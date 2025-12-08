@@ -201,10 +201,10 @@ export default function Dashboard() {
       <header className="border-b border-border/50 bg-background/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-primary to-violet flex items-center justify-center">
+            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
               <Zap className="w-5 h-5 text-primary-foreground" />
             </div>
-            <span className="text-xl font-bold text-foreground">Superpump</span>
+            <span className="text-xl font-bold text-primary">superpump</span>
           </div>
           
           <div className="flex items-center gap-4">
@@ -251,7 +251,7 @@ export default function Dashboard() {
                   <Crown className="w-5 h-5 text-accent" />
                   Mon Plan
                 </CardTitle>
-                <Badge className="bg-gradient-to-r from-primary to-violet text-primary-foreground border-0">
+                <Badge className="bg-gradient-to-r from-primary to-accent text-primary-foreground border-0">
                   {profile?.plan?.toUpperCase() || 'PRO'}
                 </Badge>
               </div>
@@ -271,7 +271,7 @@ export default function Dashboard() {
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg flex items-center gap-2">
-                  <Slack className="w-5 h-5" />
+                  <Slack className="w-5 h-5 text-[#4A154B]" />
                   Slack
                 </CardTitle>
                 {slackWorkspace?.is_connected ? (
@@ -310,7 +310,7 @@ export default function Dashboard() {
                   </>
                 ) : (
                   <>
-                    <Slack className="w-4 h-4" />
+                    <Slack className="w-4 h-4 text-[#4A154B]" />
                     Connecter Slack
                   </>
                 )}
