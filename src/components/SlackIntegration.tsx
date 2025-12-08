@@ -13,34 +13,31 @@ const SlackIntegration = () => {
   const [progress, setProgress] = useState(0);
 
   // Function to format Slack-like text with bold and mentions
-  const formatSlackText = (text: string) => {
+  const formatSlackText = (text: string, baseKey: string) => {
     const parts: React.ReactNode[] = [];
     let lastIndex = 0;
-    let keyCounter = 0;
+    let keyIndex = 0;
+
+    const getKey = () => `${baseKey}-${keyIndex++}`;
 
     // First pass: handle bold text with mentions inside
     const boldRegex = /\*([^*]+)\*/g;
     let boldMatch;
 
-    const processText = (str: string, isBold = false) => {
+    const processText = (str: string, isBold = false): React.ReactNode => {
       const mentionRegex = /@[A-Za-zÀ-ÿ\s]+/g;
       const innerParts: React.ReactNode[] = [];
       let innerLastIndex = 0;
       let mentionMatch;
 
       while ((mentionMatch = mentionRegex.exec(str)) !== null) {
-        // Add text before the mention
         if (mentionMatch.index > innerLastIndex) {
           const textBefore = str.substring(innerLastIndex, mentionMatch.index);
-          innerParts.push(isBold ? <strong key={`bold-${keyCounter++}`}>{textBefore}</strong> : textBefore);
+          innerParts.push(isBold ? <strong key={getKey()}>{textBefore}</strong> : <span key={getKey()}>{textBefore}</span>);
         }
 
-        // Add the mention with Slack styling
         innerParts.push(
-          <span
-            key={`mention-${keyCounter++}`}
-            className="bg-[#E8F5FD] text-[#1264A3] px-1 py-0.5 rounded"
-          >
+          <span key={getKey()} className="bg-[#E8F5FD] text-[#1264A3] px-1 py-0.5 rounded">
             {mentionMatch[0]}
           </span>
         );
@@ -48,38 +45,32 @@ const SlackIntegration = () => {
         innerLastIndex = mentionRegex.lastIndex;
       }
 
-      // Add remaining text
       if (innerLastIndex < str.length) {
         const textAfter = str.substring(innerLastIndex);
-        innerParts.push(isBold ? <strong key={`bold-end-${keyCounter++}`}>{textAfter}</strong> : textAfter);
+        innerParts.push(isBold ? <strong key={getKey()}>{textAfter}</strong> : <span key={getKey()}>{textAfter}</span>);
       }
 
-      return innerParts.length > 0 ? innerParts : (isBold ? <strong key={`bold-full-${keyCounter++}`}>{str}</strong> : str);
+      if (innerParts.length === 0) {
+        return isBold ? <strong key={getKey()}>{str}</strong> : <span key={getKey()}>{str}</span>;
+      }
+
+      return <span key={getKey()}>{innerParts}</span>;
     };
 
     while ((boldMatch = boldRegex.exec(text)) !== null) {
-      // Add text before the bold
       if (boldMatch.index > lastIndex) {
-        parts.push(...(Array.isArray(processText(text.substring(lastIndex, boldMatch.index)))
-          ? processText(text.substring(lastIndex, boldMatch.index)) as React.ReactNode[]
-          : [processText(text.substring(lastIndex, boldMatch.index))]));
+        parts.push(processText(text.substring(lastIndex, boldMatch.index)));
       }
 
-      // Process bold text (which may contain mentions)
-      const boldContent = boldMatch[1];
-      const processedBold = processText(boldContent, true);
-      parts.push(...(Array.isArray(processedBold) ? processedBold : [processedBold]));
-
+      parts.push(processText(boldMatch[1], true));
       lastIndex = boldRegex.lastIndex;
     }
 
-    // Add remaining text
     if (lastIndex < text.length) {
-      const remaining = processText(text.substring(lastIndex));
-      parts.push(...(Array.isArray(remaining) ? remaining : [remaining]));
+      parts.push(processText(text.substring(lastIndex)));
     }
 
-    return parts.length > 0 ? parts : text;
+    return parts.length > 0 ? <>{parts}</> : text;
   };
 
   const translations = {
@@ -761,7 +752,7 @@ const SlackIntegration = () => {
 
                           {/* Message Content */}
                           <div className="text-[15px] leading-[1.46] mb-1 font-lato text-[hsl(var(--slack-text-primary))]">
-                            {formatSlackText(msg.content)}
+                            {formatSlackText(msg.content, `posts-${idx}`)}
                           </div>
 
                           {/* LinkedIn Preview Card (only for bot messages with preview) */}
@@ -862,7 +853,7 @@ const SlackIntegration = () => {
                              <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 font-lato">APP</Badge>
                              <span className="text-[11px] text-[hsl(var(--slack-text-secondary))]">{msg.time}</span>
                            </div>
-                            <p className="text-[15px] leading-[1.46] mb-3 whitespace-pre-line font-lato text-[hsl(var(--slack-text-primary))]">{formatSlackText(msg.content)}</p>
+                            <p className="text-[15px] leading-[1.46] mb-3 whitespace-pre-line font-lato text-[hsl(var(--slack-text-primary))]">{formatSlackText(msg.content, `analytics-${idx}`)}</p>
 
                           {/* Main Metrics Grid */}
                           <Card className="border border-border bg-background mb-3">
@@ -1009,7 +1000,7 @@ const SlackIntegration = () => {
                              <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 font-lato">APP</Badge>
                              <span className="text-[11px] text-[hsl(var(--slack-text-secondary))]">{msg.time}</span>
                            </div>
-                           <p className="text-[15px] leading-[1.46] mb-3 whitespace-pre-line font-lato text-[hsl(var(--slack-text-primary))]">{formatSlackText(msg.content)}</p>
+                           <p className="text-[15px] leading-[1.46] mb-3 whitespace-pre-line font-lato text-[hsl(var(--slack-text-primary))]">{formatSlackText(msg.content, `leaderboard-${msgIdx}`)}</p>
 
                           {/* Main Leaderboard - Top 3 Impressions */}
                           {msg.rankings && (
@@ -1021,7 +1012,7 @@ const SlackIntegration = () => {
                                          <div className="flex items-center gap-3 flex-1 min-w-0">
                                            <span className="text-3xl flex-shrink-0">{ranking.badge}</span>
                                             <div className="flex-1 min-w-0">
-                                              <div className="font-semibold text-[15px]">{formatSlackText(ranking.name)}</div>
+                                              <div className="font-semibold text-[15px]">{formatSlackText(ranking.name, `ranking-${msgIdx}-${idx}`)}</div>
                                                <div className="text-[13px] text-muted-foreground">
                                                  <span className="font-semibold text-foreground">{ranking.score}</span> {t.impressionsGenerated}
                                                </div>
@@ -1057,7 +1048,7 @@ const SlackIntegration = () => {
                                 <span className="font-semibold">📝 {language === 'fr' ? 'Plus de posts publiés :' : 'Most posts published:'}</span>{" "}
                                 {msg.secondaryStats.mostPosts.map((user, idx) => (
                                   <span key={idx}>
-                                    {formatSlackText(user.name)} ({user.count})
+                                    {formatSlackText(user.name, `mostposts-${msgIdx}-${idx}`)} ({user.count})
                                     {idx < msg.secondaryStats.mostPosts.length - 1 ? ", " : ""}
                                   </span>
                                 ))}
@@ -1068,7 +1059,7 @@ const SlackIntegration = () => {
                                 <span className="font-semibold">💙 {language === 'fr' ? 'Champions du support équipe :' : 'Team support champions:'}</span>{" "}
                                 {msg.secondaryStats.mostSupport.map((user, idx) => (
                                   <span key={idx}>
-                                    {formatSlackText(user.name)} ({user.count})
+                                    {formatSlackText(user.name, `mostsupport-${msgIdx}-${idx}`)} ({user.count})
                                     {idx < msg.secondaryStats.mostSupport.length - 1 ? ", " : ""}
                                   </span>
                                 ))}
@@ -1081,7 +1072,7 @@ const SlackIntegration = () => {
                                      <span className="text-2xl">🫶</span>
                                      <div className="flex-1">
                                        <div className="font-semibold text-pink-600 dark:text-pink-400 mb-1 text-[15px]">
-                                         {language === 'fr' ? <>Remerciements spéciaux à {formatSlackText(msg.secondaryStats.mvpSupporter.name)} !</> : <>Special thanks to {formatSlackText(msg.secondaryStats.mvpSupporter.name)}!</>}
+                                         {language === 'fr' ? <>Remerciements spéciaux à {formatSlackText(msg.secondaryStats.mvpSupporter.name, `mvp-fr-${msgIdx}`)} !</> : <>Special thanks to {formatSlackText(msg.secondaryStats.mvpSupporter.name, `mvp-en-${msgIdx}`)}!</>}
                                        </div>
                                        <div className="text-[13px] text-muted-foreground">
                                          <span className="font-medium text-foreground">{msg.secondaryStats.mvpSupporter.comments} {language === 'fr' ? 'commentaires' : 'comments'}</span> {language === 'fr' ? 'et' : 'and'}{" "}
@@ -1134,7 +1125,7 @@ const SlackIntegration = () => {
                              )}
                              <span className="text-[11px] text-[hsl(var(--slack-text-secondary))]">{msg.time}</span>
                            </div>
-                           <p className="text-[15px] leading-[1.46] mb-2 whitespace-pre-line font-lato text-[hsl(var(--slack-text-primary))]">{formatSlackText(msg.content)}</p>
+                           <p className="text-[15px] leading-[1.46] mb-2 whitespace-pre-line font-lato text-[hsl(var(--slack-text-primary))]">{formatSlackText(msg.content, `share-${idx}`)}</p>
 
                           {msg.preview && msg.approved && (
                             <Card className="border-l-4 border-green-500 bg-green-500/5 border-t border-r border-b border-green-500/20">
