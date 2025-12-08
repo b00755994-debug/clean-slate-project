@@ -1,15 +1,24 @@
+import Header from "@/components/Header";
+import Hero from "@/components/Hero";
+import ProblemSolution from "@/components/ProblemSolution";
+import Features from "@/components/Features";
+import SlackIntegration from "@/components/SlackIntegration";
+import Testimonial from "@/components/Testimonial";
+import CTA from "@/components/CTA";
+import Footer from "@/components/Footer";
+
 const Index = () => {
   return (
-    <main className="min-h-screen flex items-center justify-center bg-background px-6">
-      <div className="text-center max-w-2xl mx-auto">
-        <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-medium tracking-tight text-foreground animate-fade-in-up">
-          Bienvenue
-        </h1>
-        <p className="mt-6 text-lg md:text-xl text-muted-foreground font-body leading-relaxed animate-fade-in-up-delay">
-          Votre projet est prêt. Commencez à créer quelque chose de magnifique.
-        </p>
-      </div>
-    </main>
+    <div className="min-h-screen bg-background">
+      <Header />
+      <Hero />
+      <ProblemSolution />
+      <SlackIntegration />
+      <Features />
+      <Testimonial />
+      <CTA />
+      <Footer />
+    </div>
   );
 };
 
