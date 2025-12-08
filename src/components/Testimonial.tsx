@@ -52,7 +52,7 @@ const Testimonial = () => {
 
   const t = translations[language];
   return (
-    <section className="py-16 bg-background">
+    <section id="temoignages" className="py-16 bg-background">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
