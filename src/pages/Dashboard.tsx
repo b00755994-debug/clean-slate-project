@@ -235,7 +235,7 @@ export default function Dashboard() {
       <main className="container mx-auto px-4 py-8 space-y-8">
         <div className="flex flex-col gap-2">
           <h1 className="text-3xl font-bold text-foreground">
-            Bonjour, {profile?.full_name || 'Utilisateur'} 👋
+            Bonjour, {profile?.full_name?.split(' ')[0] || 'Utilisateur'} 👋
           </h1>
           <p className="text-muted-foreground">
             Gérez votre compte et suivez vos équipes sur LinkedIn
