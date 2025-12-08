@@ -75,13 +75,6 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-        slack: {
-          DEFAULT: "hsl(var(--slack))",
-          foreground: "hsl(var(--slack-foreground))",
-          sidebar: "hsl(var(--slack-sidebar))",
-          link: "hsl(var(--slack-link))",
-          "mention-bg": "hsl(var(--slack-mention-bg))",
-        },
       },
       borderRadius: {
         lg: "var(--radius)",
