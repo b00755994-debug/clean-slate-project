@@ -89,7 +89,7 @@ const Header = () => {
                 <DropdownMenuItem onClick={() => setLanguage('en')}>English</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <Link to="/beta">
+            <Link to="/auth">
               <Button variant="ghost" className="hidden sm:inline-flex hover:bg-primary/10 hover:text-primary transition-all">{t.login}</Button>
             </Link>
             <Link to="/beta">
