@@ -16,6 +16,7 @@ const SlackIntegration = () => {
   const formatSlackText = (text: string) => {
     const parts: React.ReactNode[] = [];
     let lastIndex = 0;
+    let keyCounter = 0;
 
     // First pass: handle bold text with mentions inside
     const boldRegex = /\*([^*]+)\*/g;
@@ -31,13 +32,13 @@ const SlackIntegration = () => {
         // Add text before the mention
         if (mentionMatch.index > innerLastIndex) {
           const textBefore = str.substring(innerLastIndex, mentionMatch.index);
-          innerParts.push(isBold ? <strong key={`bold-${innerLastIndex}`}>{textBefore}</strong> : textBefore);
+          innerParts.push(isBold ? <strong key={`bold-${keyCounter++}`}>{textBefore}</strong> : textBefore);
         }
 
         // Add the mention with Slack styling
         innerParts.push(
           <span
-            key={`mention-${mentionMatch.index}`}
+            key={`mention-${keyCounter++}`}
             className="bg-[#E8F5FD] text-[#1264A3] px-1 py-0.5 rounded"
           >
             {mentionMatch[0]}
@@ -50,10 +51,10 @@ const SlackIntegration = () => {
       // Add remaining text
       if (innerLastIndex < str.length) {
         const textAfter = str.substring(innerLastIndex);
-        innerParts.push(isBold ? <strong key={`bold-end-${innerLastIndex}`}>{textAfter}</strong> : textAfter);
+        innerParts.push(isBold ? <strong key={`bold-end-${keyCounter++}`}>{textAfter}</strong> : textAfter);
       }
 
-      return innerParts.length > 0 ? innerParts : (isBold ? <strong>{str}</strong> : str);
+      return innerParts.length > 0 ? innerParts : (isBold ? <strong key={`bold-full-${keyCounter++}`}>{str}</strong> : str);
     };
 
     while ((boldMatch = boldRegex.exec(text)) !== null) {
