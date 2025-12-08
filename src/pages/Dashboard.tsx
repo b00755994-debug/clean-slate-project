@@ -366,7 +366,7 @@ export default function Dashboard() {
                 <DialogTrigger asChild>
                   <Button className="gap-2">
                     <Plus className="w-4 h-4" />
-                    Ajouter un profil
+                    Ajouter un utilisateur
                   </Button>
                 </DialogTrigger>
                 <DialogContent>
