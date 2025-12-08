@@ -133,7 +133,7 @@ export default function Auth() {
         <Card className="border-border/50 shadow-lg">
           <CardHeader className="space-y-1 text-center">
             <CardTitle className="text-2xl font-bold">
-              {isLogin ? 'Connexion' : 'Créer un compte'}
+              {isLogin ? 'Content de vous revoir 👋' : 'Créer un compte'}
             </CardTitle>
             <CardDescription>
               {isLogin
