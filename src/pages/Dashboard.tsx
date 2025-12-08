@@ -262,9 +262,13 @@ export default function Dashboard() {
               <p className="text-sm text-muted-foreground mb-4">
                 Vous êtes sur le plan <strong>Pro</strong>. Profitez de toutes les fonctionnalités avancées.
               </p>
-              <Button variant="outline" size="sm" className="w-full" disabled>
-                Gérer l'abonnement (bientôt)
-              </Button>
+              <div className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-muted/50 border border-dashed border-border text-muted-foreground text-sm">
+                <Settings className="w-4 h-4" />
+                <span>Gérer l'abonnement</span>
+                <Badge variant="secondary" className="ml-auto text-[10px] px-2 py-0.5">
+                  Bientôt
+                </Badge>
+              </div>
             </CardContent>
           </Card>
 
