@@ -251,8 +251,10 @@ export default function Dashboard() {
                   <Crown className="w-5 h-5 text-accent" />
                   Mon Plan
                 </CardTitle>
-                <Badge className="bg-gradient-to-r from-primary to-destructive text-primary-foreground border-0">
-                  {profile?.plan?.toUpperCase() || 'PRO'}
+                <Badge className="bg-card border border-foreground/20 px-4 py-1.5 text-sm font-semibold shadow-lg cursor-default hover:bg-card">
+                  <span className="bg-gradient-to-r from-primary to-destructive bg-clip-text text-transparent">
+                    {profile?.plan?.toUpperCase() || 'PRO'}
+                  </span>
                 </Badge>
               </div>
             </CardHeader>
