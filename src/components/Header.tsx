@@ -93,7 +93,7 @@ const Header = () => {
               <Button variant="ghost" className="hidden sm:inline-flex hover:bg-primary/10 hover:text-primary transition-all">{t.login}</Button>
             </Link>
             <Link to="/beta">
-              <Button className="bg-gradient-to-r from-primary to-destructive text-white hover:opacity-90">{t.joinBeta}</Button>
+              <Button variant="hero">{t.joinBeta}</Button>
             </Link>
           </div>
         </div>

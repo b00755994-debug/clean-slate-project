@@ -42,7 +42,7 @@ const Hero = () => {
             </span>
           </div>
 
-          <h1 className="text-4xl md:text-6xl font-bold mb-4 tracking-tight text-foreground">
+          <h1 className="text-4xl md:text-6xl font-bold mb-4 tracking-tight text-foreground" style={{ color: '#1B1B1B' }}>
             {t.title1}
             <br />
             <span className="bg-gradient-to-r from-primary to-destructive bg-clip-text text-transparent">
@@ -50,7 +50,7 @@ const Hero = () => {
             </span>
           </h1>
 
-          <p className="text-lg md:text-xl mb-8 max-w-2xl mx-auto leading-relaxed text-muted-foreground">
+          <p className="text-lg md:text-xl mb-8 max-w-2xl mx-auto leading-relaxed text-muted-foreground" style={{ color: '#5A5A5A' }}>
             {t.subtitle}
           </p>
 
@@ -78,7 +78,7 @@ const Hero = () => {
               <div className="text-5xl font-bold mb-2 text-primary">
                 +350%
               </div>
-              <div className="text-sm font-medium text-muted-foreground">{t.impressions}</div>
+              <div className="text-sm font-medium text-muted-foreground" style={{ color: '#5A5A5A' }}>{t.impressions}</div>
             </div>
 
             <div className="text-center">
@@ -88,7 +88,7 @@ const Hero = () => {
               <div className="text-5xl font-bold mb-2 text-primary">
                 5min
               </div>
-              <div className="text-sm font-medium text-muted-foreground">{t.setup}</div>
+              <div className="text-sm font-medium text-muted-foreground" style={{ color: '#5A5A5A' }}>{t.setup}</div>
             </div>
 
             <div className="text-center">
@@ -98,7 +98,7 @@ const Hero = () => {
               <div className="text-5xl font-bold mb-2 text-primary">
                 10x
               </div>
-              <div className="text-sm font-medium text-muted-foreground">{t.engagement}</div>
+              <div className="text-sm font-medium text-muted-foreground" style={{ color: '#5A5A5A' }}>{t.engagement}</div>
             </div>
           </div>
         </div>
