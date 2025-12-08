@@ -1,26 +1,40 @@
 import { useState, useEffect } from "react";
-import { useLanguage } from "@/contexts/LanguageContext";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import {
-  Hash,
-  TrendingUp,
+import { useLanguage } from "@/contexts/LanguageContext";
+import { 
+  Hash, 
+  ChevronDown, 
+  Plus, 
+  MessageSquare, 
+  Bell, 
+  MoreHorizontal, 
+  Home, 
+  Search,
+  Bookmark,
+  Send,
+  Smile,
+  AtSign,
+  Paperclip,
+  Mic,
+  Video,
+  BarChart2,
   Trophy,
   Share2,
-  Bell,
-  BarChart3,
-  Users,
-  MessageSquare,
   ThumbsUp,
+  Heart,
+  Laugh,
+  Star,
+  TrendingUp,
+  Users,
   Eye,
-  Smile,
+  MessageCircle,
   Repeat2,
-  Bookmark,
-  Zap,
-  Slack,
-  Home,
-  MoreHorizontal,
+  Award,
+  Crown,
+  Medal,
+  CheckCircle,
+  Clock,
+  Zap
 } from "lucide-react";
 import slackLogo from "@/assets/slack-logo.png";
 
@@ -30,1323 +44,552 @@ const SlackIntegration = () => {
   const [isAutoPlay, setIsAutoPlay] = useState(true);
   const [progress, setProgress] = useState(0);
 
-  // Function to format Slack-like text with bold and mentions
-  const formatSlackText = (text: string) => {
-    const parts: React.ReactNode[] = [];
-    let lastIndex = 0;
-
-    // First pass: handle bold text with mentions inside
-    const boldRegex = /\*([^*]+)\*/g;
-    let boldMatch;
-
-    const processText = (str: string, isBold = false) => {
-      const mentionRegex = /@[A-Za-zÀ-ÿ\s]+/g;
-      const innerParts: React.ReactNode[] = [];
-      let innerLastIndex = 0;
-      let mentionMatch;
-
-      while ((mentionMatch = mentionRegex.exec(str)) !== null) {
-        // Add text before the mention
-        if (mentionMatch.index > innerLastIndex) {
-          const textBefore = str.substring(innerLastIndex, mentionMatch.index);
-          innerParts.push(isBold ? <strong key={`bold-${innerLastIndex}`}>{textBefore}</strong> : textBefore);
-        }
-
-        // Add the mention with Slack styling
-        innerParts.push(
-          <span key={`mention-${mentionMatch.index}`} className="bg-[#E8F5FD] text-[#1264A3] px-1 py-0.5 rounded">
-            {mentionMatch[0]}
-          </span>,
-        );
-
-        innerLastIndex = mentionRegex.lastIndex;
-      }
-
-      // Add remaining text
-      if (innerLastIndex < str.length) {
-        const textAfter = str.substring(innerLastIndex);
-        innerParts.push(isBold ? <strong key={`bold-end-${innerLastIndex}`}>{textAfter}</strong> : textAfter);
-      }
-
-      return innerParts.length > 0 ? innerParts : isBold ? <strong>{str}</strong> : str;
-    };
-
-    while ((boldMatch = boldRegex.exec(text)) !== null) {
-      // Add text before the bold
-      if (boldMatch.index > lastIndex) {
-        parts.push(
-          ...(Array.isArray(processText(text.substring(lastIndex, boldMatch.index)))
-            ? (processText(text.substring(lastIndex, boldMatch.index)) as React.ReactNode[])
-            : [processText(text.substring(lastIndex, boldMatch.index))]),
-        );
-      }
-
-      // Process bold text (which may contain mentions)
-      const boldContent = boldMatch[1];
-      const processedBold = processText(boldContent, true);
-      parts.push(...(Array.isArray(processedBold) ? processedBold : [processedBold]));
-
-      lastIndex = boldRegex.lastIndex;
-    }
-
-    // Add remaining text
-    if (lastIndex < text.length) {
-      const remaining = processText(text.substring(lastIndex));
-      parts.push(...(Array.isArray(remaining) ? remaining : [remaining]));
-    }
-
-    return parts.length > 0 ? parts : text;
-  };
-
   const translations = {
     fr: {
-      badge: "Intégré avec Slack",
-      title1: "Meilleure ",
-      title2: "Application Slack",
-      title3: "",
-      subtitle:
-        "Notifications instantanées, analytics, gamification et gestion de contenu, le tout dans vos canaux Slack préférés.",
-      impressionsGenerated: "impressions générées",
+      title: "Intégré directement dans Slack",
+      subtitle: "Recevez vos notifications LinkedIn là où vous travaillez déjà",
       channels: {
-        posts: {
-          name: "#superpump-posts",
-          description: "Recevez une alerte instantanée à chaque publication de l'équipe",
-          messages: [
-            {
-              user: "superpump",
-              avatar: "🚀",
-              time: "il y a 2min",
-              content:
-                "🎯 *@Sarah Martin* vient de publier sur LinkedIn !\n\n💪 L'équipe, c'est le moment de briller ! Un like, un commentaire ou un partage de votre part peut multiplier l'impact de ce post par 10. Ensemble, on va plus loin ! 🚀",
-              preview:
-                "Après 3 mois de travail acharné, notre équipe a réussi à réduire le temps d'onboarding client de 40%. Voici les 5 stratégies clés que nous avons mises en place pour y arriver...",
-              cta: "👉 Liker et commenter sur LinkedIn",
-              stats: { views: "847", likes: "34", comments: "8" },
-              reactions: [
-                { emoji: "🔥", count: 8, users: ["Marie L.", "Jean D.", "+6"] },
-                { emoji: "👏", count: 5, users: ["Pierre M.", "Sophie R.", "Claire B.", "+2"] },
-                { emoji: "💯", count: 3, users: ["Alex T.", "Julie C.", "Marc L."] },
-              ],
-              replies: 4,
-            },
-            {
-              user: "Thomas Dubois",
-              avatar: "TD",
-              time: "il y a 3min",
-              content: "Excellent post Sarah ! J'ajoute mon commentaire tout de suite 💬",
-              isReply: true,
-            },
-            {
-              user: "superpump",
-              avatar: "🚀",
-              time: "il y a 25min",
-              content:
-                "✨ *@Marc Laurent* partage une success story client !\n\n🎉 Les vraies histoires ont 3x plus d'impact ! Prenez 30 secondes pour réagir et montrer votre soutien. Vos collègues comptent sur vous ! 💙",
-              preview:
-                "Comment notre client TechCorp a augmenté son taux de conversion de 156% en 6 mois. Une histoire inspirante de transformation digitale que je voulais partager avec vous.",
-              cta: "👉 Découvrir et partager l'histoire",
-              stats: { views: "1,243", likes: "67", comments: "12" },
-              reactions: [
-                { emoji: "🚀", count: 12, users: ["Marie L.", "Jean D.", "+10"] },
-                { emoji: "👍", count: 9, users: ["Pierre M.", "Sophie R.", "+7"] },
-                { emoji: "💡", count: 4, users: ["Alex T.", "Julie C.", "Sarah M.", "Claire B."] },
-              ],
-              replies: 3,
-            },
-            {
-              user: "Marie Lambert",
-              avatar: "ML",
-              time: "il y a 28min",
-              content: "Quelle belle success story ! Je la partage dans mon réseau 🎯",
-              isReply: true,
-            },
-            {
-              user: "superpump",
-              avatar: "🚀",
-              time: "il y a 1h",
-              content:
-                "📢 *@Julie Chen* lance un débat passionnant sur l'avenir du SaaS !\n\n🔥 Les posts qui posent des questions génèrent 3x plus d'engagement. Partagez votre point de vue en commentaire - votre expertise compte ! 💬",
-              preview:
-                "Question pour les leaders tech : Pensez-vous que l'IA va remplacer les équipes commerciales traditionnelles d'ici 5 ans ? Mon avis peut vous surprendre... 🤔",
-              cta: "👉 Rejoindre le débat maintenant",
-              stats: { views: "2,156", likes: "89", comments: "34" },
-              reactions: [
-                { emoji: "🤔", count: 15, users: ["Marie L.", "Jean D.", "+13"] },
-                { emoji: "💯", count: 8, users: ["Pierre M.", "Sophie R.", "+6"] },
-                { emoji: "👀", count: 6, users: ["Alex T.", "Julie C.", "+4"] },
-              ],
-              replies: 8,
-            },
-            {
-              user: "Pierre Martin",
-              avatar: "PM",
-              time: "il y a 1h",
-              content: "Débat super intéressant Julie ! Mon commentaire est posté 👊",
-              isReply: true,
-            },
-            {
-              user: "superpump",
-              avatar: "🚀",
-              time: "il y a 2h",
-              content:
-                "💡 *@Claire Bernard* partage des insights précieux sur la Product-Led Growth !\n\n⚡ Un post éducatif comme celui-ci positionne toute l'équipe comme des experts du secteur. Amplifiez le message avec vos réseaux ! 🎯",
-              preview:
-                "Les 7 erreurs fatales que nous avons évitées en passant à une stratégie Product-Led Growth. Thread complet avec exemples concrets et métriques à suivre...",
-              cta: "👉 Lire le thread complet",
-              stats: { views: "1,567", likes: "78", comments: "19" },
-              reactions: [
-                { emoji: "💡", count: 11, users: ["Marie L.", "Jean D.", "+9"] },
-                { emoji: "🙌", count: 7, users: ["Pierre M.", "Sophie R.", "+5"] },
-                { emoji: "🔖", count: 5, users: ["Alex T.", "Julie C.", "+3"] },
-              ],
-              replies: 5,
-            },
-          ],
-        },
-        analytics: {
-          name: "#superpump-analytics",
-          description: "Consultez les rapports de performance hebdomadaires et mensuels",
-          messages: [
-            {
-              user: "superpump",
-              avatar: "🚀",
-              time: "Aujourd'hui à 9:00",
-              content:
-                "📊 *Rapport Mensuel* - Septembre 2025\n\n🎉 Excellente performance ce mois-ci ! Vos efforts collectifs portent leurs fruits.",
-              stats: {
-                impressions: "117,000",
-                impressionsGrowth: "+23%",
-                posts: "23",
-                postsGrowth: "+6",
-                comments: "156",
-                commentsGrowth: "+18",
-                likes: "892",
-                likesGrowth: "+31%",
-                engagement: "8.7%",
-                engagementGrowth: "+1.2%",
-                icpAudience: "76%",
-                icpProgress: 76,
-                leads: "242",
-                leadsGrowth: "+4",
-                topPerformers: [
-                  { name: "Sarah M.", impressions: "37.0K" },
-                  { name: "Thomas D.", impressions: "24.2K" },
-                  { name: "Julie C.", impressions: "11.7K" },
-                ],
-              },
-              reactions: [
-                { emoji: "🎉", count: 7, users: ["Marie L.", "Jean D.", "+5"] },
-                { emoji: "🚀", count: 5, users: ["Pierre M.", "Sophie R.", "+3"] },
-              ],
-            },
-          ],
-        },
-        leaderboard: {
-          name: "#superpump-leaderboard",
-          description: "Suivez les top performers et célébrez les succès de l'équipe",
-          messages: [
-            {
-              user: "superpump",
-              avatar: "🚀",
-              time: "Aujourd'hui à 10:00",
-              content: "🏆 *Classement du Mois* - Septembre 2025\n\n*🔥 TOP 3 - IMPRESSIONS GÉNÉRÉES*",
-              rankings: [
-                { rank: 1, name: "@Sarah Martin", score: "37,050", metric: "impressions", badge: "🥇", growth: "+34%" },
-                {
-                  rank: 2,
-                  name: "@Thomas Dubois",
-                  score: "24,200",
-                  metric: "impressions",
-                  badge: "🥈",
-                  growth: "+28%",
-                },
-                { rank: 3, name: "@Julie Chen", score: "11,700", metric: "impressions", badge: "🥉", growth: "+42%" },
-              ],
-              icpEngagement: "73%",
-              secondaryStats: {
-                mostPosts: [
-                  { name: "@Thomas Dubois", count: "8 posts" },
-                  { name: "@Sarah Martin", count: "6 posts" },
-                  { name: "@Claire Bernard", count: "5 posts" },
-                ],
-                mostSupport: [
-                  { name: "@Marie Lambert", count: "47 interactions" },
-                  { name: "@Pierre Martin", count: "39 interactions" },
-                  { name: "@Alex Torres", count: "34 interactions" },
-                ],
-                mvpSupporter: {
-                  name: "@Marie Lambert",
-                  comments: "23",
-                  likes: "24",
-                },
-              },
-              reactions: [
-                { emoji: "👏", count: 14, users: ["Marie L.", "Jean D.", "+12"] },
-                { emoji: "🎉", count: 8, users: ["Pierre M.", "Sophie R.", "+6"] },
-                { emoji: "🔥", count: 6, users: ["Alex T.", "Julie C.", "+4"] },
-              ],
-            },
-          ],
-        },
-        share: {
-          name: "#superpump-please-share",
-          description: "Accédez au contenu pré-approuvé prêt à partager sur votre réseau",
-          messages: [
-            {
-              user: "superpump",
-              avatar: "🚀",
-              time: "il y a 2h",
-              content:
-                "✅ *Nouveau contenu approuvé par l'équipe Marketing*\n\n🎯 Ce post sur notre nouvelle fonctionnalité est prêt à être partagé ! N'hésitez pas à l'adapter à votre voix.\n\n💡 *Pourquoi le partager ?* Aide à construire notre thought leadership sur l'innovation produit.",
-              preview:
-                "Nous venons de lancer une fonctionnalité qui va changer la donne pour nos clients : l'automatisation intelligente des workflows. Après 6 mois de développement, nous sommes fiers de vous présenter comment cette innovation va faire gagner 10h par semaine à nos utilisateurs...",
-              cta: "🔄 Partager sur votre profil LinkedIn",
-              approved: true,
-              reactions: [
-                { emoji: "👍", count: 9, users: ["Marie L.", "Jean D.", "+7"] },
-                { emoji: "🚀", count: 6, users: ["Pierre M.", "Sophie R.", "+4"] },
-              ],
-              replies: 3,
-            },
-            {
-              user: "Thomas Dubois",
-              avatar: "TD",
-              time: "il y a 1h",
-              content: "Je partage tout de suite ! Parfait timing pour ma audience 👌",
-              isReply: true,
-            },
-            {
-              user: "superpump",
-              avatar: "🚀",
-              time: "Hier à 14:30",
-              content:
-                "✨ *Success Story Client - Validé pour partage*\n\n📢 Cette histoire résonne vraiment bien avec notre ICP. Parfait pour démontrer la valeur concrète de notre solution.\n\n🎁 *Suggestion :* Ajoutez votre propre expérience ou point de vue pour rendre le partage encore plus authentique !",
-              preview:
-                "Retour d'expérience inspirant : Comment l'équipe de TechCorp est passée de 50 à 500 clients en 18 mois grâce à une stratégie LinkedIn coordonnée. Les 3 piliers de leur succès et comment vous pouvez les reproduire...",
-              cta: "📖 Lire et partager l'étude de cas",
-              approved: true,
-              reactions: [
-                { emoji: "💯", count: 8, users: ["Marie L.", "Jean D.", "+6"] },
-                { emoji: "🔥", count: 5, users: ["Pierre M.", "Sophie R.", "+3"] },
-              ],
-            },
-          ],
-        },
+        posts: "Publications",
+        analytics: "Statistiques", 
+        leaderboard: "Classement",
+        share: "Partager"
       },
+      channelDescriptions: {
+        posts: "Notifications en temps réel de vos publications LinkedIn",
+        analytics: "Statistiques détaillées de vos performances",
+        leaderboard: "Classement de votre équipe",
+        share: "Partagez du contenu pré-approuvé"
+      },
+      newPost: "Nouvelle publication LinkedIn",
+      viewOnLinkedIn: "Voir sur LinkedIn",
+      impressions: "impressions",
+      reactions: "réactions",
+      comments: "commentaires",
+      shares: "partages",
+      thisWeek: "Cette semaine",
+      vsLastWeek: "vs semaine dernière",
+      topPerformers: "Top Performers",
+      rank: "Rang",
+      member: "Membre",
+      posts_label: "Publications",
+      engagement: "Engagement",
+      readyToShare: "Prêt à partager",
+      approvedContent: "Contenu approuvé",
+      shareNow: "Partager maintenant",
+      scheduled: "Programmé"
     },
     en: {
-      badge: "Integrated with Slack",
-      title1: "Best-in-class ",
-      title2: "Slack",
-      title3: " App",
-      subtitle:
-        "Instant notifications, analytics, gamification and content management, all in your favorite Slack channels.",
-      impressionsGenerated: "impressions generated",
+      title: "Integrated directly into Slack",
+      subtitle: "Get your LinkedIn notifications where you already work",
       channels: {
-        posts: {
-          name: "#superpump-posts",
-          description: "Get instant alerts when your team posts on LinkedIn",
-          messages: [
-            {
-              user: "superpump",
-              avatar: "🚀",
-              time: "2min ago",
-              content:
-                "🎯 *@Sarah Martin* just posted on LinkedIn!\n\n💪 Team, it's time to shine! A like, comment or share from you can multiply the impact of this post by 10. Together, we go further! 🚀",
-              preview:
-                "After 3 months of hard work, our team managed to reduce client onboarding time by 40%. Here are the 5 key strategies we implemented to achieve this...",
-              cta: "👉 Like and comment on LinkedIn",
-              stats: { views: "847", likes: "34", comments: "8" },
-              reactions: [
-                { emoji: "🔥", count: 8, users: ["Marie L.", "Jean D.", "+6"] },
-                { emoji: "👏", count: 5, users: ["Pierre M.", "Sophie R.", "Claire B.", "+2"] },
-                { emoji: "💯", count: 3, users: ["Alex T.", "Julie C.", "Marc L."] },
-              ],
-              replies: 4,
-            },
-            {
-              user: "Thomas Dubois",
-              avatar: "TD",
-              time: "3min ago",
-              content: "Excellent post Sarah! Adding my comment right away 💬",
-              isReply: true,
-            },
-            {
-              user: "superpump",
-              avatar: "🚀",
-              time: "25min ago",
-              content:
-                "✨ *@Marc Laurent* shares a client success story!\n\n🎉 Real stories have 3x more impact! Take 30 seconds to react and show your support. Your colleagues are counting on you! 💙",
-              preview:
-                "How our client TechCorp increased their conversion rate by 156% in 6 months. An inspiring digital transformation story I wanted to share with you.",
-              cta: "👉 Discover and share the story",
-              stats: { views: "1,243", likes: "67", comments: "12" },
-              reactions: [
-                { emoji: "🚀", count: 12, users: ["Marie L.", "Jean D.", "+10"] },
-                { emoji: "👍", count: 9, users: ["Pierre M.", "Sophie R.", "+7"] },
-                { emoji: "💡", count: 4, users: ["Alex T.", "Julie C.", "Sarah M.", "Claire B."] },
-              ],
-              replies: 3,
-            },
-            {
-              user: "Marie Lambert",
-              avatar: "ML",
-              time: "28min ago",
-              content: "What a great success story! Sharing it with my network 🎯",
-              isReply: true,
-            },
-            {
-              user: "superpump",
-              avatar: "🚀",
-              time: "1h ago",
-              content:
-                "📢 *@Julie Chen* launches a fascinating debate on the future of SaaS!\n\n🔥 Posts asking questions generate 3x more engagement. Share your point of view in the comments - your expertise matters! 💬",
-              preview:
-                "Question for tech leaders: Do you think AI will replace traditional sales teams within 5 years? My opinion might surprise you... 🤔",
-              cta: "👉 Join the debate now",
-              stats: { views: "2,156", likes: "89", comments: "34" },
-              reactions: [
-                { emoji: "🤔", count: 15, users: ["Marie L.", "Jean D.", "+13"] },
-                { emoji: "💯", count: 8, users: ["Pierre M.", "Sophie R.", "+6"] },
-                { emoji: "👀", count: 6, users: ["Alex T.", "Julie C.", "+4"] },
-              ],
-              replies: 8,
-            },
-            {
-              user: "Pierre Martin",
-              avatar: "PM",
-              time: "1h ago",
-              content: "Super interesting debate Julie! My comment is posted 👊",
-              isReply: true,
-            },
-            {
-              user: "superpump",
-              avatar: "🚀",
-              time: "2h ago",
-              content:
-                "💡 *@Claire Bernard* shares valuable insights on Product-Led Growth!\n\n⚡ An educational post like this positions the whole team as industry experts. Amplify the message with your networks! 🎯",
-              preview:
-                "The 7 fatal mistakes we avoided when switching to a Product-Led Growth strategy. Full thread with concrete examples and metrics to track...",
-              cta: "👉 Read the full thread",
-              stats: { views: "1,567", likes: "78", comments: "19" },
-              reactions: [
-                { emoji: "💡", count: 11, users: ["Marie L.", "Jean D.", "+9"] },
-                { emoji: "🙌", count: 7, users: ["Pierre M.", "Sophie R.", "+5"] },
-                { emoji: "🔖", count: 5, users: ["Alex T.", "Julie C.", "+3"] },
-              ],
-              replies: 5,
-            },
-          ],
-        },
-        analytics: {
-          name: "#superpump-analytics",
-          description: "Access weekly and monthly performance reports on your team's reach",
-          messages: [
-            {
-              user: "superpump",
-              avatar: "🚀",
-              time: "Today at 9:00 AM",
-              content:
-                "📊 *Monthly Report* - September 2025\n\n🎉 Excellent performance this month! Your collective efforts are paying off.",
-              stats: {
-                impressions: "117,000",
-                impressionsGrowth: "+23%",
-                posts: "23",
-                postsGrowth: "+6",
-                comments: "156",
-                commentsGrowth: "+18",
-                likes: "892",
-                likesGrowth: "+31%",
-                engagement: "8.7%",
-                engagementGrowth: "+1.2%",
-                icpAudience: "76%",
-                icpProgress: 76,
-                leads: "242",
-                leadsGrowth: "+4",
-                topPerformers: [
-                  { name: "Sarah M.", impressions: "37.0K" },
-                  { name: "Thomas D.", impressions: "24.2K" },
-                  { name: "Julie C.", impressions: "11.7K" },
-                ],
-              },
-              reactions: [
-                { emoji: "🎉", count: 7, users: ["Marie L.", "Jean D.", "+5"] },
-                { emoji: "🚀", count: 5, users: ["Pierre M.", "Sophie R.", "+3"] },
-              ],
-            },
-          ],
-        },
-        leaderboard: {
-          name: "#superpump-leaderboard",
-          description: "Track top performers and celebrate team achievements",
-          messages: [
-            {
-              user: "superpump",
-              avatar: "🚀",
-              time: "Today at 10:00 AM",
-              content: "🏆 *Monthly Leaderboard* - September 2025\n\n*🔥 TOP 3 - IMPRESSIONS GENERATED*",
-              rankings: [
-                { rank: 1, name: "@Sarah Martin", score: "37,050", metric: "impressions", badge: "🥇", growth: "+34%" },
-                {
-                  rank: 2,
-                  name: "@Thomas Dubois",
-                  score: "24,200",
-                  metric: "impressions",
-                  badge: "🥈",
-                  growth: "+28%",
-                },
-                { rank: 3, name: "@Julie Chen", score: "11,700", metric: "impressions", badge: "🥉", growth: "+42%" },
-              ],
-              icpEngagement: "73%",
-              secondaryStats: {
-                mostPosts: [
-                  { name: "@Thomas Dubois", count: "8 posts" },
-                  { name: "@Sarah Martin", count: "6 posts" },
-                  { name: "@Claire Bernard", count: "5 posts" },
-                ],
-                mostSupport: [
-                  { name: "@Marie Lambert", count: "47 interactions" },
-                  { name: "@Pierre Martin", count: "39 interactions" },
-                  { name: "@Alex Torres", count: "34 interactions" },
-                ],
-                mvpSupporter: {
-                  name: "@Marie Lambert",
-                  comments: "23",
-                  likes: "24",
-                },
-              },
-              reactions: [
-                { emoji: "👏", count: 14, users: ["Marie L.", "Jean D.", "+12"] },
-                { emoji: "🎉", count: 8, users: ["Pierre M.", "Sophie R.", "+6"] },
-                { emoji: "🔥", count: 6, users: ["Alex T.", "Julie C.", "+4"] },
-              ],
-            },
-          ],
-        },
-        share: {
-          name: "#superpump-please-share",
-          description: "Access pre-approved content ready to share with your network",
-          messages: [
-            {
-              user: "superpump",
-              avatar: "🚀",
-              time: "2h ago",
-              content:
-                "✅ *New content approved by the Marketing team*\n\n🎯 This post about our new feature is ready to be shared! Feel free to adapt it to your voice.\n\n💡 *Why share it?* Helps build our thought leadership on product innovation.",
-              preview:
-                "We just launched a game-changing feature for our clients: intelligent workflow automation. After 6 months of development, we're proud to present how this innovation will save our users 10 hours per week...",
-              cta: "🔄 Share on your LinkedIn profile",
-              approved: true,
-              reactions: [
-                { emoji: "👍", count: 9, users: ["Marie L.", "Jean D.", "+7"] },
-                { emoji: "🚀", count: 6, users: ["Pierre M.", "Sophie R.", "+4"] },
-              ],
-              replies: 3,
-            },
-            {
-              user: "Thomas Dubois",
-              avatar: "TD",
-              time: "1h ago",
-              content: "Sharing right away! Perfect timing for my audience 👌",
-              isReply: true,
-            },
-            {
-              user: "superpump",
-              avatar: "🚀",
-              time: "Yesterday at 2:30 PM",
-              content:
-                "✨ *Client Success Story - Validated for sharing*\n\n📢 This story really resonates with our ICP. Perfect to demonstrate the concrete value of our solution.\n\n🎁 *Suggestion:* Add your own experience or perspective to make the share even more authentic!",
-              preview:
-                "Inspiring feedback: How TechCorp's team went from 50 to 500 clients in 18 months thanks to a coordinated LinkedIn strategy. The 3 pillars of their success and how you can replicate them...",
-              cta: "📖 Read and share the case study",
-              approved: true,
-              reactions: [
-                { emoji: "💯", count: 8, users: ["Marie L.", "Jean D.", "+6"] },
-                { emoji: "🔥", count: 5, users: ["Pierre M.", "Sophie R.", "+3"] },
-              ],
-            },
-          ],
-        },
+        posts: "Posts",
+        analytics: "Analytics",
+        leaderboard: "Leaderboard", 
+        share: "Share"
       },
-    },
+      channelDescriptions: {
+        posts: "Real-time notifications from your LinkedIn posts",
+        analytics: "Detailed statistics of your performance",
+        leaderboard: "Your team ranking",
+        share: "Share pre-approved content"
+      },
+      newPost: "New LinkedIn post",
+      viewOnLinkedIn: "View on LinkedIn",
+      impressions: "impressions",
+      reactions: "reactions",
+      comments: "comments",
+      shares: "shares",
+      thisWeek: "This week",
+      vsLastWeek: "vs last week",
+      topPerformers: "Top Performers",
+      rank: "Rank",
+      member: "Member",
+      posts_label: "Posts",
+      engagement: "Engagement",
+      readyToShare: "Ready to share",
+      approvedContent: "Approved content",
+      shareNow: "Share now",
+      scheduled: "Scheduled"
+    }
   };
 
   const t = translations[language];
+
   const channels = [
-    { id: "posts", icon: Bell, data: t.channels.posts },
-    { id: "analytics", icon: BarChart3, data: t.channels.analytics },
-    { id: "leaderboard", icon: Trophy, data: t.channels.leaderboard },
-    { id: "share", icon: Share2, data: t.channels.share },
+    { id: "posts", icon: Hash, name: t.channels.posts },
+    { id: "analytics", icon: BarChart2, name: t.channels.analytics },
+    { id: "leaderboard", icon: Trophy, name: t.channels.leaderboard },
+    { id: "share", icon: Share2, name: t.channels.share }
   ];
 
-  // Auto-rotation effect
   useEffect(() => {
     if (!isAutoPlay) return;
 
-    const channelIds = ["posts", "analytics", "leaderboard", "share"]; // Order specified
-    const currentIndex = channelIds.indexOf(activeChannel);
-
-    // Progress animation (0 to 100 over 7 seconds)
-    const progressInterval = setInterval(() => {
+    const interval = setInterval(() => {
       setProgress((prev) => {
-        const newProgress = prev + 100 / 70; // 70 steps over 7 seconds (100ms per step)
-
-        // When reaching 100%, switch to next channel
-        if (newProgress >= 100) {
-          const nextIndex = (currentIndex + 1) % channelIds.length;
-          setActiveChannel(channelIds[nextIndex]);
+        if (prev >= 100) {
+          const currentIndex = channels.findIndex(c => c.id === activeChannel);
+          const nextIndex = (currentIndex + 1) % channels.length;
+          setActiveChannel(channels[nextIndex].id);
           return 0;
         }
-
-        return newProgress;
+        return prev + 2;
       });
     }, 100);
 
-    return () => {
-      clearInterval(progressInterval);
-    };
-  }, [activeChannel, isAutoPlay]);
+    return () => clearInterval(interval);
+  }, [isAutoPlay, activeChannel, channels]);
 
   const handleChannelClick = (channelId: string) => {
-    setIsAutoPlay(false);
     setActiveChannel(channelId);
     setProgress(0);
+    setIsAutoPlay(false);
+    setTimeout(() => setIsAutoPlay(true), 10000);
+  };
+
+  const formatSlackText = (text: string) => {
+    const parts = text.split(/(\*[^*]+\*|@\w+)/g);
+    return parts.map((part, index) => {
+      if (part.startsWith('*') && part.endsWith('*')) {
+        return <span key={index} className="font-bold">{part.slice(1, -1)}</span>;
+      }
+      if (part.startsWith('@')) {
+        return <span key={index} className="text-slack-link bg-slack-mention-bg px-0.5 rounded">@{part.slice(1)}</span>;
+      }
+      return part;
+    });
+  };
+
+  const renderPostsContent = () => (
+    <div className="space-y-4">
+      {/* Post notification */}
+      <div className="flex items-start gap-3 p-3 hover:bg-muted/50 rounded-lg transition-colors">
+        <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-sm flex-shrink-0">
+          SP
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="font-bold text-foreground">superpump</span>
+            <span className="text-xs text-muted-foreground">11:42 AM</span>
+          </div>
+          <div className="text-sm text-foreground/90 mb-3">
+            {formatSlackText(`📊 *${t.newPost}*`)}
+          </div>
+          
+          {/* LinkedIn preview card */}
+          <div className="border-l-4 border-primary bg-muted/30 rounded-r-lg p-3 mb-3">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-xs font-bold">
+                JD
+              </div>
+              <div>
+                <p className="text-sm font-medium text-foreground">Jean Dupont</p>
+                <p className="text-xs text-muted-foreground">CEO @ TechStartup</p>
+              </div>
+            </div>
+            <p className="text-sm text-foreground/80 mb-3">
+              🚀 Excited to announce our Series A! After 2 years of hard work, we've raised €5M to accelerate our growth...
+            </p>
+            <div className="flex items-center gap-4 text-xs text-muted-foreground">
+              <span className="flex items-center gap-1">
+                <Eye className="w-3 h-3" /> 2,847 {t.impressions}
+              </span>
+              <span className="flex items-center gap-1">
+                <ThumbsUp className="w-3 h-3" /> 156 {t.reactions}
+              </span>
+              <span className="flex items-center gap-1">
+                <MessageCircle className="w-3 h-3" /> 23 {t.comments}
+              </span>
+            </div>
+          </div>
+
+          {/* Reactions */}
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 bg-primary/10 border border-primary/20 rounded-full px-2 py-0.5 text-xs">
+              <span>👍</span> <span className="text-primary font-medium">12</span>
+            </div>
+            <div className="flex items-center gap-1 bg-muted rounded-full px-2 py-0.5 text-xs">
+              <span>🎉</span> <span className="text-muted-foreground">5</span>
+            </div>
+            <div className="flex items-center gap-1 bg-muted rounded-full px-2 py-0.5 text-xs">
+              <span>🔥</span> <span className="text-muted-foreground">3</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Second message */}
+      <div className="flex items-start gap-3 p-3 hover:bg-muted/50 rounded-lg transition-colors">
+        <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-sm flex-shrink-0">
+          SP
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="font-bold text-foreground">superpump</span>
+            <span className="text-xs text-muted-foreground">10:15 AM</span>
+          </div>
+          <div className="text-sm text-foreground/90">
+            {formatSlackText("🔔 *@Marie* just commented on your post: \"Great insights! Would love to discuss further.\"")}
+          </div>
+          <div className="flex items-center gap-2 mt-2">
+            <div className="flex items-center gap-1 bg-muted rounded-full px-2 py-0.5 text-xs">
+              <span>👀</span> <span className="text-muted-foreground">2</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderAnalyticsContent = () => (
+    <div className="space-y-4">
+      <div className="flex items-start gap-3 p-3">
+        <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-sm flex-shrink-0">
+          SP
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="font-bold text-foreground">superpump</span>
+            <span className="text-xs text-muted-foreground">9:00 AM</span>
+          </div>
+          <div className="text-sm text-foreground/90 mb-3">
+            {formatSlackText(`📈 *${t.thisWeek}*`)}
+          </div>
+          
+          {/* Stats grid */}
+          <div className="grid grid-cols-2 gap-3 mb-3">
+            <div className="bg-muted/50 rounded-lg p-3">
+              <div className="flex items-center gap-2 mb-1">
+                <Eye className="w-4 h-4 text-primary" />
+                <span className="text-xs text-muted-foreground">{t.impressions}</span>
+              </div>
+              <p className="text-xl font-bold text-foreground">12,847</p>
+              <p className="text-xs text-green-500 flex items-center gap-1">
+                <TrendingUp className="w-3 h-3" /> +23% {t.vsLastWeek}
+              </p>
+            </div>
+            <div className="bg-muted/50 rounded-lg p-3">
+              <div className="flex items-center gap-2 mb-1">
+                <ThumbsUp className="w-4 h-4 text-primary" />
+                <span className="text-xs text-muted-foreground">{t.reactions}</span>
+              </div>
+              <p className="text-xl font-bold text-foreground">489</p>
+              <p className="text-xs text-green-500 flex items-center gap-1">
+                <TrendingUp className="w-3 h-3" /> +15% {t.vsLastWeek}
+              </p>
+            </div>
+            <div className="bg-muted/50 rounded-lg p-3">
+              <div className="flex items-center gap-2 mb-1">
+                <MessageCircle className="w-4 h-4 text-primary" />
+                <span className="text-xs text-muted-foreground">{t.comments}</span>
+              </div>
+              <p className="text-xl font-bold text-foreground">67</p>
+              <p className="text-xs text-green-500 flex items-center gap-1">
+                <TrendingUp className="w-3 h-3" /> +8% {t.vsLastWeek}
+              </p>
+            </div>
+            <div className="bg-muted/50 rounded-lg p-3">
+              <div className="flex items-center gap-2 mb-1">
+                <Repeat2 className="w-4 h-4 text-primary" />
+                <span className="text-xs text-muted-foreground">{t.shares}</span>
+              </div>
+              <p className="text-xl font-bold text-foreground">34</p>
+              <p className="text-xs text-green-500 flex items-center gap-1">
+                <TrendingUp className="w-3 h-3" /> +42% {t.vsLastWeek}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderLeaderboardContent = () => (
+    <div className="space-y-4">
+      <div className="flex items-start gap-3 p-3">
+        <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-sm flex-shrink-0">
+          SP
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="font-bold text-foreground">superpump</span>
+            <span className="text-xs text-muted-foreground">Monday 9:00 AM</span>
+          </div>
+          <div className="text-sm text-foreground/90 mb-3">
+            {formatSlackText(`🏆 *${t.topPerformers}* - ${t.thisWeek}`)}
+          </div>
+          
+          {/* Leaderboard */}
+          <div className="bg-muted/30 rounded-lg overflow-hidden">
+            <div className="grid grid-cols-4 gap-2 p-2 bg-muted/50 text-xs font-medium text-muted-foreground">
+              <span>{t.rank}</span>
+              <span>{t.member}</span>
+              <span>{t.posts_label}</span>
+              <span>{t.engagement}</span>
+            </div>
+            {[
+              { rank: 1, name: "Marie L.", posts: 8, engagement: "12.4%", icon: Crown, color: "text-yellow-500" },
+              { rank: 2, name: "Jean D.", posts: 6, engagement: "10.2%", icon: Medal, color: "text-gray-400" },
+              { rank: 3, name: "Pierre M.", posts: 5, engagement: "9.8%", icon: Award, color: "text-amber-600" },
+              { rank: 4, name: "Sophie B.", posts: 4, engagement: "8.5%", icon: Star, color: "text-muted-foreground" },
+            ].map((member) => (
+              <div key={member.rank} className="grid grid-cols-4 gap-2 p-2 items-center text-sm border-t border-border/50">
+                <span className="flex items-center gap-1">
+                  <member.icon className={`w-4 h-4 ${member.color}`} />
+                  #{member.rank}
+                </span>
+                <span className="font-medium text-foreground">{member.name}</span>
+                <span className="text-muted-foreground">{member.posts}</span>
+                <span className="text-green-500 font-medium">{member.engagement}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderShareContent = () => (
+    <div className="space-y-4">
+      <div className="flex items-start gap-3 p-3">
+        <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-sm flex-shrink-0">
+          SP
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="font-bold text-foreground">superpump</span>
+            <span className="text-xs text-muted-foreground">Just now</span>
+          </div>
+          <div className="text-sm text-foreground/90 mb-3">
+            {formatSlackText(`✨ *${t.readyToShare}* - ${t.approvedContent}`)}
+          </div>
+          
+          {/* Share cards */}
+          <div className="space-y-3">
+            <div className="border border-border rounded-lg p-3 hover:border-primary/50 transition-colors cursor-pointer">
+              <div className="flex items-start justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4 text-green-500" />
+                  <span className="text-xs font-medium text-green-500">{t.approvedContent}</span>
+                </div>
+                <button className="text-xs bg-primary text-primary-foreground px-3 py-1 rounded-full hover:bg-primary/90 transition-colors">
+                  {t.shareNow}
+                </button>
+              </div>
+              <p className="text-sm text-foreground/80">
+                🎯 Just hit 10K followers! Thank you all for the incredible support on this journey...
+              </p>
+            </div>
+            
+            <div className="border border-border rounded-lg p-3 hover:border-primary/50 transition-colors cursor-pointer">
+              <div className="flex items-start justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-amber-500" />
+                  <span className="text-xs font-medium text-amber-500">{t.scheduled}</span>
+                </div>
+                <span className="text-xs text-muted-foreground">Tomorrow 10:00 AM</span>
+              </div>
+              <p className="text-sm text-foreground/80">
+                💡 5 tips for better LinkedIn engagement that I learned this month...
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderChannelContent = () => {
+    switch (activeChannel) {
+      case "posts":
+        return renderPostsContent();
+      case "analytics":
+        return renderAnalyticsContent();
+      case "leaderboard":
+        return renderLeaderboardContent();
+      case "share":
+        return renderShareContent();
+      default:
+        return renderPostsContent();
+    }
   };
 
   return (
-    <section className="py-16 bg-background">
-      <div className="container mx-auto px-4">
+    <section className="py-20 px-4 bg-gradient-to-b from-background to-muted/30">
+      <div className="max-w-6xl mx-auto">
+        {/* Section header */}
         <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">
-            {t.title1}
-            <span className="bg-gradient-to-r from-primary to-destructive bg-clip-text text-transparent">
-              {t.title2}
-            </span>
-            {t.title3}
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4 font-heading">
+            {t.title}
           </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">{t.subtitle}</p>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            {t.subtitle}
+          </p>
         </div>
 
-        <div className="max-w-6xl mx-auto">
-          <Card className="border-2 border-border bg-card overflow-hidden shadow-lg">
-            <div className="flex h-[650px]">
-              {/* Left Sidebar - Slack Navigation */}
-              <div className="w-16 bg-[#350D36] flex flex-col items-center py-4 gap-3 border-r border-white/10">
-                <button className="flex flex-col items-center gap-1 px-1 py-2 rounded-lg hover:bg-white/10 transition-colors group w-full">
-                  <Home className="h-5 w-5 text-white" />
-                  <span className="text-[9px] text-white font-medium">Home</span>
+        {/* Slack mockup */}
+        <Card className="overflow-hidden shadow-2xl border-border/50 bg-card max-w-4xl mx-auto">
+          <div className="flex h-[550px]">
+            {/* Sidebar */}
+            <div className="w-60 bg-slack border-r border-border flex flex-col">
+              {/* Workspace header */}
+              <div className="p-3 border-b border-white/10">
+                <div className="flex items-center gap-2">
+                  <img src={slackLogo} alt="Slack" className="w-8 h-8" />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1">
+                      <span className="font-bold text-white text-sm truncate">TechStartup</span>
+                      <ChevronDown className="w-4 h-4 text-white/70 flex-shrink-0" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Navigation */}
+              <div className="p-2 space-y-0.5">
+                <button className="w-full flex items-center gap-2 px-2 py-1.5 text-sm text-white/70 hover:bg-white/10 rounded transition-colors">
+                  <Home className="w-4 h-4" />
+                  <span>Home</span>
                 </button>
-                <button className="flex flex-col items-center gap-1 px-1 py-2 rounded-lg hover:bg-white/10 transition-colors group w-full">
-                  <MessageSquare className="h-5 w-5 text-white" />
-                  <span className="text-[9px] text-white font-medium">DMs</span>
+                <button className="w-full flex items-center gap-2 px-2 py-1.5 text-sm text-white/70 hover:bg-white/10 rounded transition-colors">
+                  <MessageSquare className="w-4 h-4" />
+                  <span>DMs</span>
                 </button>
-                <button className="flex flex-col items-center gap-1 px-1 py-2 rounded-lg hover:bg-white/10 transition-colors group w-full">
-                  <Bell className="h-5 w-5 text-white" />
-                  <span className="text-[9px] text-white font-medium">Activity</span>
-                </button>
-                <button className="flex flex-col items-center gap-1 px-1 py-2 rounded-lg hover:bg-white/10 transition-colors group w-full">
-                  <Bookmark className="h-5 w-5 text-white" />
-                  <span className="text-[9px] text-white font-medium">Later</span>
-                </button>
-                <button className="flex flex-col items-center gap-1 px-1 py-2 rounded-lg hover:bg-white/10 transition-colors group w-full">
-                  <MoreHorizontal className="h-5 w-5 text-white" />
-                  <span className="text-[9px] text-white font-medium">More</span>
+                <button className="w-full flex items-center gap-2 px-2 py-1.5 text-sm text-white/70 hover:bg-white/10 rounded transition-colors">
+                  <Bell className="w-4 h-4" />
+                  <span>Activity</span>
                 </button>
               </div>
 
-              {/* Sidebar - Channel List */}
-              <div className="w-64 bg-[#3F0E40] text-white p-4 flex flex-col border-r border-white/10 font-lato">
-                <div className="mb-6">
-                  <h3 className="text-lg font-bold mb-1">superpump</h3>
-                  <p className="text-sm text-white/70">Workspace</p>
+              {/* Channels section */}
+              <div className="flex-1 overflow-auto p-2">
+                <div className="flex items-center justify-between px-2 py-1 mb-1">
+                  <span className="text-xs font-medium text-white/50 uppercase tracking-wide">Channels</span>
+                  <Plus className="w-4 h-4 text-white/50 cursor-pointer hover:text-white" />
                 </div>
-
-                <div className="flex-1 space-y-1 overflow-y-auto">
-                  {/* Starred */}
-                  <div className="mb-4">
-                    <div className="text-xs font-semibold text-white/50 mb-2 px-2 flex items-center justify-between">
-                      <span>STARRED</span>
-                    </div>
-                    <button className="w-full text-left px-2 py-1.5 rounded flex items-center gap-2 text-white/70 hover:bg-white/10">
-                      <Hash className="h-4 w-4 flex-shrink-0" />
-                      <span className="text-sm truncate">general</span>
-                    </button>
-                  </div>
-
-                  {/* Channels */}
-                  <div className="mb-4">
-                    <div className="text-xs font-semibold text-white/50 mb-2 px-2 flex items-center justify-between">
-                      <span>CHANNELS</span>
-                      <button className="text-white/50 hover:text-white text-lg leading-none">+</button>
-                    </div>
-                    {channels.map((channel) => {
-                      const Icon = channel.icon;
-                      const isActive = activeChannel === channel.id;
-                      return (
-                        <button
-                          key={channel.id}
-                          onClick={() => handleChannelClick(channel.id)}
-                          className={`relative w-full text-left px-2 py-1.5 rounded flex items-center gap-2 transition-all duration-300 overflow-hidden ${
-                            isActive
-                              ? "bg-primary/60 text-white shadow-sm"
-                              : "text-white/70 hover:bg-primary/40 hover:text-white"
-                          }`}
-                        >
-                          {/* Progress bar - fills entire button */}
-                          {isActive && isAutoPlay && (
-                            <div
-                              className="absolute inset-0 bg-primary/40 transition-all duration-100 rounded"
-                              style={{ width: `${progress}%` }}
-                            />
-                          )}
-                          <Hash className="h-4 w-4 flex-shrink-0 relative z-10" />
-                          <span className="text-sm truncate flex-1 relative z-10">
-                            {channel.data.name.replace("#", "")}
-                          </span>
-                          {isActive && <span className="w-1.5 h-1.5 rounded-full bg-white relative z-10"></span>}
-                        </button>
-                      );
-                    })}
-                    <button className="w-full text-left px-2 py-1.5 rounded flex items-center gap-2 text-white/70 hover:bg-white/10">
-                      <Hash className="h-4 w-4 flex-shrink-0" />
-                      <span className="text-sm truncate">general</span>
-                    </button>
-                  </div>
-
-                  {/* Direct Messages */}
-                  <div className="mb-4">
-                    <div className="text-xs font-semibold text-white/50 mb-2 px-2 flex items-center justify-between">
-                      <span>DIRECT MESSAGES</span>
-                      <button className="text-white/50 hover:text-white text-lg leading-none">+</button>
-                    </div>
-                    <button className="w-full text-left px-2 py-1.5 rounded flex items-center gap-2 text-white/70 hover:bg-white/10">
-                      <div className="w-4 h-4 rounded flex-shrink-0 bg-green-500 flex items-center justify-center text-[8px] font-bold">
-                        SM
-                      </div>
-                      <span className="text-sm truncate">Sarah Martin</span>
-                      <span className="w-1.5 h-1.5 rounded-full bg-green-500 ml-auto"></span>
-                    </button>
-                    <button className="w-full text-left px-2 py-1.5 rounded flex items-center gap-2 text-white/70 hover:bg-white/10">
-                      <div className="w-4 h-4 rounded flex-shrink-0 bg-blue-500 flex items-center justify-center text-[8px] font-bold">
-                        TD
-                      </div>
-                      <span className="text-sm truncate">Thomas Dubois</span>
-                    </button>
-                    <button className="w-full text-left px-2 py-1.5 rounded flex items-center gap-2 text-white/70 hover:bg-white/10">
-                      <div className="w-4 h-4 rounded flex-shrink-0 bg-purple-500 flex items-center justify-center text-[8px] font-bold">
-                        JC
-                      </div>
-                      <span className="text-sm truncate">Julie Chen</span>
-                      <span className="w-1.5 h-1.5 rounded-full bg-green-500 ml-auto"></span>
-                    </button>
-                  </div>
-
-                  {/* Apps */}
-                  <div>
-                    <div className="text-xs font-semibold text-white/50 mb-2 px-2 flex items-center justify-between">
-                      <span>APPS</span>
-                    </div>
-                    <button className="w-full text-left px-2 py-1.5 rounded flex items-center gap-2 text-white/70 hover:bg-white/10">
-                      <div className="w-4 h-4 rounded bg-gradient-to-br from-primary to-destructive flex-shrink-0 flex items-center justify-center">
-                        <Zap className="h-2.5 w-2.5 text-white" />
-                      </div>
-                      <span className="text-sm truncate">superpump</span>
-                      <Badge
-                        variant="secondary"
-                        className="ml-auto text-[9px] px-1.5 py-0 h-4 bg-green-500/20 text-green-300 border-none"
+                
+                <div className="space-y-0.5">
+                  {channels.map((channel) => {
+                    const Icon = channel.icon;
+                    const isActive = activeChannel === channel.id;
+                    return (
+                      <button
+                        key={channel.id}
+                        onClick={() => handleChannelClick(channel.id)}
+                        className={`w-full flex items-center gap-2 px-2 py-1.5 text-sm rounded transition-colors relative ${
+                          isActive 
+                            ? "bg-white/20 text-white font-medium" 
+                            : "text-white/70 hover:bg-white/10"
+                        }`}
                       >
-                        NEW
-                      </Badge>
-                    </button>
-                  </div>
+                        <Icon className="w-4 h-4" />
+                        <span className="truncate">{channel.name}</span>
+                        {isActive && (
+                          <div 
+                            className="absolute bottom-0 left-0 h-0.5 bg-white transition-all duration-100"
+                            style={{ width: `${progress}%` }}
+                          />
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
 
-                {/* User profile at bottom */}
-                <div className="mt-auto pt-2 border-t border-white/10">
-                  <button className="w-full text-left px-2 py-2 rounded flex items-center gap-2 text-white/90 hover:bg-white/10">
-                    <div className="w-8 h-8 rounded flex-shrink-0 bg-gradient-to-br from-orange-400 to-pink-500 flex items-center justify-center text-sm font-bold">
-                      You
+                {/* Apps section */}
+                <div className="mt-4">
+                  <div className="flex items-center justify-between px-2 py-1 mb-1">
+                    <span className="text-xs font-medium text-white/50 uppercase tracking-wide">Apps</span>
+                    <Plus className="w-4 h-4 text-white/50 cursor-pointer hover:text-white" />
+                  </div>
+                  <div className="flex items-center gap-2 px-2 py-1.5 text-sm text-white bg-white/10 rounded">
+                    <div className="w-5 h-5 rounded bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground text-xs font-bold">
+                      S
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-sm font-semibold truncate">Your Name</div>
-                      <div className="text-xs text-white/50 flex items-center gap-1">
-                        <span className="w-2 h-2 rounded-full bg-green-500"></span>
-                        Active
-                      </div>
+                    <span className="font-medium">superpump</span>
+                    <Zap className="w-3 h-3 text-primary ml-auto" />
+                  </div>
+                </div>
+              </div>
+
+              {/* User profile */}
+              <div className="p-3 border-t border-white/10">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center text-white font-bold text-sm">
+                    Y
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-white truncate">You</p>
+                    <div className="flex items-center gap-1">
+                      <div className="w-2 h-2 rounded-full bg-green-500" />
+                      <span className="text-xs text-white/50">Active</span>
                     </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Main content */}
+            <div className="flex-1 flex flex-col bg-background">
+              {/* Channel header */}
+              <div className="h-12 border-b border-border flex items-center justify-between px-4">
+                <div className="flex items-center gap-2">
+                  {(() => {
+                    const channel = channels.find(c => c.id === activeChannel);
+                    const Icon = channel?.icon || Hash;
+                    return (
+                      <>
+                        <Icon className="w-5 h-5 text-muted-foreground" />
+                        <span className="font-bold text-foreground">{channel?.name}</span>
+                      </>
+                    );
+                  })()}
+                </div>
+                <div className="flex items-center gap-2">
+                  <button className="p-1.5 hover:bg-muted rounded transition-colors">
+                    <Users className="w-4 h-4 text-muted-foreground" />
+                  </button>
+                  <button className="p-1.5 hover:bg-muted rounded transition-colors">
+                    <Search className="w-4 h-4 text-muted-foreground" />
+                  </button>
+                  <button className="p-1.5 hover:bg-muted rounded transition-colors">
+                    <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
                   </button>
                 </div>
               </div>
 
-              {/* Main Content Area */}
-              <div className="flex-1 flex flex-col bg-background">
-                {/* Channel Header */}
-                <div className="border-b border-border p-4 font-lato flex items-center justify-between">
-                  <div>
-                    <h3 className="text-lg font-semibold flex items-center gap-2">
-                      <Hash className="h-5 w-5" />
-                      {channels.find((c) => c.id === activeChannel)?.data.name.replace("#", "")}
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                      {channels.find((c) => c.id === activeChannel)?.data.description}
-                    </p>
+              {/* Messages area */}
+              <div className="flex-1 overflow-auto p-4">
+                {renderChannelContent()}
+              </div>
+
+              {/* Message input */}
+              <div className="p-4 border-t border-border">
+                <div className="flex items-center gap-2 bg-muted/50 rounded-lg px-3 py-2 border border-border">
+                  <Plus className="w-5 h-5 text-muted-foreground cursor-pointer hover:text-foreground" />
+                  <input 
+                    type="text" 
+                    placeholder={`Message #${channels.find(c => c.id === activeChannel)?.name.toLowerCase()}`}
+                    className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
+                  />
+                  <div className="flex items-center gap-1">
+                    <button className="p-1.5 hover:bg-muted rounded transition-colors">
+                      <Smile className="w-4 h-4 text-muted-foreground" />
+                    </button>
+                    <button className="p-1.5 hover:bg-muted rounded transition-colors">
+                      <AtSign className="w-4 h-4 text-muted-foreground" />
+                    </button>
+                    <button className="p-1.5 hover:bg-muted rounded transition-colors">
+                      <Paperclip className="w-4 h-4 text-muted-foreground" />
+                    </button>
+                    <button className="p-1.5 hover:bg-muted rounded transition-colors">
+                      <Send className="w-4 h-4 text-muted-foreground" />
+                    </button>
                   </div>
-                  <a
-                    href="/beta"
-                    className="flex items-center gap-2 px-4 py-2 bg-[#4A154B] hover:bg-[#4A154B]/90 border border-[#4A154B] rounded text-sm font-semibold text-white transition-colors shadow-sm"
-                  >
-                    <img src={slackLogo} alt="Slack" className="h-4 w-4" />
-                    <span>Add to Slack</span>
-                  </a>
-                </div>
-
-                {/* Messages Area */}
-                <div className="flex-1 overflow-y-auto p-4 space-y-1 font-lato">
-                  {activeChannel === "posts" &&
-                    t.channels.posts.messages.map((msg, idx) => (
-                      <div key={idx} className="group hover:bg-muted/30 -mx-4 px-4 py-2 transition-colors">
-                        <div className={`flex gap-3 ${msg.isReply ? "ml-12" : ""}`}>
-                          {/* Avatar */}
-                          <div
-                            className="w-9 h-9 rounded flex items-center justify-center flex-shrink-0 text-sm font-semibold"
-                            style={{
-                              backgroundColor: msg.avatar === "🚀" ? "#4A154B" : "#E01E5A",
-                              color: "white",
-                            }}
-                          >
-                            {msg.avatar === "🚀" ? (
-                              <div className="w-full h-full rounded bg-gradient-to-br from-primary to-destructive flex items-center justify-center">
-                                <Zap className="h-5 w-5 text-white" />
-                              </div>
-                            ) : (
-                              msg.avatar
-                            )}
-                          </div>
-
-                          <div className="flex-1 min-w-0">
-                            {/* Header */}
-                            <div className="flex items-baseline gap-2 mb-0.5">
-                              <span className="font-bold text-[15px] text-[hsl(var(--slack-text-primary))] font-lato">
-                                {msg.user}
-                              </span>
-                              {msg.user === "superpump" && (
-                                <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4">
-                                  APP
-                                </Badge>
-                              )}
-                              <span className="text-[11px] text-[hsl(var(--slack-text-secondary))]">{msg.time}</span>
-                            </div>
-
-                            {/* Message Content */}
-                            <div className="text-[15px] leading-[1.46] mb-1 font-lato text-[hsl(var(--slack-text-primary))]">
-                              {formatSlackText(msg.content)}
-                            </div>
-
-                            {/* LinkedIn Preview Card (only for bot messages with preview) */}
-                            {msg.preview && (
-                              <Card className="mt-2 border border-border hover:border-primary/50 transition-colors cursor-pointer bg-background">
-                                <div className="p-3">
-                                  {/* LinkedIn header */}
-                                  <div className="flex items-center gap-2 mb-2">
-                                    <div className="w-4 h-4 rounded bg-[#0A66C2] flex items-center justify-center">
-                                      <span className="text-white text-[10px] font-bold">in</span>
-                                    </div>
-                                    <span className="text-[11px] font-medium text-muted-foreground">LinkedIn Post</span>
-                                  </div>
-
-                                  {/* Preview text */}
-                                  <p className="text-[13px] text-foreground/80 mb-3 line-clamp-2">{msg.preview}</p>
-
-                                  {/* Stats */}
-                                  <div className="flex items-center gap-4 text-[11px] text-muted-foreground mb-3 pb-3 border-b border-border">
-                                    <span className="flex items-center gap-1.5">
-                                      <Eye className="h-3.5 w-3.5" />
-                                      <span className="font-medium">{msg.stats.views}</span>
-                                    </span>
-                                    <span className="flex items-center gap-1.5">
-                                      <ThumbsUp className="h-3.5 w-3.5" />
-                                      <span className="font-medium">{msg.stats.likes}</span>
-                                    </span>
-                                    <span className="flex items-center gap-1.5">
-                                      <MessageSquare className="h-3.5 w-3.5" />
-                                      <span className="font-medium">{msg.stats.comments}</span>
-                                    </span>
-                                  </div>
-
-                                  {/* CTA Button */}
-                                  <button className="text-[13px] font-semibold text-[#0A66C2] hover:underline flex items-center gap-1">
-                                    {msg.cta}
-                                  </button>
-                                </div>
-                              </Card>
-                            )}
-
-                            {/* Reactions & Replies */}
-                            {msg.reactions && (
-                              <div className="flex items-center gap-3 mt-2">
-                                {/* Reaction bubbles */}
-                                <div className="flex items-center gap-1">
-                                  {msg.reactions.map((reaction, rIdx) => (
-                                    <div
-                                      key={rIdx}
-                                      className="flex items-center gap-1 px-2 py-0.5 rounded-full border border-border bg-background hover:border-primary/50 cursor-pointer transition-all hover:scale-105"
-                                      title={reaction.users.join(", ")}
-                                    >
-                                      <span className="text-[13px]">{reaction.emoji}</span>
-                                      <span className="text-[11px] font-medium text-foreground">{reaction.count}</span>
-                                    </div>
-                                  ))}
-
-                                  {/* Add reaction button */}
-                                  <button className="w-6 h-6 rounded-full border border-border hover:border-primary/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <Smile className="h-3.5 w-3.5 text-muted-foreground" />
-                                  </button>
-                                </div>
-
-                                {/* Reply thread indicator */}
-                                {msg.replies > 0 && (
-                                  <button className="flex items-center gap-1.5 text-[11px] text-[#0A66C2] hover:underline font-medium">
-                                    <MessageSquare className="h-3.5 w-3.5" />
-                                    {msg.replies} {msg.replies === 1 ? "reply" : "replies"}
-                                  </button>
-                                )}
-                              </div>
-                            )}
-
-                            {/* Action buttons (visible on hover) */}
-                            <div className="flex items-center gap-2 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                              <button className="p-1 hover:bg-muted rounded" title="Add reaction">
-                                <Smile className="h-4 w-4 text-muted-foreground" />
-                              </button>
-                              <button className="p-1 hover:bg-muted rounded" title="Share">
-                                <Repeat2 className="h-4 w-4 text-muted-foreground" />
-                              </button>
-                              <button className="p-1 hover:bg-muted rounded" title="Save">
-                                <Bookmark className="h-4 w-4 text-muted-foreground" />
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-
-                  {activeChannel === "analytics" &&
-                    t.channels.analytics.messages.map((msg, idx) => (
-                      <div key={idx} className="group hover:bg-muted/30 -mx-4 px-4 py-2">
-                        <div className="flex gap-3">
-                          <div className="w-9 h-9 rounded bg-gradient-to-br from-primary to-destructive flex items-center justify-center flex-shrink-0 text-sm font-semibold">
-                            <Zap className="h-5 w-5 text-white" />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-baseline gap-2 mb-0.5">
-                              <span className="font-bold text-[15px] text-[hsl(var(--slack-text-primary))] font-lato">
-                                {msg.user}
-                              </span>
-                              <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 font-lato">
-                                APP
-                              </Badge>
-                              <span className="text-[11px] text-[hsl(var(--slack-text-secondary))]">{msg.time}</span>
-                            </div>
-                            <p className="text-[15px] leading-[1.46] mb-3 whitespace-pre-line font-lato text-[hsl(var(--slack-text-primary))]">
-                              {formatSlackText(msg.content)}
-                            </p>
-
-                            {/* Main Metrics Grid */}
-                            <Card className="border border-border bg-background mb-3">
-                              <div className="p-4">
-                                {/* First Row: Posts, Impressions, Comments, Likes */}
-                                <div className="grid grid-cols-4 gap-2 mb-3">
-                                  {/* Posts - First */}
-                                  <div className="p-2 rounded-lg bg-accent/5 border border-accent/10">
-                                    <div className="flex items-center justify-between mb-1">
-                                      <MessageSquare className="h-3.5 w-3.5 text-accent" />
-                                      {msg.stats.postsGrowth && (
-                                        <span className="text-[10px] font-semibold text-green-600 dark:text-green-400">
-                                          {msg.stats.postsGrowth}
-                                        </span>
-                                      )}
-                                    </div>
-                                    <div className="text-xl font-bold text-accent">23</div>
-                                    <div className="text-[10px] text-muted-foreground mt-0.5">Posts</div>
-                                  </div>
-
-                                  {/* Impressions - Second */}
-                                  <div className="p-2 rounded-lg bg-primary/5 border border-primary/10">
-                                    <div className="flex items-center justify-between mb-1">
-                                      <Eye className="h-3.5 w-3.5 text-primary" />
-                                      {msg.stats.impressionsGrowth && (
-                                        <span className="text-[10px] font-semibold text-green-600 dark:text-green-400">
-                                          {msg.stats.impressionsGrowth}
-                                        </span>
-                                      )}
-                                    </div>
-                                    <div className="text-xl font-bold text-primary">117K</div>
-                                    <div className="text-[10px] text-muted-foreground mt-0.5">Impressions</div>
-                                  </div>
-
-                                  {/* Comments */}
-                                  {msg.stats.comments && (
-                                    <div className="p-2 rounded-lg bg-blue-500/5 border border-blue-500/10">
-                                      <div className="flex items-center justify-between mb-1">
-                                        <MessageSquare className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
-                                        {msg.stats.commentsGrowth && (
-                                          <span className="text-[10px] font-semibold text-green-600 dark:text-green-400">
-                                            {msg.stats.commentsGrowth}
-                                          </span>
-                                        )}
-                                      </div>
-                                      <div className="text-xl font-bold text-blue-600 dark:text-blue-400">
-                                        {msg.stats.comments}
-                                      </div>
-                                      <div className="text-[10px] text-muted-foreground mt-0.5">Comments</div>
-                                    </div>
-                                  )}
-
-                                  {/* Likes */}
-                                  {msg.stats.likes && (
-                                    <div className="p-2 rounded-lg bg-pink-500/5 border border-pink-500/10">
-                                      <div className="flex items-center justify-between mb-1">
-                                        <ThumbsUp className="h-3.5 w-3.5 text-pink-600 dark:text-pink-400" />
-                                        {msg.stats.likesGrowth && (
-                                          <span className="text-[10px] font-semibold text-green-600 dark:text-green-400">
-                                            {msg.stats.likesGrowth}
-                                          </span>
-                                        )}
-                                      </div>
-                                      <div className="text-xl font-bold text-pink-600 dark:text-pink-400">
-                                        {msg.stats.likes}
-                                      </div>
-                                      <div className="text-[10px] text-muted-foreground mt-0.5">Likes</div>
-                                    </div>
-                                  )}
-                                </div>
-
-                                {/* Engagement Rate / ICP / Leads - Compact Row */}
-                                <div className="grid grid-cols-3 gap-2">
-                                  {/* Engagement Rate */}
-                                  <div className="p-2 rounded-lg bg-green-500/5 border border-green-500/10">
-                                    <div className="flex items-center justify-between mb-1">
-                                      <TrendingUp className="h-3.5 w-3.5 text-green-600 dark:text-green-400" />
-                                      {msg.stats.engagementGrowth && (
-                                        <span className="text-[10px] font-semibold text-green-600 dark:text-green-400">
-                                          {msg.stats.engagementGrowth}
-                                        </span>
-                                      )}
-                                    </div>
-                                    <div className="text-xl font-bold text-green-600 dark:text-green-400">
-                                      {msg.stats.engagement}
-                                    </div>
-                                    <div className="text-[10px] text-muted-foreground mt-0.5">Engagement Rate</div>
-                                  </div>
-
-                                  {/* ICP Audience */}
-                                  <div className="p-2 rounded-lg bg-purple-500/5 border border-purple-500/10">
-                                    <div className="flex items-center justify-between mb-1">
-                                      <Users className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400" />
-                                    </div>
-                                    <div className="text-xl font-bold text-purple-600 dark:text-purple-400">67%</div>
-                                    <div className="text-[10px] text-muted-foreground mt-0.5">ICP Audience Match</div>
-                                  </div>
-
-                                  {/* Qualified Leads */}
-                                  <div className="p-2 rounded-lg bg-orange-500/5 border border-orange-500/10">
-                                    <div className="flex items-center justify-between mb-1">
-                                      <Trophy className="h-3.5 w-3.5 text-orange-600 dark:text-orange-400" />
-                                      {msg.stats.leadsGrowth && (
-                                        <span className="text-[10px] font-semibold text-green-600 dark:text-green-400">
-                                          {msg.stats.leadsGrowth}
-                                        </span>
-                                      )}
-                                    </div>
-                                    <div className="text-xl font-bold text-orange-600 dark:text-orange-400">242</div>
-                                    <div className="text-[10px] text-muted-foreground mt-0.5">Qualified Leads</div>
-                                  </div>
-                                </div>
-                              </div>
-                            </Card>
-
-                            {/* Top Performers - Only for weekly reports */}
-                            {msg.stats.topPerformers && (
-                              <Card className="border border-border bg-background mb-3">
-                                <div className="p-3">
-                                  <div className="text-[11px] font-semibold text-muted-foreground mb-2 flex items-center gap-1">
-                                    <TrendingUp className="h-3.5 w-3.5" />
-                                    TOP PERFORMERS THIS MONTH
-                                  </div>
-                                  <div className="space-y-2">
-                                    {msg.stats.topPerformers.map((performer, pIdx) => (
-                                      <div key={pIdx} className="flex items-center justify-between text-[13px]">
-                                        <span className="font-medium text-foreground">{performer.name}</span>
-                                        <span className="text-primary font-bold">{performer.impressions}</span>
-                                      </div>
-                                    ))}
-                                  </div>
-                                </div>
-                              </Card>
-                            )}
-
-                            {msg.reactions && (
-                              <div className="flex items-center gap-1 mt-2">
-                                {msg.reactions.map((reaction, rIdx) => (
-                                  <div
-                                    key={rIdx}
-                                    className="flex items-center gap-1 px-2 py-0.5 rounded-full border border-border bg-background hover:border-primary/50 cursor-pointer transition-all hover:scale-105"
-                                    title={reaction.users.join(", ")}
-                                  >
-                                    <span className="text-[13px]">{reaction.emoji}</span>
-                                    <span className="text-[11px] font-medium text-foreground">{reaction.count}</span>
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-
-                  {activeChannel === "leaderboard" &&
-                    t.channels.leaderboard.messages.map((msg, msgIdx) => (
-                      <div key={msgIdx} className="group hover:bg-muted/30 -mx-4 px-4 py-2">
-                        <div className="flex gap-3">
-                          <div className="w-9 h-9 rounded bg-gradient-to-br from-primary to-destructive flex items-center justify-center flex-shrink-0 text-sm font-semibold">
-                            <Zap className="h-5 w-5 text-white" />
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex items-baseline gap-2 mb-0.5">
-                              <span className="font-bold text-[15px] text-[hsl(var(--slack-text-primary))] font-lato">
-                                {msg.user}
-                              </span>
-                              <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 font-lato">
-                                APP
-                              </Badge>
-                              <span className="text-[11px] text-[hsl(var(--slack-text-secondary))]">{msg.time}</span>
-                            </div>
-                            <p className="text-[15px] leading-[1.46] mb-3 whitespace-pre-line font-lato text-[hsl(var(--slack-text-primary))]">
-                              {formatSlackText(msg.content)}
-                            </p>
-
-                            {/* Main Leaderboard - Top 3 Impressions */}
-                            {msg.rankings && (
-                              <Card className="border border-border bg-background mb-3">
-                                <div className="p-3">
-                                  <div className="space-y-2">
-                                    {msg.rankings.map((ranking, idx) => (
-                                      <div
-                                        key={idx}
-                                        className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 transition-colors border border-border bg-gradient-to-r from-transparent to-primary/5"
-                                      >
-                                        <div className="flex items-center gap-3 flex-1 min-w-0">
-                                          <span className="text-3xl flex-shrink-0">{ranking.badge}</span>
-                                          <div className="flex-1 min-w-0">
-                                            <div className="font-semibold text-[15px]">
-                                              {formatSlackText(ranking.name)}
-                                            </div>
-                                            <div className="text-[13px] text-muted-foreground">
-                                              <span className="font-semibold text-foreground">{ranking.score}</span>{" "}
-                                              {t.impressionsGenerated}
-                                            </div>
-                                          </div>
-                                        </div>
-                                        <div className="flex items-center gap-2 flex-shrink-0">
-                                          {ranking.growth && (
-                                            <Badge className="bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20 text-[13px] font-semibold">
-                                              {ranking.growth} {language === "fr" ? "vs mois dernier" : "vs last month"}
-                                            </Badge>
-                                          )}
-                                        </div>
-                                      </div>
-                                    ))}
-                                  </div>
-                                </div>
-                              </Card>
-                            )}
-
-                            {/* Secondary Stats - Text Format */}
-                            {msg.secondaryStats && (
-                              <div className="text-[15px] space-y-2 mb-2">
-                                {/* ICP Engagement Metric */}
-                                {msg.icpEngagement && (
-                                  <div className="p-2 rounded-lg bg-purple-500/5 border border-purple-500/20 mb-2">
-                                    <span className="font-semibold text-purple-600 dark:text-purple-400">
-                                      🎯 {msg.icpEngagement}
-                                    </span>
-                                    <span className="text-muted-foreground">
-                                      {" "}
-                                      {language === "fr"
-                                        ? "des impressions engagées proviennent de l'ICP idéal de l'entreprise"
-                                        : "of engaged impressions come from the company's ideal ICP"}
-                                    </span>
-                                  </div>
-                                )}
-
-                                {/* Most Posts */}
-                                <div className="leading-relaxed">
-                                  <span className="font-semibold">
-                                    📝 {language === "fr" ? "Plus de posts publiés :" : "Most posts published:"}
-                                  </span>{" "}
-                                  {msg.secondaryStats.mostPosts.map((user, idx) => (
-                                    <span key={idx}>
-                                      {formatSlackText(user.name)} ({user.count})
-                                      {idx < msg.secondaryStats.mostPosts.length - 1 ? ", " : ""}
-                                    </span>
-                                  ))}
-                                </div>
-
-                                {/* Most Support */}
-                                <div className="leading-relaxed">
-                                  <span className="font-semibold">
-                                    💙 {language === "fr" ? "Champions du support équipe :" : "Team support champions:"}
-                                  </span>{" "}
-                                  {msg.secondaryStats.mostSupport.map((user, idx) => (
-                                    <span key={idx}>
-                                      {formatSlackText(user.name)} ({user.count})
-                                      {idx < msg.secondaryStats.mostSupport.length - 1 ? ", " : ""}
-                                    </span>
-                                  ))}
-                                </div>
-
-                                {/* MVP Supporter Special Thanks */}
-                                {msg.secondaryStats.mvpSupporter && (
-                                  <div className="p-3 rounded-lg bg-gradient-to-r from-pink-500/10 to-purple-500/10 border border-pink-500/20 mt-2">
-                                    <div className="flex items-start gap-2">
-                                      <span className="text-2xl">🫶</span>
-                                      <div className="flex-1">
-                                        <div className="font-semibold text-pink-600 dark:text-pink-400 mb-1 text-[15px]">
-                                          {language === "fr" ? (
-                                            <>
-                                              Remerciements spéciaux à{" "}
-                                              {formatSlackText(msg.secondaryStats.mvpSupporter.name)} !
-                                            </>
-                                          ) : (
-                                            <>
-                                              Special thanks to {formatSlackText(msg.secondaryStats.mvpSupporter.name)}!
-                                            </>
-                                          )}
-                                        </div>
-                                        <div className="text-[13px] text-muted-foreground">
-                                          <span className="font-medium text-foreground">
-                                            {msg.secondaryStats.mvpSupporter.comments}{" "}
-                                            {language === "fr" ? "commentaires" : "comments"}
-                                          </span>{" "}
-                                          {language === "fr" ? "et" : "and"}{" "}
-                                          <span className="font-medium text-foreground">
-                                            {msg.secondaryStats.mvpSupporter.likes} likes
-                                          </span>{" "}
-                                          {language === "fr"
-                                            ? "donnés aux membres de l'équipe cette semaine."
-                                            : "given to team members this week."}
-                                          {language === "fr"
-                                            ? " Votre soutien fait toute la différence ! 💝"
-                                            : " Your support makes all the difference! 💝"}
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                )}
-                              </div>
-                            )}
-
-                            {msg.reactions && (
-                              <div className="flex items-center gap-1 mt-2">
-                                {msg.reactions.map((reaction, rIdx) => (
-                                  <div
-                                    key={rIdx}
-                                    className="flex items-center gap-1 px-2 py-0.5 rounded-full border border-border bg-background hover:border-primary/50 cursor-pointer transition-all hover:scale-105"
-                                    title={reaction.users.join(", ")}
-                                  >
-                                    <span className="text-[13px]">{reaction.emoji}</span>
-                                    <span className="text-[11px] font-medium text-foreground">{reaction.count}</span>
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-
-                  {activeChannel === "share" &&
-                    t.channels.share.messages.map((msg, idx) => (
-                      <div key={idx} className={`group hover:bg-muted/30 -mx-4 px-4 py-2 ${msg.isReply ? "ml-8" : ""}`}>
-                        <div className="flex gap-3">
-                          <div
-                            className="w-9 h-9 rounded flex items-center justify-center flex-shrink-0 text-sm font-semibold"
-                            style={{
-                              backgroundColor: msg.user === "superpump" ? "#4A154B" : "#E01E5A",
-                              color: "white",
-                            }}
-                          >
-                            {msg.user === "superpump" ? (
-                              <div className="w-full h-full rounded bg-gradient-to-br from-primary to-destructive flex items-center justify-center">
-                                <Zap className="h-5 w-5 text-white" />
-                              </div>
-                            ) : (
-                              msg.avatar
-                            )}
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex items-baseline gap-2 mb-0.5">
-                              <span className="font-bold text-[15px] text-[hsl(var(--slack-text-primary))] font-lato">
-                                {msg.user}
-                              </span>
-                              {msg.user === "superpump" && (
-                                <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 font-lato">
-                                  APP
-                                </Badge>
-                              )}
-                              <span className="text-[11px] text-[hsl(var(--slack-text-secondary))]">{msg.time}</span>
-                            </div>
-                            <p className="text-[15px] leading-[1.46] mb-2 whitespace-pre-line font-lato text-[hsl(var(--slack-text-primary))]">
-                              {formatSlackText(msg.content)}
-                            </p>
-
-                            {msg.preview && msg.approved && (
-                              <Card className="border-l-4 border-green-500 bg-green-500/5 border-t border-r border-b border-green-500/20">
-                                <div className="p-3">
-                                  <div className="flex items-center gap-2 mb-3">
-                                    <Badge className="text-[10px] font-bold bg-green-600 text-white hover:bg-green-700">
-                                      ✓ APPROVED
-                                    </Badge>
-                                  </div>
-                                  <p className="text-[13px] text-foreground/90 mb-3 leading-relaxed">{msg.preview}</p>
-                                  <button className="inline-flex items-center gap-2 px-4 py-2 bg-[#0A66C2] text-white rounded-md hover:bg-[#004182] transition-colors text-[13px] font-semibold">
-                                    <Share2 className="h-4 w-4" />
-                                    {msg.cta}
-                                  </button>
-                                </div>
-                              </Card>
-                            )}
-
-                            {msg.reactions && (
-                              <div className="flex items-center gap-1 mt-2">
-                                {msg.reactions.map((reaction, rIdx) => (
-                                  <div
-                                    key={rIdx}
-                                    className="flex items-center gap-1 px-2 py-0.5 rounded-full border border-border bg-background hover:border-primary/50 cursor-pointer transition-all hover:scale-105"
-                                    title={reaction.users.join(", ")}
-                                  >
-                                    <span className="text-[13px]">{reaction.emoji}</span>
-                                    <span className="text-[11px] font-medium text-foreground">{reaction.count}</span>
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-
-                            {msg.replies > 0 && (
-                              <button className="flex items-center gap-1.5 text-[11px] text-[#0A66C2] hover:underline font-medium mt-2">
-                                <MessageSquare className="h-3.5 w-3.5" />
-                                {msg.replies} {msg.replies === 1 ? "reply" : "replies"}
-                              </button>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
                 </div>
               </div>
             </div>
-          </Card>
-        </div>
+          </div>
+        </Card>
       </div>
     </section>
   );
