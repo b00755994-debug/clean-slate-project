@@ -1,4 +1,3 @@
-import { Card, CardContent } from "@/components/ui/card";
 import { Quote } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -13,17 +12,20 @@ const Testimonial = () => {
         {
           quote: "superpump a transformé notre manière de collaborer autour des posts LinkedIn. Grâce aux alertes Slack et au suivi des performances, l'engagement de l'équipe a nettement progressé.",
           author: "Sophie Martin",
-          role: "Responsable Communication, TechNova"
+          role: "Responsable Communication",
+          company: "TechNova"
+        },
+        {
+          quote: "On a mis en place des récompenses pour le top 3 du leaderboard chaque mois : un week-end, un dîner au restaurant, des places de théâtre... L'équipe s'est prise au jeu, même les sceptiques de LinkedIn ! Notre reach collectif a triplé et l'esprit d'équipe n'a jamais été aussi fort.",
+          author: "Claire Lefèvre",
+          role: "DRH",
+          company: "Nexidia"
         },
         {
           quote: "Les gens font plus confiance à leurs pairs qu'aux marques sur les réseaux. Les prospects identifiés via notre présence sur LinkedIn ont un taux de closing bien plus important que la moyenne.",
           author: "Julien Dubois",
-          role: "Directeur Marketing, Innovaris"
-        },
-        {
-          quote: "superpump nous a aidés à structurer notre stratégie LinkedIn en interne. Le leaderboard et les suggestions de posts facilitent l'engagement quotidien, ce qui impacte positivement notre image de marque.",
-          author: "Claire Lefèvre",
-          role: "Chargée de Projet Digital, Nexidia"
+          role: "Directeur Marketing",
+          company: "Innovaris"
         }
       ]
     },
@@ -34,23 +36,27 @@ const Testimonial = () => {
         {
           quote: "superpump has transformed the way we collaborate around LinkedIn posts. Thanks to Slack alerts and performance tracking, team engagement has significantly improved.",
           author: "Sophie Martin",
-          role: "Communications Manager, TechNova"
+          role: "Communications Manager",
+          company: "TechNova"
+        },
+        {
+          quote: "We set up rewards for the top 3 on the leaderboard each month: a weekend getaway, dinner at a restaurant, theater tickets... The team got into it, even the LinkedIn skeptics! Our collective reach tripled and team spirit has never been better.",
+          author: "Claire Lefèvre",
+          role: "HR Director",
+          company: "Nexidia"
         },
         {
           quote: "People trust peers more than brands on social networks. Prospects identified through our LinkedIn presence have a significantly higher closing rate than average.",
           author: "Julien Dubois",
-          role: "Marketing Director, Innovaris"
-        },
-        {
-          quote: "superpump has helped us structure our LinkedIn strategy internally. The leaderboard and post suggestions make daily engagement easier, which positively impacts our brand image.",
-          author: "Claire Lefèvre",
-          role: "Digital Project Manager, Nexidia"
+          role: "Marketing Director",
+          company: "Innovaris"
         }
       ]
     }
   };
 
   const t = translations[language];
+  
   return (
     <section id="temoignages" className="py-16 bg-background">
       <div className="container mx-auto px-4">
@@ -66,22 +72,39 @@ const Testimonial = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {t.testimonials.map((testimonial, index) => (
-              <Card key={index} className="group border-2 border-primary/20 bg-card shadow-lg hover:shadow-xl transition-shadow hover:border-primary/40">
-                <CardContent className="p-6 md:p-8">
-                  <div className="w-8 h-8 mb-4 flex items-center justify-center rounded-full bg-primary group-hover:bg-gradient-to-r group-hover:from-primary group-hover:to-destructive transition-all">
-                    <Quote className="h-5 w-5 text-primary-foreground" />
+              <div key={index} className="relative group">
+                {/* Decorative gradient blur */}
+                <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-accent/10 to-primary/20 rounded-2xl blur-lg opacity-60 group-hover:opacity-80 transition-opacity" />
+                
+                <div className="relative bg-card border border-border/50 rounded-2xl p-6 shadow-sm h-full flex flex-col">
+                  {/* Quote icon */}
+                  <div className="absolute -top-4 left-6">
+                    <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center shadow-md">
+                      <Quote className="h-4 w-4 text-primary-foreground" />
+                    </div>
                   </div>
 
-                  <blockquote className="text-base font-medium text-card-foreground mb-6 leading-relaxed">
+                  {/* Quote text */}
+                  <blockquote className="text-foreground text-base leading-relaxed pt-4 pb-4 italic flex-grow">
                     "{testimonial.quote}"
                   </blockquote>
 
-                  <div>
-                    <div className="font-semibold text-card-foreground">{testimonial.author}</div>
-                    <div className="text-sm text-muted-foreground">{testimonial.role}</div>
+                  {/* Author info */}
+                  <div className="flex items-center gap-3 pt-4 border-t border-border/50">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-destructive flex items-center justify-center shadow-sm">
+                      <span className="text-xs font-bold text-primary-foreground">
+                        {testimonial.author.split(' ').map(n => n[0]).join('')}
+                      </span>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-foreground text-sm">{testimonial.author}</p>
+                      <p className="text-muted-foreground text-xs">
+                        {testimonial.role} <span className="text-primary">@</span> {testimonial.company}
+                      </p>
+                    </div>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
         </div>
