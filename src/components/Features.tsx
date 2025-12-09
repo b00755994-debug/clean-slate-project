@@ -2,6 +2,7 @@ import { Bell, Trophy, Lightbulb, Users, Zap } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useLanguage } from "@/contexts/LanguageContext";
+import InlineTestimonial from "@/components/InlineTestimonial";
 
 const Features = () => {
   const { language } = useLanguage();
@@ -138,6 +139,28 @@ const Features = () => {
             </Card>
           ))}
         </div>
+
+        {/* Gamification Testimonial */}
+        <InlineTestimonial
+          quote={{
+            fr: "On a instauré des récompenses pour le top 3 du leaderboard chaque mois : un week-end, un dîner au resto, des places de théâtre... L'équipe s'est prise au jeu, même les plus réticents à LinkedIn ! Le reach collectif a triplé et l'ambiance n'a jamais été aussi bonne.",
+            en: "We set up rewards for the top 3 on the leaderboard each month: a weekend getaway, dinner at a restaurant, theater tickets... The team got into it, even the LinkedIn skeptics! Our collective reach tripled and team spirit has never been better."
+          }}
+          author="Thomas Renard"
+          role={{ fr: "DRH", en: "HR Director" }}
+          company="Kalypso Digital"
+        />
+
+        {/* ICP Leads Testimonial */}
+        <InlineTestimonial
+          quote={{
+            fr: "En 3 mois, on a identifié 47 leads ICP grâce aux interactions sur nos posts. 12 ont accepté un call. C'est du pipe généré sans un euro de pub.",
+            en: "In 3 months, we identified 47 ICP leads through interactions on our posts. 12 accepted a call. That's pipeline generated without a single euro in ads."
+          }}
+          author="Maxime Duval"
+          role={{ fr: "Head of Sales", en: "Head of Sales" }}
+          company="Proxima Tech"
+        />
       </div>
     </section>
   );
