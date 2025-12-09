@@ -10,12 +10,12 @@ const ProblemSolution = () => {
       title2: "en ambassadeur",
       subtitle: "Passez de l'ombre à l'impact collectif",
       problemTitle: "Le défi actuel",
-      problemHeading: "Vos contenus LinkedIn se perdent dans le bruit",
-      problemDesc: "Chaque post de vos employés pourrait toucher des milliers de personnes, mais sans coordination, l'impact reste limité.",
+      problemHeading: "Vos équipes ne relaient pas vos contenus",
+      problemDesc: "Vos collaborateurs ont un réseau précieux, mais mobiliser leur engagement sur LinkedIn reste un casse-tête quotidien.",
       problemPoints: [
-        "Posts invisibles faute d'engagement initial",
-        "Équipe non synchronisée sur les publications",
-        "Potentiel de viralité inexploité"
+        "Pas de process simple pour partager les contenus",
+        "Manque de motivation et de visibilité sur l'impact",
+        "Le potentiel de vos ambassadeurs reste inexploité"
       ],
       solutionTitle: "La solution",
       solutionHeading: "L'engagement d'équipe, orchestré depuis Slack",
@@ -32,12 +32,12 @@ const ProblemSolution = () => {
       title2: "into an ambassador",
       subtitle: "Accelerate from shadow to collective impact",
       problemTitle: "The Current Challenge",
-      problemHeading: "Your LinkedIn content gets lost in the noise",
-      problemDesc: "Every employee post could reach thousands of people, but without coordination, the impact remains limited.",
+      problemHeading: "Your teams don't share your content",
+      problemDesc: "Your employees have valuable networks, but mobilizing their LinkedIn engagement remains a daily challenge.",
       problemPoints: [
-        "Invisible posts due to lack of initial engagement",
-        "Unsynchronized team on publications",
-        "Untapped viral potential"
+        "No simple process to share content",
+        "Lack of motivation and visibility on impact",
+        "Your ambassadors' potential remains untapped"
       ],
       solutionTitle: "The Solution",
       solutionHeading: "Team engagement, orchestrated from Slack",
