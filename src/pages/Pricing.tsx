@@ -9,6 +9,7 @@ import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
+import InlineTestimonial from "@/components/InlineTestimonial";
 
 const translations = {
   fr: {
@@ -429,6 +430,19 @@ const Pricing = () => {
               </Button>
             </CardContent>
           </Card>
+        </div>
+
+        {/* ROI Testimonial */}
+        <div className="mt-16">
+          <InlineTestimonial
+            quote={{
+              fr: "On dépensait 2000€/mois en LinkedIn Ads pour toucher notre cible. Avec superpump et l'advocacy de nos 15 collaborateurs, on génère 3x plus de visibilité pour 10x moins cher.",
+              en: "We were spending €2000/month on LinkedIn Ads to reach our target. With superpump and advocacy from our 15 team members, we generate 3x more visibility for 10x less."
+            }}
+            author="Léa Marchand"
+            role={{ fr: "CMO", en: "CMO" }}
+            company="Stellaris Group"
+          />
         </div>
       </main>
 
