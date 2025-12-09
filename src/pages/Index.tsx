@@ -6,10 +6,12 @@ import SlackIntegration from "@/components/SlackIntegration";
 import Testimonial from "@/components/Testimonial";
 import CTA from "@/components/CTA";
 import Footer from "@/components/Footer";
+import BetaBanner from "@/components/BetaBanner";
 
 const Index = () => {
   return (
     <div className="min-h-screen bg-background">
+      <BetaBanner />
       <Header />
       <Hero />
       <ProblemSolution />
