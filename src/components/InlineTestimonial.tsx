@@ -31,7 +31,7 @@ const InlineTestimonial = ({ quote, author, role, company }: InlineTestimonialPr
         </div>
 
         {/* Quote text */}
-        <blockquote className="text-foreground text-base leading-relaxed pt-4 pb-4">
+        <blockquote className="text-foreground text-base leading-relaxed pt-4 pb-4 italic">
           "{quote[language]}"
         </blockquote>
 
