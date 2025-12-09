@@ -1,6 +1,5 @@
 import { X, CheckCircle2, TrendingDown, TrendingUp, Zap } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import InlineTestimonial from "@/components/InlineTestimonial";
 
 const ProblemSolution = () => {
   const { language } = useLanguage();
@@ -149,16 +148,6 @@ const ProblemSolution = () => {
           </div>
         </div>
 
-        {/* Before/After Testimonial */}
-        <InlineTestimonial
-          quote={{
-            fr: "Avant, quand un collègue publiait sur LinkedIn, personne ne le voyait. On ne passe pas notre journée à surveiller le feed ! Maintenant avec les alertes Slack, toute l'équipe réagit en 2 minutes. Le soutien est instantané.",
-            en: "Before, when a colleague posted on LinkedIn, nobody saw it. We don't spend our day monitoring the feed! Now with Slack alerts, the whole team reacts within 2 minutes. Support is instant."
-          }}
-          author="Émilie Fontaine"
-          role={{ fr: "Responsable Marque Employeur", en: "Employer Brand Manager" }}
-          company="Axantis"
-        />
       </div>
     </section>
   );
