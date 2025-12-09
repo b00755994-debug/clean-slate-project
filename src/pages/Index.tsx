@@ -11,8 +11,8 @@ import BetaBanner from "@/components/BetaBanner";
 const Index = () => {
   return (
     <div className="min-h-screen bg-background">
-      <BetaBanner />
       <Header />
+      <BetaBanner />
       <Hero />
       <ProblemSolution />
       <SlackIntegration />
