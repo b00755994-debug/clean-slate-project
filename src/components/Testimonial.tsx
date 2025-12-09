@@ -61,7 +61,7 @@ const Testimonial = () => {
     <section id="temoignages" className="py-16 bg-background">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
+          <div className="text-center mb-20">
             <h2 className="text-4xl md:text-5xl font-bold mb-4 text-foreground">
               {t.title1}{" "}
               <span className="bg-gradient-to-r from-primary to-destructive bg-clip-text text-transparent">
@@ -70,7 +70,7 @@ const Testimonial = () => {
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {t.testimonials.map((testimonial, index) => (
               <div key={index} className="relative group">
                 {/* Decorative gradient blur */}
