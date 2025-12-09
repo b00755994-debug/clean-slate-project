@@ -10,7 +10,7 @@ const ProblemSolution = () => {
       title2: "en ambassadeur",
       subtitle: "Passez de l'ombre à l'impact collectif",
       problemTitle: "Le défi actuel",
-      problemHeading: "Vos équipes ne relaient pas vos contenus",
+      problemHeading: "Difficile de mobiliser vos équipes",
       problemDesc: "Vos collaborateurs ont un réseau précieux, mais mobiliser leur engagement sur LinkedIn reste un casse-tête quotidien.",
       problemPoints: [
         "Pas de process simple pour partager les contenus",
@@ -32,7 +32,7 @@ const ProblemSolution = () => {
       title2: "into an ambassador",
       subtitle: "Accelerate from shadow to collective impact",
       problemTitle: "The Current Challenge",
-      problemHeading: "Your teams don't share your content",
+      problemHeading: "Hard to mobilize your teams",
       problemDesc: "Your employees have valuable networks, but mobilizing their LinkedIn engagement remains a daily challenge.",
       problemPoints: [
         "No simple process to share content",
