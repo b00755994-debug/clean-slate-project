@@ -41,7 +41,7 @@ const ProblemSolution = () => {
       ],
       solutionTitle: "The Solution",
       solutionHeading: "Team engagement, orchestrated from Slack",
-      solutionDesc: "Every LinkedIn post automatically triggers a Slack alert. Your team reacts in real-time, directly from your work channels.",
+      solutionDesc: "Slack becomes your employee advocacy hub. Automatic alerts, gamified leaderboards, and real-time engagement tracking turn your team into active brand ambassadors.",
       solutionPoints: [
         "Automatic Slack alerts for every post",
         "Boost engagement through gamified leaderboards",
