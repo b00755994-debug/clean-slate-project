@@ -132,13 +132,13 @@ export default function Auth() {
 
         <Card className="border-border/50 shadow-lg">
           <CardHeader className="space-y-1 text-center">
-            <CardTitle className="text-2xl font-bold">
-              {isLogin ? 'Content de vous revoir 👋' : 'Créer un compte'}
+          <CardTitle className="text-2xl font-bold">
+              {isLogin ? 'Content de vous revoir 👋' : 'Rejoignez l\'aventure 🚀'}
             </CardTitle>
             <CardDescription>
               {isLogin
                 ? 'Entrez vos identifiants pour accéder à votre compte'
-                : 'Inscrivez-vous pour commencer à utiliser Superpump'}
+                : 'Inscrivez-vous pour commencer à utiliser superpump'}
             </CardDescription>
           </CardHeader>
           <form onSubmit={handleSubmit}>
