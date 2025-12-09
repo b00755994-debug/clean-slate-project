@@ -32,7 +32,7 @@ const ProblemSolution = () => {
       title2: "into an ambassador",
       subtitle: "Accelerate from shadow to collective impact",
       problemTitle: "The Current Challenge",
-      problemHeading: "Hard to mobilize your teams",
+      problemHeading: "Struggling to rally your teams",
       problemDesc: "Your employees have valuable networks, but mobilizing their LinkedIn engagement remains a daily challenge.",
       problemPoints: [
         "No simple process to share content",
