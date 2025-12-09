@@ -36,8 +36,16 @@ import {
   CheckCircle2,
   XCircle,
   Settings,
+  Link,
+  Lock,
 } from 'lucide-react';
 import slackLogo from '@/assets/slack-logo.png';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 interface SlackWorkspace {
   id: string;
@@ -52,6 +60,7 @@ interface LinkedInProfile {
   linkedin_url: string;
   profile_name: string;
   avatar_url: string | null;
+  slack_user_id: string | null;
   posts_count?: number;
 }
 
@@ -395,6 +404,36 @@ export default function Dashboard() {
                         onChange={(e) => setNewProfileUrl(e.target.value)}
                       />
                     </div>
+                    {/* Slack User Association Field - Disabled until Slack is connected */}
+                    <div className="space-y-2">
+                      <Label htmlFor="slackUser" className="flex items-center gap-2">
+                        <img src={slackLogo} alt="Slack" className="w-4 h-4" />
+                        Utilisateur Slack associé
+                        <span className="text-muted-foreground text-xs">(optionnel)</span>
+                      </Label>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="relative">
+                              <Input
+                                id="slackUser"
+                                disabled
+                                placeholder="Connectez Slack pour débloquer"
+                                className="bg-muted/50 cursor-not-allowed pr-10"
+                              />
+                              <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="max-w-xs">
+                            <p>Connectez votre workspace Slack pour associer ce profil à un membre de votre équipe et le taguer automatiquement dans les notifications.</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                      <p className="text-xs text-muted-foreground flex items-center gap-1">
+                        <Link className="w-3 h-3" />
+                        Permet de taguer automatiquement l'utilisateur dans les notifications Slack
+                      </p>
+                    </div>
                   </div>
                   <DialogFooter>
                     <Button
@@ -428,6 +467,7 @@ export default function Dashboard() {
                     <TableRow>
                       <TableHead>Nom</TableHead>
                       <TableHead>URL LinkedIn</TableHead>
+                      <TableHead>Utilisateur Slack</TableHead>
                       <TableHead className="text-center">Posts (30j)</TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
@@ -448,6 +488,50 @@ export default function Dashboard() {
                             {profile.linkedin_url.replace('https://linkedin.com/in/', '')}
                             <ExternalLink className="w-3 h-3" />
                           </a>
+                        </TableCell>
+                        <TableCell>
+                          {slackWorkspace?.is_connected ? (
+                            profile.slack_user_id ? (
+                              <Badge variant="outline" className="text-success border-success gap-1">
+                                <CheckCircle2 className="w-3 h-3" />
+                                Associé
+                              </Badge>
+                            ) : (
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Badge 
+                                      variant="outline" 
+                                      className="cursor-pointer hover:bg-primary/10 hover:border-primary gap-1 transition-colors"
+                                    >
+                                      <Link className="w-3 h-3" />
+                                      Lier à Slack
+                                    </Badge>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>Cliquez pour associer un utilisateur Slack</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            )
+                          ) : (
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Badge 
+                                    variant="secondary" 
+                                    className="text-muted-foreground gap-1 cursor-help opacity-60"
+                                  >
+                                    <Lock className="w-3 h-3" />
+                                    Connecter Slack
+                                  </Badge>
+                                </TooltipTrigger>
+                                <TooltipContent className="max-w-xs">
+                                  <p>Connectez votre workspace Slack pour associer ce profil à un membre de votre équipe</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          )}
                         </TableCell>
                         <TableCell className="text-center">
                           <Badge variant="secondary">{profile.posts_count || 0}</Badge>
