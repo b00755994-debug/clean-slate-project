@@ -22,7 +22,7 @@ const Testimonial = () => {
           company: "Nexidia"
         },
         {
-          quote: "Les gens font plus confiance à leurs pairs qu'aux marques sur les réseaux. Les prospects identifiés via notre présence sur LinkedIn ont un taux de closing bien plus important que la moyenne.",
+          quote: "Les gens font plus confiance à leurs pairs qu'aux marques sur les réseaux. Les prospects identifiés via notre présence sur LinkedIn ont un taux de closing bien plus important que la moyenne. Le ROI est significatif pour nos équipes commerciales.",
           author: "Julien Dubois",
           role: "Directeur Marketing",
           company: "Innovaris"
@@ -46,7 +46,7 @@ const Testimonial = () => {
           company: "Nexidia"
         },
         {
-          quote: "People trust peers more than brands on social networks. Prospects identified through our LinkedIn presence have a significantly higher closing rate than average.",
+          quote: "People trust peers more than brands on social networks. Prospects identified through our LinkedIn presence have a significantly higher closing rate than average. The ROI is significant for our sales teams.",
           author: "Julien Dubois",
           role: "Marketing Director",
           company: "Innovaris"
