@@ -16,7 +16,7 @@ const Testimonial = () => {
           company: "TechNova"
         },
         {
-          quote: "On a mis en place des récompenses pour le top 3 du leaderboard chaque mois : un week-end, un dîner au restaurant, des places de théâtre... L'équipe s'est prise au jeu, même les sceptiques de LinkedIn ! Notre reach collectif a triplé et l'esprit d'équipe n'a jamais été aussi fort.",
+          quote: "On a mis en place des récompenses pour le top 3 du leaderboard chaque mois : un week-end, un dîner au restaurant, des places de théâtre... L'équipe s'est prise au jeu, même les sceptiques de LinkedIn !",
           author: "Claire Lefèvre",
           role: "DRH",
           company: "Nexidia"
@@ -40,7 +40,7 @@ const Testimonial = () => {
           company: "TechNova"
         },
         {
-          quote: "We set up rewards for the top 3 on the leaderboard each month: a weekend getaway, dinner at a restaurant, theater tickets... The team got into it, even the LinkedIn skeptics! Our collective reach tripled and team spirit has never been better.",
+          quote: "We set up rewards for the top 3 on the leaderboard each month: a weekend getaway, dinner at a restaurant, theater tickets... The team got into it, even the LinkedIn skeptics!",
           author: "Claire Lefèvre",
           role: "HR Director",
           company: "Nexidia"
