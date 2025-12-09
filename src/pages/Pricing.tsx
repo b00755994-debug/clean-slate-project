@@ -9,6 +9,7 @@ import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
+import InlineTestimonial from "@/components/InlineTestimonial";
 
 const translations = {
   fr: {
@@ -429,6 +430,19 @@ const Pricing = () => {
               </Button>
             </CardContent>
           </Card>
+        </div>
+
+        {/* ROI Testimonial */}
+        <div className="mt-16">
+          <InlineTestimonial
+            quote={{
+              fr: "À 3€ par utilisateur, c'est ridicule comparé à ce qu'on paye en ads. Un seul lead qualifié généré via LinkedIn d'un collègue rembourse 1 an d'abonnement de toute l'équipe !",
+              en: "At €3 per user, it's ridiculous compared to what we pay in ads. A single qualified lead generated via a colleague's LinkedIn post pays for 1 year of the whole team's subscription!"
+            }}
+            author="Marc Lefebvre"
+            role={{ fr: "Sales Director", en: "Sales Director" }}
+            company="Enterprise SaaS"
+          />
         </div>
       </main>
 
