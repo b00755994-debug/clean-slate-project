@@ -346,9 +346,9 @@ export default function Dashboard() {
           </p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-6 md:grid-cols-3">
           {/* Slack Integration */}
-          <Card className="border-border/50 shadow-md">
+          <Card className="border-border/50 shadow-md md:col-span-1">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg flex items-center gap-2">
@@ -400,7 +400,7 @@ export default function Dashboard() {
           </Card>
 
           {/* LinkedIn Summary with Chart */}
-          <Card className="border-border/50 shadow-md">
+          <Card className="border-border/50 shadow-md md:col-span-2">
             <CardHeader className="pb-3">
               <CardTitle className="text-lg flex items-center gap-2">
                 <Linkedin className="w-5 h-5 text-[#0A66C2]" />
