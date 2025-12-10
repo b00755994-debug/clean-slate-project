@@ -26,6 +26,14 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
   Zap,
   LogOut,
   Crown,
@@ -38,6 +46,9 @@ import {
   Settings,
   Link,
   Lock,
+  User,
+  ChevronDown,
+  Shield,
 } from 'lucide-react';
 import slackLogo from '@/assets/slack-logo.png';
 import {
@@ -46,6 +57,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from '@/components/ui/chart';
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer } from 'recharts';
 
 interface SlackWorkspace {
   id: string;
@@ -64,6 +81,11 @@ interface LinkedInProfile {
   posts_count?: number;
 }
 
+interface MonthlyPostData {
+  month: string;
+  posts: number;
+}
+
 export default function Dashboard() {
   const { user, profile, isAdmin, signOut, isLoading } = useAuth();
   const navigate = useNavigate();
@@ -71,6 +93,7 @@ export default function Dashboard() {
   
   const [slackWorkspace, setSlackWorkspace] = useState<SlackWorkspace | null>(null);
   const [linkedinProfiles, setLinkedinProfiles] = useState<LinkedInProfile[]>([]);
+  const [monthlyPosts, setMonthlyPosts] = useState<MonthlyPostData[]>([]);
   const [isAddingProfile, setIsAddingProfile] = useState(false);
   const [newProfileName, setNewProfileName] = useState('');
   const [newProfileUrl, setNewProfileUrl] = useState('');
@@ -80,6 +103,7 @@ export default function Dashboard() {
     if (user) {
       fetchSlackWorkspace();
       fetchLinkedInProfiles();
+      fetchMonthlyPosts();
     }
   }, [user]);
 
@@ -120,6 +144,33 @@ export default function Dashboard() {
       
       setLinkedinProfiles(profilesWithPosts);
     }
+  };
+
+  const fetchMonthlyPosts = async () => {
+    // Get posts for the last 6 months
+    const months: MonthlyPostData[] = [];
+    const monthNames = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
+    
+    for (let i = 5; i >= 0; i--) {
+      const date = new Date();
+      date.setMonth(date.getMonth() - i);
+      const startOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
+      const endOfMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59);
+      
+      const { count } = await supabase
+        .from('Posts')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user?.id)
+        .gte('created_at', startOfMonth.toISOString())
+        .lte('created_at', endOfMonth.toISOString());
+      
+      months.push({
+        month: monthNames[date.getMonth()],
+        posts: count || 0,
+      });
+    }
+    
+    setMonthlyPosts(months);
   };
 
   const handleAddProfile = async () => {
@@ -204,6 +255,13 @@ export default function Dashboard() {
     );
   }
 
+  const chartConfig = {
+    posts: {
+      label: "Posts",
+      color: "hsl(var(--primary))",
+    },
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary/10 to-background">
       {/* Header */}
@@ -216,26 +274,63 @@ export default function Dashboard() {
             <span className="text-xl font-bold text-foreground">superpump</span>
           </div>
           
-          <div className="flex items-center gap-4">
-            {isAdmin && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => navigate('/admin')}
-                className="gap-2"
-              >
-                <Settings className="w-4 h-4" />
-                Admin
-              </Button>
-            )}
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground hidden sm:inline">
-                {profile?.email || user?.email}
+          <div className="flex items-center gap-3">
+            {/* Plan Badge in Header */}
+            <Badge className="bg-card border border-foreground/20 px-3 py-1.5 text-sm font-semibold shadow-sm cursor-default hover:bg-card hidden sm:flex items-center gap-2">
+              <Crown className="w-4 h-4 text-accent" />
+              <span className="bg-gradient-to-r from-primary to-destructive bg-clip-text text-transparent">
+                {profile?.plan?.toUpperCase() || 'PRO'}
               </span>
-              <Button variant="ghost" size="icon" onClick={handleLogout}>
-                <LogOut className="w-4 h-4" />
-              </Button>
-            </div>
+            </Badge>
+
+            {/* User Dropdown Menu */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="gap-2">
+                  <User className="w-4 h-4" />
+                  <span className="hidden sm:inline max-w-[150px] truncate">
+                    {profile?.full_name || profile?.email?.split('@')[0] || 'Mon compte'}
+                  </span>
+                  <ChevronDown className="w-4 h-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-64 bg-popover">
+                <DropdownMenuLabel className="font-normal">
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium leading-none">
+                      {profile?.full_name || 'Utilisateur'}
+                    </p>
+                    <p className="text-xs leading-none text-muted-foreground">
+                      {profile?.email || user?.email}
+                    </p>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="gap-2 sm:hidden">
+                  <Crown className="w-4 h-4 text-accent" />
+                  <span>Plan: <strong className="bg-gradient-to-r from-primary to-destructive bg-clip-text text-transparent">{profile?.plan?.toUpperCase() || 'PRO'}</strong></span>
+                </DropdownMenuItem>
+                {isAdmin && (
+                  <>
+                    <DropdownMenuItem className="gap-2" onClick={() => navigate('/admin')}>
+                      <Shield className="w-4 h-4" />
+                      <span>Admin</span>
+                      <Badge variant="secondary" className="ml-auto text-[10px]">Staff</Badge>
+                    </DropdownMenuItem>
+                  </>
+                )}
+                <DropdownMenuItem className="gap-2 text-muted-foreground cursor-not-allowed" disabled>
+                  <Settings className="w-4 h-4" />
+                  <span>Paramètres</span>
+                  <Badge variant="secondary" className="ml-auto text-[10px]">Bientôt</Badge>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="gap-2 text-destructive focus:text-destructive" onClick={handleLogout}>
+                  <LogOut className="w-4 h-4" />
+                  <span>Se déconnecter</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </header>
@@ -251,36 +346,7 @@ export default function Dashboard() {
           </p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {/* Plan Section */}
-          <Card className="border-border/50 shadow-md">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Crown className="w-5 h-5 text-accent" />
-                  Mon Plan
-                </CardTitle>
-                <Badge className="bg-card border border-foreground/20 px-4 py-1.5 text-sm font-semibold shadow-lg cursor-default hover:bg-card">
-                  <span className="bg-gradient-to-r from-primary to-destructive bg-clip-text text-transparent">
-                    {profile?.plan?.toUpperCase() || 'PRO'}
-                  </span>
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground mb-4">
-                Vous êtes sur le plan <strong>Pro</strong>. Profitez de toutes les fonctionnalités avancées.
-              </p>
-              <div className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-muted/50 border border-dashed border-border text-muted-foreground text-sm">
-                <Settings className="w-4 h-4" />
-                <span>Gérer l'abonnement</span>
-                <Badge variant="secondary" className="ml-auto text-[10px] px-2 py-0.5">
-                  Bientôt
-                </Badge>
-              </div>
-            </CardContent>
-          </Card>
-
+        <div className="grid gap-6 md:grid-cols-2">
           {/* Slack Integration */}
           <Card className="border-border/50 shadow-md">
             <CardHeader className="pb-3">
@@ -333,27 +399,59 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          {/* Quick Stats */}
+          {/* LinkedIn Summary with Chart */}
           <Card className="border-border/50 shadow-md">
             <CardHeader className="pb-3">
               <CardTitle className="text-lg flex items-center gap-2">
                 <Linkedin className="w-5 h-5 text-[#0A66C2]" />
-                Résumé
+                Résumé LinkedIn
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Profils suivis</span>
-                  <span className="font-semibold">{linkedinProfiles.length}</span>
+              <div className="flex items-center gap-6 mb-4">
+                <div className="text-center">
+                  <p className="text-2xl font-bold">{linkedinProfiles.length}</p>
+                  <p className="text-xs text-muted-foreground">Profils suivis</p>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Posts (30j)</span>
-                  <span className="font-semibold">
+                <div className="text-center">
+                  <p className="text-2xl font-bold">
                     {linkedinProfiles.reduce((acc, p) => acc + (p.posts_count || 0), 0)}
-                  </span>
+                  </p>
+                  <p className="text-xs text-muted-foreground">Posts (30j)</p>
                 </div>
               </div>
+              
+              {/* Monthly Posts Bar Chart */}
+              <div className="h-[120px] w-full">
+                <ChartContainer config={chartConfig} className="h-full w-full">
+                  <BarChart data={monthlyPosts} margin={{ top: 5, right: 5, bottom: 5, left: -20 }}>
+                    <XAxis 
+                      dataKey="month" 
+                      tickLine={false} 
+                      axisLine={false}
+                      tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
+                    />
+                    <YAxis 
+                      tickLine={false} 
+                      axisLine={false}
+                      tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
+                      width={30}
+                    />
+                    <ChartTooltip 
+                      content={<ChartTooltipContent />}
+                      cursor={{ fill: 'hsl(var(--muted))' }}
+                    />
+                    <Bar 
+                      dataKey="posts" 
+                      fill="hsl(var(--primary))" 
+                      radius={[4, 4, 0, 0]}
+                    />
+                  </BarChart>
+                </ChartContainer>
+              </div>
+              <p className="text-xs text-muted-foreground text-center mt-2">
+                Posts par mois (6 derniers mois)
+              </p>
             </CardContent>
           </Card>
         </div>
