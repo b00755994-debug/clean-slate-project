@@ -38,7 +38,16 @@ import {
   Settings,
   Link,
   Lock,
+  ChevronDown,
+  User,
 } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import slackLogo from '@/assets/slack-logo.png';
 import {
   Tooltip,
@@ -216,27 +225,37 @@ export default function Dashboard() {
             <span className="text-xl font-bold text-foreground">superpump</span>
           </div>
           
-          <div className="flex items-center gap-4">
-            {isAdmin && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => navigate('/admin')}
-                className="gap-2"
-              >
-                <Settings className="w-4 h-4" />
-                Admin
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="gap-2">
+                <User className="w-4 h-4" />
+                <span className="hidden sm:inline">{profile?.email || user?.email}</span>
+                <ChevronDown className="w-4 h-4" />
               </Button>
-            )}
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground hidden sm:inline">
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuItem disabled className="text-xs text-muted-foreground">
                 {profile?.email || user?.email}
-              </span>
-              <Button variant="ghost" size="icon" onClick={handleLogout}>
+              </DropdownMenuItem>
+              {isAdmin && (
+                <DropdownMenuItem disabled className="text-xs">
+                  <Badge variant="outline" className="text-xs">Admin</Badge>
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuSeparator />
+              {isAdmin && (
+                <DropdownMenuItem onClick={() => navigate('/admin')} className="gap-2 cursor-pointer">
+                  <Settings className="w-4 h-4" />
+                  Admin
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleLogout} className="gap-2 cursor-pointer text-destructive">
                 <LogOut className="w-4 h-4" />
-              </Button>
-            </div>
-          </div>
+                Se déconnecter
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </header>
 
