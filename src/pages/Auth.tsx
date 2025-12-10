@@ -102,7 +102,7 @@ export default function Auth() {
         } else {
           toast({
             title: 'Inscription réussie',
-            description: 'Un email de confirmation vous a été envoyé. Vérifiez votre boîte de réception.',
+            description: 'Un email de confirmation vous a été envoyé. Vérifiez votre boîte de réception (et vos spams si besoin).',
           });
         }
       }
