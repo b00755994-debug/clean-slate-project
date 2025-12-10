@@ -227,7 +227,7 @@ export default function Dashboard() {
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="gap-2">
+              <Button variant="ghost" size="sm" className="gap-2">
                 <User className="w-4 h-4" />
                 <span className="hidden sm:inline">{profile?.email || user?.email}</span>
                 <ChevronDown className="w-4 h-4" />
