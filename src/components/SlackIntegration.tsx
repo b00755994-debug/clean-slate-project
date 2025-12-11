@@ -295,7 +295,7 @@ const SlackIntegration = () => {
               user: "superpump",
               avatar: "🚀",
               time: "Aujourd'hui à 9:00",
-              content: "💥 *Ton Daily Pump*\n\nSalut ! Voici ton résumé quotidien pour maximiser ton impact LinkedIn aujourd'hui.",
+              content: "💥 *Your Weekly Pump*\n\nSalut ! Voici ton résumé de la semaine pour maximiser ton impact LinkedIn.",
               dailyPump: {
                 section1Title: "1️⃣ Nouveaux posts d'hier dans ton équipe",
                 teamPosts: [
@@ -552,7 +552,7 @@ const SlackIntegration = () => {
               user: "superpump",
               avatar: "🚀",
               time: "Today at 9:00 AM",
-              content: "💥 *Your Daily Pump*\n\nHey! Here's your daily summary to maximize your LinkedIn impact today.",
+              content: "💥 *Your Weekly Pump*\n\nHey! Here's your weekly summary to maximize your LinkedIn impact.",
               dailyPump: {
                 section1Title: "1️⃣ New posts from your team yesterday",
                 teamPosts: [
