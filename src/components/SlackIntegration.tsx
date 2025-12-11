@@ -317,30 +317,15 @@ const SlackIntegration = () => {
               user: "You",
               avatar: "You",
               time: "Aujourd'hui à 9:15",
-              content: "Quels sont les autres sujets du moment que je peux partager stp ?",
+              content: "Other hot topics I can share about the company or the industry?",
               isUser: true
             },
             {
               user: "superpump",
               avatar: "🚀",
               time: "Aujourd'hui à 9:15",
-              content: "Super question ! 🎯 Voici 3 sujets tendance dans ton secteur cette semaine :\n\n*1. L'IA et le recrutement* - Comment les équipes RH utilisent l'IA pour identifier les meilleurs talents\n\n*2. Remote work 2.0* - Les nouvelles pratiques hybrides qui émergent en 2025\n\n*3. Employee advocacy ROI* - Des chiffres concrets sur l'impact des posts collaborateurs vs publicité\n\nTu veux que je te génère un brouillon sur l'un de ces sujets ? 📝",
+              content: "Here are the hot topics of the moment for your company and your industry! 🎯\n\n*🏢 About your company:*\n\n*1. New feature launch* - Your team just shipped the automated workflow feature last week. Great angle to share customer reactions and early wins!\n\n*2. Client success story* - TechCorp hit 500 clients milestone. Perfect for a \"behind the scenes\" post on what made the difference.\n\n*🌍 Industry trend:*\n\n*3. Employee advocacy ROI* - Hot topic right now: employee posts generate 8x more engagement than corporate ads, at $0 cost. A provocative angle that always performs well!\n\nWant me to draft something on any of these? 📝",
               aiResponse: true
-            },
-            {
-              user: "You",
-              avatar: "You",
-              time: "Aujourd'hui à 9:18",
-              content: "Oui, génère-moi un post sur l'employee advocacy ROI !",
-              isUser: true
-            },
-            {
-              user: "superpump",
-              avatar: "🚀",
-              time: "Aujourd'hui à 9:18",
-              content: "Voilà un brouillon pour toi ! 🚀\n\n---\n\n*\"Une pub LinkedIn coûte 5-10€ par clic.\n\nUn post d'un collaborateur engagé ? 0€.\n\nEt pourtant, les posts de collaborateurs génèrent 8x plus d'engagement que les posts corporate.\n\nLa vraie question n'est pas 'faut-il investir dans l'employee advocacy ?'\n\nC'est 'pourquoi vous ne l'avez pas encore fait ?'\n\n#EmployeeAdvocacy #LinkedIn #Marketing\"*\n\n---\n\nTu veux que je l'adapte ou tu le postes tel quel ?",
-              aiResponse: true,
-              postDraft: true
             }
           ]
         }
@@ -589,30 +574,15 @@ const SlackIntegration = () => {
               user: "You",
               avatar: "You",
               time: "Today at 9:15 AM",
-              content: "What are other trending topics I can share?",
+              content: "Other hot topics I can share about the company or the industry?",
               isUser: true
             },
             {
               user: "superpump",
               avatar: "🚀",
               time: "Today at 9:15 AM",
-              content: "Great question! 🎯 Here are 3 trending topics in your industry this week:\n\n*1. AI and recruiting* - How HR teams are using AI to identify top talent\n\n*2. Remote work 2.0* - New hybrid practices emerging in 2025\n\n*3. Employee advocacy ROI* - Concrete numbers on employee posts impact vs advertising\n\nWant me to generate a draft on one of these topics? 📝",
+              content: "Here are the hot topics of the moment for your company and your industry! 🎯\n\n*🏢 About your company:*\n\n*1. New feature launch* - Your team just shipped the automated workflow feature last week. Great angle to share customer reactions and early wins!\n\n*2. Client success story* - TechCorp hit 500 clients milestone. Perfect for a \"behind the scenes\" post on what made the difference.\n\n*🌍 Industry trend:*\n\n*3. Employee advocacy ROI* - Hot topic right now: employee posts generate 8x more engagement than corporate ads, at $0 cost. A provocative angle that always performs well!\n\nWant me to draft something on any of these? 📝",
               aiResponse: true
-            },
-            {
-              user: "You",
-              avatar: "You",
-              time: "Today at 9:18 AM",
-              content: "Yes, generate a post about employee advocacy ROI!",
-              isUser: true
-            },
-            {
-              user: "superpump",
-              avatar: "🚀",
-              time: "Today at 9:18 AM",
-              content: "Here's a draft for you! 🚀\n\n---\n\n*\"A LinkedIn ad costs $5-10 per click.\n\nA post from an engaged employee? $0.\n\nYet employee posts generate 8x more engagement than corporate posts.\n\nThe real question isn't 'should we invest in employee advocacy?'\n\nIt's 'why haven't you done it yet?'\n\n#EmployeeAdvocacy #LinkedIn #Marketing\"*\n\n---\n\nWant me to adjust it or are you posting it as is?",
-              aiResponse: true,
-              postDraft: true
             }
           ]
         }
@@ -1398,26 +1368,6 @@ const SlackIntegration = () => {
                             </Card>
                           )}
 
-                          {/* AI Response with post draft */}
-                          {msg.postDraft && (
-                            <Card className="mt-2 border-l-4 border-primary bg-primary/5 border-t border-r border-b border-primary/20">
-                              <div className="p-3">
-                                <div className="flex items-center gap-2 mb-2">
-                                  <Badge className="text-[10px] font-bold bg-primary text-white hover:bg-primary/90">
-                                    📝 {language === 'fr' ? 'BROUILLON' : 'DRAFT'}
-                                  </Badge>
-                                </div>
-                                <div className="flex gap-2 mt-3">
-                                  <button className="px-3 py-1.5 rounded-md text-[12px] font-medium bg-muted text-foreground hover:bg-muted/80 border border-border transition-colors">
-                                    ✏️ {language === 'fr' ? 'Modifier' : 'Edit'}
-                                  </button>
-                                  <button className="px-3 py-1.5 rounded-md text-[12px] font-medium bg-[#0A66C2] text-white hover:bg-[#004182] transition-colors">
-                                    🚀 {language === 'fr' ? 'Poster sur LinkedIn' : 'Post on LinkedIn'}
-                                  </button>
-                                </div>
-                              </div>
-                            </Card>
-                          )}
 
                           {/* Reactions */}
                           {msg.reactions && (
