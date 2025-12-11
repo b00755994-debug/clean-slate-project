@@ -288,7 +288,7 @@ const SlackIntegration = () => {
         },
         dm: {
           name: "superpump",
-          description: "Votre assistant IA pour coordonner vos publications LinkedIn",
+          description: "Your employee advocacy AI agent",
           isDM: true,
           messages: [
             {
@@ -545,7 +545,7 @@ const SlackIntegration = () => {
         },
         dm: {
           name: "superpump",
-          description: "Your AI assistant to coordinate your LinkedIn posts",
+          description: "Your employee advocacy AI agent",
           isDM: true,
           messages: [
             {
