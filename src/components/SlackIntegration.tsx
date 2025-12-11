@@ -12,7 +12,7 @@ const SlackIntegration = () => {
   const [isAutoPlay, setIsAutoPlay] = useState(true);
   const [progress, setProgress] = useState(0);
 
-  // Function to format Slack-like text with bold and mentions
+  // Function to format Slack-like text with bold, mentions and links
   const formatSlackText = (text: string, baseKey: string) => {
     const parts: React.ReactNode[] = [];
     let lastIndex = 0;
@@ -20,29 +20,46 @@ const SlackIntegration = () => {
 
     const getKey = () => `${baseKey}-${keyIndex++}`;
 
-    // First pass: handle bold text with mentions inside
+    // First pass: handle bold text with mentions and links inside
     const boldRegex = /\*([^*]+)\*/g;
     let boldMatch;
 
     const processText = (str: string, isBold = false): React.ReactNode => {
-      const mentionRegex = /@[A-Za-zÀ-ÿ\s]+/g;
+      // Combined regex for mentions and links <url|text>
+      const combinedRegex = /(@[A-Za-zÀ-ÿ\s]+)|(<([^|>]+)\|([^>]+)>)/g;
       const innerParts: React.ReactNode[] = [];
       let innerLastIndex = 0;
-      let mentionMatch;
+      let match;
 
-      while ((mentionMatch = mentionRegex.exec(str)) !== null) {
-        if (mentionMatch.index > innerLastIndex) {
-          const textBefore = str.substring(innerLastIndex, mentionMatch.index);
+      while ((match = combinedRegex.exec(str)) !== null) {
+        if (match.index > innerLastIndex) {
+          const textBefore = str.substring(innerLastIndex, match.index);
           innerParts.push(isBold ? <strong key={getKey()}>{textBefore}</strong> : <span key={getKey()}>{textBefore}</span>);
         }
 
-        innerParts.push(
-          <span key={getKey()} className="bg-[#E8F5FD] text-[#1264A3] px-1 py-0.5 rounded">
-            {mentionMatch[0]}
-          </span>
-        );
+        if (match[1]) {
+          // It's a mention
+          innerParts.push(
+            <span key={getKey()} className="bg-[#E8F5FD] text-[#1264A3] px-1 py-0.5 rounded">
+              {match[1]}
+            </span>
+          );
+        } else if (match[3] && match[4]) {
+          // It's a link <url|text>
+          innerParts.push(
+            <a 
+              key={getKey()} 
+              href={match[3]} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-[#1264A3] hover:underline font-medium"
+            >
+              {match[4]}
+            </a>
+          );
+        }
 
-        innerLastIndex = mentionRegex.lastIndex;
+        innerLastIndex = combinedRegex.lastIndex;
       }
 
       if (innerLastIndex < str.length) {
@@ -295,7 +312,7 @@ const SlackIntegration = () => {
               user: "superpump",
               avatar: "🚀",
               time: "Aujourd'hui à 9:00",
-              content: "💥 *Your Weekly Pump*\n\nHey! Here's your weekly summary to maximize your LinkedIn impact this week. 🚀\n\n*📢 New posts from your team this week:*\n\n• *@Marie Lambert* shared insights on client onboarding - 847 impressions already! → See post\n• *@Thomas Dubois* posted about product updates - great engagement with 34 comments → See post\n\n👉 Take 2 min to like & comment on their posts!\n\n*💡 Your personalized post suggestion:*\n\n\"The 3 most common mistakes we see when clients launch their employee advocacy program\" - This topic resonates well with your audience and aligns with company messaging.\n\nWant me to draft this post for you? 📝",
+              content: "💥 *Your Weekly Pump*\n\nHey! Here's your weekly summary to maximize your LinkedIn impact this week. 🚀\n\n*📢 New posts from your team this week:*\n\n• *@Marie Lambert* shared insights on client onboarding - 847 impressions already! <#|See post>\n• *@Thomas Dubois* posted about product updates - great engagement with 34 comments <#|See post>\n\n👉 Take 2 min to like & comment on their posts!\n\n*💡 Your personalized post suggestion:*\n\n\"The 3 most common mistakes we see when clients launch their employee advocacy program\" - This topic resonates well with your audience and aligns with company messaging.\n\nWant me to draft this post for you? 📝",
               reactions: [
                 { emoji: "🔥", count: 1, users: ["You"] }
               ]
@@ -539,7 +556,7 @@ const SlackIntegration = () => {
               user: "superpump",
               avatar: "🚀",
               time: "Today at 9:00 AM",
-              content: "💥 *Your Weekly Pump*\n\nHey! Here's your weekly summary to maximize your LinkedIn impact this week. 🚀\n\n*📢 New posts from your team this week:*\n\n• *@Marie Lambert* shared insights on client onboarding - 847 impressions already! → See post\n• *@Thomas Dubois* posted about product updates - great engagement with 34 comments → See post\n\n👉 Take 2 min to like & comment on their posts!\n\n*💡 Your personalized post suggestion:*\n\n\"The 3 most common mistakes we see when clients launch their employee advocacy program\" - This topic resonates well with your audience and aligns with company messaging.\n\nWant me to draft this post for you? 📝",
+              content: "💥 *Your Weekly Pump*\n\nHey! Here's your weekly summary to maximize your LinkedIn impact this week. 🚀\n\n*📢 New posts from your team this week:*\n\n• *@Marie Lambert* shared insights on client onboarding - 847 impressions already! <#|See post>\n• *@Thomas Dubois* posted about product updates - great engagement with 34 comments <#|See post>\n\n👉 Take 2 min to like & comment on their posts!\n\n*💡 Your personalized post suggestion:*\n\n\"The 3 most common mistakes we see when clients launch their employee advocacy program\" - This topic resonates well with your audience and aligns with company messaging.\n\nWant me to draft this post for you? 📝",
               reactions: [
                 { emoji: "🔥", count: 1, users: ["You"] }
               ]
