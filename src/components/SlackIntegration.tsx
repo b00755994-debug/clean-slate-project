@@ -773,7 +773,7 @@ const SlackIntegration = () => {
                         <Zap className="h-2.5 w-2.5 text-white" />
                       </div>
                       <span className="text-sm truncate">superpump</span>
-                      <Badge variant="secondary" className="ml-auto text-[9px] px-1.5 py-0 h-4 bg-destructive/80 text-white border-none">AI</Badge>
+                      <Badge variant="secondary" className="ml-auto text-[9px] px-1.5 py-0 h-4 bg-[#4A154B] text-white border-none">APP</Badge>
                     </button>
                   </div>
                 </div>
