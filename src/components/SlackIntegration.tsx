@@ -295,22 +295,9 @@ const SlackIntegration = () => {
               user: "superpump",
               avatar: "🚀",
               time: "Aujourd'hui à 9:00",
-              content: "💥 *Your Weekly Pump*\n\nSalut ! Voici ton résumé de la semaine pour maximiser ton impact LinkedIn.",
-              dailyPump: {
-                section1Title: "1️⃣ Nouveaux posts d'hier dans ton équipe",
-                teamPosts: [
-                  { name: "Marie", action: "Voir le post de Marie" },
-                  { name: "Thomas", action: "Voir le post de Thomas" }
-                ],
-                section2Title: "2️⃣ Suggestion de post pour toi",
-                suggestion: "Tu peux poster aujourd'hui sur : les 3 erreurs qu'on voit le plus chez nos clients quand ils lancent leur employee advocacy.",
-                buttons: [
-                  { label: "💡 Voir mes idées de posts", primary: false },
-                  { label: "🔗 Ouvrir LinkedIn pour poster", primary: true }
-                ]
-              },
+              content: "💥 *Your Weekly Pump*\n\nHey! Here's your weekly summary to maximize your LinkedIn impact this week. 🚀\n\n*📢 New posts from your team this week:*\n\n• *@Marie Lambert* shared insights on client onboarding - 847 impressions already!\n• *@Thomas Dubois* posted about product updates - great engagement with 34 comments\n\n👉 Take 2 min to like & comment on their posts!\n\n*💡 Your personalized post suggestion:*\n\n\"The 3 most common mistakes we see when clients launch their employee advocacy program\" - This topic resonates well with your audience and aligns with company messaging.\n\nWant me to draft this post for you? 📝",
               reactions: [
-                { emoji: "🔥", count: 1, users: ["Toi"] }
+                { emoji: "🔥", count: 1, users: ["You"] }
               ]
             },
             {
@@ -552,20 +539,7 @@ const SlackIntegration = () => {
               user: "superpump",
               avatar: "🚀",
               time: "Today at 9:00 AM",
-              content: "💥 *Your Weekly Pump*\n\nHey! Here's your weekly summary to maximize your LinkedIn impact.",
-              dailyPump: {
-                section1Title: "1️⃣ New posts from your team yesterday",
-                teamPosts: [
-                  { name: "Marie", action: "See Marie's post" },
-                  { name: "Thomas", action: "See Thomas's post" }
-                ],
-                section2Title: "2️⃣ Post suggestion for you",
-                suggestion: "You can post today about: the 3 most common mistakes we see when clients launch their employee advocacy program.",
-                buttons: [
-                  { label: "💡 See my post ideas", primary: false },
-                  { label: "🔗 Open LinkedIn to post", primary: true }
-                ]
-              },
+              content: "💥 *Your Weekly Pump*\n\nHey! Here's your weekly summary to maximize your LinkedIn impact this week. 🚀\n\n*📢 New posts from your team this week:*\n\n• *@Marie Lambert* shared insights on client onboarding - 847 impressions already!\n• *@Thomas Dubois* posted about product updates - great engagement with 34 comments\n\n👉 Take 2 min to like & comment on their posts!\n\n*💡 Your personalized post suggestion:*\n\n\"The 3 most common mistakes we see when clients launch their employee advocacy program\" - This topic resonates well with your audience and aligns with company messaging.\n\nWant me to draft this post for you? 📝",
               reactions: [
                 { emoji: "🔥", count: 1, users: ["You"] }
               ]
@@ -1317,53 +1291,6 @@ const SlackIntegration = () => {
                           <div className="text-[15px] leading-[1.46] mb-1 font-lato text-[hsl(var(--slack-text-primary))] whitespace-pre-line">
                             {formatSlackText(msg.content, `dm-${idx}`)}
                           </div>
-
-                          {/* Daily Pump Card */}
-                          {msg.dailyPump && (
-                            <Card className="mt-3 border border-border bg-gradient-to-br from-primary/5 to-destructive/5">
-                              <div className="p-4 space-y-4">
-                                {/* Section 1: Team Posts */}
-                                <div>
-                                  <h4 className="font-semibold text-[14px] text-foreground mb-2">{msg.dailyPump.section1Title}</h4>
-                                  <div className="space-y-2">
-                                    {msg.dailyPump.teamPosts.map((post, pIdx) => (
-                                      <button key={pIdx} className="w-full text-left px-3 py-2 rounded-md bg-[#0A66C2]/10 hover:bg-[#0A66C2]/20 text-[#0A66C2] text-[13px] font-medium transition-colors flex items-center gap-2">
-                                        <div className="w-4 h-4 rounded bg-[#0A66C2] flex items-center justify-center">
-                                          <span className="text-white text-[8px] font-bold">in</span>
-                                        </div>
-                                        {post.action}
-                                      </button>
-                                    ))}
-                                  </div>
-                                </div>
-
-                                {/* Section 2: Suggestion */}
-                                <div>
-                                  <h4 className="font-semibold text-[14px] text-foreground mb-2">{msg.dailyPump.section2Title}</h4>
-                                  <p className="text-[13px] text-muted-foreground italic bg-muted/50 p-3 rounded-md border-l-2 border-primary">
-                                    "{msg.dailyPump.suggestion}"
-                                  </p>
-                                </div>
-
-                                {/* Buttons */}
-                                <div className="flex flex-wrap gap-2 pt-2">
-                                  {msg.dailyPump.buttons.map((btn, bIdx) => (
-                                    <button 
-                                      key={bIdx}
-                                      className={`px-4 py-2 rounded-md text-[13px] font-semibold transition-colors ${
-                                        btn.primary 
-                                          ? 'bg-[#0A66C2] text-white hover:bg-[#004182]' 
-                                          : 'bg-muted text-foreground hover:bg-muted/80 border border-border'
-                                      }`}
-                                    >
-                                      {btn.label}
-                                    </button>
-                                  ))}
-                                </div>
-                              </div>
-                            </Card>
-                          )}
-
 
                           {/* Reactions */}
                           {msg.reactions && (
