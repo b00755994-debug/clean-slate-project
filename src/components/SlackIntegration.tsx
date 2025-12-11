@@ -287,7 +287,7 @@ const SlackIntegration = () => {
           ]
         },
         dm: {
-          name: "superpump",
+          name: "Your employee advocacy AI coach",
           description: "Votre assistant IA pour coordonner vos publications LinkedIn",
           isDM: true,
           messages: [
@@ -544,7 +544,7 @@ const SlackIntegration = () => {
           ]
         },
         dm: {
-          name: "superpump",
+          name: "Your employee advocacy AI coach",
           description: "Your AI assistant to coordinate your LinkedIn posts",
           isDM: true,
           messages: [
@@ -757,7 +757,7 @@ const SlackIntegration = () => {
                       <div className="w-4 h-4 rounded bg-gradient-to-br from-primary to-destructive flex-shrink-0 flex items-center justify-center relative z-10">
                         <Zap className="h-2.5 w-2.5 text-white" />
                       </div>
-                      <span className="text-sm truncate flex-1 relative z-10">superpump</span>
+                      <span className="text-sm truncate flex-1 relative z-10">Your employee advocacy AI coach</span>
                       <Badge variant="secondary" className="text-[8px] px-1 py-0 h-3.5 bg-destructive/80 text-white border-none relative z-10">AI</Badge>
                       {activeChannel === "dm" && <span className="w-1.5 h-1.5 rounded-full bg-white relative z-10"></span>}
                     </button>
@@ -765,10 +765,6 @@ const SlackIntegration = () => {
                       <div className="w-4 h-4 rounded flex-shrink-0 bg-green-500 flex items-center justify-center text-[8px] font-bold">SM</div>
                       <span className="text-sm truncate">Sarah Martin</span>
                       <span className="w-1.5 h-1.5 rounded-full bg-green-500 ml-auto"></span>
-                    </button>
-                    <button className="w-full text-left px-2 py-1.5 rounded flex items-center gap-2 text-white/70 hover:bg-white/10">
-                      <div className="w-4 h-4 rounded flex-shrink-0 bg-blue-500 flex items-center justify-center text-[8px] font-bold">TD</div>
-                      <span className="text-sm truncate">Thomas Dubois</span>
                     </button>
                     <button className="w-full text-left px-2 py-1.5 rounded flex items-center gap-2 text-white/70 hover:bg-white/10">
                       <div className="w-4 h-4 rounded flex-shrink-0 bg-purple-500 flex items-center justify-center text-[8px] font-bold">JC</div>
