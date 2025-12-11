@@ -285,6 +285,64 @@ const SlackIntegration = () => {
               ]
             }
           ]
+        },
+        dm: {
+          name: "superpump",
+          description: "Votre assistant IA pour coordonner vos publications LinkedIn",
+          isDM: true,
+          messages: [
+            {
+              user: "superpump",
+              avatar: "🚀",
+              time: "Aujourd'hui à 9:00",
+              content: "💥 *Ton Daily Pump*\n\nSalut ! Voici ton résumé quotidien pour maximiser ton impact LinkedIn aujourd'hui.",
+              dailyPump: {
+                section1Title: "1️⃣ Nouveaux posts d'hier dans ton équipe",
+                teamPosts: [
+                  { name: "Marie", action: "Voir le post de Marie" },
+                  { name: "Thomas", action: "Voir le post de Thomas" }
+                ],
+                section2Title: "2️⃣ Suggestion de post pour toi",
+                suggestion: "Tu peux poster aujourd'hui sur : les 3 erreurs qu'on voit le plus chez nos clients quand ils lancent leur employee advocacy.",
+                buttons: [
+                  { label: "💡 Voir mes idées de posts", primary: false },
+                  { label: "🔗 Ouvrir LinkedIn pour poster", primary: true }
+                ]
+              },
+              reactions: [
+                { emoji: "🔥", count: 1, users: ["Toi"] }
+              ]
+            },
+            {
+              user: "You",
+              avatar: "You",
+              time: "Aujourd'hui à 9:15",
+              content: "Quels sont les autres sujets du moment que je peux partager stp ?",
+              isUser: true
+            },
+            {
+              user: "superpump",
+              avatar: "🚀",
+              time: "Aujourd'hui à 9:15",
+              content: "Super question ! 🎯 Voici 3 sujets tendance dans ton secteur cette semaine :\n\n*1. L'IA et le recrutement* - Comment les équipes RH utilisent l'IA pour identifier les meilleurs talents\n\n*2. Remote work 2.0* - Les nouvelles pratiques hybrides qui émergent en 2025\n\n*3. Employee advocacy ROI* - Des chiffres concrets sur l'impact des posts collaborateurs vs publicité\n\nTu veux que je te génère un brouillon sur l'un de ces sujets ? 📝",
+              aiResponse: true
+            },
+            {
+              user: "You",
+              avatar: "You",
+              time: "Aujourd'hui à 9:18",
+              content: "Oui, génère-moi un post sur l'employee advocacy ROI !",
+              isUser: true
+            },
+            {
+              user: "superpump",
+              avatar: "🚀",
+              time: "Aujourd'hui à 9:18",
+              content: "Voilà un brouillon pour toi ! 🚀\n\n---\n\n*\"Une pub LinkedIn coûte 5-10€ par clic.\n\nUn post d'un collaborateur engagé ? 0€.\n\nEt pourtant, les posts de collaborateurs génèrent 8x plus d'engagement que les posts corporate.\n\nLa vraie question n'est pas 'faut-il investir dans l'employee advocacy ?'\n\nC'est 'pourquoi vous ne l'avez pas encore fait ?'\n\n#EmployeeAdvocacy #LinkedIn #Marketing\"*\n\n---\n\nTu veux que je l'adapte ou tu le postes tel quel ?",
+              aiResponse: true,
+              postDraft: true
+            }
+          ]
         }
       }
     },
@@ -499,6 +557,64 @@ const SlackIntegration = () => {
               ]
             }
           ]
+        },
+        dm: {
+          name: "superpump",
+          description: "Your AI assistant to coordinate your LinkedIn posts",
+          isDM: true,
+          messages: [
+            {
+              user: "superpump",
+              avatar: "🚀",
+              time: "Today at 9:00 AM",
+              content: "💥 *Your Daily Pump*\n\nHey! Here's your daily summary to maximize your LinkedIn impact today.",
+              dailyPump: {
+                section1Title: "1️⃣ New posts from your team yesterday",
+                teamPosts: [
+                  { name: "Marie", action: "See Marie's post" },
+                  { name: "Thomas", action: "See Thomas's post" }
+                ],
+                section2Title: "2️⃣ Post suggestion for you",
+                suggestion: "You can post today about: the 3 most common mistakes we see when clients launch their employee advocacy program.",
+                buttons: [
+                  { label: "💡 See my post ideas", primary: false },
+                  { label: "🔗 Open LinkedIn to post", primary: true }
+                ]
+              },
+              reactions: [
+                { emoji: "🔥", count: 1, users: ["You"] }
+              ]
+            },
+            {
+              user: "You",
+              avatar: "You",
+              time: "Today at 9:15 AM",
+              content: "What are other trending topics I can share?",
+              isUser: true
+            },
+            {
+              user: "superpump",
+              avatar: "🚀",
+              time: "Today at 9:15 AM",
+              content: "Great question! 🎯 Here are 3 trending topics in your industry this week:\n\n*1. AI and recruiting* - How HR teams are using AI to identify top talent\n\n*2. Remote work 2.0* - New hybrid practices emerging in 2025\n\n*3. Employee advocacy ROI* - Concrete numbers on employee posts impact vs advertising\n\nWant me to generate a draft on one of these topics? 📝",
+              aiResponse: true
+            },
+            {
+              user: "You",
+              avatar: "You",
+              time: "Today at 9:18 AM",
+              content: "Yes, generate a post about employee advocacy ROI!",
+              isUser: true
+            },
+            {
+              user: "superpump",
+              avatar: "🚀",
+              time: "Today at 9:18 AM",
+              content: "Here's a draft for you! 🚀\n\n---\n\n*\"A LinkedIn ad costs $5-10 per click.\n\nA post from an engaged employee? $0.\n\nYet employee posts generate 8x more engagement than corporate posts.\n\nThe real question isn't 'should we invest in employee advocacy?'\n\nIt's 'why haven't you done it yet?'\n\n#EmployeeAdvocacy #LinkedIn #Marketing\"*\n\n---\n\nWant me to adjust it or are you posting it as is?",
+              aiResponse: true,
+              postDraft: true
+            }
+          ]
         }
       }
     }
@@ -509,14 +625,15 @@ const SlackIntegration = () => {
     { id: "posts", icon: Bell, data: t.channels.posts },
     { id: "analytics", icon: BarChart3, data: t.channels.analytics },
     { id: "leaderboard", icon: Trophy, data: t.channels.leaderboard },
-    { id: "share", icon: Share2, data: t.channels.share }
+    { id: "share", icon: Share2, data: t.channels.share },
+    { id: "dm", icon: MessageSquare, data: t.channels.dm, isDM: true }
   ];
 
   // Auto-rotation effect
   useEffect(() => {
     if (!isAutoPlay) return;
 
-    const channelIds = ["posts", "analytics", "leaderboard", "share"]; // Order specified
+    const channelIds = ["posts", "analytics", "leaderboard", "share", "dm"]; // Order specified
     const currentIndex = channelIds.indexOf(activeChannel);
 
     // Progress animation (0 to 100 over 7 seconds)
@@ -614,7 +731,7 @@ const SlackIntegration = () => {
                       <span>CHANNELS</span>
                       <button className="text-white/50 hover:text-white text-lg leading-none">+</button>
                     </div>
-                    {channels.map((channel) => {
+                    {channels.filter(c => !c.isDM).map((channel) => {
                       const Icon = channel.icon;
                       const isActive = activeChannel === channel.id;
                       return (
@@ -652,6 +769,28 @@ const SlackIntegration = () => {
                       <span>DIRECT MESSAGES</span>
                       <button className="text-white/50 hover:text-white text-lg leading-none">+</button>
                     </div>
+                    {/* superpump DM - clickable */}
+                    <button 
+                      onClick={() => handleChannelClick("dm")}
+                      className={`relative w-full text-left px-2 py-1.5 rounded flex items-center gap-2 transition-all duration-300 overflow-hidden ${
+                        activeChannel === "dm"
+                          ? "bg-primary/60 text-white shadow-sm"
+                          : "text-white/70 hover:bg-primary/40 hover:text-white"
+                      }`}
+                    >
+                      {activeChannel === "dm" && isAutoPlay && (
+                        <div
+                          className="absolute inset-0 bg-primary/40 transition-all duration-100 rounded"
+                          style={{ width: `${progress}%` }}
+                        />
+                      )}
+                      <div className="w-4 h-4 rounded bg-gradient-to-br from-primary to-destructive flex-shrink-0 flex items-center justify-center relative z-10">
+                        <Zap className="h-2.5 w-2.5 text-white" />
+                      </div>
+                      <span className="text-sm truncate flex-1 relative z-10">superpump</span>
+                      <Badge variant="secondary" className="text-[8px] px-1 py-0 h-3.5 bg-destructive/80 text-white border-none relative z-10">AI</Badge>
+                      {activeChannel === "dm" && <span className="w-1.5 h-1.5 rounded-full bg-white relative z-10"></span>}
+                    </button>
                     <button className="w-full text-left px-2 py-1.5 rounded flex items-center gap-2 text-white/70 hover:bg-white/10">
                       <div className="w-4 h-4 rounded flex-shrink-0 bg-green-500 flex items-center justify-center text-[8px] font-bold">SM</div>
                       <span className="text-sm truncate">Sarah Martin</span>
@@ -706,8 +845,17 @@ const SlackIntegration = () => {
                 <div className="border-b border-border p-4 font-lato flex items-center justify-between">
                   <div>
                     <h3 className="text-lg font-semibold flex items-center gap-2">
-                      <Hash className="h-5 w-5" />
+                      {activeChannel === "dm" ? (
+                        <div className="w-5 h-5 rounded bg-gradient-to-br from-primary to-destructive flex items-center justify-center">
+                          <Zap className="h-3 w-3 text-white" />
+                        </div>
+                      ) : (
+                        <Hash className="h-5 w-5" />
+                      )}
                       {channels.find(c => c.id === activeChannel)?.data.name.replace('#', '')}
+                      {activeChannel === "dm" && (
+                        <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 bg-destructive/80 text-white border-none">AI</Badge>
+                      )}
                     </h3>
                     <p className="text-sm text-muted-foreground">
                       {channels.find(c => c.id === activeChannel)?.data.description}
@@ -1167,6 +1315,144 @@ const SlackIntegration = () => {
                       </div>
                     </div>
                   ))}
+
+                  {/* DM Channel */}
+                  {activeChannel === "dm" && t.channels.dm.messages.map((msg, idx) => (
+                    <div key={idx} className="group hover:bg-muted/30 -mx-4 px-4 py-2 transition-colors">
+                      <div className="flex gap-3">
+                        {/* Avatar */}
+                        <div className="w-9 h-9 rounded flex items-center justify-center flex-shrink-0 text-sm font-semibold"
+                             style={{
+                               backgroundColor: msg.isUser ? '#E01E5A' : '#4A154B',
+                               color: 'white'
+                             }}>
+                          {msg.isUser ? (
+                            <div className="w-full h-full rounded bg-gradient-to-br from-orange-400 to-pink-500 flex items-center justify-center text-xs font-bold">
+                              You
+                            </div>
+                          ) : (
+                            <div className="w-full h-full rounded bg-gradient-to-br from-primary to-destructive flex items-center justify-center">
+                              <Zap className="h-5 w-5 text-white" />
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="flex-1 min-w-0">
+                          {/* Header */}
+                          <div className="flex items-baseline gap-2 mb-0.5">
+                            <span className="font-bold text-[15px] text-[hsl(var(--slack-text-primary))] font-lato">{msg.user}</span>
+                            {msg.user === "superpump" && (
+                              <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 bg-destructive/80 text-white border-none">AI</Badge>
+                            )}
+                            <span className="text-[11px] text-[hsl(var(--slack-text-secondary))]">{msg.time}</span>
+                          </div>
+
+                          {/* Message Content */}
+                          <div className="text-[15px] leading-[1.46] mb-1 font-lato text-[hsl(var(--slack-text-primary))] whitespace-pre-line">
+                            {formatSlackText(msg.content, `dm-${idx}`)}
+                          </div>
+
+                          {/* Daily Pump Card */}
+                          {msg.dailyPump && (
+                            <Card className="mt-3 border border-border bg-gradient-to-br from-primary/5 to-destructive/5">
+                              <div className="p-4 space-y-4">
+                                {/* Section 1: Team Posts */}
+                                <div>
+                                  <h4 className="font-semibold text-[14px] text-foreground mb-2">{msg.dailyPump.section1Title}</h4>
+                                  <div className="space-y-2">
+                                    {msg.dailyPump.teamPosts.map((post, pIdx) => (
+                                      <button key={pIdx} className="w-full text-left px-3 py-2 rounded-md bg-[#0A66C2]/10 hover:bg-[#0A66C2]/20 text-[#0A66C2] text-[13px] font-medium transition-colors flex items-center gap-2">
+                                        <div className="w-4 h-4 rounded bg-[#0A66C2] flex items-center justify-center">
+                                          <span className="text-white text-[8px] font-bold">in</span>
+                                        </div>
+                                        {post.action}
+                                      </button>
+                                    ))}
+                                  </div>
+                                </div>
+
+                                {/* Section 2: Suggestion */}
+                                <div>
+                                  <h4 className="font-semibold text-[14px] text-foreground mb-2">{msg.dailyPump.section2Title}</h4>
+                                  <p className="text-[13px] text-muted-foreground italic bg-muted/50 p-3 rounded-md border-l-2 border-primary">
+                                    "{msg.dailyPump.suggestion}"
+                                  </p>
+                                </div>
+
+                                {/* Buttons */}
+                                <div className="flex flex-wrap gap-2 pt-2">
+                                  {msg.dailyPump.buttons.map((btn, bIdx) => (
+                                    <button 
+                                      key={bIdx}
+                                      className={`px-4 py-2 rounded-md text-[13px] font-semibold transition-colors ${
+                                        btn.primary 
+                                          ? 'bg-[#0A66C2] text-white hover:bg-[#004182]' 
+                                          : 'bg-muted text-foreground hover:bg-muted/80 border border-border'
+                                      }`}
+                                    >
+                                      {btn.label}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            </Card>
+                          )}
+
+                          {/* AI Response with post draft */}
+                          {msg.postDraft && (
+                            <Card className="mt-2 border-l-4 border-primary bg-primary/5 border-t border-r border-b border-primary/20">
+                              <div className="p-3">
+                                <div className="flex items-center gap-2 mb-2">
+                                  <Badge className="text-[10px] font-bold bg-primary text-white hover:bg-primary/90">
+                                    📝 {language === 'fr' ? 'BROUILLON' : 'DRAFT'}
+                                  </Badge>
+                                </div>
+                                <div className="flex gap-2 mt-3">
+                                  <button className="px-3 py-1.5 rounded-md text-[12px] font-medium bg-muted text-foreground hover:bg-muted/80 border border-border transition-colors">
+                                    ✏️ {language === 'fr' ? 'Modifier' : 'Edit'}
+                                  </button>
+                                  <button className="px-3 py-1.5 rounded-md text-[12px] font-medium bg-[#0A66C2] text-white hover:bg-[#004182] transition-colors">
+                                    🚀 {language === 'fr' ? 'Poster sur LinkedIn' : 'Post on LinkedIn'}
+                                  </button>
+                                </div>
+                              </div>
+                            </Card>
+                          )}
+
+                          {/* Reactions */}
+                          {msg.reactions && (
+                            <div className="flex items-center gap-1 mt-2">
+                              {msg.reactions.map((reaction, rIdx) => (
+                                <div key={rIdx}
+                                     className="flex items-center gap-1 px-2 py-0.5 rounded-full border border-border bg-background hover:border-primary/50 cursor-pointer transition-all hover:scale-105"
+                                     title={reaction.users.join(', ')}>
+                                  <span className="text-[13px]">{reaction.emoji}</span>
+                                  <span className="text-[11px] font-medium text-foreground">{reaction.count}</span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* Chat input for DM */}
+                  {activeChannel === "dm" && (
+                    <div className="mt-4 -mx-4 px-4 pt-3 border-t border-border">
+                      <div className="flex items-center gap-2 p-2 rounded-lg border border-border bg-muted/30">
+                        <input 
+                          type="text" 
+                          placeholder={language === 'fr' ? "Pose une question à superpump..." : "Ask superpump a question..."}
+                          className="flex-1 bg-transparent text-[14px] placeholder:text-muted-foreground focus:outline-none"
+                          readOnly
+                        />
+                        <button className="p-2 rounded-md bg-primary text-white hover:bg-primary/90 transition-colors">
+                          <MessageSquare className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
