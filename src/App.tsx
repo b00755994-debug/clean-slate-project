@@ -15,6 +15,10 @@ import LegalNotice from "./pages/LegalNotice";
 import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
+import DashboardLeaderboard from "./pages/DashboardLeaderboard";
+import DashboardAnalytics from "./pages/DashboardAnalytics";
+import DashboardContent from "./pages/DashboardContent";
+import DashboardInteractions from "./pages/DashboardInteractions";
 import Admin from "./pages/Admin";
 
 const queryClient = new QueryClient();
@@ -40,6 +44,38 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/leaderboard"
+              element={
+                <ProtectedRoute>
+                  <DashboardLeaderboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/analytics"
+              element={
+                <ProtectedRoute>
+                  <DashboardAnalytics />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/content"
+              element={
+                <ProtectedRoute>
+                  <DashboardContent />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/interactions"
+              element={
+                <ProtectedRoute>
+                  <DashboardInteractions />
                 </ProtectedRoute>
               }
             />
