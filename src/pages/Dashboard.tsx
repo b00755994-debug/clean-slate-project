@@ -710,45 +710,47 @@ export default function Dashboard() {
                                 );
                               }}
                             >
-                              <SelectTrigger asChild>
-                                {linkedinProfile.slack_user_id ? (
-                                  (() => {
-                                    const slackMember = getSlackMember(linkedinProfile.slack_user_id);
-                                    return (
-                                      <Badge 
-                                        variant="outline" 
-                                        className="bg-[#4A154B]/10 border-[#4A154B]/30 text-[#4A154B] dark:text-[#E01E5A] dark:border-[#E01E5A]/30 dark:bg-[#E01E5A]/10 gap-2 cursor-pointer hover:bg-[#4A154B]/20 dark:hover:bg-[#E01E5A]/20 py-1 px-2 text-xs"
-                                      >
-                                        {slackMember?.avatar_url ? (
-                                          <img 
-                                            src={slackMember.avatar_url} 
-                                            alt={slackMember.name}
-                                            className="w-5 h-5 rounded"
-                                          />
-                                        ) : (
-                                          <div className="w-5 h-5 rounded bg-[#4A154B] flex items-center justify-center">
-                                            <span className="text-white text-xs font-medium">
-                                              {getSlackMemberName(linkedinProfile.slack_user_id).charAt(0).toUpperCase()}
-                                            </span>
-                                          </div>
-                                        )}
-                                        {getSlackMemberName(linkedinProfile.slack_user_id)}
-                                      </Badge>
-                                    );
-                                  })()
-                                ) : (
-                                  <Badge 
-                                    variant="outline" 
-                                    className="cursor-pointer hover:bg-[#4A154B]/10 hover:border-[#4A154B]/30 gap-2 transition-colors py-1 px-2 text-xs border-[#4A154B]/20"
-                                  >
-                                    <img 
-                                      src={slackLogo} 
-                                      alt="Slack" 
-                                      className="w-4 h-4"
-                                    />
-                                    Sélectionner
-                                  </Badge>
-                                )}
+                              <SelectTrigger className="border-0 bg-transparent p-0 h-auto w-auto shadow-none focus:ring-0 [&>svg]:hidden">
+                                <Badge 
+                                  variant="outline" 
+                                  className={linkedinProfile.slack_user_id 
+                                    ? "bg-[#4A154B]/10 border-[#4A154B]/30 text-[#4A154B] dark:text-[#E01E5A] dark:border-[#E01E5A]/30 dark:bg-[#E01E5A]/10 gap-2 cursor-pointer hover:bg-[#4A154B]/20 dark:hover:bg-[#E01E5A]/20 py-1 px-2 text-xs"
+                                    : "cursor-pointer hover:bg-[#4A154B]/10 hover:border-[#4A154B]/30 gap-2 transition-colors py-1 px-2 text-xs border-[#4A154B]/20"
+                                  }
+                                >
+                                  {linkedinProfile.slack_user_id ? (
+                                    (() => {
+                                      const slackMember = getSlackMember(linkedinProfile.slack_user_id);
+                                      return (
+                                        <>
+                                          {slackMember?.avatar_url ? (
+                                            <img 
+                                              src={slackMember.avatar_url} 
+                                              alt={slackMember.name}
+                                              className="w-5 h-5 rounded"
+                                            />
+                                          ) : (
+                                            <div className="w-5 h-5 rounded bg-[#4A154B] flex items-center justify-center">
+                                              <span className="text-white text-xs font-medium">
+                                                {getSlackMemberName(linkedinProfile.slack_user_id).charAt(0).toUpperCase()}
+                                              </span>
+                                            </div>
+                                          )}
+                                          {getSlackMemberName(linkedinProfile.slack_user_id)}
+                                        </>
+                                      );
+                                    })()
+                                  ) : (
+                                    <>
+                                      <img 
+                                        src={slackLogo} 
+                                        alt="Slack" 
+                                        className="w-4 h-4"
+                                      />
+                                      Sélectionner
+                                    </>
+                                  )}
+                                </Badge>
                               </SelectTrigger>
                               <SelectContent 
                                 className="bg-popover border border-border shadow-lg z-[100] max-h-60 overflow-auto"
