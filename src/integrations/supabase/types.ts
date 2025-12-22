@@ -14,112 +14,197 @@ export type Database = {
   }
   public: {
     Tables: {
-      Activity: {
+      billable_users: {
         Row: {
-          created_at: string
-          id: number
-        }
-        Insert: {
-          created_at?: string
-          id?: number
-        }
-        Update: {
-          created_at?: string
-          id?: number
-        }
-        Relationships: []
-      }
-      linkedin_profiles: {
-        Row: {
+          actor_id: string | null
           avatar_url: string | null
+          billability_validated: boolean | null
           created_at: string | null
           id: string
           linkedin_url: string
           profile_name: string
           slack_user_id: string | null
           user_id: string
+          workspace_id: string | null
         }
         Insert: {
+          actor_id?: string | null
           avatar_url?: string | null
+          billability_validated?: boolean | null
           created_at?: string | null
           id?: string
           linkedin_url: string
           profile_name: string
           slack_user_id?: string | null
           user_id: string
+          workspace_id?: string | null
         }
         Update: {
+          actor_id?: string | null
           avatar_url?: string | null
+          billability_validated?: boolean | null
           created_at?: string | null
           id?: string
           linkedin_url?: string
           profile_name?: string
           slack_user_id?: string | null
           user_id?: string
-        }
-        Relationships: []
-      }
-      People: {
-        Row: {
-          id: string | null
-        }
-        Insert: {
-          id?: string | null
-        }
-        Update: {
-          id?: string | null
-        }
-        Relationships: []
-      }
-      Posts: {
-        Row: {
-          comments: number | null
-          created_at: string
-          empathy: number | null
-          id: number
-          impressions: number | null
-          likes: number | null
-          linkedin_profile_id: string | null
-          praise: number | null
-          reactions: number | null
-          shares: number | null
-          url: string | null
-          user_id: string | null
-        }
-        Insert: {
-          comments?: number | null
-          created_at?: string
-          empathy?: number | null
-          id?: number
-          impressions?: number | null
-          likes?: number | null
-          linkedin_profile_id?: string | null
-          praise?: number | null
-          reactions?: number | null
-          shares?: number | null
-          url?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          comments?: number | null
-          created_at?: string
-          empathy?: number | null
-          id?: number
-          impressions?: number | null
-          likes?: number | null
-          linkedin_profile_id?: string | null
-          praise?: number | null
-          reactions?: number | null
-          shares?: number | null
-          url?: string | null
-          user_id?: string | null
+          workspace_id?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "Posts_linkedin_profile_id_fkey"
-            columns: ["linkedin_profile_id"]
+            foreignKeyName: "linkedin_profiles_workspace_id_fkey"
+            columns: ["workspace_id"]
             isOneToOne: false
-            referencedRelation: "linkedin_profiles"
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      history: {
+        Row: {
+          content: string | null
+          created_at: string
+          id: string
+          linkedin_post_id: string | null
+          people_id: string | null
+          post_id: string | null
+          type: string | null
+          url: string | null
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string
+          id: string
+          linkedin_post_id?: string | null
+          people_id?: string | null
+          post_id?: string | null
+          type?: string | null
+          url?: string | null
+        }
+        Update: {
+          content?: string | null
+          created_at?: string
+          id?: string
+          linkedin_post_id?: string | null
+          people_id?: string | null
+          post_id?: string | null
+          type?: string | null
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "history_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      people: {
+        Row: {
+          connexions: number | null
+          id: string | null
+          internal_actor_id: string | null
+          interractions_with_supermpump_users: number | null
+          post_id: string | null
+          profile_url: string | null
+        }
+        Insert: {
+          connexions?: number | null
+          id?: string | null
+          internal_actor_id?: string | null
+          interractions_with_supermpump_users?: number | null
+          post_id?: string | null
+          profile_url?: string | null
+        }
+        Update: {
+          connexions?: number | null
+          id?: string | null
+          internal_actor_id?: string | null
+          interractions_with_supermpump_users?: number | null
+          post_id?: string | null
+          profile_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "people_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      posts: {
+        Row: {
+          comments: number | null
+          content: string | null
+          created_at: string
+          empathy: number | null
+          id: string
+          impressions: number | null
+          likes: number | null
+          linkedin_post_id: string | null
+          linkedin_profiles: string | null
+          praise: number | null
+          reactions: number | null
+          shares: number | null
+          status: Database["public"]["Enums"]["post_status"] | null
+          url: string | null
+          user_id: number | null
+          workspace_id: string | null
+        }
+        Insert: {
+          comments?: number | null
+          content?: string | null
+          created_at?: string
+          empathy?: number | null
+          id: string
+          impressions?: number | null
+          likes?: number | null
+          linkedin_post_id?: string | null
+          linkedin_profiles?: string | null
+          praise?: number | null
+          reactions?: number | null
+          shares?: number | null
+          status?: Database["public"]["Enums"]["post_status"] | null
+          url?: string | null
+          user_id?: number | null
+          workspace_id?: string | null
+        }
+        Update: {
+          comments?: number | null
+          content?: string | null
+          created_at?: string
+          empathy?: number | null
+          id?: string
+          impressions?: number | null
+          likes?: number | null
+          linkedin_post_id?: string | null
+          linkedin_profiles?: string | null
+          praise?: number | null
+          reactions?: number | null
+          shares?: number | null
+          status?: Database["public"]["Enums"]["post_status"] | null
+          url?: string | null
+          user_id?: number | null
+          workspace_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_2_linkedin_profiles_fkey"
+            columns: ["linkedin_profiles"]
+            isOneToOne: false
+            referencedRelation: "billable_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posts_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
             referencedColumns: ["id"]
           },
         ]
@@ -133,6 +218,7 @@ export type Database = {
           id: string
           plan: string | null
           updated_at: string | null
+          workspace_id: string | null
         }
         Insert: {
           avatar_url?: string | null
@@ -142,6 +228,7 @@ export type Database = {
           id: string
           plan?: string | null
           updated_at?: string | null
+          workspace_id?: string | null
         }
         Update: {
           avatar_url?: string | null
@@ -151,86 +238,139 @@ export type Database = {
           id?: string
           plan?: string | null
           updated_at?: string | null
+          workspace_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
       }
-      slack_workspaces: {
+      slack_workspace_auth: {
         Row: {
-          connected_at: string | null
-          created_at: string | null
           id: string
-          is_connected: boolean | null
-          user_id: string
-          workspace_id: string | null
-          workspace_name: string
+          installed_at: string
+          scopes: string | null
+          slack_id: string | null
+          superpump_workspace_id: string | null
+          token: string | null
         }
         Insert: {
-          connected_at?: string | null
-          created_at?: string | null
           id?: string
-          is_connected?: boolean | null
-          user_id: string
-          workspace_id?: string | null
-          workspace_name: string
+          installed_at?: string
+          scopes?: string | null
+          slack_id?: string | null
+          superpump_workspace_id?: string | null
+          token?: string | null
         }
         Update: {
-          connected_at?: string | null
-          created_at?: string | null
           id?: string
-          is_connected?: boolean | null
-          user_id?: string
-          workspace_id?: string | null
-          workspace_name?: string
+          installed_at?: string
+          scopes?: string | null
+          slack_id?: string | null
+          superpump_workspace_id?: string | null
+          token?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "slack_workspace_auth_superpump_workspace_id_fkey"
+            columns: ["superpump_workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
           id: string
           role: Database["public"]["Enums"]["app_role"]
           user_id: string
+          workspace_id: string | null
         }
         Insert: {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id: string
+          workspace_id?: string | null
         }
         Update: {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
+          workspace_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "user_roles_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
       }
-      Users: {
+      workspaces: {
         Row: {
-          created_at: string
-          id: number
+          connected_at: string | null
+          created_at: string | null
+          id: string
+          is_connected: boolean | null
+          linkedin_profiles_id: string | null
+          posts_id: string | null
+          slack_workspace_auth: string | null
+          user_id: string
+          workspace_name: string
         }
         Insert: {
-          created_at?: string
-          id?: number
+          connected_at?: string | null
+          created_at?: string | null
+          id?: string
+          is_connected?: boolean | null
+          linkedin_profiles_id?: string | null
+          posts_id?: string | null
+          slack_workspace_auth?: string | null
+          user_id: string
+          workspace_name: string
         }
         Update: {
-          created_at?: string
-          id?: number
+          connected_at?: string | null
+          created_at?: string | null
+          id?: string
+          is_connected?: boolean | null
+          linkedin_profiles_id?: string | null
+          posts_id?: string | null
+          slack_workspace_auth?: string | null
+          user_id?: string
+          workspace_name?: string
         }
-        Relationships: []
-      }
-      Workspace: {
-        Row: {
-          created_at: string
-          id: number
-        }
-        Insert: {
-          created_at?: string
-          id?: number
-        }
-        Update: {
-          created_at?: string
-          id?: number
-        }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "workspaces_linkedin_profiles_id_fkey"
+            columns: ["linkedin_profiles_id"]
+            isOneToOne: false
+            referencedRelation: "billable_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "workspaces_posts_id_fkey"
+            columns: ["posts_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "workspaces_slack_workspace_auth_fkey"
+            columns: ["slack_workspace_auth"]
+            isOneToOne: false
+            referencedRelation: "slack_workspace_auth"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
@@ -247,6 +387,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
+      post_status: "stopped" | "ongoing" | "done"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -375,6 +516,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
+      post_status: ["stopped", "ongoing", "done"],
     },
   },
 } as const

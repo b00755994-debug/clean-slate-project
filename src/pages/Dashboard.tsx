@@ -94,19 +94,25 @@ export default function Dashboard() {
 
   const fetchSlackWorkspace = async () => {
     const { data, error } = await supabase
-      .from('slack_workspaces')
+      .from('workspaces')
       .select('*')
       .eq('user_id', user?.id)
       .maybeSingle();
     
     if (!error && data) {
-      setSlackWorkspace(data);
+      setSlackWorkspace({
+        id: data.id,
+        workspace_name: data.workspace_name,
+        workspace_id: null,
+        is_connected: data.is_connected || false,
+        connected_at: data.connected_at,
+      });
     }
   };
 
   const fetchLinkedInProfiles = async () => {
     const { data: profiles, error } = await supabase
-      .from('linkedin_profiles')
+      .from('billable_users')
       .select('*')
       .eq('user_id', user?.id);
     
@@ -116,14 +122,14 @@ export default function Dashboard() {
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
       
       const profilesWithPosts = await Promise.all(
-        profiles.map(async (profile) => {
+        profiles.map(async (p) => {
           const { count } = await supabase
-            .from('Posts')
+            .from('posts')
             .select('*', { count: 'exact', head: true })
-            .eq('linkedin_profile_id', profile.id)
+            .eq('linkedin_profiles', p.id)
             .gte('created_at', thirtyDaysAgo.toISOString());
           
-          return { ...profile, posts_count: count || 0 };
+          return { ...p, posts_count: count || 0 };
         })
       );
       
@@ -144,7 +150,7 @@ export default function Dashboard() {
     setIsAddingProfile(true);
     
     const { error } = await supabase
-      .from('linkedin_profiles')
+      .from('billable_users')
       .insert({
         user_id: user?.id,
         profile_name: newProfileName.trim(),
@@ -173,7 +179,7 @@ export default function Dashboard() {
 
   const handleDeleteProfile = async (profileId: string) => {
     const { error } = await supabase
-      .from('linkedin_profiles')
+      .from('billable_users')
       .delete()
       .eq('id', profileId);
     
