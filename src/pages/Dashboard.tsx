@@ -355,9 +355,13 @@ export default function Dashboard() {
     }
   }, []);
 
-  // Find Slack member name by id
+  // Find Slack member by id
+  const getSlackMember = (slackUserId: string): SlackMember | undefined => {
+    return slackMembers.find(m => m.id === slackUserId);
+  };
+
   const getSlackMemberName = (slackUserId: string) => {
-    const member = slackMembers.find(m => m.id === slackUserId);
+    const member = getSlackMember(slackUserId);
     return member?.name || slackUserId;
   };
 
@@ -709,11 +713,31 @@ export default function Dashboard() {
                                     sideOffset={4}
                                   >
                                     <SelectItem value="none">
-                                      <span className="text-muted-foreground">Aucun</span>
+                                      <div className="flex items-center gap-2">
+                                        <div className="w-6 h-6 rounded bg-muted flex items-center justify-center">
+                                          <Unlink className="w-3 h-3 text-muted-foreground" />
+                                        </div>
+                                        <span className="text-muted-foreground">Aucun</span>
+                                      </div>
                                     </SelectItem>
                                     {slackMembers.map((member) => (
                                       <SelectItem key={member.id} value={member.id}>
-                                        {member.name}
+                                        <div className="flex items-center gap-2">
+                                          {member.avatar_url ? (
+                                            <img 
+                                              src={member.avatar_url} 
+                                              alt={member.name}
+                                              className="w-6 h-6 rounded"
+                                            />
+                                          ) : (
+                                            <div className="w-6 h-6 rounded bg-[#4A154B] flex items-center justify-center">
+                                              <span className="text-white text-xs font-medium">
+                                                {member.name.charAt(0).toUpperCase()}
+                                              </span>
+                                            </div>
+                                          )}
+                                          <span>{member.name}</span>
+                                        </div>
                                       </SelectItem>
                                     ))}
                                   </SelectContent>
@@ -739,28 +763,49 @@ export default function Dashboard() {
                                 </Button>
                               </div>
                             ) : linkedinProfile.slack_user_id ? (
-                              <Badge 
-                                variant="outline" 
-                                className="text-success border-success gap-1 cursor-pointer hover:bg-success/10"
-                                onClick={() => {
-                                  setEditingProfileId(linkedinProfile.id);
-                                  setEditSlackUserId(linkedinProfile.slack_user_id || '');
-                                }}
-                              >
-                                <CheckCircle2 className="w-3 h-3" />
-                                {getSlackMemberName(linkedinProfile.slack_user_id)}
-                              </Badge>
+                              (() => {
+                                const slackMember = getSlackMember(linkedinProfile.slack_user_id);
+                                return (
+                                  <Badge 
+                                    variant="outline" 
+                                    className="bg-[#4A154B]/10 border-[#4A154B]/30 text-[#4A154B] dark:text-[#E01E5A] dark:border-[#E01E5A]/30 dark:bg-[#E01E5A]/10 gap-2 cursor-pointer hover:bg-[#4A154B]/20 dark:hover:bg-[#E01E5A]/20 py-1 px-2"
+                                    onClick={() => {
+                                      setEditingProfileId(linkedinProfile.id);
+                                      setEditSlackUserId(linkedinProfile.slack_user_id || '');
+                                    }}
+                                  >
+                                    {slackMember?.avatar_url ? (
+                                      <img 
+                                        src={slackMember.avatar_url} 
+                                        alt={slackMember.name}
+                                        className="w-4 h-4 rounded"
+                                      />
+                                    ) : (
+                                      <div className="w-4 h-4 rounded bg-[#4A154B] flex items-center justify-center">
+                                        <span className="text-white text-[10px] font-medium">
+                                          {getSlackMemberName(linkedinProfile.slack_user_id).charAt(0).toUpperCase()}
+                                        </span>
+                                      </div>
+                                    )}
+                                    {getSlackMemberName(linkedinProfile.slack_user_id)}
+                                  </Badge>
+                                );
+                              })()
                             ) : (
                               <Badge 
                                 variant="outline" 
-                                className="cursor-pointer hover:bg-primary/10 hover:border-primary gap-1 transition-colors"
+                                className="cursor-pointer hover:bg-[#4A154B]/10 hover:border-[#4A154B]/30 gap-2 transition-colors py-1 px-2"
                                 onClick={() => {
                                   setEditingProfileId(linkedinProfile.id);
                                   setEditSlackUserId('');
                                 }}
                               >
-                                <Link className="w-3 h-3" />
-                                Lier au profil Slack
+                                <img 
+                                  src={slackLogo} 
+                                  alt="Slack" 
+                                  className="w-4 h-4"
+                                />
+                                Lier à Slack
                               </Badge>
                             )
                           ) : (
