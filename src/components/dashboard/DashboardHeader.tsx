@@ -34,7 +34,7 @@ export function DashboardHeader() {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="sm" className="gap-2">
               <User className="w-4 h-4" />
-              <span className="hidden sm:inline">{profile?.email || user?.email}</span>
+              <span className="hidden sm:inline">{profile?.full_name || user?.email}</span>
               <ChevronDown className="w-4 h-4" />
             </Button>
           </DropdownMenuTrigger>
