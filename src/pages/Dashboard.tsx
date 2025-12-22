@@ -701,116 +701,90 @@ export default function Dashboard() {
                         </TableCell>
                         <TableCell className="w-[20%]">
                           {slackWorkspace?.is_connected ? (
-                            editingProfileId === linkedinProfile.id ? (
-                              <div className="flex items-center gap-2">
-                                <Select
-                                  value={editSlackUserId}
-                                  onValueChange={setEditSlackUserId}
-                                >
-                                  <SelectTrigger className="min-w-[180px]">
-                                    <SelectValue placeholder="Sélectionner" />
-                                  </SelectTrigger>
-                                  <SelectContent 
-                                    className="bg-popover border border-border shadow-lg z-[100] max-h-60 overflow-auto"
-                                    position="popper"
-                                    sideOffset={4}
-                                  >
-                                    <SelectItem value="none">
-                                      <div className="flex items-center gap-2">
-                                        <div className="w-6 h-6 rounded bg-muted flex items-center justify-center">
-                                          <Unlink className="w-3 h-3 text-muted-foreground" />
-                                        </div>
-                                        <span className="text-muted-foreground">Aucun</span>
-                                      </div>
-                                    </SelectItem>
-                                    {slackMembers.map((member) => (
-                                      <SelectItem key={member.id} value={member.id}>
-                                        <div className="flex items-center gap-2">
-                                          {member.avatar_url ? (
-                                            <img 
-                                              src={member.avatar_url} 
-                                              alt={member.name}
-                                              className="w-6 h-6 rounded"
-                                            />
-                                          ) : (
-                                            <div className="w-6 h-6 rounded bg-[#4A154B] flex items-center justify-center">
-                                              <span className="text-white text-xs font-medium">
-                                                {member.name.charAt(0).toUpperCase()}
-                                              </span>
-                                            </div>
-                                          )}
-                                          <span>{member.name}</span>
-                                        </div>
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                                <Button
-                                  size="sm"
-                                  onClick={() => handleUpdateSlackUser(
-                                    linkedinProfile.id, 
-                                    editSlackUserId === 'none' ? null : editSlackUserId || null
-                                  )}
-                                >
-                                  OK
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  onClick={() => {
-                                    setEditingProfileId(null);
-                                    setEditSlackUserId('');
-                                  }}
-                                >
-                                  ✕
-                                </Button>
-                              </div>
-                            ) : linkedinProfile.slack_user_id ? (
-                              (() => {
-                                const slackMember = getSlackMember(linkedinProfile.slack_user_id);
-                                return (
+                            <Select
+                              value={linkedinProfile.slack_user_id || 'none'}
+                              onValueChange={(value) => {
+                                handleUpdateSlackUser(
+                                  linkedinProfile.id, 
+                                  value === 'none' ? null : value
+                                );
+                              }}
+                            >
+                              <SelectTrigger asChild>
+                                {linkedinProfile.slack_user_id ? (
+                                  (() => {
+                                    const slackMember = getSlackMember(linkedinProfile.slack_user_id);
+                                    return (
+                                      <Badge 
+                                        variant="outline" 
+                                        className="bg-[#4A154B]/10 border-[#4A154B]/30 text-[#4A154B] dark:text-[#E01E5A] dark:border-[#E01E5A]/30 dark:bg-[#E01E5A]/10 gap-2 cursor-pointer hover:bg-[#4A154B]/20 dark:hover:bg-[#E01E5A]/20 py-1 px-2 text-xs"
+                                      >
+                                        {slackMember?.avatar_url ? (
+                                          <img 
+                                            src={slackMember.avatar_url} 
+                                            alt={slackMember.name}
+                                            className="w-5 h-5 rounded"
+                                          />
+                                        ) : (
+                                          <div className="w-5 h-5 rounded bg-[#4A154B] flex items-center justify-center">
+                                            <span className="text-white text-xs font-medium">
+                                              {getSlackMemberName(linkedinProfile.slack_user_id).charAt(0).toUpperCase()}
+                                            </span>
+                                          </div>
+                                        )}
+                                        {getSlackMemberName(linkedinProfile.slack_user_id)}
+                                      </Badge>
+                                    );
+                                  })()
+                                ) : (
                                   <Badge 
                                     variant="outline" 
-                                    className="bg-[#4A154B]/10 border-[#4A154B]/30 text-[#4A154B] dark:text-[#E01E5A] dark:border-[#E01E5A]/30 dark:bg-[#E01E5A]/10 gap-2 cursor-pointer hover:bg-[#4A154B]/20 dark:hover:bg-[#E01E5A]/20 py-1 px-2 text-xs"
-                                    onClick={() => {
-                                      setEditingProfileId(linkedinProfile.id);
-                                      setEditSlackUserId(linkedinProfile.slack_user_id || '');
-                                    }}
+                                    className="cursor-pointer hover:bg-[#4A154B]/10 hover:border-[#4A154B]/30 gap-2 transition-colors py-1 px-2 text-xs border-[#4A154B]/20"
                                   >
-                                    {slackMember?.avatar_url ? (
-                                      <img 
-                                        src={slackMember.avatar_url} 
-                                        alt={slackMember.name}
-                                        className="w-5 h-5 rounded"
-                                      />
-                                    ) : (
-                                      <div className="w-5 h-5 rounded bg-[#4A154B] flex items-center justify-center">
-                                        <span className="text-white text-xs font-medium">
-                                          {getSlackMemberName(linkedinProfile.slack_user_id).charAt(0).toUpperCase()}
-                                        </span>
-                                      </div>
-                                    )}
-                                    {getSlackMemberName(linkedinProfile.slack_user_id)}
+                                    <img 
+                                      src={slackLogo} 
+                                      alt="Slack" 
+                                      className="w-4 h-4"
+                                    />
+                                    Sélectionner
                                   </Badge>
-                                );
-                              })()
-                            ) : (
-                              <Badge 
-                                variant="outline" 
-                                className="cursor-pointer hover:bg-[#4A154B]/10 hover:border-[#4A154B]/30 gap-2 transition-colors py-1 px-2 text-xs border-[#4A154B]/20"
-                                onClick={() => {
-                                  setEditingProfileId(linkedinProfile.id);
-                                  setEditSlackUserId('');
-                                }}
+                                )}
+                              </SelectTrigger>
+                              <SelectContent 
+                                className="bg-popover border border-border shadow-lg z-[100] max-h-60 overflow-auto"
+                                position="popper"
+                                sideOffset={4}
                               >
-                                <img 
-                                  src={slackLogo} 
-                                  alt="Slack" 
-                                  className="w-4 h-4"
-                                />
-                                Sélectionner
-                              </Badge>
-                            )
+                                <SelectItem value="none">
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-6 h-6 rounded bg-muted flex items-center justify-center">
+                                      <Unlink className="w-3 h-3 text-muted-foreground" />
+                                    </div>
+                                    <span className="text-muted-foreground">Aucun</span>
+                                  </div>
+                                </SelectItem>
+                                {slackMembers.map((member) => (
+                                  <SelectItem key={member.id} value={member.id}>
+                                    <div className="flex items-center gap-2">
+                                      {member.avatar_url ? (
+                                        <img 
+                                          src={member.avatar_url} 
+                                          alt={member.name}
+                                          className="w-6 h-6 rounded"
+                                        />
+                                      ) : (
+                                        <div className="w-6 h-6 rounded bg-[#4A154B] flex items-center justify-center">
+                                          <span className="text-white text-xs font-medium">
+                                            {member.name.charAt(0).toUpperCase()}
+                                          </span>
+                                        </div>
+                                      )}
+                                      <span>{member.name}</span>
+                                    </div>
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
                           ) : (
                             <TooltipProvider>
                               <Tooltip>
