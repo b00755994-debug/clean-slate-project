@@ -771,7 +771,7 @@ export default function Dashboard() {
                                 return (
                                   <Badge 
                                     variant="outline" 
-                                    className="bg-[#4A154B]/10 border-[#4A154B]/30 text-[#4A154B] dark:text-[#E01E5A] dark:border-[#E01E5A]/30 dark:bg-[#E01E5A]/10 gap-2 cursor-pointer hover:bg-[#4A154B]/20 dark:hover:bg-[#E01E5A]/20 py-1.5 px-3 text-sm"
+                                    className="bg-[#4A154B]/10 border-[#4A154B]/30 text-[#4A154B] dark:text-[#E01E5A] dark:border-[#E01E5A]/30 dark:bg-[#E01E5A]/10 gap-2 cursor-pointer hover:bg-[#4A154B]/20 dark:hover:bg-[#E01E5A]/20 py-1 px-2 text-xs"
                                     onClick={() => {
                                       setEditingProfileId(linkedinProfile.id);
                                       setEditSlackUserId(linkedinProfile.slack_user_id || '');
@@ -797,7 +797,7 @@ export default function Dashboard() {
                             ) : (
                               <Badge 
                                 variant="outline" 
-                                className="cursor-pointer hover:bg-[#4A154B]/10 hover:border-[#4A154B]/30 gap-2 transition-colors py-1.5 px-3 text-sm"
+                                className="cursor-pointer hover:bg-[#4A154B]/10 hover:border-[#4A154B]/30 gap-2 transition-colors py-1 px-2 text-xs"
                                 onClick={() => {
                                   setEditingProfileId(linkedinProfile.id);
                                   setEditSlackUserId('');
