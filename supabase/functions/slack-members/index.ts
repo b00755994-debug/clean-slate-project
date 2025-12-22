@@ -116,20 +116,40 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Fetch members from Slack API
-    console.log('Calling Slack users.list API');
-    const slackResponse = await fetch('https://slack.com/api/users.list', {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${slackAuth.token}`,
-        'Content-Type': 'application/json',
-      },
-    });
+    // Fetch members from Slack API with retry logic for rate limiting
+    const fetchSlackUsers = async (retryCount = 0): Promise<any> => {
+      console.log(`Calling Slack users.list API (attempt ${retryCount + 1})`);
+      const response = await fetch('https://slack.com/api/users.list', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${slackAuth.token}`,
+          'Content-Type': 'application/json',
+        },
+      });
 
-    const slackData = await slackResponse.json();
+      const data = await response.json();
+
+      // If rate limited and haven't retried yet, wait and retry once
+      if (data.error === 'ratelimited' && retryCount < 1) {
+        console.log('Rate limited, waiting 2 seconds before retry...');
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        return fetchSlackUsers(retryCount + 1);
+      }
+
+      return data;
+    };
+
+    const slackData = await fetchSlackUsers();
 
     if (!slackData.ok) {
       console.error('Slack API error:', slackData.error);
+      // Return specific error type for rate limiting
+      if (slackData.error === 'ratelimited') {
+        return new Response(
+          JSON.stringify({ members: [], error: 'ratelimited' }),
+          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
       return new Response(
         JSON.stringify({ error: `Slack API error: ${slackData.error}` }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
