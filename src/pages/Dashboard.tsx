@@ -443,20 +443,18 @@ export default function Dashboard() {
               {slackWorkspace?.is_connected ? (
                 <div className="flex gap-2">
                   <Button
-                    variant="outline"
                     size="sm"
-                    className="gap-2 flex-1"
+                    className="gap-2 flex-1 bg-[#4A154B] hover:bg-[#3a1039] text-white"
                     asChild
                   >
                     <a href="slack://open" target="_blank" rel="noopener noreferrer">
-                      <MessageSquare className="w-4 h-4" />
+                      <img src={slackLogo} alt="Slack" className="w-4 h-4" />
                       Ouvrir Slack
                     </a>
                   </Button>
                   <Button
-                    variant="outline"
                     size="sm"
-                    className="gap-2 flex-1 text-destructive hover:text-destructive hover:bg-destructive/10"
+                    className="gap-2 flex-1 bg-destructive hover:bg-destructive/90 text-destructive-foreground"
                     onClick={handleDisconnectSlack}
                   >
                     <Unlink className="w-4 h-4" />
