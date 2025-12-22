@@ -462,7 +462,7 @@ export default function Dashboard() {
                 </p>
               )}
               {slackWorkspace?.is_connected ? (
-                <div className="flex gap-2 mt-auto">
+                <div className="flex gap-2 mt-auto pt-4">
                   <Button
                     size="sm"
                     className="gap-2 flex-1 bg-[#4A154B] hover:bg-[#3a1039] text-white"
