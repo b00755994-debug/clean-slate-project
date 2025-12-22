@@ -196,8 +196,11 @@ export default function Dashboard() {
       return;
     }
     
-    // Redirect to Slack OAuth via edge function
-    window.location.href = `https://hvmrjymweajxxkoiupzf.supabase.co/functions/v1/slack-auth?user_id=${user.id}`;
+    // Get current URL origin + path for redirect after OAuth
+    const redirectUrl = `${window.location.origin}/dashboard`;
+    
+    // Redirect to Slack OAuth via edge function with redirect URL
+    window.location.href = `https://hvmrjymweajxxkoiupzf.supabase.co/functions/v1/slack-auth?user_id=${user.id}&redirect_url=${encodeURIComponent(redirectUrl)}`;
   };
 
   // Handle Slack OAuth callback messages

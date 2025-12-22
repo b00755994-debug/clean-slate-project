@@ -12,14 +12,32 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Default fallback URL
+  let dashboardUrl = 'https://superpump.lovable.app/dashboard';
+
   try {
     const url = new URL(req.url);
     const code = url.searchParams.get('code');
-    const state = url.searchParams.get('state'); // This is the user_id
+    const state = url.searchParams.get('state');
     const error = url.searchParams.get('error');
 
-    // Base redirect URL for the dashboard
-    const dashboardUrl = 'https://superpump.lovable.app/dashboard';
+    // Parse state to get userId and redirectUrl
+    let userId: string | null = null;
+    
+    if (state) {
+      try {
+        const stateData = JSON.parse(atob(state));
+        userId = stateData.userId;
+        if (stateData.redirectUrl) {
+          dashboardUrl = stateData.redirectUrl;
+        }
+        console.log(`Parsed state: userId=${userId}, redirectUrl=${dashboardUrl}`);
+      } catch (e) {
+        // Fallback: state might be just the userId (old format)
+        userId = state;
+        console.log(`Using state as userId (old format): ${userId}`);
+      }
+    }
 
     if (error) {
       console.error('Slack OAuth error:', error);
@@ -31,8 +49,8 @@ serve(async (req) => {
       });
     }
 
-    if (!code || !state) {
-      console.error('Missing code or state parameter');
+    if (!code || !userId) {
+      console.error('Missing code or userId parameter');
       return new Response(null, {
         status: 302,
         headers: {
@@ -41,7 +59,6 @@ serve(async (req) => {
       });
     }
 
-    const userId = state;
     console.log(`Processing Slack callback for user ${userId}`);
 
     const clientId = Deno.env.get('SLACK_CLIENT_ID');
@@ -192,7 +209,7 @@ serve(async (req) => {
     return new Response(null, {
       status: 302,
       headers: {
-        'Location': `https://superpump.lovable.app/dashboard?slack_error=${encodeURIComponent(errorMessage)}`,
+        'Location': `${dashboardUrl}?slack_error=${encodeURIComponent(errorMessage)}`,
       },
     });
   }
