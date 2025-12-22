@@ -63,21 +63,16 @@ All colors MUST be HSL.
 
     --transition-base: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
+    --sidebar-background: 340 100% 99%;
+    --sidebar-foreground: 215 16% 47%;
+    --sidebar-primary: 210 90% 40%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 90% 40%;
+    --sidebar-accent-foreground: 0 0% 100%;
     --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-ring: 210 90% 40%;
+    --sidebar-width: 14rem;
+    --sidebar-width-collapsed: 3.5rem;
 
     /* Slack-style colors */
     --slack: 291 65% 19%;
@@ -137,14 +132,16 @@ All colors MUST be HSL.
     --shadow-card: 0 4px 24px -2px hsl(0 0% 0% / 0.4);
     --shadow-glow: 0 8px 32px -8px hsl(339 100% 70% / 0.5);
     --shadow-vibrant: 0 20px 60px -10px hsl(236 100% 65% / 0.4), 0 8px 24px -8px hsl(339 100% 70% / 0.4);
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-background: 222 47% 11%;
+    --sidebar-foreground: 215 20% 65%;
+    --sidebar-primary: 210 90% 50%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 210 90% 50%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 217 33% 20%;
+    --sidebar-ring: 210 90% 50%;
+    --sidebar-width: 14rem;
+    --sidebar-width-collapsed: 3.5rem;
 
     /* Slack-style colors - dark mode */
     --slack: 291 65% 19%;

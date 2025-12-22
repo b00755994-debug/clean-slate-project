@@ -9,12 +9,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Zap, LogOut, Settings, ChevronDown, User, Menu } from 'lucide-react';
-import { SidebarTrigger } from '@/components/ui/sidebar';
+import { Zap, LogOut, Settings, ChevronDown, ChevronLeft, ChevronRight, User } from 'lucide-react';
+import { useSidebar } from '@/components/ui/sidebar';
 
 export function DashboardHeader() {
   const { user, profile, isAdmin, signOut } = useAuth();
   const navigate = useNavigate();
+  const { state, toggleSidebar } = useSidebar();
+  const isCollapsed = state === 'collapsed';
 
   const handleLogout = async () => {
     await signOut();
@@ -23,15 +25,24 @@ export function DashboardHeader() {
 
   return (
     <header className="border-b border-border/50 bg-background/80 backdrop-blur-sm sticky top-0 z-50">
-      <div className="px-4 py-4 flex items-center justify-between">
+      <div className="px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <SidebarTrigger className="md:hidden">
-            <Menu className="w-5 h-5" />
-          </SidebarTrigger>
-          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-primary to-destructive flex items-center justify-center">
-            <Zap className="w-5 h-5 text-primary-foreground" />
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleSidebar}
+            className="h-8 w-8 text-muted-foreground hover:text-foreground transition-colors"
+          >
+            {isCollapsed ? (
+              <ChevronRight className="h-4 w-4" />
+            ) : (
+              <ChevronLeft className="h-4 w-4" />
+            )}
+          </Button>
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-violet flex items-center justify-center">
+            <Zap className="w-4 h-4 text-primary-foreground" />
           </div>
-          <span className="text-xl font-bold text-foreground">superpump</span>
+          <span className="text-lg font-bold text-foreground">superpump</span>
         </div>
 
         <DropdownMenu>
