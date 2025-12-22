@@ -86,6 +86,7 @@ export default function Dashboard() {
   const [slackWorkspace, setSlackWorkspace] = useState<SlackWorkspace | null>(null);
   const [linkedinProfiles, setLinkedinProfiles] = useState<LinkedInProfile[]>([]);
   const [slackMembers, setSlackMembers] = useState<SlackMember[]>([]);
+  const [slackMembersLoaded, setSlackMembersLoaded] = useState(false);
   const [isLoadingMembers, setIsLoadingMembers] = useState(false);
   const [isAddingProfile, setIsAddingProfile] = useState(false);
   const [newProfileName, setNewProfileName] = useState('');
@@ -154,7 +155,12 @@ export default function Dashboard() {
     }
   };
 
-  const fetchSlackMembers = async () => {
+  const fetchSlackMembers = async (force = false) => {
+    // Use cache if already loaded, unless forced
+    if (!force && slackMembersLoaded && slackMembers.length > 0) {
+      return;
+    }
+    
     setIsLoadingMembers(true);
     try {
       const { data, error } = await supabase.functions.invoke('slack-members');
@@ -169,8 +175,19 @@ export default function Dashboard() {
         return;
       }
 
+      // Handle rate limit error from edge function
+      if (data?.error === 'ratelimited') {
+        toast({
+          title: 'API Slack surchargée',
+          description: 'Réessayez dans quelques secondes',
+          variant: 'destructive',
+        });
+        return;
+      }
+
       if (data?.members) {
         setSlackMembers(data.members);
+        setSlackMembersLoaded(true);
       }
     } catch (err) {
       console.error('Error invoking slack-members:', err);
