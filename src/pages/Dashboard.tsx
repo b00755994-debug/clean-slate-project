@@ -42,6 +42,8 @@ import {
   XCircle,
   Settings,
   Link,
+  Unlink,
+  MessageSquare,
   Lock,
   User,
 } from 'lucide-react';
@@ -282,6 +284,33 @@ export default function Dashboard() {
     window.location.href = `https://hvmrjymweajxxkoiupzf.supabase.co/functions/v1/slack-auth?user_id=${user.id}&redirect_url=${encodeURIComponent(redirectUrl)}`;
   };
 
+  const handleDisconnectSlack = async () => {
+    if (!slackWorkspace?.id) return;
+    
+    const { error } = await supabase
+      .from('workspaces')
+      .update({
+        is_connected: false,
+        slack_workspace_auth: null,
+      })
+      .eq('id', slackWorkspace.id);
+    
+    if (error) {
+      toast({
+        title: 'Erreur',
+        description: 'Impossible de déconnecter Slack',
+        variant: 'destructive',
+      });
+    } else {
+      toast({
+        title: 'Slack déconnecté',
+        description: 'Votre workspace Slack a été déconnecté',
+      });
+      setSlackWorkspace(prev => prev ? { ...prev, is_connected: false } : null);
+      setSlackMembers([]);
+    }
+  };
+
   // Handle Slack OAuth callback messages
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -392,9 +421,17 @@ export default function Dashboard() {
               {slackWorkspace?.is_connected ? (
                 <p className="text-sm text-muted-foreground mb-4">
                   Connecté à <strong>{slackWorkspace.workspace_name}</strong>
-                  {slackMembers.length > 0 && (
+                  {slackMembers.length > 0 ? (
                     <span className="block text-xs mt-1">
                       {slackMembers.length} membre(s) disponible(s)
+                    </span>
+                  ) : isLoadingMembers ? (
+                    <span className="block text-xs mt-1 text-muted-foreground">
+                      Chargement des membres...
+                    </span>
+                  ) : (
+                    <span className="block text-xs mt-1 text-amber-500">
+                      Aucun membre trouvé. Essayez de reconnecter Slack.
                     </span>
                   )}
                 </p>
@@ -403,24 +440,39 @@ export default function Dashboard() {
                   Connectez votre workspace Slack pour recevoir les notifications.
                 </p>
               )}
-              <Button
-                variant={slackWorkspace?.is_connected ? 'outline' : 'default'}
-                size="sm"
-                className={`w-full gap-2 ${!slackWorkspace?.is_connected ? 'bg-[#4A154B] hover:bg-[#3a1039] text-white' : ''}`}
-                onClick={handleConnectSlack}
-              >
-                {slackWorkspace?.is_connected ? (
-                  <>
-                    <ExternalLink className="w-4 h-4" />
-                    Ouvrir l'app Slack
-                  </>
-                ) : (
-                  <>
-                    <img src={slackLogo} alt="Slack" className="w-4 h-4" />
-                    Connecter Slack
-                  </>
-                )}
-              </Button>
+              {slackWorkspace?.is_connected ? (
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-2 flex-1"
+                    asChild
+                  >
+                    <a href="slack://open" target="_blank" rel="noopener noreferrer">
+                      <MessageSquare className="w-4 h-4" />
+                      Ouvrir Slack
+                    </a>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-2 flex-1 text-destructive hover:text-destructive hover:bg-destructive/10"
+                    onClick={handleDisconnectSlack}
+                  >
+                    <Unlink className="w-4 h-4" />
+                    Déconnecter
+                  </Button>
+                </div>
+              ) : (
+                <Button
+                  size="sm"
+                  className="w-full gap-2 bg-[#4A154B] hover:bg-[#3a1039] text-white"
+                  onClick={handleConnectSlack}
+                >
+                  <img src={slackLogo} alt="Slack" className="w-4 h-4" />
+                  Connecter Slack
+                </Button>
+              )}
             </CardContent>
           </Card>
 

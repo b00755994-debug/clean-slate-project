@@ -163,35 +163,68 @@ serve(async (req) => {
       workspaceId = newWorkspace.id;
     }
 
-    // Store Slack auth data
-    const { error: authError } = await supabase
-      .from('slack_workspace_auth')
-      .upsert({
-        superpump_workspace_id: workspaceId,
-        slack_id: teamId,
-        token: accessToken,
-        scopes: scopes,
-        installed_at: new Date().toISOString(),
-      }, {
-        onConflict: 'superpump_workspace_id',
-      });
-
-    if (authError) {
-      console.error('Error storing Slack auth:', authError);
-    }
-
-    // Update workspace with slack_workspace_auth reference
-    const { data: slackAuth } = await supabase
+    // Check if Slack auth already exists for this workspace
+    const { data: existingAuth } = await supabase
       .from('slack_workspace_auth')
       .select('id')
       .eq('superpump_workspace_id', workspaceId)
-      .single();
+      .maybeSingle();
 
-    if (slackAuth) {
-      await supabase
-        .from('workspaces')
-        .update({ slack_workspace_auth: slackAuth.id })
-        .eq('id', workspaceId);
+    let slackAuthId: string;
+
+    if (existingAuth) {
+      // Update existing Slack auth
+      console.log(`Updating existing Slack auth ${existingAuth.id} for workspace ${workspaceId}`);
+      const { error: updateAuthError } = await supabase
+        .from('slack_workspace_auth')
+        .update({
+          slack_id: teamId,
+          token: accessToken,
+          scopes: scopes,
+          installed_at: new Date().toISOString(),
+        })
+        .eq('id', existingAuth.id);
+
+      if (updateAuthError) {
+        console.error('Error updating Slack auth:', updateAuthError);
+      }
+      slackAuthId = existingAuth.id;
+    } else {
+      // Create new Slack auth
+      console.log(`Creating new Slack auth for workspace ${workspaceId}`);
+      const { data: newAuth, error: insertAuthError } = await supabase
+        .from('slack_workspace_auth')
+        .insert({
+          superpump_workspace_id: workspaceId,
+          slack_id: teamId,
+          token: accessToken,
+          scopes: scopes,
+          installed_at: new Date().toISOString(),
+        })
+        .select('id')
+        .single();
+
+      if (insertAuthError) {
+        console.error('Error creating Slack auth:', insertAuthError);
+        return new Response(null, {
+          status: 302,
+          headers: {
+            'Location': `${dashboardUrl}?slack_error=auth_storage_error`,
+          },
+        });
+      }
+      slackAuthId = newAuth.id;
+    }
+
+    // Update workspace with slack_workspace_auth reference
+    console.log(`Linking workspace ${workspaceId} to slack_workspace_auth ${slackAuthId}`);
+    const { error: linkError } = await supabase
+      .from('workspaces')
+      .update({ slack_workspace_auth: slackAuthId })
+      .eq('id', workspaceId);
+
+    if (linkError) {
+      console.error('Error linking workspace to Slack auth:', linkError);
     }
 
     console.log(`Successfully connected Slack workspace ${teamName} for user ${userId}`);

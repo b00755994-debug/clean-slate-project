@@ -55,9 +55,8 @@ Deno.serve(async (req) => {
     // Get the user's workspace
     const { data: workspace, error: workspaceError } = await supabase
       .from('workspaces')
-      .select('id, slack_workspace_auth')
+      .select('id, slack_workspace_auth, is_connected, workspace_name')
       .eq('user_id', user.id)
-      .eq('is_connected', true)
       .maybeSingle();
 
     if (workspaceError) {
@@ -68,10 +67,33 @@ Deno.serve(async (req) => {
       );
     }
 
-    if (!workspace || !workspace.slack_workspace_auth) {
-      console.log('No connected Slack workspace found');
+    console.log(`Workspace found:`, workspace ? { 
+      id: workspace.id, 
+      name: workspace.workspace_name,
+      is_connected: workspace.is_connected, 
+      slack_workspace_auth: workspace.slack_workspace_auth 
+    } : 'null');
+
+    if (!workspace) {
+      console.log('No workspace found for user');
       return new Response(
-        JSON.stringify({ members: [] }),
+        JSON.stringify({ members: [], error: 'no_workspace' }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (!workspace.is_connected) {
+      console.log('Workspace exists but is not connected');
+      return new Response(
+        JSON.stringify({ members: [], error: 'not_connected' }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (!workspace.slack_workspace_auth) {
+      console.log('Workspace connected but slack_workspace_auth is null');
+      return new Response(
+        JSON.stringify({ members: [], error: 'no_slack_auth' }),
         { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
