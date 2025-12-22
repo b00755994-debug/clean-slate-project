@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -8,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
 import {
   Table,
   TableBody,
@@ -26,8 +26,6 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import {
-  Zap,
-  LogOut,
   Crown,
   Linkedin,
   Plus,
@@ -38,16 +36,7 @@ import {
   Settings,
   Link,
   Lock,
-  ChevronDown,
-  User,
 } from 'lucide-react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import slackLogo from '@/assets/slack-logo.png';
 import {
   Tooltip,
@@ -74,8 +63,7 @@ interface LinkedInProfile {
 }
 
 export default function Dashboard() {
-  const { user, profile, isAdmin, signOut, isLoading } = useAuth();
-  const navigate = useNavigate();
+  const { user, profile, isLoading } = useAuth();
   const { toast } = useToast();
   
   const [slackWorkspace, setSlackWorkspace] = useState<SlackWorkspace | null>(null);
@@ -206,67 +194,19 @@ export default function Dashboard() {
     });
   };
 
-  const handleLogout = async () => {
-    await signOut();
-    navigate('/');
-  };
-
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
+      <DashboardLayout>
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+      </DashboardLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-secondary/10 to-background">
-      {/* Header */}
-      <header className="border-b border-border/50 bg-background/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-primary to-destructive flex items-center justify-center">
-              <Zap className="w-5 h-5 text-primary-foreground" />
-            </div>
-            <span className="text-xl font-bold text-foreground">superpump</span>
-          </div>
-          
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="gap-2">
-                <User className="w-4 h-4" />
-                <span className="hidden sm:inline">{profile?.email || user?.email}</span>
-                <ChevronDown className="w-4 h-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuItem disabled className="text-xs text-muted-foreground">
-                {profile?.email || user?.email}
-              </DropdownMenuItem>
-              {isAdmin && (
-                <DropdownMenuItem disabled className="text-xs">
-                  <Badge variant="outline" className="text-xs">Admin</Badge>
-                </DropdownMenuItem>
-              )}
-              <DropdownMenuSeparator />
-              {isAdmin && (
-                <DropdownMenuItem onClick={() => navigate('/admin')} className="gap-2 cursor-pointer">
-                  <Settings className="w-4 h-4" />
-                  Admin
-                </DropdownMenuItem>
-              )}
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleLogout} className="gap-2 cursor-pointer text-destructive">
-                <LogOut className="w-4 h-4" />
-                Se déconnecter
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8 space-y-8">
+    <DashboardLayout>
+      <div className="space-y-8">
         <div className="flex flex-col gap-2">
           <h1 className="text-3xl font-bold text-foreground">
             Bonjour, {profile?.full_name?.split(' ')[0] || 'Utilisateur'} 👋
@@ -579,7 +519,7 @@ export default function Dashboard() {
             )}
           </CardContent>
         </Card>
-      </main>
-    </div>
+      </div>
+    </DashboardLayout>
   );
 }
