@@ -672,8 +672,8 @@ export default function Dashboard() {
                 <Table className="text-sm table-fixed w-full">
                   <TableHeader>
                     <TableRow className="h-8">
-                      <TableHead className="py-1 text-xs w-[14%]">Nom</TableHead>
-                      <TableHead className="py-1 text-xs w-[44%]">URL LinkedIn</TableHead>
+                      <TableHead className="py-1 text-xs w-[18%]">Nom</TableHead>
+                      <TableHead className="py-1 text-xs w-[40%]">URL LinkedIn</TableHead>
                       <TableHead className="py-1 text-xs w-[20%]">Utilisateur Slack</TableHead>
                       <TableHead className="text-center py-1 text-xs w-[10%]">Posts (30j)</TableHead>
                       <TableHead className="text-right py-1 text-xs w-[12%]">Actions</TableHead>
@@ -685,10 +685,10 @@ export default function Dashboard() {
                     <TableBody>
                     {linkedinProfiles.map((linkedinProfile) => (
                       <TableRow key={linkedinProfile.id} className="h-8">
-                        <TableCell className="font-medium py-1 w-[14%]">
+                        <TableCell className="font-medium py-1 w-[18%]">
                           {linkedinProfile.profile_name}
                         </TableCell>
-                        <TableCell className="py-1 w-[44%]">
+                        <TableCell className="py-1 w-[40%]">
                           <a
                             href={linkedinProfile.linkedin_url}
                             target="_blank"
