@@ -43,6 +43,7 @@ import {
   Settings,
   Link,
   Unlink,
+  LogOut,
   MessageSquare,
   Lock,
   User,
@@ -475,11 +476,10 @@ export default function Dashboard() {
                   </Button>
                   <Button
                     size="sm"
-                    variant="outline"
-                    className="gap-2 flex-1 border-red-400/50 text-red-600 hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-950/30 dark:hover:text-red-300"
+                    className="gap-1.5 flex-1 bg-red-100 border border-red-200 text-red-600 hover:bg-red-200 hover:text-red-700 dark:bg-red-950/30 dark:border-red-800/50 dark:text-red-400 dark:hover:bg-red-900/40"
                     onClick={handleDisconnectSlack}
                   >
-                    <Unlink className="w-4 h-4" />
+                    <LogOut className="w-3.5 h-3.5" />
                     Déconnecter
                   </Button>
                 </div>
