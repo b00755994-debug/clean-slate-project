@@ -441,7 +441,7 @@ export default function Dashboard() {
                 </p>
               )}
               {slackWorkspace?.is_connected ? (
-                <div className="flex gap-2">
+                <div className="flex gap-2 mt-auto pt-2">
                   <Button
                     size="sm"
                     className="gap-2 flex-1 bg-[#4A154B] hover:bg-[#3a1039] text-white"
@@ -454,7 +454,8 @@ export default function Dashboard() {
                   </Button>
                   <Button
                     size="sm"
-                    className="gap-2 flex-1 bg-destructive hover:bg-destructive/90 text-destructive-foreground"
+                    variant="outline"
+                    className="gap-2 flex-1 border-red-400/50 text-red-600 hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-950/30 dark:hover:text-red-300"
                     onClick={handleDisconnectSlack}
                   >
                     <Unlink className="w-4 h-4" />
