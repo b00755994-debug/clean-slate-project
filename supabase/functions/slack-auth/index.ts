@@ -14,6 +14,7 @@ serve(async (req) => {
   try {
     const url = new URL(req.url);
     const userId = url.searchParams.get('user_id');
+    const redirectUrl = url.searchParams.get('redirect_url') || 'https://superpump.lovable.app/dashboard';
 
     if (!userId) {
       console.error('Missing user_id parameter');
@@ -35,8 +36,9 @@ serve(async (req) => {
     const redirectUri = 'https://hvmrjymweajxxkoiupzf.supabase.co/functions/v1/slack-callback';
     const scopes = ['users:read', 'users:read.email', 'team:read', 'chat:write'];
     
-    // Use userId as state to identify the user in the callback
-    const state = userId;
+    // Encode userId and redirectUrl in state (base64 JSON)
+    const stateData = JSON.stringify({ userId, redirectUrl });
+    const state = btoa(stateData);
 
     const slackAuthUrl = new URL('https://slack.com/oauth/v2/authorize');
     slackAuthUrl.searchParams.set('client_id', clientId);
@@ -44,7 +46,7 @@ serve(async (req) => {
     slackAuthUrl.searchParams.set('redirect_uri', redirectUri);
     slackAuthUrl.searchParams.set('state', state);
 
-    console.log(`Redirecting user ${userId} to Slack OAuth`);
+    console.log(`Redirecting user ${userId} to Slack OAuth, will redirect back to ${redirectUrl}`);
 
     // Redirect to Slack authorization page
     return new Response(null, {
