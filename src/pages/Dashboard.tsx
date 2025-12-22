@@ -681,8 +681,8 @@ export default function Dashboard() {
                   </TableHeader>
                   <TableBody>
                     {linkedinProfiles.map((linkedinProfile) => (
-                      <TableRow key={linkedinProfile.id} className="h-12">
-                        <TableCell className="font-medium">
+                      <TableRow key={linkedinProfile.id} className="h-9">
+                        <TableCell className="font-medium py-1.5">
                           {linkedinProfile.profile_name}
                         </TableCell>
                         <TableCell>
