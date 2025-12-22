@@ -668,20 +668,20 @@ export default function Dashboard() {
                 <p className="text-sm">Ajoutez des membres de votre équipe pour commencer.</p>
               </div>
             ) : (
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto max-h-[320px] overflow-y-auto">
                 <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Nom</TableHead>
-                      <TableHead>URL LinkedIn</TableHead>
-                      <TableHead>Utilisateur Slack</TableHead>
-                      <TableHead className="text-center">Posts (30j)</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
+                  <TableHeader className="sticky top-0 bg-card z-10">
+                    <TableRow className="h-10">
+                      <TableHead className="py-2">Nom</TableHead>
+                      <TableHead className="py-2">URL LinkedIn</TableHead>
+                      <TableHead className="py-2">Utilisateur Slack</TableHead>
+                      <TableHead className="text-center py-2">Posts (30j)</TableHead>
+                      <TableHead className="text-right py-2">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {linkedinProfiles.map((linkedinProfile) => (
-                      <TableRow key={linkedinProfile.id}>
+                      <TableRow key={linkedinProfile.id} className="h-12">
                         <TableCell className="font-medium">
                           {linkedinProfile.profile_name}
                         </TableCell>
