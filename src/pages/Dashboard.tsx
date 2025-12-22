@@ -672,10 +672,10 @@ export default function Dashboard() {
                 <Table className="text-sm table-fixed w-full">
                   <TableHeader>
                     <TableRow className="h-8">
-                      <TableHead className="py-1 text-xs w-[15%]">Nom</TableHead>
-                      <TableHead className="py-1 text-xs w-[35%]">URL LinkedIn</TableHead>
-                      <TableHead className="py-1 text-xs w-[22%]">Utilisateur Slack</TableHead>
-                      <TableHead className="text-center py-1 text-xs w-[10%]">Posts (30j)</TableHead>
+                      <TableHead className="py-1 text-xs w-[14%]">Nom</TableHead>
+                      <TableHead className="py-1 text-xs w-[40%]">URL LinkedIn</TableHead>
+                      <TableHead className="py-1 text-xs w-[20%]">Utilisateur Slack</TableHead>
+                      <TableHead className="text-center py-1 text-xs w-[8%]">Posts (30j)</TableHead>
                       <TableHead className="text-right py-1 text-xs w-[18%]">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -685,10 +685,10 @@ export default function Dashboard() {
                     <TableBody>
                     {linkedinProfiles.map((linkedinProfile) => (
                       <TableRow key={linkedinProfile.id} className="h-8">
-                        <TableCell className="font-medium py-1 w-[15%]">
+                        <TableCell className="font-medium py-1 w-[14%]">
                           {linkedinProfile.profile_name}
                         </TableCell>
-                        <TableCell className="py-1 w-[35%]">
+                        <TableCell className="py-1 w-[40%]">
                           <a
                             href={linkedinProfile.linkedin_url}
                             target="_blank"
@@ -699,7 +699,7 @@ export default function Dashboard() {
                             <ExternalLink className="w-3 h-3" />
                           </a>
                         </TableCell>
-                        <TableCell className="w-[22%]">
+                        <TableCell className="w-[20%]">
                           {slackWorkspace?.is_connected ? (
                             editingProfileId === linkedinProfile.id ? (
                               <div className="flex items-center gap-2">
@@ -830,7 +830,7 @@ export default function Dashboard() {
                             </TooltipProvider>
                           )}
                         </TableCell>
-                        <TableCell className="text-center w-[10%]">
+                        <TableCell className="text-center w-[8%]">
                           <Badge variant="secondary">{linkedinProfile.posts_count || 0}</Badge>
                         </TableCell>
                         <TableCell className="text-right w-[18%]">
