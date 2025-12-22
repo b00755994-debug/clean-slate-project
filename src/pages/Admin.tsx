@@ -78,15 +78,15 @@ export default function Admin() {
     const usersWithData = await Promise.all(
       profiles.map(async (profile) => {
         // Check slack connection
-        const { data: slack } = await supabase
-          .from('slack_workspaces')
+        const { data: workspace } = await supabase
+          .from('workspaces')
           .select('is_connected')
           .eq('user_id', profile.id)
           .maybeSingle();
 
         // Count linkedin profiles
         const { count } = await supabase
-          .from('linkedin_profiles')
+          .from('billable_users')
           .select('*', { count: 'exact', head: true })
           .eq('user_id', profile.id);
 
@@ -96,7 +96,7 @@ export default function Admin() {
           full_name: profile.full_name,
           plan: profile.plan || 'pro',
           created_at: profile.created_at,
-          slack_connected: slack?.is_connected || false,
+          slack_connected: workspace?.is_connected || false,
           linkedin_profiles_count: count || 0,
         };
       })
