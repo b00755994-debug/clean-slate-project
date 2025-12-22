@@ -687,27 +687,16 @@ export default function Dashboard() {
                                     <SelectValue placeholder="Sélectionner" />
                                   </SelectTrigger>
                                   <SelectContent 
-                                    className="bg-popover border border-border shadow-lg z-[100]"
+                                    className="bg-popover border border-border shadow-lg z-[100] max-h-60 overflow-auto"
                                     position="popper"
                                     sideOffset={4}
                                   >
-                                    <SelectItem value="">
+                                    <SelectItem value="none">
                                       <span className="text-muted-foreground">Aucun</span>
                                     </SelectItem>
                                     {slackMembers.map((member) => (
                                       <SelectItem key={member.id} value={member.id}>
-                                        <div className="flex items-center gap-2">
-                                          {member.avatar_url ? (
-                                            <img 
-                                              src={member.avatar_url} 
-                                              alt={member.name} 
-                                              className="w-4 h-4 rounded-full"
-                                            />
-                                          ) : (
-                                            <User className="w-4 h-4 text-muted-foreground" />
-                                          )}
-                                          <span className="text-sm">{member.name}</span>
-                                        </div>
+                                        {member.name}
                                       </SelectItem>
                                     ))}
                                   </SelectContent>
@@ -716,7 +705,7 @@ export default function Dashboard() {
                                   size="sm"
                                   onClick={() => handleUpdateSlackUser(
                                     linkedinProfile.id, 
-                                    editSlackUserId || null
+                                    editSlackUserId === 'none' ? null : editSlackUserId || null
                                   )}
                                 >
                                   OK
