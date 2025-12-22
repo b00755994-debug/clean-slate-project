@@ -419,7 +419,7 @@ export default function Dashboard() {
           </Card>
 
           {/* Slack Integration */}
-          <Card className="border-border/50 shadow-md">
+          <Card id="slack-integration-card" className="border-border/50 shadow-md transition-all duration-300">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg flex items-center gap-2">
@@ -797,7 +797,7 @@ export default function Dashboard() {
                             ) : (
                               <Badge 
                                 variant="outline" 
-                                className="cursor-pointer hover:bg-[#4A154B]/10 hover:border-[#4A154B]/30 gap-2 transition-colors py-1 px-2 text-xs"
+                                className="cursor-pointer hover:bg-[#4A154B]/10 hover:border-[#4A154B]/30 gap-2 transition-colors py-1 px-2 text-xs border-[#4A154B]/20"
                                 onClick={() => {
                                   setEditingProfileId(linkedinProfile.id);
                                   setEditSlackUserId('');
@@ -806,9 +806,9 @@ export default function Dashboard() {
                                 <img 
                                   src={slackLogo} 
                                   alt="Slack" 
-                                  className="w-5 h-5"
+                                  className="w-4 h-4"
                                 />
-                                Lier à Slack
+                                Sélectionner
                               </Badge>
                             )
                           ) : (
@@ -817,7 +817,17 @@ export default function Dashboard() {
                                 <TooltipTrigger asChild>
                                   <Badge 
                                     variant="secondary" 
-                                    className="text-muted-foreground gap-1 cursor-help opacity-60"
+                                    className="text-muted-foreground gap-1.5 cursor-pointer opacity-50 hover:opacity-70 transition-opacity"
+                                    onClick={() => {
+                                      const slackCard = document.getElementById('slack-integration-card');
+                                      if (slackCard) {
+                                        slackCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                        slackCard.classList.add('ring-2', 'ring-primary', 'ring-offset-2');
+                                        setTimeout(() => {
+                                          slackCard.classList.remove('ring-2', 'ring-primary', 'ring-offset-2');
+                                        }, 2000);
+                                      }
+                                    }}
                                   >
                                     <Lock className="w-3 h-3" />
                                     Connecter Slack
