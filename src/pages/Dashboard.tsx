@@ -444,7 +444,7 @@ export default function Dashboard() {
                   Connecté à <strong>{slackWorkspace.workspace_name}</strong>
                   {slackMembers.length > 0 ? (
                     <span className="block text-xs mt-1">
-                      {slackMembers.length} membre(s) disponible(s)
+                      {slackMembers.length} membres identifiés
                     </span>
                   ) : isLoadingMembers ? (
                     <span className="block text-xs mt-1 text-muted-foreground">
