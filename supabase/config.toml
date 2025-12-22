@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.slack-callback]
 verify_jwt = false
+
+[functions.slack-members]
+verify_jwt = false

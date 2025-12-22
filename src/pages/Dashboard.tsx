@@ -26,6 +26,13 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
   Crown,
   Linkedin,
   Plus,
@@ -36,6 +43,7 @@ import {
   Settings,
   Link,
   Lock,
+  User,
 } from 'lucide-react';
 import slackLogo from '@/assets/slack-logo.png';
 import {
@@ -62,16 +70,28 @@ interface LinkedInProfile {
   posts_count?: number;
 }
 
+interface SlackMember {
+  id: string;
+  name: string;
+  email: string | null;
+  avatar_url: string | null;
+}
+
 export default function Dashboard() {
   const { user, profile, isLoading } = useAuth();
   const { toast } = useToast();
   
   const [slackWorkspace, setSlackWorkspace] = useState<SlackWorkspace | null>(null);
   const [linkedinProfiles, setLinkedinProfiles] = useState<LinkedInProfile[]>([]);
+  const [slackMembers, setSlackMembers] = useState<SlackMember[]>([]);
+  const [isLoadingMembers, setIsLoadingMembers] = useState(false);
   const [isAddingProfile, setIsAddingProfile] = useState(false);
   const [newProfileName, setNewProfileName] = useState('');
   const [newProfileUrl, setNewProfileUrl] = useState('');
+  const [selectedSlackUserId, setSelectedSlackUserId] = useState<string>('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingProfileId, setEditingProfileId] = useState<string | null>(null);
+  const [editSlackUserId, setEditSlackUserId] = useState<string>('');
 
   useEffect(() => {
     if (user) {
@@ -79,6 +99,13 @@ export default function Dashboard() {
       fetchLinkedInProfiles();
     }
   }, [user]);
+
+  // Fetch Slack members when workspace is connected
+  useEffect(() => {
+    if (slackWorkspace?.is_connected) {
+      fetchSlackMembers();
+    }
+  }, [slackWorkspace?.is_connected]);
 
   const fetchSlackWorkspace = async () => {
     const { data, error } = await supabase
@@ -125,6 +152,31 @@ export default function Dashboard() {
     }
   };
 
+  const fetchSlackMembers = async () => {
+    setIsLoadingMembers(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('slack-members');
+      
+      if (error) {
+        console.error('Error fetching Slack members:', error);
+        toast({
+          title: 'Erreur',
+          description: 'Impossible de récupérer les membres Slack',
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      if (data?.members) {
+        setSlackMembers(data.members);
+      }
+    } catch (err) {
+      console.error('Error invoking slack-members:', err);
+    } finally {
+      setIsLoadingMembers(false);
+    }
+  };
+
   const handleAddProfile = async () => {
     if (!newProfileName.trim() || !newProfileUrl.trim()) {
       toast({
@@ -143,6 +195,7 @@ export default function Dashboard() {
         user_id: user?.id,
         profile_name: newProfileName.trim(),
         linkedin_url: newProfileUrl.trim(),
+        slack_user_id: selectedSlackUserId || null,
       });
     
     if (error) {
@@ -158,6 +211,7 @@ export default function Dashboard() {
       });
       setNewProfileName('');
       setNewProfileUrl('');
+      setSelectedSlackUserId('');
       setIsDialogOpen(false);
       fetchLinkedInProfiles();
     }
@@ -182,6 +236,31 @@ export default function Dashboard() {
         title: 'Profil supprimé',
         description: 'Le profil LinkedIn a été supprimé',
       });
+      fetchLinkedInProfiles();
+    }
+  };
+
+  const handleUpdateSlackUser = async (profileId: string, slackUserId: string | null) => {
+    const { error } = await supabase
+      .from('billable_users')
+      .update({ slack_user_id: slackUserId })
+      .eq('id', profileId);
+    
+    if (error) {
+      toast({
+        title: 'Erreur',
+        description: "Impossible de mettre à jour l'association Slack",
+        variant: 'destructive',
+      });
+    } else {
+      toast({
+        title: 'Association mise à jour',
+        description: slackUserId 
+          ? 'Le profil a été associé à un utilisateur Slack'
+          : "L'association Slack a été supprimée",
+      });
+      setEditingProfileId(null);
+      setEditSlackUserId('');
       fetchLinkedInProfiles();
     }
   };
@@ -229,6 +308,12 @@ export default function Dashboard() {
       window.history.replaceState({}, '', '/dashboard');
     }
   }, []);
+
+  // Find Slack member name by id
+  const getSlackMemberName = (slackUserId: string) => {
+    const member = slackMembers.find(m => m.id === slackUserId);
+    return member?.name || slackUserId;
+  };
 
   if (isLoading) {
     return (
@@ -307,6 +392,11 @@ export default function Dashboard() {
               {slackWorkspace?.is_connected ? (
                 <p className="text-sm text-muted-foreground mb-4">
                   Connecté à <strong>{slackWorkspace.workspace_name}</strong>
+                  {slackMembers.length > 0 && (
+                    <span className="block text-xs mt-1">
+                      {slackMembers.length} membre(s) disponible(s)
+                    </span>
+                  )}
                 </p>
               ) : (
                 <p className="text-sm text-muted-foreground mb-4">
@@ -405,35 +495,79 @@ export default function Dashboard() {
                         onChange={(e) => setNewProfileUrl(e.target.value)}
                       />
                     </div>
-                    {/* Slack User Association Field - Disabled until Slack is connected */}
+                    {/* Slack User Association Field */}
                     <div className="space-y-2">
                       <Label htmlFor="slackUser" className="flex items-center gap-2">
                         <img src={slackLogo} alt="Slack" className="w-4 h-4" />
                         Utilisateur Slack associé
                         <span className="text-muted-foreground text-xs">(optionnel)</span>
                       </Label>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <div className="relative">
-                              <Input
-                                id="slackUser"
-                                disabled
-                                placeholder="Connectez Slack pour débloquer"
-                                className="bg-muted/50 cursor-not-allowed pr-10"
-                              />
-                              <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                            </div>
-                          </TooltipTrigger>
-                          <TooltipContent side="top" className="max-w-xs">
-                            <p>Connectez votre workspace Slack pour associer ce profil à un membre de votre équipe et le taguer automatiquement dans les notifications.</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                      <p className="text-xs text-muted-foreground flex items-center gap-1">
-                        <Link className="w-3 h-3" />
-                        Permet de taguer automatiquement l'utilisateur dans les notifications Slack
-                      </p>
+                      {slackWorkspace?.is_connected && slackMembers.length > 0 ? (
+                        <>
+                          <Select
+                            value={selectedSlackUserId}
+                            onValueChange={setSelectedSlackUserId}
+                          >
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Sélectionner un membre Slack" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-background border border-border">
+                              <SelectItem value="">
+                                <span className="text-muted-foreground">Aucun</span>
+                              </SelectItem>
+                              {slackMembers.map((member) => (
+                                <SelectItem key={member.id} value={member.id}>
+                                  <div className="flex items-center gap-2">
+                                    {member.avatar_url ? (
+                                      <img 
+                                        src={member.avatar_url} 
+                                        alt={member.name} 
+                                        className="w-5 h-5 rounded-full"
+                                      />
+                                    ) : (
+                                      <User className="w-5 h-5 text-muted-foreground" />
+                                    )}
+                                    <span>{member.name}</span>
+                                    {member.email && (
+                                      <span className="text-xs text-muted-foreground">
+                                        ({member.email})
+                                      </span>
+                                    )}
+                                  </div>
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <p className="text-xs text-muted-foreground flex items-center gap-1">
+                            <Link className="w-3 h-3" />
+                            Permet de taguer automatiquement l'utilisateur dans les notifications Slack
+                          </p>
+                        </>
+                      ) : slackWorkspace?.is_connected && isLoadingMembers ? (
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+                          Chargement des membres...
+                        </div>
+                      ) : (
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <div className="relative">
+                                <Input
+                                  id="slackUser"
+                                  disabled
+                                  placeholder="Connectez Slack pour débloquer"
+                                  className="bg-muted/50 cursor-not-allowed pr-10"
+                                />
+                                <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                              </div>
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="max-w-xs">
+                              <p>Connectez votre workspace Slack pour associer ce profil à un membre de votre équipe et le taguer automatiquement dans les notifications.</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      )}
                     </div>
                   </div>
                   <DialogFooter>
@@ -474,46 +608,99 @@ export default function Dashboard() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {linkedinProfiles.map((profile) => (
-                      <TableRow key={profile.id}>
+                    {linkedinProfiles.map((linkedinProfile) => (
+                      <TableRow key={linkedinProfile.id}>
                         <TableCell className="font-medium">
-                          {profile.profile_name}
+                          {linkedinProfile.profile_name}
                         </TableCell>
                         <TableCell>
                           <a
-                            href={profile.linkedin_url}
+                            href={linkedinProfile.linkedin_url}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-primary hover:underline flex items-center gap-1"
                           >
-                            {profile.linkedin_url.replace('https://linkedin.com/in/', '')}
+                            {linkedinProfile.linkedin_url.replace('https://linkedin.com/in/', '')}
                             <ExternalLink className="w-3 h-3" />
                           </a>
                         </TableCell>
                         <TableCell>
                           {slackWorkspace?.is_connected ? (
-                            profile.slack_user_id ? (
-                              <Badge variant="outline" className="text-success border-success gap-1">
+                            editingProfileId === linkedinProfile.id ? (
+                              <div className="flex items-center gap-2">
+                                <Select
+                                  value={editSlackUserId}
+                                  onValueChange={setEditSlackUserId}
+                                >
+                                  <SelectTrigger className="w-40">
+                                    <SelectValue placeholder="Sélectionner" />
+                                  </SelectTrigger>
+                                  <SelectContent className="bg-background border border-border">
+                                    <SelectItem value="">
+                                      <span className="text-muted-foreground">Aucun</span>
+                                    </SelectItem>
+                                    {slackMembers.map((member) => (
+                                      <SelectItem key={member.id} value={member.id}>
+                                        <div className="flex items-center gap-2">
+                                          {member.avatar_url ? (
+                                            <img 
+                                              src={member.avatar_url} 
+                                              alt={member.name} 
+                                              className="w-4 h-4 rounded-full"
+                                            />
+                                          ) : (
+                                            <User className="w-4 h-4 text-muted-foreground" />
+                                          )}
+                                          <span className="text-sm">{member.name}</span>
+                                        </div>
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                                <Button
+                                  size="sm"
+                                  onClick={() => handleUpdateSlackUser(
+                                    linkedinProfile.id, 
+                                    editSlackUserId || null
+                                  )}
+                                >
+                                  OK
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => {
+                                    setEditingProfileId(null);
+                                    setEditSlackUserId('');
+                                  }}
+                                >
+                                  ✕
+                                </Button>
+                              </div>
+                            ) : linkedinProfile.slack_user_id ? (
+                              <Badge 
+                                variant="outline" 
+                                className="text-success border-success gap-1 cursor-pointer hover:bg-success/10"
+                                onClick={() => {
+                                  setEditingProfileId(linkedinProfile.id);
+                                  setEditSlackUserId(linkedinProfile.slack_user_id || '');
+                                }}
+                              >
                                 <CheckCircle2 className="w-3 h-3" />
-                                Associé
+                                {getSlackMemberName(linkedinProfile.slack_user_id)}
                               </Badge>
                             ) : (
-                              <TooltipProvider>
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <Badge 
-                                      variant="outline" 
-                                      className="cursor-pointer hover:bg-primary/10 hover:border-primary gap-1 transition-colors"
-                                    >
-                                      <Link className="w-3 h-3" />
-                                      Lier à Slack
-                                    </Badge>
-                                  </TooltipTrigger>
-                                  <TooltipContent>
-                                    <p>Cliquez pour associer un utilisateur Slack</p>
-                                  </TooltipContent>
-                                </Tooltip>
-                              </TooltipProvider>
+                              <Badge 
+                                variant="outline" 
+                                className="cursor-pointer hover:bg-primary/10 hover:border-primary gap-1 transition-colors"
+                                onClick={() => {
+                                  setEditingProfileId(linkedinProfile.id);
+                                  setEditSlackUserId('');
+                                }}
+                              >
+                                <Link className="w-3 h-3" />
+                                Lier à Slack
+                              </Badge>
                             )
                           ) : (
                             <TooltipProvider>
@@ -535,13 +722,13 @@ export default function Dashboard() {
                           )}
                         </TableCell>
                         <TableCell className="text-center">
-                          <Badge variant="secondary">{profile.posts_count || 0}</Badge>
+                          <Badge variant="secondary">{linkedinProfile.posts_count || 0}</Badge>
                         </TableCell>
                         <TableCell className="text-right">
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => handleDeleteProfile(profile.id)}
+                            onClick={() => handleDeleteProfile(linkedinProfile.id)}
                             className="text-destructive hover:text-destructive hover:bg-destructive/10"
                           >
                             <Trash2 className="w-4 h-4" />
