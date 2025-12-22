@@ -668,9 +668,9 @@ export default function Dashboard() {
                 <p className="text-sm">Ajoutez des membres de votre équipe pour commencer.</p>
               </div>
             ) : (
-              <div className="overflow-x-auto max-h-[240px] overflow-y-auto">
+              <div className="overflow-x-auto">
                 <Table className="text-sm">
-                  <TableHeader className="sticky top-0 bg-card z-10">
+                  <TableHeader>
                     <TableRow className="h-8">
                       <TableHead className="py-1 text-xs">Nom</TableHead>
                       <TableHead className="py-1 text-xs">URL LinkedIn</TableHead>
@@ -679,7 +679,10 @@ export default function Dashboard() {
                       <TableHead className="text-right py-1 text-xs">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
-                  <TableBody>
+                </Table>
+                <div className="max-h-[200px] overflow-y-auto">
+                  <Table className="text-sm">
+                    <TableBody>
                     {linkedinProfiles.map((linkedinProfile) => (
                       <TableRow key={linkedinProfile.id} className="h-8">
                         <TableCell className="font-medium py-1">
@@ -844,6 +847,7 @@ export default function Dashboard() {
                     ))}
                   </TableBody>
                 </Table>
+                </div>
               </div>
             )}
           </CardContent>
