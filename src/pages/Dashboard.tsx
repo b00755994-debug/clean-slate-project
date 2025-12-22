@@ -683,10 +683,14 @@ export default function Dashboard() {
                                   value={editSlackUserId}
                                   onValueChange={setEditSlackUserId}
                                 >
-                                  <SelectTrigger className="w-40">
+                                  <SelectTrigger className="min-w-[180px]">
                                     <SelectValue placeholder="Sélectionner" />
                                   </SelectTrigger>
-                                  <SelectContent className="bg-background border border-border">
+                                  <SelectContent 
+                                    className="bg-popover border border-border shadow-lg z-[100]"
+                                    position="popper"
+                                    sideOffset={4}
+                                  >
                                     <SelectItem value="">
                                       <span className="text-muted-foreground">Aucun</span>
                                     </SelectItem>
@@ -750,7 +754,7 @@ export default function Dashboard() {
                                 }}
                               >
                                 <Link className="w-3 h-3" />
-                                Lier à Slack
+                                Lier au profil Slack
                               </Badge>
                             )
                           ) : (
