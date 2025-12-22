@@ -24,12 +24,37 @@ serve(async (req) => {
     // Parse state to get userId and redirectUrl
     let userId: string | null = null;
     
+    // Whitelist of allowed redirect domains
+    const ALLOWED_REDIRECT_DOMAINS = [
+      'superpump.lovable.app',
+      'localhost',
+      'lovableproject.com'
+    ];
+
     if (state) {
       try {
         const stateData = JSON.parse(atob(state));
         userId = stateData.userId;
+        
+        // Validate redirect URL against whitelist
         if (stateData.redirectUrl) {
-          dashboardUrl = stateData.redirectUrl;
+          try {
+            const redirectUrl = new URL(stateData.redirectUrl);
+            const isAllowed = ALLOWED_REDIRECT_DOMAINS.some(domain => 
+              redirectUrl.hostname === domain || 
+              redirectUrl.hostname.endsWith(`.${domain}`)
+            );
+            
+            if (isAllowed) {
+              dashboardUrl = stateData.redirectUrl;
+            } else {
+              console.warn(`Rejected redirect to untrusted domain: ${redirectUrl.hostname}`);
+              // Keep default fallback
+            }
+          } catch (urlError) {
+            console.error('Invalid redirect URL format:', urlError);
+            // Keep default fallback
+          }
         }
         console.log(`Parsed state: userId=${userId}, redirectUrl=${dashboardUrl}`);
       } catch (e) {
