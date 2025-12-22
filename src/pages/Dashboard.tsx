@@ -671,7 +671,7 @@ export default function Dashboard() {
               <div className="overflow-x-auto">
                 <Table className="text-sm table-fixed w-full">
                   <TableHeader>
-                    <TableRow className="h-8">
+                    <TableRow className="h-7">
                       <TableHead className="py-1 text-xs w-[18%]">Nom</TableHead>
                       <TableHead className="py-1 text-xs w-[40%]">URL LinkedIn</TableHead>
                       <TableHead className="py-1 text-xs w-[20%]">Utilisateur Slack</TableHead>
@@ -684,7 +684,7 @@ export default function Dashboard() {
                   <Table className="text-sm table-fixed w-full">
                     <TableBody>
                     {linkedinProfiles.map((linkedinProfile) => (
-                      <TableRow key={linkedinProfile.id} className="h-8">
+                      <TableRow key={linkedinProfile.id} className="h-7">
                         <TableCell className="font-medium py-1 w-[18%]">
                           {linkedinProfile.profile_name}
                         </TableCell>
