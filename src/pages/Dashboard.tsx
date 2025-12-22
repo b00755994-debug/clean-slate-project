@@ -187,12 +187,45 @@ export default function Dashboard() {
   };
 
   const handleConnectSlack = () => {
-    // Placeholder - will be replaced with actual Slack OAuth flow
-    toast({
-      title: 'Slack App',
-      description: "L'application Slack est en cours de développement. Revenez bientôt!",
-    });
+    if (!user?.id) {
+      toast({
+        title: 'Erreur',
+        description: 'Vous devez être connecté pour lier Slack',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
+    // Redirect to Slack OAuth via edge function
+    window.location.href = `https://hvmrjymweajxxkoiupzf.supabase.co/functions/v1/slack-auth?user_id=${user.id}`;
   };
+
+  // Handle Slack OAuth callback messages
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const slackSuccess = urlParams.get('slack_success');
+    const slackError = urlParams.get('slack_error');
+
+    if (slackSuccess) {
+      toast({
+        title: 'Slack connecté !',
+        description: 'Votre workspace Slack a été connecté avec succès.',
+      });
+      // Clean up URL
+      window.history.replaceState({}, '', '/dashboard');
+      fetchSlackWorkspace();
+    }
+
+    if (slackError) {
+      toast({
+        title: 'Erreur Slack',
+        description: `La connexion a échoué: ${slackError}`,
+        variant: 'destructive',
+      });
+      // Clean up URL
+      window.history.replaceState({}, '', '/dashboard');
+    }
+  }, []);
 
   if (isLoading) {
     return (
