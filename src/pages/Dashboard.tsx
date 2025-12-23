@@ -671,12 +671,12 @@ export default function Dashboard() {
               <div className="overflow-x-auto">
                 <Table className="text-sm table-fixed w-full">
                   <TableHeader>
-                    <TableRow className="h-6">
-                      <TableHead className="py-1 text-xs w-[18%]">Nom</TableHead>
-                      <TableHead className="py-1 text-xs w-[40%]">URL LinkedIn</TableHead>
-                      <TableHead className="py-1 text-xs w-[20%]">Utilisateur Slack</TableHead>
-                      <TableHead className="text-center py-1 text-xs w-[10%]">Posts (30j)</TableHead>
-                      <TableHead className="text-right py-1 text-xs w-[12%]">Actions</TableHead>
+                    <TableRow className="h-5">
+                      <TableHead className="py-0.5 text-xs w-[18%]">Nom</TableHead>
+                      <TableHead className="py-0.5 text-xs w-[40%]">URL LinkedIn</TableHead>
+                      <TableHead className="py-0.5 text-xs w-[20%]">Utilisateur Slack</TableHead>
+                      <TableHead className="text-center py-0.5 text-xs w-[10%]">Posts (30j)</TableHead>
+                      <TableHead className="text-right py-0.5 text-xs w-[12%]">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                 </Table>
