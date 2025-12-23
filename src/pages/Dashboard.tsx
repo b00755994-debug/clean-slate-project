@@ -530,7 +530,7 @@ export default function Dashboard() {
                   <Linkedin className="w-5 h-5 text-[#0A66C2]" />
                   Profils LinkedIn suivis
                 </CardTitle>
-                <CardDescription>
+              <CardDescription className="mt-1.5">
                   Membres de votre équipe dont vous suivez l'activité LinkedIn
                 </CardDescription>
               </div>
