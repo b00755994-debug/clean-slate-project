@@ -684,11 +684,11 @@ export default function Dashboard() {
                   <Table className="text-sm table-fixed w-full">
                     <TableBody>
                     {linkedinProfiles.map((linkedinProfile) => (
-                      <TableRow key={linkedinProfile.id} className="h-6">
-                        <TableCell className="font-medium py-1 w-[18%]">
+                      <TableRow key={linkedinProfile.id} className="h-5">
+                        <TableCell className="font-medium py-0.5 w-[18%]">
                           {linkedinProfile.profile_name}
                         </TableCell>
-                        <TableCell className="py-1 w-[40%]">
+                        <TableCell className="py-0.5 w-[40%]">
                           <a
                             href={linkedinProfile.linkedin_url}
                             target="_blank"
@@ -699,7 +699,7 @@ export default function Dashboard() {
                             <ExternalLink className="w-3 h-3" />
                           </a>
                         </TableCell>
-                        <TableCell className="w-[20%]">
+                        <TableCell className="py-0.5 w-[20%]">
                           {slackWorkspace?.is_connected ? (
                             <Select
                               value={linkedinProfile.slack_user_id || 'none'}
@@ -816,10 +816,10 @@ export default function Dashboard() {
                             </TooltipProvider>
                           )}
                         </TableCell>
-                        <TableCell className="text-center w-[10%]">
+                        <TableCell className="text-center py-0.5 w-[10%]">
                           <Badge variant="secondary">{linkedinProfile.posts_count || 0}</Badge>
                         </TableCell>
-                        <TableCell className="text-right w-[12%]">
+                        <TableCell className="text-right py-0.5 w-[12%]">
                           <Button
                             variant="ghost"
                             size="icon"
