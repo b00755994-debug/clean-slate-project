@@ -1,4 +1,4 @@
-import { LayoutDashboard, Trophy, BarChart3, Library, Users } from 'lucide-react';
+import { LayoutDashboard, BarChart3, Library, Users } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import {
   Sidebar,
@@ -16,12 +16,6 @@ const menuItems = [
     url: '/dashboard',
     icon: LayoutDashboard,
     available: true,
-  },
-  {
-    title: 'Leaderboard',
-    url: '/dashboard/leaderboard',
-    icon: Trophy,
-    available: false,
   },
   {
     title: 'Analytics',
