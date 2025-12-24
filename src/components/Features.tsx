@@ -1,4 +1,4 @@
-import { Zap, Sparkles, BarChart3, Target } from "lucide-react";
+import { Zap, Sparkles, BarChart3, Users } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -27,7 +27,7 @@ const Features = () => {
           description: "Pilotez votre présence LinkedIn : nombre de posts, taille d'audience cumulée, collaborateurs actifs, taux de participation. Analysez les tendances par équipe ou région avec des données agrégées."
         },
         {
-          icon: Target,
+          icon: Users,
           title: "Insights Audience & Marque",
           description: "Comprenez qui réagit à vos contenus : secteur, fonction, séniorité, taille d'entreprise. Mesurez l'alignement avec votre ICP et suivez l'évolution de la qualité de votre audience."
         },
@@ -54,7 +54,7 @@ const Features = () => {
           description: "Get a clear, aggregated view of how your team shows up on LinkedIn. Track participation, active contributors, and visibility trends across teams and regions, without individual tracking."
         },
         {
-          icon: Target,
+          icon: Users,
           title: "Audience & Brand Insights",
           description: "Understand who engages with your content: industry, role, seniority, company size. Measure ICP alignment and track audience quality evolution over time."
         },
