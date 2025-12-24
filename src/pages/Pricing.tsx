@@ -113,7 +113,7 @@ const translations = {
           "Team-scale advanced analytics",
           "Personal AI coach for your teams",
           "Audience & brand insights",
-          "Export data to your CRM",
+          
           "Priority support"
         ]
       },
