@@ -74,7 +74,7 @@ const SlackIntegration = () => {
       title1: "Meilleure ",
       title2: "Application Slack",
       title3: "",
-      subtitle: "Notifications instantanées, analytics, gamification et gestion de contenu, le tout dans vos canaux Slack préférés.",
+      subtitle: "Notifications instantanées, analytics, rapports personnalisés et coaching, le tout dans vos canaux Slack préférés.",
       impressionsGenerated: "impressions générées",
       channels: {
         posts: {
@@ -403,7 +403,7 @@ const SlackIntegration = () => {
       title1: "Best-in-class ",
       title2: "Slack",
       title3: " App",
-      subtitle: "Instant notifications, analytics, gamification and content management, all in your favorite Slack channels.",
+      subtitle: "Instant notifications, analytics, personalized reports & coaching, all in your favorite Slack channels.",
       impressionsGenerated: "impressions generated",
       channels: {
         posts: {
