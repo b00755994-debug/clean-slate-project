@@ -46,7 +46,7 @@ const Features = () => {
         {
           icon: Sparkles,
           title: "Personal AI Coach",
-          description: "Private performance insights and AI guidance for every employee. See your visibility trends, get clear recommendations on when to post, and receive content suggestions from your team's shared content library."
+          description: "Provide private performance insights and AI guidance for every employee, including performance trends, sharing recommendations, content suggestions and more."
         },
         {
           icon: BookOpen,
