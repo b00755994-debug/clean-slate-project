@@ -962,9 +962,9 @@ const SlackIntegration = () => {
                           {/* Main Metrics Grid */}
                           <Card className="border border-border bg-background mb-3">
                             <div className="p-4">
-                              {/* First Row: Posts, Impressions, Comments, Likes */}
-                              <div className="grid grid-cols-4 gap-2 mb-3">
-                                {/* Posts - First */}
+                              {/* Row 1: Posts, Impressions, Engagement */}
+                              <div className="grid grid-cols-3 gap-2 mb-2">
+                                {/* Posts */}
                                 <div className="p-2 rounded-lg bg-accent/5 border border-accent/10">
                                   <div className="flex items-center justify-between mb-1">
                                     <MessageSquare className="h-3.5 w-3.5 text-accent" />
@@ -976,7 +976,7 @@ const SlackIntegration = () => {
                                   <div className="text-[10px] text-muted-foreground mt-0.5">Posts</div>
                                 </div>
 
-                                {/* Impressions - Second */}
+                                {/* Impressions */}
                                 <div className="p-2 rounded-lg bg-primary/5 border border-primary/10">
                                   <div className="flex items-center justify-between mb-1">
                                     <Eye className="h-3.5 w-3.5 text-primary" />
@@ -988,37 +988,6 @@ const SlackIntegration = () => {
                                   <div className="text-[10px] text-muted-foreground mt-0.5">Impressions</div>
                                 </div>
 
-                                {/* Comments */}
-                                {msg.stats.comments && (
-                                  <div className="p-2 rounded-lg bg-blue-500/5 border border-blue-500/10">
-                                    <div className="flex items-center justify-between mb-1">
-                                      <MessageSquare className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
-                                      {msg.stats.commentsGrowth && (
-                                        <span className="text-[10px] font-semibold text-green-600 dark:text-green-400">{msg.stats.commentsGrowth}</span>
-                                      )}
-                                    </div>
-                                    <div className="text-xl font-bold text-blue-600 dark:text-blue-400">{msg.stats.comments}</div>
-                                    <div className="text-[10px] text-muted-foreground mt-0.5">Comments</div>
-                                  </div>
-                                )}
-
-                                {/* Likes */}
-                                {msg.stats.likes && (
-                                  <div className="p-2 rounded-lg bg-pink-500/5 border border-pink-500/10">
-                                    <div className="flex items-center justify-between mb-1">
-                                      <ThumbsUp className="h-3.5 w-3.5 text-pink-600 dark:text-pink-400" />
-                                      {msg.stats.likesGrowth && (
-                                        <span className="text-[10px] font-semibold text-green-600 dark:text-green-400">{msg.stats.likesGrowth}</span>
-                                      )}
-                                    </div>
-                                    <div className="text-xl font-bold text-pink-600 dark:text-pink-400">{msg.stats.likes}</div>
-                                    <div className="text-[10px] text-muted-foreground mt-0.5">Likes</div>
-                                  </div>
-                                )}
-                              </div>
-
-                              {/* Engagement Rate / ICP / Leads - Compact Row */}
-                              <div className="grid grid-cols-3 gap-2">
                                 {/* Engagement Rate */}
                                 <div className="p-2 rounded-lg bg-green-500/5 border border-green-500/10">
                                   <div className="flex items-center justify-between mb-1">
@@ -1030,6 +999,33 @@ const SlackIntegration = () => {
                                   <div className="text-xl font-bold text-green-600 dark:text-green-400">{msg.stats.engagement}</div>
                                   <div className="text-[10px] text-muted-foreground mt-0.5">Engagement Rate</div>
                                 </div>
+                              </div>
+
+                              {/* Row 2: Comments, Likes, ICP */}
+                              <div className="grid grid-cols-3 gap-2">
+                                {/* Comments */}
+                                <div className="p-2 rounded-lg bg-blue-500/5 border border-blue-500/10">
+                                  <div className="flex items-center justify-between mb-1">
+                                    <MessageSquare className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+                                    {msg.stats.commentsGrowth && (
+                                      <span className="text-[10px] font-semibold text-green-600 dark:text-green-400">{msg.stats.commentsGrowth}</span>
+                                    )}
+                                  </div>
+                                  <div className="text-xl font-bold text-blue-600 dark:text-blue-400">{msg.stats.comments || 312}</div>
+                                  <div className="text-[10px] text-muted-foreground mt-0.5">Comments</div>
+                                </div>
+
+                                {/* Likes */}
+                                <div className="p-2 rounded-lg bg-pink-500/5 border border-pink-500/10">
+                                  <div className="flex items-center justify-between mb-1">
+                                    <ThumbsUp className="h-3.5 w-3.5 text-pink-600 dark:text-pink-400" />
+                                    {msg.stats.likesGrowth && (
+                                      <span className="text-[10px] font-semibold text-green-600 dark:text-green-400">{msg.stats.likesGrowth}</span>
+                                    )}
+                                  </div>
+                                  <div className="text-xl font-bold text-pink-600 dark:text-pink-400">{msg.stats.likes || 1842}</div>
+                                  <div className="text-[10px] text-muted-foreground mt-0.5">Likes</div>
+                                </div>
 
                                 {/* ICP Audience */}
                                 <div className="p-2 rounded-lg bg-purple-500/5 border border-purple-500/10">
@@ -1038,18 +1034,6 @@ const SlackIntegration = () => {
                                   </div>
                                   <div className="text-xl font-bold text-purple-600 dark:text-purple-400">67%</div>
                                   <div className="text-[10px] text-muted-foreground mt-0.5">ICP Audience Match</div>
-                                </div>
-
-                                {/* Qualified Leads */}
-                                <div className="p-2 rounded-lg bg-orange-500/5 border border-orange-500/10">
-                                  <div className="flex items-center justify-between mb-1">
-                                    <Trophy className="h-3.5 w-3.5 text-orange-600 dark:text-orange-400" />
-                                    {msg.stats.leadsGrowth && (
-                                      <span className="text-[10px] font-semibold text-green-600 dark:text-green-400">{msg.stats.leadsGrowth}</span>
-                                    )}
-                                  </div>
-                                  <div className="text-xl font-bold text-orange-600 dark:text-orange-400">242</div>
-                                  <div className="text-[10px] text-muted-foreground mt-0.5">Qualified Leads</div>
                                 </div>
                               </div>
                             </div>
