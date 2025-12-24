@@ -111,7 +111,7 @@ const translations = {
           "Everything in Individual",
           "Content library + AI suggestions",
           "Team-scale advanced analytics",
-          "Gamified leaderboards",
+          "Personal AI coach for your teams",
           "ICP lead detection",
           "Export data to your CRM",
           "Priority support"
