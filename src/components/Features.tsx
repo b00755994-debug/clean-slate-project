@@ -29,7 +29,7 @@ const Features = () => {
         {
           icon: BarChart3,
           title: "Audience & Brand Analytics",
-          description: "Obtenez une vue claire de la présence LinkedIn de votre équipe avec des données agrégées et anonymisées. Suivez la participation, les tendances de visibilité et la qualité de l'audience par secteur, fonction, séniorité et taille d'entreprise."
+          description: "Obtenez une vue claire de la présence LinkedIn de votre équipe avec des données agrégées et anonymisées. Suivez les métriques globales (impressions, réactions, commentaires) et analysez la qualité de l'audience par secteur, fonction, séniorité et taille d'entreprise."
         },
       ]
     },
@@ -56,7 +56,7 @@ const Features = () => {
         {
           icon: BarChart3,
           title: "Audience & Brand Analytics",
-          description: "Get a clear view of your team's LinkedIn presence with aggregated, anonymized data. Track participation, visibility trends, and audience quality by industry, role, seniority, and company size."
+          description: "Get a clear view of your team's LinkedIn presence with aggregated, anonymized data. Track global metrics (impressions, reactions, comments) and analyze audience quality by industry, role, seniority, and company size."
         },
       ]
     }
