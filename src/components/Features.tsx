@@ -51,7 +51,7 @@ const Features = () => {
         {
           icon: BarChart3,
           title: "Advocacy & Activation Dashboard",
-          description: "Get a clear, aggregated view of how your team shows up on LinkedIn. Track participation, active contributors, and visibility trends across teams and regions — without individual tracking."
+          description: "Get a clear, aggregated view of how your team shows up on LinkedIn. Track participation, active contributors, and visibility trends across teams and regions, without individual tracking."
         },
         {
           icon: Target,
