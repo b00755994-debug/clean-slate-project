@@ -9,62 +9,54 @@ const Features = () => {
     fr: {
       title1: "Activez. Coachez.",
       title2: "Mesurez.",
-      subtitle: "Transformez chaque collaborateur en ambassadeur LinkedIn. Sans surveillance, sans classement, sans friction.",
+      subtitle: "Transformez chaque collaborateur en ambassadeur LinkedIn.",
       features: [
         {
           icon: Zap,
           title: "Alertes Slack Intelligentes",
-          description: "Notification instantanée dans Slack dès qu'un membre publie. Aperçu du post, lien direct, et call-to-action clair pour engager en quelques secondes.",
-          microCopy: "Zéro bruit. Zéro spam. Juste de l'impact."
+          description: "Notification instantanée dans Slack dès qu'un membre publie. Aperçu du post, lien direct, et call-to-action clair pour engager en quelques secondes."
         },
         {
           icon: Sparkles,
-          title: "Coach Personnel IA",
-          description: "Chaque collaborateur dispose d'un tableau de bord privé : tendances de visibilité, évolution de l'engagement, et recommandations personnalisées. L'IA suggère quand poster, quels formats fonctionnent, et puise dans la Content Library curatée par vos admins.",
-          microCopy: "Pas de classement. Pas de pression. Juste du coaching."
+          title: "Rapports Personnels & Coach IA",
+          description: "Chaque collaborateur accède à son propre tableau de bord : tendances de visibilité, évolution de l'engagement, recommandations personnalisées. L'IA suggère quand poster et quels formats privilégier, en s'appuyant sur la Content Library curatée par vos admins."
         },
         {
           icon: BarChart3,
-          title: "Dashboard Activation Admins",
-          description: "Vue stratégique de l'activation interne : taux de participation, engagement interne vs externe, tendances par équipe ou région. Données agrégées pour piloter, pas pour surveiller.",
-          microCopy: "Conçu pour décider, pas pour surveiller."
+          title: "Vue Globale & Activation",
+          description: "Pilotez votre présence LinkedIn : nombre de posts, taille d'audience cumulée, collaborateurs actifs, taux de participation. Analysez les tendances par équipe ou région avec des données agrégées."
         },
         {
           icon: Target,
           title: "Insights Audience & Marque",
-          description: "Comprenez qui réagit à vos contenus : secteur, fonction, séniorité, taille d'entreprise. Mesurez l'alignement avec votre ICP et suivez l'évolution de la qualité de votre audience dans le temps.",
-          microCopy: "Brand intent, pas sales intent."
+          description: "Comprenez qui réagit à vos contenus : secteur, fonction, séniorité, taille d'entreprise. Mesurez l'alignement avec votre ICP et suivez l'évolution de la qualité de votre audience."
         },
       ]
     },
     en: {
       title1: "Activate. Coach.",
       title2: "Measure.",
-      subtitle: "Turn every employee into a LinkedIn ambassador. No surveillance, no rankings, no friction.",
+      subtitle: "Turn every employee into a LinkedIn ambassador.",
       features: [
         {
           icon: Zap,
           title: "Smart Slack Alerts",
-          description: "Instant Slack notification when a team member posts. Post preview, direct link, and clear call-to-action to engage in seconds.",
-          microCopy: "Zero noise. Zero spam. Just impact."
+          description: "Instant Slack notification when a team member posts. Post preview, direct link, and clear call-to-action to engage in seconds."
         },
         {
           icon: Sparkles,
-          title: "Personal AI Coach",
-          description: "Each employee gets a private dashboard: visibility trends, engagement evolution, and personalized recommendations. AI suggests when to post, what formats work, and pulls from the admin-curated Content Library.",
-          microCopy: "No rankings. No pressure. Just guidance."
+          title: "Personal Reports & AI Coach",
+          description: "Each employee gets their own dashboard: visibility trends, engagement evolution, and personalized recommendations. AI suggests when to post and what formats work best, drawing from the admin-curated Content Library."
         },
         {
           icon: BarChart3,
-          title: "Admin Activation Dashboard",
-          description: "Strategic view of internal activation: participation rates, internal vs external engagement, trends by team or region. Aggregated data for decision-making, not surveillance.",
-          microCopy: "Built to decide, not to monitor."
+          title: "Global View & Activation",
+          description: "Monitor your LinkedIn presence: post count, cumulative audience size, active contributors, participation rates. Analyze trends by team or region with aggregated data."
         },
         {
           icon: Target,
           title: "Audience & Brand Insights",
-          description: "Understand who engages with your content: industry, role, seniority, company size. Measure ICP alignment and track audience quality evolution over time.",
-          microCopy: "Brand intent, not sales intent."
+          description: "Understand who engages with your content: industry, role, seniority, company size. Measure ICP alignment and track audience quality evolution over time."
         },
       ]
     }
@@ -107,11 +99,8 @@ const Features = () => {
                     {feature.title}
                   </span>
                 </h3>
-                <p className="text-muted-foreground text-base leading-relaxed mb-3">
+                <p className="text-muted-foreground text-base leading-relaxed">
                   {feature.description}
-                </p>
-                <p className="text-sm italic text-muted-foreground/70">
-                  {feature.microCopy}
                 </p>
               </CardContent>
             </Card>
