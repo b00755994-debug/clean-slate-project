@@ -40,8 +40,8 @@ const Features = () => {
       features: [
         {
           icon: Zap,
-          title: "Smart Slack Alerts",
-          description: "Instant Slack notification when a team member posts. Post preview, direct link, and clear call-to-action to engage in seconds."
+          title: "Smart Slack Activation Alerts",
+          description: "Instantly notify the right Slack channels when a team member posts on LinkedIn. Each alert includes a post preview, direct link, and clear actions to drive fast, coordinated engagement."
         },
         {
           icon: Sparkles,
