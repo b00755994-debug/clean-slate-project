@@ -30,7 +30,9 @@ Les utilisateurs s'engagent expressément à ne pas :
 • Scraper ou tenter de scraper LinkedIn ou toute plateforme tierce
 • Exporter ou revendre des données personnelles
 • Identifier ou profiler des membres LinkedIn individuels
-• Utiliser la plateforme pour du spam, de la collecte de prospects ou de la prospection non sollicitée`
+• Utiliser la plateforme pour du spam, de la collecte de prospects ou de la prospection non sollicitée
+
+Superpump est conçu pour fonctionner en conformité avec les conditions et politiques API applicables de LinkedIn.`
         },
         {
           title: "4. Limitations de la plateforme",
@@ -96,7 +98,9 @@ Users expressly agree not to:
 • Scrape or attempt to scrape LinkedIn or any third-party platform
 • Export or resell personal data
 • Identify or profile individual LinkedIn members
-• Use the platform for spam, lead harvesting, or unsolicited outreach`
+• Use the platform for spam, lead harvesting, or unsolicited outreach
+
+Superpump is designed to operate in compliance with LinkedIn's applicable API terms and policies.`
         },
         {
           title: "4. Platform limitations",

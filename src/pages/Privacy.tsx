@@ -38,7 +38,7 @@ Superpump fournit des outils pour aider les entreprises à activer leurs employ�
 • Données techniques (adresse IP, type de navigateur, informations sur l'appareil)
 
 **2.3 Données liées à LinkedIn**
-Lorsqu'autorisé par l'utilisateur, Superpump peut accéder à des données LinkedIn limitées, strictement dans le cadre des conditions d'utilisation de l'API LinkedIn, notamment :
+Lorsqu'autorisé par un administrateur d'organisation et ses utilisateurs, Superpump peut accéder à des données LinkedIn limitées, strictement dans le cadre des conditions d'utilisation de l'API LinkedIn, notamment :
 • Métriques de performance du contenu agrégées (ex. impressions, réactions, compteurs d'engagement)
 • Insights d'audience agrégés (ex. distributions par secteur, fonction, niveau hiérarchique)
 
@@ -69,7 +69,7 @@ Lorsqu'autorisé par l'utilisateur, Superpump peut accéder à des données Link
 • Journaux d'utilisation et techniques : jusqu'à [X] mois
 • Données d'analyse agrégées : conservées sans identifiants personnels
 
-Les données LinkedIn au niveau individuel, lorsqu'elles sont traitées de manière transitoire, ne sont pas stockées à long terme et sont agrégées ou supprimées rapidement.`
+Les données LinkedIn au niveau individuel, lorsqu'elles sont traitées de manière transitoire, sont conservées uniquement le temps strictement nécessaire à la génération d'insights agrégés, puis sont rapidement supprimées.`
         },
         {
           title: "6. Partage des données et sous-traitants",
@@ -147,7 +147,7 @@ Superpump provides tools to help companies activate employees and analyze their 
 • Technical data (IP address, browser type, device information)
 
 **2.3 LinkedIn-related data**
-When authorized by the user, Superpump may access limited LinkedIn data strictly within LinkedIn's API terms, including:
+When authorized by an organization administrator and its users, Superpump may access limited LinkedIn data strictly within LinkedIn's API terms, including:
 • Aggregated content performance metrics (e.g. impressions, reactions, engagement counts)
 • Aggregated audience insights (e.g. industry, role, seniority distributions)
 
@@ -178,7 +178,7 @@ When authorized by the user, Superpump may access limited LinkedIn data strictly
 • Usage and technical logs: up to [X] months
 • Aggregated analytics data: retained without personal identifiers
 
-LinkedIn-related individual-level data, when transiently processed, is not stored long-term and is aggregated or deleted promptly.`
+Individual LinkedIn-related data, when transiently processed, is retained only for the time strictly necessary to generate aggregated insights and is then promptly deleted.`
         },
         {
           title: "6. Data sharing & subprocessors",
