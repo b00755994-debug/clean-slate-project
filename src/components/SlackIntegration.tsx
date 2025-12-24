@@ -1039,26 +1039,6 @@ const SlackIntegration = () => {
                             </div>
                           </Card>
 
-                          {/* Top Performers - Only for weekly reports */}
-                          {msg.stats.topPerformers && (
-                            <Card className="border border-border bg-background mb-3">
-                              <div className="p-3">
-                                <div className="text-[11px] font-semibold text-muted-foreground mb-2 flex items-center gap-1">
-                                  <TrendingUp className="h-3.5 w-3.5" />
-                                  TOP PERFORMERS THIS MONTH
-                                </div>
-                                <div className="space-y-2">
-                                  {msg.stats.topPerformers.map((performer, pIdx) => (
-                                    <div key={pIdx} className="flex items-center justify-between text-[13px]">
-                                      <span className="font-medium text-foreground">{performer.name}</span>
-                                      <span className="text-primary font-bold">{performer.impressions}</span>
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-                            </Card>
-                          )}
-
                           {msg.reactions && (
                             <div className="flex items-center gap-1 mt-2">
                               {msg.reactions.map((reaction, rIdx) => (
