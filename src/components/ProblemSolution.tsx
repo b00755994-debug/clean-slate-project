@@ -22,7 +22,7 @@ const ProblemSolution = () => {
       solutionDesc: "Chaque publication LinkedIn déclenche automatiquement une alerte Slack. Votre équipe réagit en temps réel, directement depuis vos canaux de travail.",
       solutionPoints: [
         "Alertes automatiques sur Slack à chaque post",
-        "Boostez l'engagement grâce aux classements gamifiés",
+        "Boostez votre équipe grâce au coaching IA individuel sur Slack",
         "Portée décuplée, notoriété amplifiée"
       ],
       metric: "d'impressions en moyenne"
@@ -44,7 +44,7 @@ const ProblemSolution = () => {
       solutionDesc: "Slack becomes your employee advocacy hub. Automatic alerts, gamified leaderboards, and real-time engagement tracking turn your team into active brand ambassadors.",
       solutionPoints: [
         "Automatic Slack alerts for every post",
-        "Boost engagement through gamified leaderboards",
+        "Boost your team through individual AI coaching on Slack",
         "Amplify reach and exposure to your target audience"
       ],
       metric: "average impressions"
