@@ -56,7 +56,7 @@ const Features = () => {
         {
           icon: Users,
           title: "Audience & Brand Insights",
-          description: "Understand who engages with your content: industry, role, seniority, company size. Measure ICP alignment and track audience quality evolution over time."
+          description: "Access aggregated and anonymized audience data: distribution by industry, role, seniority, and company size. Assess ICP alignment and track overall audience quality evolution."
         },
       ]
     }
