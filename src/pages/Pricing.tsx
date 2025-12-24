@@ -97,7 +97,7 @@ const translations = {
         description: "Get started for free",
         features: [
           "Slack alerts to rally your team",
-          "Basic analytics",
+          "Basic individual analytics",
           "Email support",
           "Slack integration"
         ],
