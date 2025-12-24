@@ -19,7 +19,7 @@ const ProblemSolution = () => {
       ],
       solutionTitle: "La solution",
       solutionHeading: "L'engagement d'équipe, orchestré depuis Slack",
-      solutionDesc: "Chaque publication LinkedIn déclenche automatiquement une alerte Slack. Votre équipe réagit en temps réel, directement depuis vos canaux de travail.",
+      solutionDesc: "Slack devient votre hub d'employee advocacy. Alertes intelligentes, coaching IA et analyse d'audience intégrée transforment votre équipe en ambassadeurs actifs.",
       solutionPoints: [
         "Alertes automatiques sur Slack à chaque post",
         "Boostez votre équipe grâce au coaching IA individuel sur Slack",
@@ -41,7 +41,7 @@ const ProblemSolution = () => {
       ],
       solutionTitle: "The Solution",
       solutionHeading: "Team engagement, orchestrated from Slack",
-      solutionDesc: "Slack becomes your employee advocacy hub. Automatic alerts, gamified leaderboards, and real-time engagement tracking turn your team into active brand ambassadors.",
+      solutionDesc: "Slack becomes your employee advocacy hub. Smart Slack alerts, AI coaching and built-in audience analysis turn your team into active brand ambassadors.",
       solutionPoints: [
         "Automatic Slack alerts for every post",
         "Boost your team through individual AI coaching on Slack",
