@@ -1,6 +1,5 @@
-import { Bell, Trophy, Lightbulb, Users, Zap } from "lucide-react";
+import { Zap, Sparkles, BarChart3, Target } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 const Features = () => {
@@ -8,78 +7,71 @@ const Features = () => {
 
   const translations = {
     fr: {
-      title1: "Tout ce dont vous avez besoin pour",
-      title2: "réussir",
-      subtitle: "Transformez LinkedIn en machine à générer des leads hautement qualifiés. L'engagement collectif de votre équipe, orchestré depuis Slack.",
+      title1: "Activez. Coachez.",
+      title2: "Mesurez.",
+      subtitle: "Transformez chaque collaborateur en ambassadeur LinkedIn. Sans surveillance, sans classement, sans friction.",
       features: [
         {
-          icon: Bell,
-          title: "Alertes Slack Instantanées",
-          description: "Notifications automatiques directement dans vos canaux Slack dès qu'un membre publie. Aperçu du post, lien direct et call-to-action pour maximiser l'engagement collectif en quelques secondes.",
-          status: "live",
-          statusText: "Disponible"
+          icon: Zap,
+          title: "Alertes Slack Intelligentes",
+          description: "Notification instantanée dans Slack dès qu'un membre publie. Aperçu du post, lien direct, et call-to-action clair pour engager en quelques secondes.",
+          microCopy: "Zéro bruit. Zéro spam. Juste de l'impact."
         },
         {
-          icon: Trophy,
-          title: "Leaderboard Gamifié & Analytics",
-          description: "Classement en temps réel des membres par impressions générées, posts publiés et soutiens apportés. Rapports mensuels détaillés avec métriques d'engagement, performances individuelles, et analyse de l'audience ICP touchée.",
-          status: "live",
-          statusText: "Disponible"
+          icon: Sparkles,
+          title: "Coach Personnel IA",
+          description: "Chaque collaborateur dispose d'un tableau de bord privé : tendances de visibilité, évolution de l'engagement, et recommandations personnalisées. L'IA suggère quand poster, quels formats fonctionnent, et puise dans la Content Library curatée par vos admins.",
+          microCopy: "Pas de classement. Pas de pression. Juste du coaching."
         },
         {
-          icon: Lightbulb,
-          title: "Suggestions de Contenu",
-          description: "Base de recommandations alimentée par vos admins pour aider l'équipe à publier du contenu pertinent et d'actualité.",
-          status: "live",
-          statusText: "Disponible"
+          icon: BarChart3,
+          title: "Dashboard Activation Admins",
+          description: "Vue stratégique de l'activation interne : taux de participation, engagement interne vs externe, tendances par équipe ou région. Données agrégées pour piloter, pas pour surveiller.",
+          microCopy: "Conçu pour décider, pas pour surveiller."
         },
         {
-          icon: Users,
-          title: "Identification de Leads ICP",
-          description: "Identification automatique des leads faisant partie de votre ICP ayant interagi avec vos publications. Extraction CSV ou intégration directe avec votre CRM préféré pour un suivi commercial immédiat.",
-          status: "construction",
-          statusText: "Prochainement"
+          icon: Target,
+          title: "Insights Audience & Marque",
+          description: "Comprenez qui réagit à vos contenus : secteur, fonction, séniorité, taille d'entreprise. Mesurez l'alignement avec votre ICP et suivez l'évolution de la qualité de votre audience dans le temps.",
+          microCopy: "Brand intent, pas sales intent."
         },
       ]
     },
     en: {
-      title1: "Everything you need to",
-      title2: "succeed",
-      subtitle: "Transform LinkedIn into a highly qualified lead generation machine. Your team's collective engagement, orchestrated from Slack.",
+      title1: "Activate. Coach.",
+      title2: "Measure.",
+      subtitle: "Turn every employee into a LinkedIn ambassador. No surveillance, no rankings, no friction.",
       features: [
         {
-          icon: Bell,
-          title: "Instant Slack Alerts",
-          description: "Automatic notifications directly in your Slack channels as soon as a member posts. Post preview, direct link and call-to-action to maximize collective engagement in seconds.",
-          status: "live",
-          statusText: "Available"
+          icon: Zap,
+          title: "Smart Slack Alerts",
+          description: "Instant Slack notification when a team member posts. Post preview, direct link, and clear call-to-action to engage in seconds.",
+          microCopy: "Zero noise. Zero spam. Just impact."
         },
         {
-          icon: Trophy,
-          title: "Gamified Leaderboard & Analytics",
-          description: "Real-time ranking of members by impressions generated, posts published, and support provided. Detailed monthly reports with engagement metrics, individual performance, and ICP audience analysis.",
-          status: "live",
-          statusText: "Available"
+          icon: Sparkles,
+          title: "Personal AI Coach",
+          description: "Each employee gets a private dashboard: visibility trends, engagement evolution, and personalized recommendations. AI suggests when to post, what formats work, and pulls from the admin-curated Content Library.",
+          microCopy: "No rankings. No pressure. Just guidance."
         },
         {
-          icon: Lightbulb,
-          title: "Content Suggestions",
-          description: "A curated recommendation library powered by your admins to help the team publish relevant and timely content.",
-          status: "live",
-          statusText: "Available"
+          icon: BarChart3,
+          title: "Admin Activation Dashboard",
+          description: "Strategic view of internal activation: participation rates, internal vs external engagement, trends by team or region. Aggregated data for decision-making, not surveillance.",
+          microCopy: "Built to decide, not to monitor."
         },
         {
-          icon: Users,
-          title: "ICP Lead Identification",
-          description: "Automatic identification of ICP leads who engaged with your posts. CSV export or direct integration with your favorite CRM for immediate sales follow-up.",
-          status: "construction",
-          statusText: "Coming Soon"
+          icon: Target,
+          title: "Audience & Brand Insights",
+          description: "Understand who engages with your content: industry, role, seniority, company size. Measure ICP alignment and track audience quality evolution over time.",
+          microCopy: "Brand intent, not sales intent."
         },
       ]
     }
   };
 
   const t = translations[language];
+  
   return (
     <section className="py-12 bg-background relative overflow-hidden">
       <div className="absolute inset-0 bg-grid-pattern opacity-5" />
@@ -103,36 +95,23 @@ const Features = () => {
               key={index}
               className="border-border bg-card/50 backdrop-blur-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-2 hover:border-primary/50 group relative"
             >
-              {feature.status === "construction" && (
-                <div className="absolute -top-3 -right-3 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <Badge className="bg-background text-muted-foreground border border-border shadow-md px-2.5 py-1 flex items-center gap-1.5">
-                    <span className="text-sm">🥷</span>
-                    <span className="text-xs font-medium">{feature.statusText}</span>
-                  </Badge>
-                </div>
-              )}
-              {feature.status === "live" && (
-                <div className="absolute -top-3 -right-3 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <Badge className="bg-primary text-primary-foreground border-0 shadow-md px-2.5 py-1 flex items-center gap-1.5">
-                    <Zap className="h-3 w-3" />
-                    <span className="text-xs font-medium">{feature.statusText}</span>
-                  </Badge>
-                </div>
-              )}
               <CardContent className="p-6">
-                <div className="mb-4 flex items-center justify-between">
+                <div className="mb-4">
                   <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-primary transition-all group-hover:scale-110">
                     <feature.icon className="h-6 w-6 text-primary-foreground" />
                   </div>
                 </div>
-                <h3 className="text-xl font-bold mb-3 text-card-foreground transition-all duration-300 group-hover:text-transparent group-hover:bg-clip-text" style={{ backgroundImage: 'none' }}>
+                <h3 className="text-xl font-bold mb-3 text-card-foreground transition-all duration-300">
                   <span className="group-hover:hidden">{feature.title}</span>
                   <span className="hidden group-hover:inline bg-gradient-to-r from-primary to-destructive bg-clip-text text-transparent">
                     {feature.title}
                   </span>
                 </h3>
-                <p className="text-muted-foreground text-base leading-relaxed">
+                <p className="text-muted-foreground text-base leading-relaxed mb-3">
                   {feature.description}
+                </p>
+                <p className="text-sm italic text-muted-foreground/70">
+                  {feature.microCopy}
                 </p>
               </CardContent>
             </Card>
