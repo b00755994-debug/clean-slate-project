@@ -50,8 +50,8 @@ const Features = () => {
         },
         {
           icon: BarChart3,
-          title: "Global View & Activation",
-          description: "Monitor your LinkedIn presence: post count, cumulative audience size, active contributors, participation rates. Analyze trends by team or region with aggregated data."
+          title: "Advocacy & Activation Dashboard",
+          description: "Get a clear, aggregated view of how your team shows up on LinkedIn. Track participation, active contributors, and visibility trends across teams and regions — without individual tracking."
         },
         {
           icon: Target,
