@@ -109,7 +109,7 @@ const translations = {
         description: "Amplify your team's voice",
         features: [
           "Everything in Individual",
-          "Content library",
+          "Vetted content library",
           "Team-scale advanced analytics",
           "Personal AI coach for your teams",
           "Audience & brand insights",
