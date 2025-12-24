@@ -723,8 +723,8 @@ const SlackIntegration = () => {
                   </div>
 
                   {/* Direct Messages */}
-                  <div className="mb-4">
-                    <div className="text-xs font-semibold text-white/50 mb-2 px-2 flex items-center justify-between">
+                  <div className="mb-2">
+                    <div className="text-xs font-semibold text-white/50 mb-1 px-2 flex items-center justify-between">
                       <span>DIRECT MESSAGES</span>
                       <button className="text-white/50 hover:text-white text-lg leading-none">+</button>
                     </div>
