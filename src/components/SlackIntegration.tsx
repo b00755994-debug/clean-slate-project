@@ -585,8 +585,6 @@ const SlackIntegration = () => {
   const channels = [
     { id: "posts", icon: Bell, data: t.channels.posts },
     { id: "analytics", icon: BarChart3, data: t.channels.analytics },
-    { id: "leaderboard", icon: Trophy, data: t.channels.leaderboard },
-    { id: "share", icon: Share2, data: t.channels.share },
     { id: "dm", icon: MessageSquare, data: t.channels.dm, isDM: true }
   ];
 
@@ -594,7 +592,7 @@ const SlackIntegration = () => {
   useEffect(() => {
     if (!isAutoPlay) return;
 
-    const channelIds = ["posts", "analytics", "leaderboard", "share", "dm"]; // Order specified
+    const channelIds = ["posts", "analytics", "dm"]; // Order specified
     const currentIndex = channelIds.indexOf(activeChannel);
 
     // Progress animation (0 to 100 over 7 seconds)
