@@ -10,7 +10,7 @@ const Testimonial = () => {
       title2: "superpump",
       testimonials: [
         {
-          quote: "superpump a transformé notre manière de collaborer autour des posts LinkedIn. Grâce aux alertes Slack et au suivi des performances, l'engagement de l'équipe a nettement progressé.",
+          quote: "superpump a transformé notre manière de collaborer autour des posts LinkedIn. Grâce aux alertes Slack et au coaching individuel, l'engagement de l'équipe a nettement progressé.",
           author: "Sophie Martin",
           role: "Responsable Communication",
           company: "TechNova"
@@ -34,7 +34,7 @@ const Testimonial = () => {
       title2: "superpump",
       testimonials: [
         {
-          quote: "superpump has transformed the way we collaborate around LinkedIn posts. Thanks to Slack alerts and performance tracking, team engagement has significantly improved.",
+          quote: "superpump has transformed the way we collaborate around LinkedIn posts. Thanks to Slack alerts and individual coaching, team engagement has significantly improved.",
           author: "Sophie Martin",
           role: "Communications Manager",
           company: "TechNova"
