@@ -1,4 +1,4 @@
-import { Zap, Sparkles, BarChart3, Users } from "lucide-react";
+import { Zap, Sparkles, BarChart3, BookOpen } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -22,14 +22,14 @@ const Features = () => {
           description: "Chaque collaborateur accède à son propre tableau de bord : tendances de visibilité, évolution de l'engagement, recommandations personnalisées. L'IA suggère quand poster et quels formats privilégier, en s'appuyant sur la Content Library curatée par vos admins."
         },
         {
-          icon: BarChart3,
-          title: "Vue Globale & Activation",
-          description: "Pilotez votre présence LinkedIn : nombre de posts, taille d'audience cumulée, collaborateurs actifs, taux de participation. Analysez les tendances par équipe ou région avec des données agrégées."
+          icon: BookOpen,
+          title: "Content Library",
+          description: "Créez et partagez du contenu approuvé avec votre équipe. Les admins peuvent constituer une bibliothèque de templates, idées et ressources que les collaborateurs peuvent utiliser pour s'inspirer et garantir une communication cohérente."
         },
         {
-          icon: Users,
-          title: "Insights Audience & Marque",
-          description: "Comprenez qui réagit à vos contenus : secteur, fonction, séniorité, taille d'entreprise. Mesurez l'alignement avec votre ICP et suivez l'évolution de la qualité de votre audience."
+          icon: BarChart3,
+          title: "Audience & Brand Analytics",
+          description: "Obtenez une vue claire de la présence LinkedIn de votre équipe avec des données agrégées et anonymisées. Suivez la participation, les tendances de visibilité et la qualité de l'audience par secteur, fonction, séniorité et taille d'entreprise."
         },
       ]
     },
@@ -49,14 +49,14 @@ const Features = () => {
           description: "Private performance insights and AI guidance for every employee. See your visibility trends, get clear recommendations on when to post, and receive content suggestions from your team's shared content library."
         },
         {
-          icon: BarChart3,
-          title: "Advocacy & Activation Dashboard",
-          description: "Get a clear, aggregated view of how your team shows up on LinkedIn. Track participation, active contributors, and visibility trends across teams and regions, without individual tracking."
+          icon: BookOpen,
+          title: "Content Library",
+          description: "Curate and share approved content with your team. Admins can build a library of post templates, ideas, and resources that employees can use for inspiration and consistent messaging."
         },
         {
-          icon: Users,
-          title: "Audience & Brand Insights",
-          description: "Access aggregated and anonymized audience data: distribution by industry, role, seniority, and company size. Assess ICP alignment and track overall audience quality evolution."
+          icon: BarChart3,
+          title: "Audience & Brand Analytics",
+          description: "Get a clear view of your team's LinkedIn presence with aggregated, anonymized data. Track participation, visibility trends, and audience quality by industry, role, seniority, and company size."
         },
       ]
     }
