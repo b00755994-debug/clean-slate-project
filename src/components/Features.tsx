@@ -45,8 +45,8 @@ const Features = () => {
         },
         {
           icon: Sparkles,
-          title: "Personal Reports & AI Coach",
-          description: "Each employee gets their own dashboard: visibility trends, engagement evolution, and personalized recommendations. AI suggests when to post and what formats work best, drawing from the admin-curated Content Library."
+          title: "Personal AI Coach",
+          description: "Private performance insights and AI guidance for every employee. See your visibility trends, get clear recommendations on when to post, and receive content suggestions from your team's shared content library."
         },
         {
           icon: BarChart3,
