@@ -56,7 +56,7 @@ const Features = () => {
         {
           icon: BarChart3,
           title: "Audience & Brand Analytics",
-          description: "Get a clear view of your team's LinkedIn presence with aggregated, anonymized data. Track global metrics (impressions, reactions, comments) and analyze audience quality by industry, role, seniority, and company size."
+          description: "Get a clear view of your team's LinkedIn presence with aggregated, anonymized data. Track your global reach metrics and analyze your audience quality by industry, role, seniority, and company size."
         },
       ]
     }
