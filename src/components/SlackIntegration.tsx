@@ -860,7 +860,7 @@ const SlackIntegration = () => {
                   </div>
 
                   {/* Direct Messages */}
-                  <div className="mb-2">
+                  <div className="mt-4 mb-2">
                     <div className="text-xs font-semibold text-white/50 mb-1 px-2 flex items-center justify-between">
                       <span>APPS
                     </span>
