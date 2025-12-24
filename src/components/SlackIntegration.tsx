@@ -749,16 +749,6 @@ const SlackIntegration = () => {
                       <span className="text-sm truncate flex-1 relative z-10">superpump</span>
                       <Badge variant="secondary" className="text-[8px] px-1 py-0 h-3.5 bg-destructive/80 text-white border-none relative z-10">AI</Badge>
                     </button>
-                    <button className="w-full text-left px-2 py-1.5 rounded flex items-center gap-2 text-white/70 hover:bg-white/10">
-                      <div className="w-4 h-4 rounded flex-shrink-0 bg-green-500 flex items-center justify-center text-[8px] font-bold">SM</div>
-                      <span className="text-sm truncate">Sarah Martin</span>
-                      <span className="w-1.5 h-1.5 rounded-full bg-green-500 ml-auto"></span>
-                    </button>
-                    <button className="w-full text-left px-2 py-1.5 rounded flex items-center gap-2 text-white/70 hover:bg-white/10">
-                      <div className="w-4 h-4 rounded flex-shrink-0 bg-purple-500 flex items-center justify-center text-[8px] font-bold">JC</div>
-                      <span className="text-sm truncate">Julie Chen</span>
-                      <span className="w-1.5 h-1.5 rounded-full bg-green-500 ml-auto"></span>
-                    </button>
                   </div>
 
                   {/* Apps */}
