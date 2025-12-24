@@ -16,7 +16,7 @@ const Testimonial = () => {
           company: "TechNova"
         },
         {
-          quote: "On a mis en place des récompenses pour le top 3 du leaderboard chaque mois : un week-end, un dîner au restaurant, des places de théâtre... L'équipe s'est prise au jeu, même les sceptiques de LinkedIn !",
+          quote: "On avait sous-estimé la puissance des réseaux pour la vente B2B. Superpump s'est intégré directement dans nos workflows, et même nos plus grands sceptiques de LinkedIn se sont pris au jeu !",
           author: "Claire Lefèvre",
           role: "DRH",
           company: "Nexidia"
@@ -40,7 +40,7 @@ const Testimonial = () => {
           company: "TechNova"
         },
         {
-          quote: "We set up rewards for the top 3 on the leaderboard each month: a weekend getaway, dinner at a restaurant, theater tickets... The team got into it, even the LinkedIn skeptics!",
+          quote: "We underestimated how powerful networks could be for B2B sales. Superpump plugged straight into our workflows, and even our biggest LinkedIn skeptics got on board!",
           author: "Claire Lefèvre",
           role: "HR Director",
           company: "Nexidia"
