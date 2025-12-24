@@ -376,7 +376,7 @@ const SlackIntegration = () => {
             user: "superpump",
             avatar: "🚀",
             time: "Aujourd'hui à 9:00",
-            content: "💥 *Your Weekly Pump*\n\nHey! Here's your weekly summary to maximize your LinkedIn impact this week. 🚀\n\n*📢 New posts from your team this week:*\n\n• *@Marie Lambert* shared insights on client onboarding - 847 impressions already! <#|See post>\n• *@Thomas Dubois* posted about product updates - great engagement with 34 comments <#|See post>\n\n👉 Take 2 min to like & comment on their posts!\n\n*💡 Your personalized post suggestion:*\n\n\"The 3 most common mistakes we see when clients launch their employee advocacy program\" - This topic resonates well with your audience and aligns with company messaging.\n\nWant me to draft this post for you? 📝",
+            content: "💥 *Your Weekly Pump*\n\nHey! Here's your weekly summary to maximize your LinkedIn impact this week. 🚀\n\n*📊 Your performance last week:*\n\n• *Impressions:* 2,340 (+18% vs previous week)\n• *Engagement rate:* 6.2%\n• *Comments received:* 12\n• *Profile views:* 89\n\n🎉 Great progress! You're in the top 20% of your team this week.\n\n*💡 Your personalized post suggestion:*\n\n\"The 3 most common mistakes we see when clients launch their employee advocacy program\" - This topic resonates well with your audience and aligns with company messaging.\n\nWant me to draft this post for you? 📝",
             reactions: [{
               emoji: "🔥",
               count: 1,
@@ -705,7 +705,7 @@ const SlackIntegration = () => {
             user: "superpump",
             avatar: "🚀",
             time: "Today at 9:00 AM",
-            content: "💥 *Your Weekly Pump*\n\nHey! Here's your weekly summary to maximize your LinkedIn impact this week. 🚀\n\n*📢 New posts from your team this week:*\n\n• *@Marie Lambert* shared insights on client onboarding - 847 impressions already! <#|See post>\n• *@Thomas Dubois* posted about product updates - great engagement with 34 comments <#|See post>\n\n👉 Take 2 min to like & comment on their posts!\n\n*💡 Your personalized post suggestion:*\n\n\"The 3 most common mistakes we see when clients launch their employee advocacy program\" - This topic resonates well with your audience and aligns with company messaging.\n\nWant me to draft this post for you? 📝",
+            content: "💥 *Your Weekly Pump*\n\nHey! Here's your weekly summary to maximize your LinkedIn impact this week. 🚀\n\n*📊 Your performance last week:*\n\n• *Impressions:* 2,340 (+18% vs previous week)\n• *Engagement rate:* 6.2%\n• *Comments received:* 12\n• *Profile views:* 89\n\n🎉 Great progress! You're in the top 20% of your team this week.\n\n*💡 Your personalized post suggestion:*\n\n\"The 3 most common mistakes we see when clients launch their employee advocacy program\" - This topic resonates well with your audience and aligns with company messaging.\n\nWant me to draft this post for you? 📝",
             reactions: [{
               emoji: "🔥",
               count: 1,
