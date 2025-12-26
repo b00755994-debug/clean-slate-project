@@ -3,12 +3,11 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { PostCard } from './PostCard';
 import { VettedContentCard } from './VettedContentCard';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 
-type BookmarkType = 'all' | 'posts' | 'vetted';
+export type BookmarkType = 'all' | 'posts' | 'vetted';
 
 interface Bookmark {
   id: string;
@@ -46,14 +45,17 @@ interface BillableUser {
   linkedin_url: string;
 }
 
-export function BookmarksList() {
+interface BookmarksListProps {
+  filterType: BookmarkType;
+}
+
+export function BookmarksList({ filterType }: BookmarksListProps) {
   const { user, isAdmin } = useAuth();
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
   const [posts, setPosts] = useState<Record<string, Post>>({});
   const [vettedContents, setVettedContents] = useState<Record<string, VettedContent>>({});
   const [profiles, setProfiles] = useState<Record<string, BillableUser>>({});
   const [loading, setLoading] = useState(true);
-  const [filterType, setFilterType] = useState<BookmarkType>('all');
 
   useEffect(() => {
     fetchData();
@@ -151,9 +153,6 @@ export function BookmarksList() {
     return true;
   });
 
-  const postBookmarksCount = bookmarks.filter(b => b.post_id).length;
-  const vettedBookmarksCount = bookmarks.filter(b => b.vetted_content_id).length;
-
   if (loading) {
     return (
       <div className="space-y-4">
@@ -168,20 +167,6 @@ export function BookmarksList() {
 
   return (
     <div className="space-y-4">
-      {/* Filter and stats */}
-      <div className="flex items-center gap-4 flex-wrap">
-        <Select value={filterType} onValueChange={(v: BookmarkType) => setFilterType(v)}>
-          <SelectTrigger className="w-[200px]">
-            <SelectValue placeholder="Type de contenu" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Tous ({bookmarks.length})</SelectItem>
-            <SelectItem value="posts">Posts d'équipe ({postBookmarksCount})</SelectItem>
-            <SelectItem value="vetted">Contenus validés ({vettedBookmarksCount})</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
       {/* Bookmarks list */}
       {filteredBookmarks.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground">
