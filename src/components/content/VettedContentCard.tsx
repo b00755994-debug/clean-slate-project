@@ -30,6 +30,7 @@ const categoryColors: Record<string, string> = {
   product: 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300',
   culture: 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300',
   event: 'bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300',
+  stats: 'bg-cyan-100 text-cyan-700 dark:bg-cyan-900 dark:text-cyan-300',
 };
 
 const categoryLabels: Record<string, string> = {
@@ -38,6 +39,7 @@ const categoryLabels: Record<string, string> = {
   product: 'Produit',
   culture: 'Culture',
   event: 'Événement',
+  stats: 'Chiffres',
 };
 
 export function VettedContentCard({ 
