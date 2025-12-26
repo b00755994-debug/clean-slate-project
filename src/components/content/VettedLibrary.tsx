@@ -2,11 +2,14 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { VettedContentCard } from './VettedContentCard';
+import { VettedContentListItem } from './VettedContentListItem';
 import { AddContentModal } from './AddContentModal';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Plus } from 'lucide-react';
+import { Plus, Grid3X3, List, LayoutGrid, X } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import {
   AlertDialog,
@@ -29,12 +32,24 @@ interface VettedContent {
   workspace_id: string;
 }
 
+type ViewMode = 'grid' | 'list' | 'cards';
+
+const categories = [
+  { value: 'general', label: 'Général' },
+  { value: 'announcement', label: 'Annonce' },
+  { value: 'product', label: 'Produit' },
+  { value: 'culture', label: 'Culture' },
+  { value: 'event', label: 'Événement' },
+  { value: 'stats', label: 'Chiffres' },
+];
+
 export function VettedLibrary() {
   const { user, isAdmin } = useAuth();
   const [contents, setContents] = useState<VettedContent[]>([]);
   const [bookmarkedContents, setBookmarkedContents] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
-  const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [modalOpen, setModalOpen] = useState(false);
   const [editingContent, setEditingContent] = useState<VettedContent | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -199,10 +214,18 @@ export function VettedLibrary() {
   };
 
   const filteredContents = contents.filter(
-    c => categoryFilter === 'all' || c.category === categoryFilter
+    c => selectedCategories.length === 0 || selectedCategories.includes(c.category || 'general')
   );
 
-  const categories = ['general', 'announcement', 'product', 'culture', 'event', 'stats'];
+  const toggleCategory = (value: string) => {
+    setSelectedCategories(prev => 
+      prev.includes(value) 
+        ? prev.filter(c => c !== value)
+        : [...prev, value]
+    );
+  };
+
+  const clearFilters = () => setSelectedCategories([]);
 
   if (loading) {
     return (
@@ -221,40 +244,84 @@ export function VettedLibrary() {
   return (
     <div className="space-y-4">
       {/* Header with filters and add button */}
-      <div className="flex justify-between items-center gap-3 flex-wrap">
-        <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Catégorie" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Toutes les catégories</SelectItem>
-            <SelectItem value="general">Général</SelectItem>
-            <SelectItem value="announcement">Annonce</SelectItem>
-            <SelectItem value="product">Produit</SelectItem>
-            <SelectItem value="culture">Culture</SelectItem>
-            <SelectItem value="event">Événement</SelectItem>
-            <SelectItem value="stats">Chiffres</SelectItem>
-          </SelectContent>
-        </Select>
+      <div className="flex flex-col gap-3">
+        <div className="flex justify-between items-center gap-3 flex-wrap">
+          {/* Category multi-select badges */}
+          <div className="flex items-center gap-2 flex-wrap flex-1">
+            {categories.map(cat => (
+              <Badge
+                key={cat.value}
+                variant={selectedCategories.includes(cat.value) ? 'default' : 'outline'}
+                className={cn(
+                  "cursor-pointer transition-colors",
+                  selectedCategories.includes(cat.value) && "bg-primary text-primary-foreground"
+                )}
+                onClick={() => toggleCategory(cat.value)}
+              >
+                {cat.label}
+              </Badge>
+            ))}
+            {selectedCategories.length > 0 && (
+              <Button variant="ghost" size="sm" onClick={clearFilters} className="h-6 px-2">
+                <X className="h-3 w-3 mr-1" />
+                Effacer
+              </Button>
+            )}
+          </div>
 
-        {isAdmin && (
-          <Button onClick={() => { setEditingContent(null); setModalOpen(true); }}>
-            <Plus className="h-4 w-4 mr-2" />
-            Ajouter un contenu
-          </Button>
-        )}
+          {/* View mode toggle */}
+          <div className="flex items-center gap-2">
+            <ToggleGroup type="single" value={viewMode} onValueChange={(v) => v && setViewMode(v as ViewMode)}>
+              <ToggleGroupItem value="grid" aria-label="Vue grille">
+                <Grid3X3 className="h-4 w-4" />
+              </ToggleGroupItem>
+              <ToggleGroupItem value="list" aria-label="Vue liste">
+                <List className="h-4 w-4" />
+              </ToggleGroupItem>
+              <ToggleGroupItem value="cards" aria-label="Vue fiches">
+                <LayoutGrid className="h-4 w-4" />
+              </ToggleGroupItem>
+            </ToggleGroup>
+
+            {isAdmin && (
+              <Button onClick={() => { setEditingContent(null); setModalOpen(true); }}>
+                <Plus className="h-4 w-4 mr-2" />
+                Ajouter
+              </Button>
+            )}
+          </div>
+        </div>
       </div>
 
-      {/* Content grid */}
+      {/* Content display */}
       {filteredContents.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground">
           <p>Aucun contenu validé</p>
           {isAdmin && (
-            <p className="text-sm mt-2">Cliquez sur "Ajouter un contenu" pour commencer</p>
+            <p className="text-sm mt-2">Cliquez sur "Ajouter" pour commencer</p>
           )}
         </div>
+      ) : viewMode === 'list' ? (
+        <div className="space-y-2">
+          {filteredContents.map(content => (
+            <VettedContentListItem
+              key={content.id}
+              content={content}
+              isBookmarked={bookmarkedContents.has(content.id)}
+              isAdmin={isAdmin}
+              onToggleBookmark={handleToggleBookmark}
+              onEdit={handleEdit}
+              onDelete={handleDeleteClick}
+            />
+          ))}
+        </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className={cn(
+          "grid gap-4",
+          viewMode === 'grid' 
+            ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" 
+            : "grid-cols-1 md:grid-cols-2"
+        )}>
           {filteredContents.map(content => (
             <VettedContentCard
               key={content.id}
@@ -264,6 +331,7 @@ export function VettedLibrary() {
               onToggleBookmark={handleToggleBookmark}
               onEdit={handleEdit}
               onDelete={handleDeleteClick}
+              variant={viewMode === 'cards' ? 'card' : 'default'}
             />
           ))}
         </div>

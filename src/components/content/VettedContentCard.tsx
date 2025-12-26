@@ -22,6 +22,7 @@ interface VettedContentCardProps {
   onToggleBookmark?: (contentId: string) => void;
   onEdit?: (content: VettedContentCardProps['content']) => void;
   onDelete?: (contentId: string) => void;
+  variant?: 'default' | 'card';
 }
 
 const categoryColors: Record<string, string> = {
@@ -48,7 +49,8 @@ export function VettedContentCard({
   isAdmin = false,
   onToggleBookmark,
   onEdit,
-  onDelete
+  onDelete,
+  variant = 'default'
 }: VettedContentCardProps) {
   const [bookmarked, setBookmarked] = useState(isBookmarked);
   const [copied, setCopied] = useState(false);
@@ -72,9 +74,15 @@ export function VettedContentCard({
   const category = content.category || 'general';
 
   return (
-    <Card className="border-border/50 shadow-sm hover:shadow-md transition-shadow h-full flex flex-col">
+    <Card className={cn(
+      "border-border/50 shadow-sm hover:shadow-md transition-shadow h-full flex flex-col",
+      variant === 'card' && "bg-gradient-to-br from-background to-muted/30"
+    )}>
       {content.image_url && (
-        <div className="aspect-video overflow-hidden rounded-t-lg">
+        <div className={cn(
+          "overflow-hidden rounded-t-lg",
+          variant === 'card' ? "aspect-[4/3]" : "aspect-video"
+        )}>
           <img 
             src={content.image_url} 
             alt={content.title}
