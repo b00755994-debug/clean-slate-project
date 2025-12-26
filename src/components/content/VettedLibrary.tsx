@@ -4,7 +4,6 @@ import { useAuth } from '@/hooks/useAuth';
 import { VettedContentCard } from './VettedContentCard';
 import { AddContentModal } from './AddContentModal';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Plus } from 'lucide-react';
 import { toast } from 'sonner';
@@ -29,12 +28,15 @@ interface VettedContent {
   workspace_id: string;
 }
 
-export function VettedLibrary() {
+interface VettedLibraryProps {
+  categoryFilter: string;
+}
+
+export function VettedLibrary({ categoryFilter }: VettedLibraryProps) {
   const { user, isAdmin } = useAuth();
   const [contents, setContents] = useState<VettedContent[]>([]);
   const [bookmarkedContents, setBookmarkedContents] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
-  const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [modalOpen, setModalOpen] = useState(false);
   const [editingContent, setEditingContent] = useState<VettedContent | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -202,8 +204,6 @@ export function VettedLibrary() {
     c => categoryFilter === 'all' || c.category === categoryFilter
   );
 
-  const categories = ['general', 'announcement', 'product', 'culture', 'event', 'stats'];
-
   if (loading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -220,30 +220,15 @@ export function VettedLibrary() {
 
   return (
     <div className="space-y-4">
-      {/* Header with filters and add button */}
-      <div className="flex justify-between items-center gap-3 flex-wrap">
-        <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Catégorie" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Toutes les catégories</SelectItem>
-            <SelectItem value="general">Général</SelectItem>
-            <SelectItem value="announcement">Annonce</SelectItem>
-            <SelectItem value="product">Produit</SelectItem>
-            <SelectItem value="culture">Culture</SelectItem>
-            <SelectItem value="event">Événement</SelectItem>
-            <SelectItem value="stats">Chiffres</SelectItem>
-          </SelectContent>
-        </Select>
-
-        {isAdmin && (
+      {/* Add button for admins */}
+      {isAdmin && (
+        <div className="flex justify-end">
           <Button onClick={() => { setEditingContent(null); setModalOpen(true); }}>
             <Plus className="h-4 w-4 mr-2" />
             Ajouter un contenu
           </Button>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Content grid */}
       {filteredContents.length === 0 ? (

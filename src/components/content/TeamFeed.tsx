@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { PostCard } from './PostCard';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 
@@ -26,14 +25,20 @@ interface BillableUser {
   linkedin_url: string;
 }
 
-export function TeamFeed() {
+export type SortBy = 'recent' | 'impressions' | 'reactions';
+
+interface TeamFeedProps {
+  sortBy: SortBy;
+  authorFilter: string;
+  onAuthorsLoaded?: (authors: BillableUser[]) => void;
+}
+
+export function TeamFeed({ sortBy, authorFilter, onAuthorsLoaded }: TeamFeedProps) {
   const { user } = useAuth();
   const [posts, setPosts] = useState<Post[]>([]);
   const [profiles, setProfiles] = useState<Record<string, BillableUser>>({});
   const [bookmarkedPosts, setBookmarkedPosts] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
-  const [sortBy, setSortBy] = useState<'recent' | 'impressions' | 'reactions'>('recent');
-  const [authorFilter, setAuthorFilter] = useState<string>('all');
 
   useEffect(() => {
     fetchData();
@@ -55,6 +60,7 @@ export function TeamFeed() {
         profilesMap[u.id] = u;
       });
       setProfiles(profilesMap);
+      onAuthorsLoaded?.(billableUsers || []);
 
       // Fetch posts
       const { data: postsData, error: postsError } = await supabase
@@ -131,65 +137,36 @@ export function TeamFeed() {
       }
     });
 
-  const uniqueAuthors = Object.values(profiles);
-
   if (loading) {
     return (
-      <div className="space-y-4">
-        {[1, 2, 3].map(i => (
-          <div key={i} className="p-4 border rounded-lg">
-            <div className="flex items-center gap-3 mb-3">
-              <Skeleton className="h-10 w-10 rounded-full" />
-              <div>
-                <Skeleton className="h-4 w-32 mb-1" />
-                <Skeleton className="h-3 w-20" />
+      <div className="flex justify-center">
+        <div className="w-full max-w-[600px] space-y-4">
+          {[1, 2, 3].map(i => (
+            <div key={i} className="p-4 border rounded-lg">
+              <div className="flex items-center gap-3 mb-3">
+                <Skeleton className="h-10 w-10 rounded-full" />
+                <div>
+                  <Skeleton className="h-4 w-32 mb-1" />
+                  <Skeleton className="h-3 w-20" />
+                </div>
               </div>
+              <Skeleton className="h-16 w-full" />
             </div>
-            <Skeleton className="h-16 w-full" />
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
-      {/* Filters */}
-      <div className="flex gap-3 flex-wrap">
-        <Select value={sortBy} onValueChange={(v: 'recent' | 'impressions' | 'reactions') => setSortBy(v)}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Trier par" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="recent">Plus récents</SelectItem>
-            <SelectItem value="impressions">Plus vus</SelectItem>
-            <SelectItem value="reactions">Plus de réactions</SelectItem>
-          </SelectContent>
-        </Select>
-
-        <Select value={authorFilter} onValueChange={setAuthorFilter}>
-          <SelectTrigger className="w-[200px]">
-            <SelectValue placeholder="Filtrer par auteur" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Tous les auteurs</SelectItem>
-            {uniqueAuthors.map(author => (
-              <SelectItem key={author.id} value={author.id}>
-                {author.profile_name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      {/* Posts */}
-      {filteredAndSortedPosts.length === 0 ? (
-        <div className="text-center py-12 text-muted-foreground">
-          <p>Aucun post trouvé</p>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {filteredAndSortedPosts.map(post => (
+    <div className="flex justify-center">
+      <div className="w-full max-w-[600px] space-y-4">
+        {filteredAndSortedPosts.length === 0 ? (
+          <div className="text-center py-12 text-muted-foreground">
+            <p>Aucun post trouvé</p>
+          </div>
+        ) : (
+          filteredAndSortedPosts.map(post => (
             <PostCard
               key={post.id}
               post={post}
@@ -197,9 +174,9 @@ export function TeamFeed() {
               isBookmarked={bookmarkedPosts.has(post.id)}
               onToggleBookmark={handleToggleBookmark}
             />
-          ))}
-        </div>
-      )}
+          ))
+        )}
+      </div>
     </div>
   );
 }
