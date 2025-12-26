@@ -202,7 +202,7 @@ export function VettedLibrary() {
     c => categoryFilter === 'all' || c.category === categoryFilter
   );
 
-  const categories = ['general', 'announcement', 'product', 'culture', 'event'];
+  const categories = ['general', 'announcement', 'product', 'culture', 'event', 'stats'];
 
   if (loading) {
     return (
@@ -233,6 +233,7 @@ export function VettedLibrary() {
             <SelectItem value="product">Produit</SelectItem>
             <SelectItem value="culture">Culture</SelectItem>
             <SelectItem value="event">Événement</SelectItem>
+            <SelectItem value="stats">Chiffres</SelectItem>
           </SelectContent>
         </Select>
 
