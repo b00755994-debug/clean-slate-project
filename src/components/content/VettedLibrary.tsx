@@ -43,7 +43,11 @@ const categories = [
   { value: 'stats', label: 'Chiffres' },
 ];
 
-export function VettedLibrary() {
+interface VettedLibraryProps {
+  showBookmarksOnly?: boolean;
+}
+
+export function VettedLibrary({ showBookmarksOnly = false }: VettedLibraryProps) {
   const { user, isAdmin } = useAuth();
   const [contents, setContents] = useState<VettedContent[]>([]);
   const [bookmarkedContents, setBookmarkedContents] = useState<Set<string>>(new Set());
@@ -213,9 +217,9 @@ export function VettedLibrary() {
     }
   };
 
-  const filteredContents = contents.filter(
-    c => selectedCategories.length === 0 || selectedCategories.includes(c.category || 'general')
-  );
+  const filteredContents = contents
+    .filter(c => selectedCategories.length === 0 || selectedCategories.includes(c.category || 'general'))
+    .filter(c => !showBookmarksOnly || bookmarkedContents.has(c.id));
 
   const toggleCategory = (value: string) => {
     setSelectedCategories(prev => 

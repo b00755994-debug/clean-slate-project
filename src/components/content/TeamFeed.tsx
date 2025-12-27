@@ -26,7 +26,11 @@ interface BillableUser {
   linkedin_url: string;
 }
 
-export function TeamFeed() {
+interface TeamFeedProps {
+  showBookmarksOnly?: boolean;
+}
+
+export function TeamFeed({ showBookmarksOnly = false }: TeamFeedProps) {
   const { user } = useAuth();
   const [posts, setPosts] = useState<Post[]>([]);
   const [profiles, setProfiles] = useState<Record<string, BillableUser>>({});
@@ -120,6 +124,7 @@ export function TeamFeed() {
 
   const filteredAndSortedPosts = posts
     .filter(post => authorFilter === 'all' || post.linkedin_profiles === authorFilter)
+    .filter(post => !showBookmarksOnly || bookmarkedPosts.has(post.id))
     .sort((a, b) => {
       switch (sortBy) {
         case 'impressions':
