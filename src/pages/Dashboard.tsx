@@ -14,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Crown, Linkedin, Plus, Trash2, ExternalLink, CheckCircle2, XCircle, Settings, Link, Unlink, LogOut, MessageSquare, Lock, User } from 'lucide-react';
 import slackLogo from '@/assets/slack-logo.png';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useSlackMembers } from '@/hooks/useSlackMembers';
 interface SlackWorkspace {
   id: string;
   workspace_name: string;
@@ -46,9 +47,6 @@ export default function Dashboard() {
   } = useToast();
   const [slackWorkspace, setSlackWorkspace] = useState<SlackWorkspace | null>(null);
   const [linkedinProfiles, setLinkedinProfiles] = useState<LinkedInProfile[]>([]);
-  const [slackMembers, setSlackMembers] = useState<SlackMember[]>([]);
-  const [slackMembersLoaded, setSlackMembersLoaded] = useState(false);
-  const [isLoadingMembers, setIsLoadingMembers] = useState(false);
   const [isAddingProfile, setIsAddingProfile] = useState(false);
   const [newProfileName, setNewProfileName] = useState('');
   const [newProfileUrl, setNewProfileUrl] = useState('');
@@ -56,19 +54,16 @@ export default function Dashboard() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProfileId, setEditingProfileId] = useState<string | null>(null);
   const [editSlackUserId, setEditSlackUserId] = useState<string>('');
+
+  // Use React Query hook for Slack members with caching
+  const { data: slackMembers = [], isLoading: isLoadingMembers } = useSlackMembers(slackWorkspace?.is_connected || false);
+
   useEffect(() => {
     if (user) {
       fetchSlackWorkspace();
       fetchLinkedInProfiles();
     }
   }, [user]);
-
-  // Fetch Slack members when workspace is connected
-  useEffect(() => {
-    if (slackWorkspace?.is_connected) {
-      fetchSlackMembers();
-    }
-  }, [slackWorkspace?.is_connected]);
   const fetchSlackWorkspace = async () => {
     const {
       data,
@@ -106,46 +101,6 @@ export default function Dashboard() {
         };
       }));
       setLinkedinProfiles(profilesWithPosts);
-    }
-  };
-  const fetchSlackMembers = async (force = false) => {
-    // Use cache if already loaded, unless forced
-    if (!force && slackMembersLoaded && slackMembers.length > 0) {
-      return;
-    }
-    setIsLoadingMembers(true);
-    try {
-      const {
-        data,
-        error
-      } = await supabase.functions.invoke('slack-members');
-      if (error) {
-        console.error('Error fetching Slack members:', error);
-        toast({
-          title: 'Erreur',
-          description: 'Impossible de récupérer les membres Slack',
-          variant: 'destructive'
-        });
-        return;
-      }
-
-      // Handle rate limit error from edge function
-      if (data?.error === 'ratelimited') {
-        toast({
-          title: 'API Slack surchargée',
-          description: 'Réessayez dans quelques secondes',
-          variant: 'destructive'
-        });
-        return;
-      }
-      if (data?.members) {
-        setSlackMembers(data.members);
-        setSlackMembersLoaded(true);
-      }
-    } catch (err) {
-      console.error('Error invoking slack-members:', err);
-    } finally {
-      setIsLoadingMembers(false);
     }
   };
   const handleAddProfile = async () => {
@@ -264,7 +219,6 @@ export default function Dashboard() {
         ...prev,
         is_connected: false
       } : null);
-      setSlackMembers([]);
     }
   };
 
