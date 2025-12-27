@@ -233,14 +233,16 @@ export default function DashboardContent() {
 
           {/* Right side: View mode toggle + Add button */}
           <div className="flex items-center gap-2">
-            <ToggleGroup type="single" value={viewMode} onValueChange={(v) => v && setViewMode(v as ViewMode)}>
-              <ToggleGroupItem value="grid" aria-label="Vue grille">
-                <Grid3X3 className="h-4 w-4" />
-              </ToggleGroupItem>
-              <ToggleGroupItem value="list" aria-label="Vue liste">
-                <List className="h-4 w-4" />
-              </ToggleGroupItem>
-            </ToggleGroup>
+            {activeTab === 'vetted' && (
+              <ToggleGroup type="single" value={viewMode} onValueChange={(v) => v && setViewMode(v as ViewMode)}>
+                <ToggleGroupItem value="grid" aria-label="Vue grille">
+                  <Grid3X3 className="h-4 w-4" />
+                </ToggleGroupItem>
+                <ToggleGroupItem value="list" aria-label="Vue liste">
+                  <List className="h-4 w-4" />
+                </ToggleGroupItem>
+              </ToggleGroup>
+            )}
 
             {activeTab === 'vetted' && isAdmin && (
               <Button onClick={() => setModalOpen(true)}>
