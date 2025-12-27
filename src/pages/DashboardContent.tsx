@@ -37,18 +37,18 @@ export default function DashboardContent() {
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        <div className="flex flex-col gap-2">
-          <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
-            <Library className="w-8 h-8 text-primary" />
-            Content Library
-          </h1>
-          <p className="text-muted-foreground">
-            Explorez les posts de votre équipe et les contenus validés par l'entreprise
-          </p>
-        </div>
+        {/* Header with title on left and toggle on right */}
+        <div className="flex items-start justify-between gap-4 flex-wrap">
+          <div className="flex flex-col gap-1">
+            <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
+              <Library className="w-8 h-8 text-primary" />
+              Content Library
+            </h1>
+            <p className="text-muted-foreground">
+              Explorez les posts de votre équipe et les contenus validés par l'entreprise
+            </p>
+          </div>
 
-        {/* Header with tabs on left and filters on right */}
-        <div className="flex items-center justify-between gap-4 flex-wrap">
           <ToggleGroup 
             type="single" 
             value={activeTab} 
@@ -64,48 +64,48 @@ export default function DashboardContent() {
               <span className="hidden sm:inline">Vetted Library</span>
             </ToggleGroupItem>
           </ToggleGroup>
+        </div>
 
-          {/* Filters - right side */}
-          <div className="flex items-center gap-3 flex-wrap">
-            {activeTab === 'feed' && (
-              <>
-                <Select value={sortBy} onValueChange={(v: 'recent' | 'impressions' | 'reactions') => setSortBy(v)}>
-                  <SelectTrigger className="w-[150px]">
-                    <SelectValue placeholder="Trier par" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="recent">Plus récents</SelectItem>
-                    <SelectItem value="impressions">Plus vus</SelectItem>
-                    <SelectItem value="reactions">Plus de réactions</SelectItem>
-                  </SelectContent>
-                </Select>
+        {/* Filters */}
+        <div className="flex items-center gap-3 flex-wrap">
+          {activeTab === 'feed' && (
+            <>
+              <Select value={sortBy} onValueChange={(v: 'recent' | 'impressions' | 'reactions') => setSortBy(v)}>
+                <SelectTrigger className="w-[150px]">
+                  <SelectValue placeholder="Trier par" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="recent">Plus récents</SelectItem>
+                  <SelectItem value="impressions">Plus vus</SelectItem>
+                  <SelectItem value="reactions">Plus de réactions</SelectItem>
+                </SelectContent>
+              </Select>
 
-                <Select value={authorFilter} onValueChange={setAuthorFilter}>
-                  <SelectTrigger className="w-[160px]">
-                    <SelectValue placeholder="Filtrer par auteur" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Tous les auteurs</SelectItem>
-                    {authors.map(author => (
-                      <SelectItem key={author.id} value={author.id}>
-                        {author.profile_name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </>
-            )}
+              <Select value={authorFilter} onValueChange={setAuthorFilter}>
+                <SelectTrigger className="w-[160px]">
+                  <SelectValue placeholder="Filtrer par auteur" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tous les auteurs</SelectItem>
+                  {authors.map(author => (
+                    <SelectItem key={author.id} value={author.id}>
+                      {author.profile_name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </>
+          )}
 
-            <Toggle
-              pressed={showBookmarksOnly}
-              onPressedChange={setShowBookmarksOnly}
-              className="flex items-center gap-2"
-              aria-label="Filtrer les favoris"
-            >
-              <Bookmark className="h-4 w-4" />
-              <span className="hidden sm:inline">Favoris</span>
-            </Toggle>
-          </div>
+          <Toggle
+            pressed={showBookmarksOnly}
+            onPressedChange={setShowBookmarksOnly}
+            className="flex items-center gap-2"
+            aria-label="Filtrer les favoris"
+          >
+            <Bookmark className="h-4 w-4" />
+            <span className="hidden sm:inline">Favoris</span>
+          </Toggle>
         </div>
 
         {/* Content */}
