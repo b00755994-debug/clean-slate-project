@@ -4,13 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { VettedContentCard } from './VettedContentCard';
 import { VettedContentListItem } from './VettedContentListItem';
 import { AddContentModal } from './AddContentModal';
-import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Plus, Grid3X3, List, X } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import {
   AlertDialog,
@@ -35,28 +29,27 @@ interface VettedContent {
 
 type ViewMode = 'grid' | 'list';
 
-const categories = [
-  { value: 'general', label: 'Général' },
-  { value: 'announcement', label: 'Annonce' },
-  { value: 'product', label: 'Produit' },
-  { value: 'culture', label: 'Culture' },
-  { value: 'event', label: 'Événement' },
-  { value: 'stats', label: 'Chiffres' },
-];
-
 interface VettedLibraryProps {
   showBookmarksOnly?: boolean;
+  selectedCategories: string[];
+  dateFilter: string;
+  viewMode: ViewMode;
+  modalOpen: boolean;
+  onModalOpenChange: (open: boolean) => void;
 }
 
-export function VettedLibrary({ showBookmarksOnly = false }: VettedLibraryProps) {
+export function VettedLibrary({ 
+  showBookmarksOnly = false,
+  selectedCategories,
+  dateFilter,
+  viewMode,
+  modalOpen,
+  onModalOpenChange
+}: VettedLibraryProps) {
   const { user, isAdmin } = useAuth();
   const [contents, setContents] = useState<VettedContent[]>([]);
   const [bookmarkedContents, setBookmarkedContents] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [viewMode, setViewMode] = useState<ViewMode>('grid');
-  const [dateFilter, setDateFilter] = useState<string>('all');
-  const [modalOpen, setModalOpen] = useState(false);
   const [editingContent, setEditingContent] = useState<VettedContent | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [contentToDelete, setContentToDelete] = useState<string | null>(null);
@@ -181,6 +174,7 @@ export function VettedLibrary({ showBookmarksOnly = false }: VettedLibraryProps)
       }
 
       setEditingContent(null);
+      onModalOpenChange(false);
       fetchData();
     } catch (error) {
       console.error('Error saving content:', error);
@@ -190,7 +184,7 @@ export function VettedLibrary({ showBookmarksOnly = false }: VettedLibraryProps)
 
   const handleEdit = (content: VettedContent) => {
     setEditingContent(content);
-    setModalOpen(true);
+    onModalOpenChange(true);
   };
 
   const handleDeleteClick = (contentId: string) => {
@@ -233,19 +227,6 @@ export function VettedLibrary({ showBookmarksOnly = false }: VettedLibraryProps)
       return true;
     });
 
-  const toggleCategory = (value: string) => {
-    setSelectedCategories(prev => 
-      prev.includes(value) 
-        ? prev.filter(c => c !== value)
-        : [...prev, value]
-    );
-  };
-
-  const clearFilters = () => {
-    setSelectedCategories([]);
-    setDateFilter('all');
-  };
-
   if (loading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -262,65 +243,6 @@ export function VettedLibrary({ showBookmarksOnly = false }: VettedLibraryProps)
 
   return (
     <div className="space-y-4">
-      {/* Header with filters and add button */}
-      <div className="flex flex-col gap-3">
-        <div className="flex justify-between items-center gap-3 flex-wrap">
-          {/* Category multi-select badges */}
-          <div className="flex items-center gap-2 flex-wrap flex-1">
-            {categories.map(cat => (
-              <Badge
-                key={cat.value}
-                variant={selectedCategories.includes(cat.value) ? 'default' : 'outline'}
-                className={cn(
-                  "cursor-pointer transition-colors",
-                  selectedCategories.includes(cat.value) && "bg-primary text-primary-foreground"
-                )}
-                onClick={() => toggleCategory(cat.value)}
-              >
-                {cat.label}
-              </Badge>
-            ))}
-            {(selectedCategories.length > 0 || dateFilter !== 'all') && (
-              <Button variant="ghost" size="sm" onClick={clearFilters} className="h-6 px-2">
-                <X className="h-3 w-3 mr-1" />
-                Effacer
-              </Button>
-            )}
-          </div>
-
-          {/* Date filter, view mode toggle and add button */}
-          <div className="flex items-center gap-2">
-            <Select value={dateFilter} onValueChange={setDateFilter}>
-              <SelectTrigger className="w-[140px]">
-                <SelectValue placeholder="Date" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Toutes dates</SelectItem>
-                <SelectItem value="week">7 derniers jours</SelectItem>
-                <SelectItem value="month">30 derniers jours</SelectItem>
-                <SelectItem value="quarter">3 derniers mois</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <ToggleGroup type="single" value={viewMode} onValueChange={(v) => v && setViewMode(v as ViewMode)}>
-              <ToggleGroupItem value="grid" aria-label="Vue grille">
-                <Grid3X3 className="h-4 w-4" />
-              </ToggleGroupItem>
-              <ToggleGroupItem value="list" aria-label="Vue liste">
-                <List className="h-4 w-4" />
-              </ToggleGroupItem>
-            </ToggleGroup>
-
-            {isAdmin && (
-              <Button onClick={() => { setEditingContent(null); setModalOpen(true); }}>
-                <Plus className="h-4 w-4 mr-2" />
-                Ajouter
-              </Button>
-            )}
-          </div>
-        </div>
-      </div>
-
       {/* Content display */}
       {filteredContents.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground">
@@ -361,7 +283,10 @@ export function VettedLibrary({ showBookmarksOnly = false }: VettedLibraryProps)
 
       <AddContentModal
         open={modalOpen}
-        onOpenChange={setModalOpen}
+        onOpenChange={(open) => {
+          onModalOpenChange(open);
+          if (!open) setEditingContent(null);
+        }}
         onSubmit={handleSubmitContent}
         editingContent={editingContent}
       />

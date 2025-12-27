@@ -25,16 +25,20 @@ interface BillableUser {
   linkedin_url: string;
 }
 
+type ViewMode = 'grid' | 'list';
+
 interface TeamFeedProps {
   showBookmarksOnly?: boolean;
   sortBy?: 'recent' | 'impressions' | 'reactions';
   authorFilter?: string;
+  viewMode?: ViewMode;
 }
 
 export function TeamFeed({ 
   showBookmarksOnly = false,
   sortBy = 'recent',
-  authorFilter = 'all'
+  authorFilter = 'all',
+  viewMode = 'list'
 }: TeamFeedProps) {
   const { user } = useAuth();
   const [posts, setPosts] = useState<Post[]>([]);
