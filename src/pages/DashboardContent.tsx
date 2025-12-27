@@ -2,20 +2,35 @@ import { useState, useEffect } from 'react';
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
 import { TeamFeed } from '@/components/content/TeamFeed';
 import { VettedLibrary } from '@/components/content/VettedLibrary';
-import { Library, Newspaper, Bookmark } from 'lucide-react';
+import { Library, Newspaper, Bookmark, Grid3X3, List, Plus, X } from 'lucide-react';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Toggle } from '@/components/ui/toggle';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
+import { cn } from '@/lib/utils';
 
 type ContentTab = 'feed' | 'vetted';
+type ViewMode = 'grid' | 'list';
 
 interface BillableUser {
   id: string;
   profile_name: string;
 }
 
+const categories = [
+  { value: 'general', label: 'Général' },
+  { value: 'announcement', label: 'Annonce' },
+  { value: 'product', label: 'Produit' },
+  { value: 'culture', label: 'Culture' },
+  { value: 'event', label: 'Événement' },
+  { value: 'stats', label: 'Chiffres' },
+];
+
 export default function DashboardContent() {
+  const { isAdmin } = useAuth();
   const [activeTab, setActiveTab] = useState<ContentTab>('feed');
   const [showBookmarksOnly, setShowBookmarksOnly] = useState(false);
   
@@ -23,6 +38,14 @@ export default function DashboardContent() {
   const [sortBy, setSortBy] = useState<'recent' | 'impressions' | 'reactions'>('recent');
   const [authorFilter, setAuthorFilter] = useState<string>('all');
   const [authors, setAuthors] = useState<BillableUser[]>([]);
+
+  // Vetted Library filters
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [dateFilter, setDateFilter] = useState<string>('all');
+  
+  // Shared
+  const [viewMode, setViewMode] = useState<ViewMode>('grid');
+  const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchAuthors = async () => {
@@ -33,6 +56,21 @@ export default function DashboardContent() {
     };
     fetchAuthors();
   }, []);
+
+  const toggleCategory = (value: string) => {
+    setSelectedCategories(prev => 
+      prev.includes(value) 
+        ? prev.filter(c => c !== value)
+        : [...prev, value]
+    );
+  };
+
+  const clearFilters = () => {
+    setSelectedCategories([]);
+    setDateFilter('all');
+  };
+
+  const hasActiveFilters = selectedCategories.length > 0 || dateFilter !== 'all';
 
   return (
     <DashboardLayout>
@@ -66,46 +104,104 @@ export default function DashboardContent() {
           </ToggleGroup>
         </div>
 
-        {/* Filters */}
-        <div className="flex items-center gap-3 flex-wrap">
-          {activeTab === 'feed' && (
-            <>
-              <Select value={sortBy} onValueChange={(v: 'recent' | 'impressions' | 'reactions') => setSortBy(v)}>
-                <SelectTrigger className="w-[150px]">
-                  <SelectValue placeholder="Trier par" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="recent">Plus récents</SelectItem>
-                  <SelectItem value="impressions">Plus vus</SelectItem>
-                  <SelectItem value="reactions">Plus de réactions</SelectItem>
-                </SelectContent>
-              </Select>
+        {/* Filters line: Filtres spécifiques | Toggle grille/liste | Bouton ajouter */}
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          {/* Left side: Specific filters */}
+          <div className="flex items-center gap-3 flex-wrap flex-1">
+            {activeTab === 'feed' ? (
+              <>
+                <Select value={sortBy} onValueChange={(v: 'recent' | 'impressions' | 'reactions') => setSortBy(v)}>
+                  <SelectTrigger className="w-[150px]">
+                    <SelectValue placeholder="Trier par" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="recent">Plus récents</SelectItem>
+                    <SelectItem value="impressions">Plus vus</SelectItem>
+                    <SelectItem value="reactions">Plus de réactions</SelectItem>
+                  </SelectContent>
+                </Select>
 
-              <Select value={authorFilter} onValueChange={setAuthorFilter}>
-                <SelectTrigger className="w-[160px]">
-                  <SelectValue placeholder="Filtrer par auteur" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Tous les auteurs</SelectItem>
-                  {authors.map(author => (
-                    <SelectItem key={author.id} value={author.id}>
-                      {author.profile_name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </>
-          )}
+                <Select value={authorFilter} onValueChange={setAuthorFilter}>
+                  <SelectTrigger className="w-[160px]">
+                    <SelectValue placeholder="Filtrer par auteur" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Tous les auteurs</SelectItem>
+                    {authors.map(author => (
+                      <SelectItem key={author.id} value={author.id}>
+                        {author.profile_name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </>
+            ) : (
+              <>
+                {/* Category badges */}
+                {categories.map(cat => (
+                  <Badge
+                    key={cat.value}
+                    variant={selectedCategories.includes(cat.value) ? 'default' : 'outline'}
+                    className={cn(
+                      "cursor-pointer transition-colors",
+                      selectedCategories.includes(cat.value) && "bg-primary text-primary-foreground"
+                    )}
+                    onClick={() => toggleCategory(cat.value)}
+                  >
+                    {cat.label}
+                  </Badge>
+                ))}
 
-          <Toggle
-            pressed={showBookmarksOnly}
-            onPressedChange={setShowBookmarksOnly}
-            className="flex items-center gap-2"
-            aria-label="Filtrer les favoris"
-          >
-            <Bookmark className="h-4 w-4" />
-            <span className="hidden sm:inline">Favoris</span>
-          </Toggle>
+                <Select value={dateFilter} onValueChange={setDateFilter}>
+                  <SelectTrigger className="w-[140px]">
+                    <SelectValue placeholder="Date" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Toutes dates</SelectItem>
+                    <SelectItem value="week">7 derniers jours</SelectItem>
+                    <SelectItem value="month">30 derniers jours</SelectItem>
+                    <SelectItem value="quarter">3 derniers mois</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                {hasActiveFilters && (
+                  <Button variant="ghost" size="sm" onClick={clearFilters} className="h-6 px-2">
+                    <X className="h-3 w-3 mr-1" />
+                    Effacer
+                  </Button>
+                )}
+              </>
+            )}
+
+            <Toggle
+              pressed={showBookmarksOnly}
+              onPressedChange={setShowBookmarksOnly}
+              className="flex items-center gap-2"
+              aria-label="Filtrer les favoris"
+            >
+              <Bookmark className="h-4 w-4" />
+              <span className="hidden sm:inline">Favoris</span>
+            </Toggle>
+          </div>
+
+          {/* Right side: View mode toggle + Add button */}
+          <div className="flex items-center gap-2">
+            <ToggleGroup type="single" value={viewMode} onValueChange={(v) => v && setViewMode(v as ViewMode)}>
+              <ToggleGroupItem value="grid" aria-label="Vue grille">
+                <Grid3X3 className="h-4 w-4" />
+              </ToggleGroupItem>
+              <ToggleGroupItem value="list" aria-label="Vue liste">
+                <List className="h-4 w-4" />
+              </ToggleGroupItem>
+            </ToggleGroup>
+
+            {activeTab === 'vetted' && isAdmin && (
+              <Button onClick={() => setModalOpen(true)}>
+                <Plus className="h-4 w-4 mr-2" />
+                Ajouter
+              </Button>
+            )}
+          </div>
         </div>
 
         {/* Content */}
@@ -114,9 +210,17 @@ export default function DashboardContent() {
             showBookmarksOnly={showBookmarksOnly}
             sortBy={sortBy}
             authorFilter={authorFilter}
+            viewMode={viewMode}
           />
         ) : (
-          <VettedLibrary showBookmarksOnly={showBookmarksOnly} />
+          <VettedLibrary 
+            showBookmarksOnly={showBookmarksOnly}
+            selectedCategories={selectedCategories}
+            dateFilter={dateFilter}
+            viewMode={viewMode}
+            modalOpen={modalOpen}
+            onModalOpenChange={setModalOpen}
+          />
         )}
       </div>
     </DashboardLayout>
