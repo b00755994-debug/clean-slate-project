@@ -159,7 +159,7 @@ export default function DashboardContent() {
                           <CommandItem
                             key={cat.value}
                             onSelect={() => toggleCategory(cat.value)}
-                            className="cursor-pointer hover:bg-muted"
+                            className="cursor-pointer data-[selected=true]:bg-muted data-[selected=true]:text-foreground"
                           >
                             <div className={cn(
                               "mr-2 h-4 w-4 rounded-sm border border-input flex items-center justify-center",
