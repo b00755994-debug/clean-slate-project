@@ -6,9 +6,10 @@ import { VettedContentListItem } from './VettedContentListItem';
 import { AddContentModal } from './AddContentModal';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Plus, Grid3X3, List, LayoutGrid, X } from 'lucide-react';
+import { Plus, Grid3X3, List, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import {
@@ -32,7 +33,7 @@ interface VettedContent {
   workspace_id: string;
 }
 
-type ViewMode = 'grid' | 'list' | 'cards';
+type ViewMode = 'grid' | 'list';
 
 const categories = [
   { value: 'general', label: 'Général' },
@@ -54,6 +55,7 @@ export function VettedLibrary({ showBookmarksOnly = false }: VettedLibraryProps)
   const [loading, setLoading] = useState(true);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
+  const [dateFilter, setDateFilter] = useState<string>('all');
   const [modalOpen, setModalOpen] = useState(false);
   const [editingContent, setEditingContent] = useState<VettedContent | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -219,7 +221,17 @@ export function VettedLibrary({ showBookmarksOnly = false }: VettedLibraryProps)
 
   const filteredContents = contents
     .filter(c => selectedCategories.length === 0 || selectedCategories.includes(c.category || 'general'))
-    .filter(c => !showBookmarksOnly || bookmarkedContents.has(c.id));
+    .filter(c => !showBookmarksOnly || bookmarkedContents.has(c.id))
+    .filter(c => {
+      if (dateFilter === 'all') return true;
+      const now = new Date();
+      const contentDate = new Date(c.created_at);
+      const diffDays = Math.floor((now.getTime() - contentDate.getTime()) / (1000 * 60 * 60 * 24));
+      if (dateFilter === 'week') return diffDays <= 7;
+      if (dateFilter === 'month') return diffDays <= 30;
+      if (dateFilter === 'quarter') return diffDays <= 90;
+      return true;
+    });
 
   const toggleCategory = (value: string) => {
     setSelectedCategories(prev => 
@@ -229,7 +241,10 @@ export function VettedLibrary({ showBookmarksOnly = false }: VettedLibraryProps)
     );
   };
 
-  const clearFilters = () => setSelectedCategories([]);
+  const clearFilters = () => {
+    setSelectedCategories([]);
+    setDateFilter('all');
+  };
 
   if (loading) {
     return (
@@ -265,7 +280,7 @@ export function VettedLibrary({ showBookmarksOnly = false }: VettedLibraryProps)
                 {cat.label}
               </Badge>
             ))}
-            {selectedCategories.length > 0 && (
+            {(selectedCategories.length > 0 || dateFilter !== 'all') && (
               <Button variant="ghost" size="sm" onClick={clearFilters} className="h-6 px-2">
                 <X className="h-3 w-3 mr-1" />
                 Effacer
@@ -273,17 +288,26 @@ export function VettedLibrary({ showBookmarksOnly = false }: VettedLibraryProps)
             )}
           </div>
 
-          {/* View mode toggle */}
+          {/* Date filter, view mode toggle and add button */}
           <div className="flex items-center gap-2">
+            <Select value={dateFilter} onValueChange={setDateFilter}>
+              <SelectTrigger className="w-[140px]">
+                <SelectValue placeholder="Date" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Toutes dates</SelectItem>
+                <SelectItem value="week">7 derniers jours</SelectItem>
+                <SelectItem value="month">30 derniers jours</SelectItem>
+                <SelectItem value="quarter">3 derniers mois</SelectItem>
+              </SelectContent>
+            </Select>
+
             <ToggleGroup type="single" value={viewMode} onValueChange={(v) => v && setViewMode(v as ViewMode)}>
               <ToggleGroupItem value="grid" aria-label="Vue grille">
                 <Grid3X3 className="h-4 w-4" />
               </ToggleGroupItem>
               <ToggleGroupItem value="list" aria-label="Vue liste">
                 <List className="h-4 w-4" />
-              </ToggleGroupItem>
-              <ToggleGroupItem value="cards" aria-label="Vue fiches">
-                <LayoutGrid className="h-4 w-4" />
               </ToggleGroupItem>
             </ToggleGroup>
 
@@ -320,12 +344,7 @@ export function VettedLibrary({ showBookmarksOnly = false }: VettedLibraryProps)
           ))}
         </div>
       ) : (
-        <div className={cn(
-          "grid gap-4",
-          viewMode === 'grid' 
-            ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" 
-            : "grid-cols-1 md:grid-cols-2"
-        )}>
+        <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
           {filteredContents.map(content => (
             <VettedContentCard
               key={content.id}
@@ -335,7 +354,6 @@ export function VettedLibrary({ showBookmarksOnly = false }: VettedLibraryProps)
               onToggleBookmark={handleToggleBookmark}
               onEdit={handleEdit}
               onDelete={handleDeleteClick}
-              variant={viewMode === 'cards' ? 'card' : 'default'}
             />
           ))}
         </div>
