@@ -141,11 +141,16 @@ export default function DashboardContent() {
                 {/* Category multi-select dropdown */}
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button variant="outline" className="w-[160px] justify-between">
-                      {selectedCategories.length > 0 
-                        ? `${selectedCategories.length} catégorie${selectedCategories.length > 1 ? 's' : ''}`
-                        : 'Catégories'}
-                      <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    <Button 
+                      variant="outline" 
+                      className="h-10 w-[160px] justify-between border-input bg-background px-3 text-sm font-normal hover:bg-background"
+                    >
+                      <span className="truncate">
+                        {selectedCategories.length > 0 
+                          ? `${selectedCategories.length} catégorie${selectedCategories.length > 1 ? 's' : ''}`
+                          : 'Catégories'}
+                      </span>
+                      <ChevronDown className="h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-[200px] p-0 bg-popover" align="start">
