@@ -71,8 +71,13 @@ export default function DashboardContent() {
     setDateFilter('all');
   };
 
-  const hasActiveFilters = selectedCategories.length > 0 || dateFilter !== 'all';
+  const hasActiveVettedFilters = selectedCategories.length > 0 || dateFilter !== 'all';
+  const hasActiveFeedFilters = sortBy !== 'recent' || authorFilter !== 'all';
 
+  const clearFeedFilters = () => {
+    setSortBy('recent');
+    setAuthorFilter('all');
+  };
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -135,6 +140,23 @@ export default function DashboardContent() {
                     ))}
                   </SelectContent>
                 </Select>
+
+                <Toggle
+                  pressed={showBookmarksOnly}
+                  onPressedChange={setShowBookmarksOnly}
+                  className="flex items-center gap-2"
+                  aria-label="Filtrer les favoris"
+                >
+                  <Bookmark className="h-4 w-4" />
+                  <span className="hidden sm:inline">Favoris</span>
+                </Toggle>
+
+                {hasActiveFeedFilters && (
+                  <Button variant="ghost" size="sm" onClick={clearFeedFilters} className="h-8 px-3">
+                    <X className="h-3 w-3 mr-1" />
+                    Effacer
+                  </Button>
+                )}
               </>
             ) : (
               <>
@@ -199,7 +221,7 @@ export default function DashboardContent() {
                   <span className="hidden sm:inline">Favoris</span>
                 </Toggle>
 
-                {hasActiveFilters && (
+                {hasActiveVettedFilters && (
                   <Button variant="ghost" size="sm" onClick={clearFilters} className="h-8 px-3">
                     <X className="h-3 w-3 mr-1" />
                     Effacer
