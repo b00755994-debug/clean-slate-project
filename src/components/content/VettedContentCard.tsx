@@ -74,7 +74,7 @@ export function VettedContentCard({
   return (
     <Card className="border-border/50 shadow-sm hover:shadow-md transition-shadow h-full flex flex-col">
       {content.image_url && (
-        <div className="overflow-hidden rounded-t-lg aspect-video">
+        <div className="overflow-hidden rounded-t-lg aspect-[16/9] max-h-32">
           <img 
             src={content.image_url} 
             alt={content.title}
@@ -82,46 +82,44 @@ export function VettedContentCard({
           />
         </div>
       )}
-      <CardHeader className="pb-2">
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex-1">
-            <Badge className={cn("text-xs mb-2", categoryColors[category])}>
+      <CardHeader className="py-2 px-3">
+        <div className="flex items-start justify-between gap-1">
+          <div className="flex-1 min-w-0">
+            <Badge className={cn("text-[10px] px-1.5 py-0 mb-1", categoryColors[category])}>
               {categoryLabels[category] || category}
             </Badge>
-            <h3 className="font-semibold text-foreground line-clamp-2">
+            <h3 className="font-medium text-sm text-foreground line-clamp-2">
               {content.title}
             </h3>
           </div>
-          <div className="flex gap-1">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleBookmark}
-              className={cn("h-8 w-8", bookmarked && "text-primary")}
-            >
-              <Bookmark className={cn("h-4 w-4", bookmarked && "fill-current")} />
-            </Button>
-          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleBookmark}
+            className={cn("h-6 w-6 shrink-0", bookmarked && "text-primary")}
+          >
+            <Bookmark className={cn("h-3 w-3", bookmarked && "fill-current")} />
+          </Button>
         </div>
       </CardHeader>
-      <CardContent className="flex-1 flex flex-col">
-        <p className="text-sm text-muted-foreground line-clamp-3 flex-1">
+      <CardContent className="flex-1 flex flex-col pt-0 px-3 pb-2">
+        <p className="text-xs text-muted-foreground line-clamp-2 flex-1">
           {content.content}
         </p>
         
-        <div className="flex items-center justify-between mt-4 pt-3 border-t border-border/50">
-          <span className="text-xs text-muted-foreground">
+        <div className="flex items-center justify-between mt-2 pt-2 border-t border-border/50">
+          <span className="text-[10px] text-muted-foreground">
             {formatDistanceToNow(new Date(content.created_at), { addSuffix: true, locale: fr })}
           </span>
-          <div className="flex gap-1">
+          <div className="flex gap-0.5">
             <Button
               variant="ghost"
               size="sm"
               onClick={handleCopy}
-              className="h-8 px-2"
+              className="h-6 px-1.5 text-[10px]"
             >
-              {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-              <span className="ml-1 text-xs">{copied ? 'Copié' : 'Copier'}</span>
+              {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+              <span className="ml-0.5">{copied ? 'Copié' : 'Copier'}</span>
             </Button>
             {isAdmin && (
               <>
@@ -129,17 +127,17 @@ export function VettedContentCard({
                   variant="ghost"
                   size="icon"
                   onClick={() => onEdit?.(content)}
-                  className="h-8 w-8"
+                  className="h-6 w-6"
                 >
-                  <Edit className="h-4 w-4" />
+                  <Edit className="h-3 w-3" />
                 </Button>
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => onDelete?.(content.id)}
-                  className="h-8 w-8 text-destructive hover:text-destructive"
+                  className="h-6 w-6 text-destructive hover:text-destructive"
                 >
-                  <Trash2 className="h-4 w-4" />
+                  <Trash2 className="h-3 w-3" />
                 </Button>
               </>
             )}
