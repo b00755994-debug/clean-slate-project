@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
 import { TeamFeed } from '@/components/content/TeamFeed';
 import { VettedLibrary } from '@/components/content/VettedLibrary';
@@ -38,7 +39,6 @@ export default function DashboardContent() {
   // Team Feed filters
   const [sortBy, setSortBy] = useState<'recent' | 'impressions' | 'reactions'>('recent');
   const [authorFilter, setAuthorFilter] = useState<string>('all');
-  const [authors, setAuthors] = useState<BillableUser[]>([]);
 
   // Vetted Library filters
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -48,15 +48,17 @@ export default function DashboardContent() {
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [modalOpen, setModalOpen] = useState(false);
 
-  useEffect(() => {
-    const fetchAuthors = async () => {
+  // Use React Query for authors with caching
+  const { data: authors = [] } = useQuery({
+    queryKey: ['authors'],
+    queryFn: async () => {
       const { data } = await supabase
         .from('billable_users')
         .select('id, profile_name');
-      setAuthors(data || []);
-    };
-    fetchAuthors();
-  }, []);
+      return (data || []) as BillableUser[];
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
 
   const toggleCategory = (value: string) => {
     setSelectedCategories(prev => 

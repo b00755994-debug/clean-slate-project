@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { useState } from 'react';
+import { useVettedLibrary } from '@/hooks/useVettedLibrary';
 import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 import { VettedContentCard } from './VettedContentCard';
 import { VettedContentListItem } from './VettedContentListItem';
 import { AddContentModal } from './AddContentModal';
@@ -47,88 +48,19 @@ export function VettedLibrary({
   onModalOpenChange
 }: VettedLibraryProps) {
   const { user, isAdmin } = useAuth();
-  const [contents, setContents] = useState<VettedContent[]>([]);
-  const [bookmarkedContents, setBookmarkedContents] = useState<Set<string>>(new Set());
-  const [loading, setLoading] = useState(true);
+  const { contents, bookmarkedContents, loading, toggleBookmark, deleteContent, refetch } = useVettedLibrary();
   const [editingContent, setEditingContent] = useState<VettedContent | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [contentToDelete, setContentToDelete] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchData();
-  }, [user]);
-
-  const fetchData = async () => {
-    if (!user) return;
-
-    try {
-      // Fetch vetted contents
-      const { data: contentsData, error: contentsError } = await supabase
-        .from('vetted_content')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (contentsError) throw contentsError;
-      setContents(contentsData || []);
-
-      // Fetch user's bookmarks for vetted content
-      const { data: bookmarks, error: bookmarksError } = await supabase
-        .from('bookmarks')
-        .select('vetted_content_id')
-        .eq('user_id', user.id)
-        .not('vetted_content_id', 'is', null);
-
-      if (bookmarksError) throw bookmarksError;
-      setBookmarkedContents(new Set(bookmarks?.map(b => b.vetted_content_id!) || []));
-
-    } catch (error) {
-      console.error('Error fetching data:', error);
-      toast.error('Erreur lors du chargement des contenus');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleToggleBookmark = async (contentId: string) => {
-    if (!user) return;
-
-    const isCurrentlyBookmarked = bookmarkedContents.has(contentId);
-
-    try {
-      if (isCurrentlyBookmarked) {
-        const { error } = await supabase
-          .from('bookmarks')
-          .delete()
-          .eq('user_id', user.id)
-          .eq('vetted_content_id', contentId);
-
-        if (error) throw error;
-        setBookmarkedContents(prev => {
-          const next = new Set(prev);
-          next.delete(contentId);
-          return next;
-        });
-        toast.success('Retiré des favoris');
-      } else {
-        const { error } = await supabase
-          .from('bookmarks')
-          .insert({ user_id: user.id, vetted_content_id: contentId });
-
-        if (error) throw error;
-        setBookmarkedContents(prev => new Set([...prev, contentId]));
-        toast.success('Ajouté aux favoris');
-      }
-    } catch (error) {
-      console.error('Error toggling bookmark:', error);
-      toast.error('Erreur lors de la mise à jour des favoris');
-    }
+  const handleToggleBookmark = (contentId: string) => {
+    toggleBookmark(contentId);
   };
 
   const handleSubmitContent = async (data: { id?: string; title: string; content: string; image_url: string | null; category: string }) => {
     if (!user) return;
 
     try {
-      // First get user's workspace
       const { data: workspace, error: workspaceError } = await supabase
         .from('workspaces')
         .select('id')
@@ -143,7 +75,6 @@ export function VettedLibrary({
       }
 
       if (data.id) {
-        // Update existing
         const { error } = await supabase
           .from('vetted_content')
           .update({
@@ -157,7 +88,6 @@ export function VettedLibrary({
         if (error) throw error;
         toast.success('Contenu modifié');
       } else {
-        // Create new
         const { error } = await supabase
           .from('vetted_content')
           .insert({
@@ -175,7 +105,7 @@ export function VettedLibrary({
 
       setEditingContent(null);
       onModalOpenChange(false);
-      fetchData();
+      refetch();
     } catch (error) {
       console.error('Error saving content:', error);
       toast.error('Erreur lors de la sauvegarde');
@@ -192,25 +122,11 @@ export function VettedLibrary({
     setDeleteDialogOpen(true);
   };
 
-  const handleConfirmDelete = async () => {
+  const handleConfirmDelete = () => {
     if (!contentToDelete) return;
-
-    try {
-      const { error } = await supabase
-        .from('vetted_content')
-        .delete()
-        .eq('id', contentToDelete);
-
-      if (error) throw error;
-      toast.success('Contenu supprimé');
-      fetchData();
-    } catch (error) {
-      console.error('Error deleting content:', error);
-      toast.error('Erreur lors de la suppression');
-    } finally {
-      setDeleteDialogOpen(false);
-      setContentToDelete(null);
-    }
+    deleteContent(contentToDelete);
+    setDeleteDialogOpen(false);
+    setContentToDelete(null);
   };
 
   const filteredContents = contents
@@ -243,7 +159,6 @@ export function VettedLibrary({
 
   return (
     <div className="space-y-4">
-      {/* Content display */}
       {filteredContents.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground">
           <p>Aucun contenu validé</p>
