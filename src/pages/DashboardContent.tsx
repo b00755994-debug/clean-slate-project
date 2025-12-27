@@ -142,7 +142,7 @@ export default function DashboardContent() {
                 <Popover>
                   <PopoverTrigger asChild>
                     <button 
-                      className="flex h-10 w-[160px] items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                      className="flex h-10 w-[160px] items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 hover:bg-accent hover:text-accent-foreground"
                     >
                       <span className="truncate">
                         {selectedCategories.length > 0 
