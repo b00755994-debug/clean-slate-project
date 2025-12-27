@@ -2,12 +2,13 @@ import { useState, useEffect } from 'react';
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
 import { TeamFeed } from '@/components/content/TeamFeed';
 import { VettedLibrary } from '@/components/content/VettedLibrary';
-import { Library, Newspaper, Bookmark, Grid3X3, List, Plus, X } from 'lucide-react';
+import { Library, Newspaper, Bookmark, Grid3X3, List, Plus, X, Check, ChevronDown } from 'lucide-react';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Toggle } from '@/components/ui/toggle';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Command, CommandGroup, CommandItem } from '@/components/ui/command';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
@@ -137,20 +138,38 @@ export default function DashboardContent() {
               </>
             ) : (
               <>
-                {/* Category badges */}
-                {categories.map(cat => (
-                  <Badge
-                    key={cat.value}
-                    variant={selectedCategories.includes(cat.value) ? 'default' : 'outline'}
-                    className={cn(
-                      "cursor-pointer transition-colors",
-                      selectedCategories.includes(cat.value) && "bg-primary text-primary-foreground"
-                    )}
-                    onClick={() => toggleCategory(cat.value)}
-                  >
-                    {cat.label}
-                  </Badge>
-                ))}
+                {/* Category multi-select dropdown */}
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" className="w-[160px] justify-between">
+                      {selectedCategories.length > 0 
+                        ? `${selectedCategories.length} catégorie${selectedCategories.length > 1 ? 's' : ''}`
+                        : 'Catégories'}
+                      <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[200px] p-0 bg-popover" align="start">
+                    <Command>
+                      <CommandGroup>
+                        {categories.map(cat => (
+                          <CommandItem
+                            key={cat.value}
+                            onSelect={() => toggleCategory(cat.value)}
+                            className="cursor-pointer"
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                selectedCategories.includes(cat.value) ? "opacity-100" : "opacity-0"
+                              )}
+                            />
+                            {cat.label}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
 
                 <Select value={dateFilter} onValueChange={setDateFilter}>
                   <SelectTrigger className="w-[140px]">
@@ -164,24 +183,24 @@ export default function DashboardContent() {
                   </SelectContent>
                 </Select>
 
+                <Toggle
+                  pressed={showBookmarksOnly}
+                  onPressedChange={setShowBookmarksOnly}
+                  className="flex items-center gap-2"
+                  aria-label="Filtrer les favoris"
+                >
+                  <Bookmark className="h-4 w-4" />
+                  <span className="hidden sm:inline">Favoris</span>
+                </Toggle>
+
                 {hasActiveFilters && (
-                  <Button variant="ghost" size="sm" onClick={clearFilters} className="h-6 px-2">
+                  <Button variant="ghost" size="sm" onClick={clearFilters} className="h-8 px-3">
                     <X className="h-3 w-3 mr-1" />
                     Effacer
                   </Button>
                 )}
               </>
             )}
-
-            <Toggle
-              pressed={showBookmarksOnly}
-              onPressedChange={setShowBookmarksOnly}
-              className="flex items-center gap-2"
-              aria-label="Filtrer les favoris"
-            >
-              <Bookmark className="h-4 w-4" />
-              <span className="hidden sm:inline">Favoris</span>
-            </Toggle>
           </div>
 
           {/* Right side: View mode toggle + Add button */}
