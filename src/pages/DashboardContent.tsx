@@ -159,14 +159,16 @@ export default function DashboardContent() {
                           <CommandItem
                             key={cat.value}
                             onSelect={() => toggleCategory(cat.value)}
-                            className="cursor-pointer"
+                            className="cursor-pointer hover:bg-muted"
                           >
-                            <Check
-                              className={cn(
-                                "mr-2 h-4 w-4",
-                                selectedCategories.includes(cat.value) ? "opacity-100" : "opacity-0"
+                            <div className={cn(
+                              "mr-2 h-4 w-4 rounded-sm border border-input flex items-center justify-center",
+                              selectedCategories.includes(cat.value) && "bg-primary border-primary"
+                            )}>
+                              {selectedCategories.includes(cat.value) && (
+                                <Check className="h-3 w-3 text-primary-foreground" />
                               )}
-                            />
+                            </div>
                             {cat.label}
                           </CommandItem>
                         ))}
