@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -11,20 +10,13 @@ import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Crown, Linkedin, Plus, Trash2, ExternalLink, CheckCircle2, XCircle, Settings, Link, Unlink, LogOut, MessageSquare, Lock, User } from 'lucide-react';
+import { Crown, Linkedin, Plus, Trash2, ExternalLink, CheckCircle2, XCircle, Settings, LogOut, User, Link, Unlink, Lock, MessageSquare } from 'lucide-react';
 import slackLogo from '@/assets/slack-logo.png';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useSlackMembers } from '@/hooks/useSlackMembers';
 import { useWorkspace } from '@/hooks/useWorkspace';
+import { useLinkedInProfiles } from '@/hooks/useLinkedInProfiles';
 
-interface LinkedInProfile {
-  id: string;
-  linkedin_url: string;
-  profile_name: string;
-  avatar_url: string | null;
-  slack_user_id: string | null;
-  posts_count?: number;
-}
 interface SlackMember {
   id: string;
   name: string;
@@ -41,50 +33,23 @@ export default function Dashboard() {
     toast
   } = useToast();
   
-  // Use React Query hook for workspace with caching
+  // Use React Query hooks for caching
   const { workspace: slackWorkspace, refetch: refetchWorkspace, disconnect: disconnectSlack } = useWorkspace();
+  const { 
+    linkedinProfiles, 
+    addProfile, 
+    isAddingProfile, 
+    deleteProfile, 
+    updateSlackUser 
+  } = useLinkedInProfiles();
+  const { data: slackMembers = [], isLoading: isLoadingMembers } = useSlackMembers(slackWorkspace?.is_connected || false);
   
-  const [linkedinProfiles, setLinkedinProfiles] = useState<LinkedInProfile[]>([]);
-  const [isAddingProfile, setIsAddingProfile] = useState(false);
   const [newProfileName, setNewProfileName] = useState('');
   const [newProfileUrl, setNewProfileUrl] = useState('');
   const [selectedSlackUserId, setSelectedSlackUserId] = useState<string>('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProfileId, setEditingProfileId] = useState<string | null>(null);
   const [editSlackUserId, setEditSlackUserId] = useState<string>('');
-
-  // Use React Query hook for Slack members with caching
-  const { data: slackMembers = [], isLoading: isLoadingMembers } = useSlackMembers(slackWorkspace?.is_connected || false);
-
-  useEffect(() => {
-    if (user) {
-      fetchLinkedInProfiles();
-    }
-  }, [user]);
-  const fetchLinkedInProfiles = async () => {
-    const {
-      data: profiles,
-      error
-    } = await supabase.from('billable_users').select('*').eq('user_id', user?.id);
-    if (!error && profiles) {
-      // Get posts count for each profile in the last 30 days
-      const thirtyDaysAgo = new Date();
-      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-      const profilesWithPosts = await Promise.all(profiles.map(async p => {
-        const {
-          count
-        } = await supabase.from('posts').select('*', {
-          count: 'exact',
-          head: true
-        }).eq('linkedin_profiles', p.id).gte('created_at', thirtyDaysAgo.toISOString());
-        return {
-          ...p,
-          posts_count: count || 0
-        };
-      }));
-      setLinkedinProfiles(profilesWithPosts);
-    }
-  };
   const handleAddProfile = async () => {
     if (!newProfileName.trim() || !newProfileUrl.trim()) {
       toast({
@@ -94,73 +59,27 @@ export default function Dashboard() {
       });
       return;
     }
-    setIsAddingProfile(true);
-    const {
-      error
-    } = await supabase.from('billable_users').insert({
-      user_id: user?.id,
-      profile_name: newProfileName.trim(),
-      linkedin_url: newProfileUrl.trim(),
-      slack_user_id: selectedSlackUserId || null
-    });
-    if (error) {
-      toast({
-        title: 'Erreur',
-        description: "Impossible d'ajouter le profil",
-        variant: 'destructive'
-      });
-    } else {
-      toast({
-        title: 'Profil ajouté',
-        description: 'Le profil LinkedIn a été ajouté avec succès'
+    try {
+      await addProfile({
+        profileName: newProfileName,
+        linkedinUrl: newProfileUrl,
+        slackUserId: selectedSlackUserId || undefined,
       });
       setNewProfileName('');
       setNewProfileUrl('');
       setSelectedSlackUserId('');
       setIsDialogOpen(false);
-      fetchLinkedInProfiles();
-    }
-    setIsAddingProfile(false);
-  };
-  const handleDeleteProfile = async (profileId: string) => {
-    const {
-      error
-    } = await supabase.from('billable_users').delete().eq('id', profileId);
-    if (error) {
-      toast({
-        title: 'Erreur',
-        description: 'Impossible de supprimer le profil',
-        variant: 'destructive'
-      });
-    } else {
-      toast({
-        title: 'Profil supprimé',
-        description: 'Le profil LinkedIn a été supprimé'
-      });
-      fetchLinkedInProfiles();
+    } catch (error) {
+      // Error is handled in the hook
     }
   };
-  const handleUpdateSlackUser = async (profileId: string, slackUserId: string | null) => {
-    const {
-      error
-    } = await supabase.from('billable_users').update({
-      slack_user_id: slackUserId
-    }).eq('id', profileId);
-    if (error) {
-      toast({
-        title: 'Erreur',
-        description: "Impossible de mettre à jour l'association Slack",
-        variant: 'destructive'
-      });
-    } else {
-      toast({
-        title: 'Association mise à jour',
-        description: slackUserId ? 'Le profil a été associé à un utilisateur Slack' : "L'association Slack a été supprimée"
-      });
-      setEditingProfileId(null);
-      setEditSlackUserId('');
-      fetchLinkedInProfiles();
-    }
+  const handleDeleteProfile = (profileId: string) => {
+    deleteProfile(profileId);
+  };
+  const handleUpdateSlackUser = (profileId: string, slackUserId: string | null) => {
+    updateSlackUser({ profileId, slackUserId });
+    setEditingProfileId(null);
+    setEditSlackUserId('');
   };
   const handleConnectSlack = () => {
     if (!user?.id) {
