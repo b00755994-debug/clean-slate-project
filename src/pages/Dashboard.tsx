@@ -15,13 +15,8 @@ import { Crown, Linkedin, Plus, Trash2, ExternalLink, CheckCircle2, XCircle, Set
 import slackLogo from '@/assets/slack-logo.png';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useSlackMembers } from '@/hooks/useSlackMembers';
-interface SlackWorkspace {
-  id: string;
-  workspace_name: string;
-  workspace_id: string | null;
-  is_connected: boolean;
-  connected_at: string | null;
-}
+import { useWorkspace } from '@/hooks/useWorkspace';
+
 interface LinkedInProfile {
   id: string;
   linkedin_url: string;
@@ -45,7 +40,10 @@ export default function Dashboard() {
   const {
     toast
   } = useToast();
-  const [slackWorkspace, setSlackWorkspace] = useState<SlackWorkspace | null>(null);
+  
+  // Use React Query hook for workspace with caching
+  const { workspace: slackWorkspace, refetch: refetchWorkspace, disconnect: disconnectSlack } = useWorkspace();
+  
   const [linkedinProfiles, setLinkedinProfiles] = useState<LinkedInProfile[]>([]);
   const [isAddingProfile, setIsAddingProfile] = useState(false);
   const [newProfileName, setNewProfileName] = useState('');
@@ -60,25 +58,9 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (user) {
-      fetchSlackWorkspace();
       fetchLinkedInProfiles();
     }
   }, [user]);
-  const fetchSlackWorkspace = async () => {
-    const {
-      data,
-      error
-    } = await supabase.from('workspaces').select('*').eq('user_id', user?.id).maybeSingle();
-    if (!error && data) {
-      setSlackWorkspace({
-        id: data.id,
-        workspace_name: data.workspace_name,
-        workspace_id: null,
-        is_connected: data.is_connected || false,
-        connected_at: data.connected_at
-      });
-    }
-  };
   const fetchLinkedInProfiles = async () => {
     const {
       data: profiles,
@@ -198,27 +180,18 @@ export default function Dashboard() {
   };
   const handleDisconnectSlack = async () => {
     if (!slackWorkspace?.id) return;
-    const {
-      error
-    } = await supabase.from('workspaces').update({
-      is_connected: false,
-      slack_workspace_auth: null
-    }).eq('id', slackWorkspace.id);
-    if (error) {
+    try {
+      disconnectSlack(slackWorkspace.id);
+      toast({
+        title: 'Slack déconnecté',
+        description: 'Votre workspace Slack a été déconnecté'
+      });
+    } catch (error) {
       toast({
         title: 'Erreur',
         description: 'Impossible de déconnecter Slack',
         variant: 'destructive'
       });
-    } else {
-      toast({
-        title: 'Slack déconnecté',
-        description: 'Votre workspace Slack a été déconnecté'
-      });
-      setSlackWorkspace(prev => prev ? {
-        ...prev,
-        is_connected: false
-      } : null);
     }
   };
 
@@ -234,7 +207,7 @@ export default function Dashboard() {
       });
       // Clean up URL
       window.history.replaceState({}, '', '/dashboard');
-      fetchSlackWorkspace();
+      refetchWorkspace();
     }
     if (slackError) {
       toast({
