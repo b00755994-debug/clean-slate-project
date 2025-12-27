@@ -1,11 +1,17 @@
+import { useState } from 'react';
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TeamFeed } from '@/components/content/TeamFeed';
 import { VettedLibrary } from '@/components/content/VettedLibrary';
-import { BookmarksList } from '@/components/content/BookmarksList';
 import { Library, Newspaper, Bookmark } from 'lucide-react';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { Toggle } from '@/components/ui/toggle';
+
+type ContentTab = 'feed' | 'vetted';
 
 export default function DashboardContent() {
+  const [activeTab, setActiveTab] = useState<ContentTab>('feed');
+  const [showBookmarksOnly, setShowBookmarksOnly] = useState(false);
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -19,34 +25,41 @@ export default function DashboardContent() {
           </p>
         </div>
 
-        <Tabs defaultValue="feed" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 lg:w-[400px]">
-            <TabsTrigger value="feed" className="flex items-center gap-2">
+        {/* Header with tabs on left and bookmark filter on right */}
+        <div className="flex items-center justify-between gap-4 flex-wrap">
+          <ToggleGroup 
+            type="single" 
+            value={activeTab} 
+            onValueChange={(v) => v && setActiveTab(v as ContentTab)}
+            className="bg-muted rounded-lg p-1"
+          >
+            <ToggleGroupItem value="feed" className="flex items-center gap-2 px-4">
               <Newspaper className="h-4 w-4" />
               <span className="hidden sm:inline">Team Feed</span>
-            </TabsTrigger>
-            <TabsTrigger value="vetted" className="flex items-center gap-2">
+            </ToggleGroupItem>
+            <ToggleGroupItem value="vetted" className="flex items-center gap-2 px-4">
               <Library className="h-4 w-4" />
               <span className="hidden sm:inline">Vetted Library</span>
-            </TabsTrigger>
-            <TabsTrigger value="bookmarks" className="flex items-center gap-2">
-              <Bookmark className="h-4 w-4" />
-              <span className="hidden sm:inline">My Bookmarks</span>
-            </TabsTrigger>
-          </TabsList>
+            </ToggleGroupItem>
+          </ToggleGroup>
 
-          <TabsContent value="feed" className="mt-6">
-            <TeamFeed />
-          </TabsContent>
+          <Toggle
+            pressed={showBookmarksOnly}
+            onPressedChange={setShowBookmarksOnly}
+            className="flex items-center gap-2"
+            aria-label="Filtrer les favoris"
+          >
+            <Bookmark className="h-4 w-4" />
+            <span className="hidden sm:inline">Favoris uniquement</span>
+          </Toggle>
+        </div>
 
-          <TabsContent value="vetted" className="mt-6">
-            <VettedLibrary />
-          </TabsContent>
-
-          <TabsContent value="bookmarks" className="mt-6">
-            <BookmarksList />
-          </TabsContent>
-        </Tabs>
+        {/* Content */}
+        {activeTab === 'feed' ? (
+          <TeamFeed showBookmarksOnly={showBookmarksOnly} />
+        ) : (
+          <VettedLibrary showBookmarksOnly={showBookmarksOnly} />
+        )}
       </div>
     </DashboardLayout>
   );
