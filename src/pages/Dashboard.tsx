@@ -8,54 +8,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
-  Crown,
-  Linkedin,
-  Plus,
-  Trash2,
-  ExternalLink,
-  CheckCircle2,
-  XCircle,
-  Settings,
-  Link,
-  Unlink,
-  LogOut,
-  MessageSquare,
-  Lock,
-  User,
-} from 'lucide-react';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Crown, Linkedin, Plus, Trash2, ExternalLink, CheckCircle2, XCircle, Settings, Link, Unlink, LogOut, MessageSquare, Lock, User } from 'lucide-react';
 import slackLogo from '@/assets/slack-logo.png';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
-
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 interface SlackWorkspace {
   id: string;
   workspace_name: string;
@@ -63,7 +21,6 @@ interface SlackWorkspace {
   is_connected: boolean;
   connected_at: string | null;
 }
-
 interface LinkedInProfile {
   id: string;
   linkedin_url: string;
@@ -72,18 +29,21 @@ interface LinkedInProfile {
   slack_user_id: string | null;
   posts_count?: number;
 }
-
 interface SlackMember {
   id: string;
   name: string;
   email: string | null;
   avatar_url: string | null;
 }
-
 export default function Dashboard() {
-  const { user, profile, isLoading } = useAuth();
-  const { toast } = useToast();
-  
+  const {
+    user,
+    profile,
+    isLoading
+  } = useAuth();
+  const {
+    toast
+  } = useToast();
   const [slackWorkspace, setSlackWorkspace] = useState<SlackWorkspace | null>(null);
   const [linkedinProfiles, setLinkedinProfiles] = useState<LinkedInProfile[]>([]);
   const [slackMembers, setSlackMembers] = useState<SlackMember[]>([]);
@@ -96,7 +56,6 @@ export default function Dashboard() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProfileId, setEditingProfileId] = useState<string | null>(null);
   const [editSlackUserId, setEditSlackUserId] = useState<string>('');
-
   useEffect(() => {
     if (user) {
       fetchSlackWorkspace();
@@ -110,68 +69,62 @@ export default function Dashboard() {
       fetchSlackMembers();
     }
   }, [slackWorkspace?.is_connected]);
-
   const fetchSlackWorkspace = async () => {
-    const { data, error } = await supabase
-      .from('workspaces')
-      .select('*')
-      .eq('user_id', user?.id)
-      .maybeSingle();
-    
+    const {
+      data,
+      error
+    } = await supabase.from('workspaces').select('*').eq('user_id', user?.id).maybeSingle();
     if (!error && data) {
       setSlackWorkspace({
         id: data.id,
         workspace_name: data.workspace_name,
         workspace_id: null,
         is_connected: data.is_connected || false,
-        connected_at: data.connected_at,
+        connected_at: data.connected_at
       });
     }
   };
-
   const fetchLinkedInProfiles = async () => {
-    const { data: profiles, error } = await supabase
-      .from('billable_users')
-      .select('*')
-      .eq('user_id', user?.id);
-    
+    const {
+      data: profiles,
+      error
+    } = await supabase.from('billable_users').select('*').eq('user_id', user?.id);
     if (!error && profiles) {
       // Get posts count for each profile in the last 30 days
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-      
-      const profilesWithPosts = await Promise.all(
-        profiles.map(async (p) => {
-          const { count } = await supabase
-            .from('posts')
-            .select('*', { count: 'exact', head: true })
-            .eq('linkedin_profiles', p.id)
-            .gte('created_at', thirtyDaysAgo.toISOString());
-          
-          return { ...p, posts_count: count || 0 };
-        })
-      );
-      
+      const profilesWithPosts = await Promise.all(profiles.map(async p => {
+        const {
+          count
+        } = await supabase.from('posts').select('*', {
+          count: 'exact',
+          head: true
+        }).eq('linkedin_profiles', p.id).gte('created_at', thirtyDaysAgo.toISOString());
+        return {
+          ...p,
+          posts_count: count || 0
+        };
+      }));
       setLinkedinProfiles(profilesWithPosts);
     }
   };
-
   const fetchSlackMembers = async (force = false) => {
     // Use cache if already loaded, unless forced
     if (!force && slackMembersLoaded && slackMembers.length > 0) {
       return;
     }
-    
     setIsLoadingMembers(true);
     try {
-      const { data, error } = await supabase.functions.invoke('slack-members');
-      
+      const {
+        data,
+        error
+      } = await supabase.functions.invoke('slack-members');
       if (error) {
         console.error('Error fetching Slack members:', error);
         toast({
           title: 'Erreur',
           description: 'Impossible de récupérer les membres Slack',
-          variant: 'destructive',
+          variant: 'destructive'
         });
         return;
       }
@@ -181,11 +134,10 @@ export default function Dashboard() {
         toast({
           title: 'API Slack surchargée',
           description: 'Réessayez dans quelques secondes',
-          variant: 'destructive',
+          variant: 'destructive'
         });
         return;
       }
-
       if (data?.members) {
         setSlackMembers(data.members);
         setSlackMembersLoaded(true);
@@ -196,38 +148,34 @@ export default function Dashboard() {
       setIsLoadingMembers(false);
     }
   };
-
   const handleAddProfile = async () => {
     if (!newProfileName.trim() || !newProfileUrl.trim()) {
       toast({
         title: 'Erreur',
         description: 'Veuillez remplir tous les champs',
-        variant: 'destructive',
+        variant: 'destructive'
       });
       return;
     }
-
     setIsAddingProfile(true);
-    
-    const { error } = await supabase
-      .from('billable_users')
-      .insert({
-        user_id: user?.id,
-        profile_name: newProfileName.trim(),
-        linkedin_url: newProfileUrl.trim(),
-        slack_user_id: selectedSlackUserId || null,
-      });
-    
+    const {
+      error
+    } = await supabase.from('billable_users').insert({
+      user_id: user?.id,
+      profile_name: newProfileName.trim(),
+      linkedin_url: newProfileUrl.trim(),
+      slack_user_id: selectedSlackUserId || null
+    });
     if (error) {
       toast({
         title: 'Erreur',
         description: "Impossible d'ajouter le profil",
-        variant: 'destructive',
+        variant: 'destructive'
       });
     } else {
       toast({
         title: 'Profil ajouté',
-        description: 'Le profil LinkedIn a été ajouté avec succès',
+        description: 'Le profil LinkedIn a été ajouté avec succès'
       });
       setNewProfileName('');
       setNewProfileUrl('');
@@ -235,96 +183,87 @@ export default function Dashboard() {
       setIsDialogOpen(false);
       fetchLinkedInProfiles();
     }
-    
     setIsAddingProfile(false);
   };
-
   const handleDeleteProfile = async (profileId: string) => {
-    const { error } = await supabase
-      .from('billable_users')
-      .delete()
-      .eq('id', profileId);
-    
+    const {
+      error
+    } = await supabase.from('billable_users').delete().eq('id', profileId);
     if (error) {
       toast({
         title: 'Erreur',
         description: 'Impossible de supprimer le profil',
-        variant: 'destructive',
+        variant: 'destructive'
       });
     } else {
       toast({
         title: 'Profil supprimé',
-        description: 'Le profil LinkedIn a été supprimé',
+        description: 'Le profil LinkedIn a été supprimé'
       });
       fetchLinkedInProfiles();
     }
   };
-
   const handleUpdateSlackUser = async (profileId: string, slackUserId: string | null) => {
-    const { error } = await supabase
-      .from('billable_users')
-      .update({ slack_user_id: slackUserId })
-      .eq('id', profileId);
-    
+    const {
+      error
+    } = await supabase.from('billable_users').update({
+      slack_user_id: slackUserId
+    }).eq('id', profileId);
     if (error) {
       toast({
         title: 'Erreur',
         description: "Impossible de mettre à jour l'association Slack",
-        variant: 'destructive',
+        variant: 'destructive'
       });
     } else {
       toast({
         title: 'Association mise à jour',
-        description: slackUserId 
-          ? 'Le profil a été associé à un utilisateur Slack'
-          : "L'association Slack a été supprimée",
+        description: slackUserId ? 'Le profil a été associé à un utilisateur Slack' : "L'association Slack a été supprimée"
       });
       setEditingProfileId(null);
       setEditSlackUserId('');
       fetchLinkedInProfiles();
     }
   };
-
   const handleConnectSlack = () => {
     if (!user?.id) {
       toast({
         title: 'Erreur',
         description: 'Vous devez être connecté pour lier Slack',
-        variant: 'destructive',
+        variant: 'destructive'
       });
       return;
     }
-    
+
     // Get current URL origin + path for redirect after OAuth
     const redirectUrl = `${window.location.origin}/dashboard`;
-    
+
     // Redirect to Slack OAuth via edge function with redirect URL
     window.location.href = `https://hvmrjymweajxxkoiupzf.supabase.co/functions/v1/slack-auth?user_id=${user.id}&redirect_url=${encodeURIComponent(redirectUrl)}`;
   };
-
   const handleDisconnectSlack = async () => {
     if (!slackWorkspace?.id) return;
-    
-    const { error } = await supabase
-      .from('workspaces')
-      .update({
-        is_connected: false,
-        slack_workspace_auth: null,
-      })
-      .eq('id', slackWorkspace.id);
-    
+    const {
+      error
+    } = await supabase.from('workspaces').update({
+      is_connected: false,
+      slack_workspace_auth: null
+    }).eq('id', slackWorkspace.id);
     if (error) {
       toast({
         title: 'Erreur',
         description: 'Impossible de déconnecter Slack',
-        variant: 'destructive',
+        variant: 'destructive'
       });
     } else {
       toast({
         title: 'Slack déconnecté',
-        description: 'Votre workspace Slack a été déconnecté',
+        description: 'Votre workspace Slack a été déconnecté'
       });
-      setSlackWorkspace(prev => prev ? { ...prev, is_connected: false } : null);
+      setSlackWorkspace(prev => prev ? {
+        ...prev,
+        is_connected: false
+      } : null);
       setSlackMembers([]);
     }
   };
@@ -334,22 +273,20 @@ export default function Dashboard() {
     const urlParams = new URLSearchParams(window.location.search);
     const slackSuccess = urlParams.get('slack_success');
     const slackError = urlParams.get('slack_error');
-
     if (slackSuccess) {
       toast({
         title: 'Slack connecté !',
-        description: 'Votre workspace Slack a été connecté avec succès.',
+        description: 'Votre workspace Slack a été connecté avec succès.'
       });
       // Clean up URL
       window.history.replaceState({}, '', '/dashboard');
       fetchSlackWorkspace();
     }
-
     if (slackError) {
       toast({
         title: 'Erreur Slack',
         description: `La connexion a échoué: ${slackError}`,
-        variant: 'destructive',
+        variant: 'destructive'
       });
       // Clean up URL
       window.history.replaceState({}, '', '/dashboard');
@@ -360,31 +297,25 @@ export default function Dashboard() {
   const getSlackMember = (slackUserId: string): SlackMember | undefined => {
     return slackMembers.find(m => m.id === slackUserId);
   };
-
   const getSlackMemberName = (slackUserId: string) => {
     const member = getSlackMember(slackUserId);
     return member?.name || slackUserId;
   };
-
   if (isLoading) {
-    return (
-      <DashboardLayout>
+    return <DashboardLayout>
         <div className="flex items-center justify-center h-64">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
         </div>
-      </DashboardLayout>
-    );
+      </DashboardLayout>;
   }
-
-  return (
-    <DashboardLayout>
+  return <DashboardLayout>
       <div className="space-y-8">
         <div className="flex flex-col gap-2">
           <h1 className="text-3xl font-bold text-foreground">
             Bonjour, {profile?.full_name?.split(' ')[0] || 'Utilisateur'} 👋
           </h1>
           <p className="text-muted-foreground">
-            Gérez votre compte et suivez vos équipes sur LinkedIn
+            Gérez votre compte et soutenez vos équipes sur LinkedIn
           </p>
         </div>
 
@@ -426,73 +357,43 @@ export default function Dashboard() {
                   <img src={slackLogo} alt="Slack" className="w-5 h-5" />
                   Slack
                 </CardTitle>
-                {slackWorkspace?.is_connected ? (
-                  <Badge variant="outline" className="text-success border-success">
+                {slackWorkspace?.is_connected ? <Badge variant="outline" className="text-success border-success">
                     <CheckCircle2 className="w-3 h-3 mr-1" />
                     Connecté
-                  </Badge>
-                ) : (
-                  <Badge variant="outline" className="text-muted-foreground">
+                  </Badge> : <Badge variant="outline" className="text-muted-foreground">
                     <XCircle className="w-3 h-3 mr-1" />
                     Non connecté
-                  </Badge>
-                )}
+                  </Badge>}
               </div>
             </CardHeader>
             <CardContent>
-              {slackWorkspace?.is_connected ? (
-                <p className="text-sm text-muted-foreground mb-4">
+              {slackWorkspace?.is_connected ? <p className="text-sm text-muted-foreground mb-4">
                   Connecté à <strong>{slackWorkspace.workspace_name}</strong>
-                  {slackMembers.length > 0 ? (
-                    <span className="block text-xs mt-1">
+                  {slackMembers.length > 0 ? <span className="block text-xs mt-1">
                       {slackMembers.length} membres identifiés
-                    </span>
-                  ) : isLoadingMembers ? (
-                    <span className="block text-xs mt-1 text-muted-foreground">
+                    </span> : isLoadingMembers ? <span className="block text-xs mt-1 text-muted-foreground">
                       Chargement des membres...
-                    </span>
-                  ) : (
-                    <span className="block text-xs mt-1 text-amber-500">
+                    </span> : <span className="block text-xs mt-1 text-amber-500">
                       Aucun membre trouvé. Essayez de reconnecter Slack.
-                    </span>
-                  )}
-                </p>
-              ) : (
-                <p className="text-sm text-muted-foreground mb-4">
+                    </span>}
+                </p> : <p className="text-sm text-muted-foreground mb-4">
                   Connectez votre workspace Slack pour recevoir les notifications.
-                </p>
-              )}
-              {slackWorkspace?.is_connected ? (
-                <div className="flex gap-2 mt-auto pt-4">
-                  <Button
-                    size="sm"
-                    className="gap-2 flex-1 bg-[#4A154B] hover:bg-[#3a1039] text-white"
-                    asChild
-                  >
+                </p>}
+              {slackWorkspace?.is_connected ? <div className="flex gap-2 mt-auto pt-4">
+                  <Button size="sm" className="gap-2 flex-1 bg-[#4A154B] hover:bg-[#3a1039] text-white" asChild>
                     <a href="slack://open" target="_blank" rel="noopener noreferrer">
                       <img src={slackLogo} alt="Slack" className="w-4 h-4" />
                       Ouvrir Slack
                     </a>
                   </Button>
-                  <Button
-                    size="sm"
-                    className="gap-1.5 flex-1 bg-red-100 border border-red-200 text-red-600 hover:bg-red-200 hover:text-red-700 dark:bg-red-950/30 dark:border-red-800/50 dark:text-red-400 dark:hover:bg-red-900/40"
-                    onClick={handleDisconnectSlack}
-                  >
+                  <Button size="sm" className="gap-1.5 flex-1 bg-red-100 border border-red-200 text-red-600 hover:bg-red-200 hover:text-red-700 dark:bg-red-950/30 dark:border-red-800/50 dark:text-red-400 dark:hover:bg-red-900/40" onClick={handleDisconnectSlack}>
                     <LogOut className="w-3.5 h-3.5" />
                     Déconnecter
                   </Button>
-                </div>
-              ) : (
-                <Button
-                  size="sm"
-                  className="w-full gap-2 bg-[#4A154B] hover:bg-[#3a1039] text-white"
-                  onClick={handleConnectSlack}
-                >
+                </div> : <Button size="sm" className="w-full gap-2 bg-[#4A154B] hover:bg-[#3a1039] text-white" onClick={handleConnectSlack}>
                   <img src={slackLogo} alt="Slack" className="w-4 h-4" />
                   Connecter Slack
-                </Button>
-              )}
+                </Button>}
             </CardContent>
           </Card>
 
@@ -551,21 +452,11 @@ export default function Dashboard() {
                   <div className="space-y-4 py-4">
                     <div className="space-y-2">
                       <Label htmlFor="profileName">Nom du profil</Label>
-                      <Input
-                        id="profileName"
-                        placeholder="Jean Dupont"
-                        value={newProfileName}
-                        onChange={(e) => setNewProfileName(e.target.value)}
-                      />
+                      <Input id="profileName" placeholder="Jean Dupont" value={newProfileName} onChange={e => setNewProfileName(e.target.value)} />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="profileUrl">URL LinkedIn</Label>
-                      <Input
-                        id="profileUrl"
-                        placeholder="https://linkedin.com/in/jeandupont"
-                        value={newProfileUrl}
-                        onChange={(e) => setNewProfileUrl(e.target.value)}
-                      />
+                      <Input id="profileUrl" placeholder="https://linkedin.com/in/jeandupont" value={newProfileUrl} onChange={e => setNewProfileUrl(e.target.value)} />
                     </div>
                     {/* Slack User Association Field */}
                     <div className="space-y-2">
@@ -574,12 +465,8 @@ export default function Dashboard() {
                         Utilisateur Slack associé
                         <span className="text-muted-foreground text-xs">(optionnel)</span>
                       </Label>
-                      {slackWorkspace?.is_connected && slackMembers.length > 0 ? (
-                        <>
-                          <Select
-                            value={selectedSlackUserId}
-                            onValueChange={setSelectedSlackUserId}
-                          >
+                      {slackWorkspace?.is_connected && slackMembers.length > 0 ? <>
+                          <Select value={selectedSlackUserId} onValueChange={setSelectedSlackUserId}>
                             <SelectTrigger className="w-full">
                               <SelectValue placeholder="Sélectionner un membre Slack" />
                             </SelectTrigger>
@@ -587,50 +474,29 @@ export default function Dashboard() {
                               <SelectItem value="">
                                 <span className="text-muted-foreground">Aucun</span>
                               </SelectItem>
-                              {slackMembers.map((member) => (
-                                <SelectItem key={member.id} value={member.id}>
+                              {slackMembers.map(member => <SelectItem key={member.id} value={member.id}>
                                   <div className="flex items-center gap-2">
-                                    {member.avatar_url ? (
-                                      <img 
-                                        src={member.avatar_url} 
-                                        alt={member.name} 
-                                        className="w-5 h-5 rounded-full"
-                                      />
-                                    ) : (
-                                      <User className="w-5 h-5 text-muted-foreground" />
-                                    )}
+                                    {member.avatar_url ? <img src={member.avatar_url} alt={member.name} className="w-5 h-5 rounded-full" /> : <User className="w-5 h-5 text-muted-foreground" />}
                                     <span>{member.name}</span>
-                                    {member.email && (
-                                      <span className="text-xs text-muted-foreground">
+                                    {member.email && <span className="text-xs text-muted-foreground">
                                         ({member.email})
-                                      </span>
-                                    )}
+                                      </span>}
                                   </div>
-                                </SelectItem>
-                              ))}
+                                </SelectItem>)}
                             </SelectContent>
                           </Select>
                           <p className="text-xs text-muted-foreground flex items-center gap-1">
                             <Link className="w-3 h-3" />
                             Permet de taguer automatiquement l'utilisateur dans les notifications Slack
                           </p>
-                        </>
-                      ) : slackWorkspace?.is_connected && isLoadingMembers ? (
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        </> : slackWorkspace?.is_connected && isLoadingMembers ? <div className="flex items-center gap-2 text-sm text-muted-foreground">
                           <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
                           Chargement des membres...
-                        </div>
-                      ) : (
-                        <TooltipProvider>
+                        </div> : <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <div className="relative">
-                                <Input
-                                  id="slackUser"
-                                  disabled
-                                  placeholder="Connectez Slack pour débloquer"
-                                  className="bg-muted/50 cursor-not-allowed pr-10"
-                                />
+                                <Input id="slackUser" disabled placeholder="Connectez Slack pour débloquer" className="bg-muted/50 cursor-not-allowed pr-10" />
                                 <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                               </div>
                             </TooltipTrigger>
@@ -638,21 +504,14 @@ export default function Dashboard() {
                               <p>Connectez votre workspace Slack pour associer ce profil à un membre de votre équipe et le taguer automatiquement dans les notifications.</p>
                             </TooltipContent>
                           </Tooltip>
-                        </TooltipProvider>
-                      )}
+                        </TooltipProvider>}
                     </div>
                   </div>
                   <DialogFooter>
-                    <Button
-                      variant="outline"
-                      onClick={() => setIsDialogOpen(false)}
-                    >
+                    <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
                       Annuler
                     </Button>
-                    <Button
-                      onClick={handleAddProfile}
-                      disabled={isAddingProfile}
-                    >
+                    <Button onClick={handleAddProfile} disabled={isAddingProfile}>
                       {isAddingProfile ? 'Ajout...' : 'Ajouter'}
                     </Button>
                   </DialogFooter>
@@ -661,14 +520,11 @@ export default function Dashboard() {
             </div>
           </CardHeader>
           <CardContent>
-            {linkedinProfiles.length === 0 ? (
-              <div className="text-center py-12 text-muted-foreground">
+            {linkedinProfiles.length === 0 ? <div className="text-center py-12 text-muted-foreground">
                 <Linkedin className="w-12 h-12 mx-auto mb-4 opacity-50" />
                 <p>Aucun profil LinkedIn suivi pour le moment.</p>
                 <p className="text-sm">Ajoutez des membres de votre équipe pour commencer.</p>
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
+              </div> : <div className="overflow-x-auto">
                 <Table className="text-sm table-fixed w-full">
                   <TableHeader>
                     <TableRow className="h-5">
@@ -683,80 +539,39 @@ export default function Dashboard() {
                 <div className="max-h-[200px] overflow-y-auto">
                   <Table className="text-sm table-fixed w-full">
                     <TableBody>
-                    {linkedinProfiles.map((linkedinProfile) => (
-                      <TableRow key={linkedinProfile.id} className="h-5">
+                    {linkedinProfiles.map(linkedinProfile => <TableRow key={linkedinProfile.id} className="h-5">
                         <TableCell className="font-medium py-0.5 w-[18%]">
                           {linkedinProfile.profile_name}
                         </TableCell>
                         <TableCell className="py-0.5 w-[40%]">
-                          <a
-                            href={linkedinProfile.linkedin_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-primary hover:underline flex items-center gap-1"
-                          >
+                          <a href={linkedinProfile.linkedin_url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
                             {linkedinProfile.linkedin_url.replace('https://linkedin.com/in/', '')}
                             <ExternalLink className="w-3 h-3" />
                           </a>
                         </TableCell>
                         <TableCell className="py-0.5 w-[20%]">
-                          {slackWorkspace?.is_connected ? (
-                            <Select
-                              value={linkedinProfile.slack_user_id || 'none'}
-                              onValueChange={(value) => {
-                                handleUpdateSlackUser(
-                                  linkedinProfile.id, 
-                                  value === 'none' ? null : value
-                                );
-                              }}
-                            >
+                          {slackWorkspace?.is_connected ? <Select value={linkedinProfile.slack_user_id || 'none'} onValueChange={value => {
+                        handleUpdateSlackUser(linkedinProfile.id, value === 'none' ? null : value);
+                      }}>
                               <SelectTrigger className="border-0 bg-transparent p-0 h-auto w-auto shadow-none focus:ring-0 [&>svg]:hidden">
-                                <Badge 
-                                  variant="outline" 
-                                  className={linkedinProfile.slack_user_id 
-                                    ? "bg-[#4A154B]/10 border-[#4A154B]/30 text-[#4A154B] dark:text-[#E01E5A] dark:border-[#E01E5A]/30 dark:bg-[#E01E5A]/10 gap-2 cursor-pointer hover:bg-[#4A154B]/20 dark:hover:bg-[#E01E5A]/20 py-1 px-2 text-xs"
-                                    : "cursor-pointer hover:bg-[#4A154B]/10 hover:border-[#4A154B]/30 gap-2 transition-colors py-1 px-2 text-xs border-[#4A154B]/20"
-                                  }
-                                >
-                                  {linkedinProfile.slack_user_id ? (
-                                    (() => {
-                                      const slackMember = getSlackMember(linkedinProfile.slack_user_id);
-                                      return (
-                                        <>
-                                          {slackMember?.avatar_url ? (
-                                            <img 
-                                              src={slackMember.avatar_url} 
-                                              alt={slackMember.name}
-                                              className="w-5 h-5 rounded"
-                                            />
-                                          ) : (
-                                            <div className="w-5 h-5 rounded bg-[#4A154B] flex items-center justify-center">
+                                <Badge variant="outline" className={linkedinProfile.slack_user_id ? "bg-[#4A154B]/10 border-[#4A154B]/30 text-[#4A154B] dark:text-[#E01E5A] dark:border-[#E01E5A]/30 dark:bg-[#E01E5A]/10 gap-2 cursor-pointer hover:bg-[#4A154B]/20 dark:hover:bg-[#E01E5A]/20 py-1 px-2 text-xs" : "cursor-pointer hover:bg-[#4A154B]/10 hover:border-[#4A154B]/30 gap-2 transition-colors py-1 px-2 text-xs border-[#4A154B]/20"}>
+                                  {linkedinProfile.slack_user_id ? (() => {
+                              const slackMember = getSlackMember(linkedinProfile.slack_user_id);
+                              return <>
+                                          {slackMember?.avatar_url ? <img src={slackMember.avatar_url} alt={slackMember.name} className="w-5 h-5 rounded" /> : <div className="w-5 h-5 rounded bg-[#4A154B] flex items-center justify-center">
                                               <span className="text-white text-xs font-medium">
                                                 {getSlackMemberName(linkedinProfile.slack_user_id).charAt(0).toUpperCase()}
                                               </span>
-                                            </div>
-                                          )}
+                                            </div>}
                                           {getSlackMemberName(linkedinProfile.slack_user_id)}
-                                        </>
-                                      );
-                                    })()
-                                  ) : (
-                                    <>
-                                      <img 
-                                        src={slackLogo} 
-                                        alt="Slack" 
-                                        className="w-4 h-4"
-                                      />
+                                        </>;
+                            })() : <>
+                                      <img src={slackLogo} alt="Slack" className="w-4 h-4" />
                                       Sélectionner
-                                    </>
-                                  )}
+                                    </>}
                                 </Badge>
                               </SelectTrigger>
-                              <SelectContent 
-                                className="bg-popover border border-border shadow-lg z-[100] max-h-60 overflow-auto"
-                                position="popper"
-                                sideOffset={4}
-                              >
+                              <SelectContent className="bg-popover border border-border shadow-lg z-[100] max-h-60 overflow-auto" position="popper" sideOffset={4}>
                                 <SelectItem value="none">
                                   <div className="flex items-center gap-2">
                                     <div className="w-6 h-6 rounded bg-muted flex items-center justify-center">
@@ -765,46 +580,33 @@ export default function Dashboard() {
                                     <span className="text-muted-foreground">Aucun</span>
                                   </div>
                                 </SelectItem>
-                                {slackMembers.map((member) => (
-                                  <SelectItem key={member.id} value={member.id}>
+                                {slackMembers.map(member => <SelectItem key={member.id} value={member.id}>
                                     <div className="flex items-center gap-2">
-                                      {member.avatar_url ? (
-                                        <img 
-                                          src={member.avatar_url} 
-                                          alt={member.name}
-                                          className="w-6 h-6 rounded"
-                                        />
-                                      ) : (
-                                        <div className="w-6 h-6 rounded bg-[#4A154B] flex items-center justify-center">
+                                      {member.avatar_url ? <img src={member.avatar_url} alt={member.name} className="w-6 h-6 rounded" /> : <div className="w-6 h-6 rounded bg-[#4A154B] flex items-center justify-center">
                                           <span className="text-white text-xs font-medium">
                                             {member.name.charAt(0).toUpperCase()}
                                           </span>
-                                        </div>
-                                      )}
+                                        </div>}
                                       <span>{member.name}</span>
                                     </div>
-                                  </SelectItem>
-                                ))}
+                                  </SelectItem>)}
                               </SelectContent>
-                            </Select>
-                          ) : (
-                            <TooltipProvider>
+                            </Select> : <TooltipProvider>
                               <Tooltip>
                                 <TooltipTrigger asChild>
-                                  <Badge 
-                                    variant="secondary" 
-                                    className="text-muted-foreground gap-1.5 cursor-pointer opacity-50 hover:opacity-70 transition-opacity"
-                                    onClick={() => {
-                                      const slackCard = document.getElementById('slack-integration-card');
-                                      if (slackCard) {
-                                        slackCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                                        slackCard.classList.add('ring-2', 'ring-primary', 'ring-offset-2');
-                                        setTimeout(() => {
-                                          slackCard.classList.remove('ring-2', 'ring-primary', 'ring-offset-2');
-                                        }, 2000);
-                                      }
-                                    }}
-                                  >
+                                  <Badge variant="secondary" className="text-muted-foreground gap-1.5 cursor-pointer opacity-50 hover:opacity-70 transition-opacity" onClick={() => {
+                              const slackCard = document.getElementById('slack-integration-card');
+                              if (slackCard) {
+                                slackCard.scrollIntoView({
+                                  behavior: 'smooth',
+                                  block: 'center'
+                                });
+                                slackCard.classList.add('ring-2', 'ring-primary', 'ring-offset-2');
+                                setTimeout(() => {
+                                  slackCard.classList.remove('ring-2', 'ring-primary', 'ring-offset-2');
+                                }, 2000);
+                              }
+                            }}>
                                     <Lock className="w-3 h-3" />
                                     Connecter Slack
                                   </Badge>
@@ -813,32 +615,23 @@ export default function Dashboard() {
                                   <p>Connectez votre workspace Slack pour associer ce profil à un membre de votre équipe</p>
                                 </TooltipContent>
                               </Tooltip>
-                            </TooltipProvider>
-                          )}
+                            </TooltipProvider>}
                         </TableCell>
                         <TableCell className="text-center py-0.5 w-[10%]">
                           <Badge variant="secondary">{linkedinProfile.posts_count || 0}</Badge>
                         </TableCell>
                         <TableCell className="text-right py-0.5 w-[12%]">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleDeleteProfile(linkedinProfile.id)}
-                            className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                          >
+                          <Button variant="ghost" size="icon" onClick={() => handleDeleteProfile(linkedinProfile.id)} className="text-destructive hover:text-destructive hover:bg-destructive/10">
                             <Trash2 className="w-4 h-4" />
                           </Button>
                         </TableCell>
-                      </TableRow>
-                    ))}
+                      </TableRow>)}
                   </TableBody>
                 </Table>
                 </div>
-              </div>
-            )}
+              </div>}
           </CardContent>
         </Card>
       </div>
-    </DashboardLayout>
-  );
+    </DashboardLayout>;
 }
