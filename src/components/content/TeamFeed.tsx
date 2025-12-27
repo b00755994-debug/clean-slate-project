@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { PostCard } from './PostCard';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 
@@ -28,16 +27,20 @@ interface BillableUser {
 
 interface TeamFeedProps {
   showBookmarksOnly?: boolean;
+  sortBy?: 'recent' | 'impressions' | 'reactions';
+  authorFilter?: string;
 }
 
-export function TeamFeed({ showBookmarksOnly = false }: TeamFeedProps) {
+export function TeamFeed({ 
+  showBookmarksOnly = false,
+  sortBy = 'recent',
+  authorFilter = 'all'
+}: TeamFeedProps) {
   const { user } = useAuth();
   const [posts, setPosts] = useState<Post[]>([]);
   const [profiles, setProfiles] = useState<Record<string, BillableUser>>({});
   const [bookmarkedPosts, setBookmarkedPosts] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
-  const [sortBy, setSortBy] = useState<'recent' | 'impressions' | 'reactions'>('recent');
-  const [authorFilter, setAuthorFilter] = useState<string>('all');
 
   useEffect(() => {
     fetchData();
@@ -136,8 +139,6 @@ export function TeamFeed({ showBookmarksOnly = false }: TeamFeedProps) {
       }
     });
 
-  const uniqueAuthors = Object.values(profiles);
-
   if (loading) {
     return (
       <div className="space-y-4">
@@ -159,34 +160,6 @@ export function TeamFeed({ showBookmarksOnly = false }: TeamFeedProps) {
 
   return (
     <div className="space-y-4">
-      {/* Filters */}
-      <div className="flex gap-3 flex-wrap">
-        <Select value={sortBy} onValueChange={(v: 'recent' | 'impressions' | 'reactions') => setSortBy(v)}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Trier par" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="recent">Plus récents</SelectItem>
-            <SelectItem value="impressions">Plus vus</SelectItem>
-            <SelectItem value="reactions">Plus de réactions</SelectItem>
-          </SelectContent>
-        </Select>
-
-        <Select value={authorFilter} onValueChange={setAuthorFilter}>
-          <SelectTrigger className="w-[200px]">
-            <SelectValue placeholder="Filtrer par auteur" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Tous les auteurs</SelectItem>
-            {uniqueAuthors.map(author => (
-              <SelectItem key={author.id} value={author.id}>
-                {author.profile_name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
       {/* Posts */}
       {filteredAndSortedPosts.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground">
