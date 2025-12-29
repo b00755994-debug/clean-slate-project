@@ -875,7 +875,7 @@ const SlackIntegration = () => {
                         <Zap className="h-2.5 w-2.5 text-white" />
                       </div>
                       <span className="text-sm truncate flex-1 relative z-10">superpump</span>
-                      <Badge variant="secondary" className="text-[8px] px-1 py-0 h-3.5 bg-destructive/80 text-white border-none relative z-10">AI</Badge>
+                      <img src={slackLogo} alt="App" className="h-3.5 w-3.5 relative z-10" />
                     </button>
                   </div>
 
@@ -908,7 +908,7 @@ const SlackIntegration = () => {
                           <Zap className="h-3 w-3 text-white" />
                         </div> : <Hash className="h-5 w-5" />}
                       {channels.find(c => c.id === activeChannel)?.data.name.replace('#', '')}
-                      {activeChannel === "dm" && <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 bg-destructive/80 text-white border-none">AI</Badge>}
+                      {activeChannel === "dm" && <img src={slackLogo} alt="App" className="h-4 w-4" />}
                     </h3>
                     <p className="text-sm text-muted-foreground">
                       {channels.find(c => c.id === activeChannel)?.data.description}
