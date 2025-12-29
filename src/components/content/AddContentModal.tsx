@@ -4,10 +4,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ImagePlus, X, Loader2 } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Command, CommandGroup, CommandItem } from '@/components/ui/command';
+import { ImagePlus, X, Loader2, ChevronDown, Check } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 
 interface ContentData {
   id?: string;
@@ -37,10 +39,11 @@ export function AddContentModal({ open, onOpenChange, onSubmit, editingContent }
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [category, setCategory] = useState('general');
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(['general']);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [categoryPopoverOpen, setCategoryPopoverOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -48,7 +51,9 @@ export function AddContentModal({ open, onOpenChange, onSubmit, editingContent }
       setTitle(editingContent.title);
       setContent(editingContent.content);
       setImageUrl(editingContent.image_url);
-      setCategory(editingContent.category || 'general');
+      // Parse comma-separated categories or use single category
+      const cats = editingContent.category ? editingContent.category.split(',').filter(Boolean) : ['general'];
+      setSelectedCategories(cats.length > 0 ? cats : ['general']);
     } else {
       resetForm();
     }
@@ -58,7 +63,18 @@ export function AddContentModal({ open, onOpenChange, onSubmit, editingContent }
     setTitle('');
     setContent('');
     setImageUrl(null);
-    setCategory('general');
+    setSelectedCategories(['general']);
+  };
+
+  const toggleCategory = (value: string) => {
+    setSelectedCategories(prev => {
+      if (prev.includes(value)) {
+        // Don't allow removing the last category
+        if (prev.length === 1) return prev;
+        return prev.filter(c => c !== value);
+      }
+      return [...prev, value];
+    });
   };
 
   const uploadImage = async (file: File): Promise<string | null> => {
@@ -144,7 +160,7 @@ export function AddContentModal({ open, onOpenChange, onSubmit, editingContent }
         title,
         content,
         image_url: imageUrl,
-        category,
+        category: selectedCategories.join(','), // Store as comma-separated
       });
       resetForm();
       onOpenChange(false);
@@ -175,19 +191,45 @@ export function AddContentModal({ open, onOpenChange, onSubmit, editingContent }
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="category">Catégorie</Label>
-              <Select value={category} onValueChange={setCategory}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Sélectionner une catégorie" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categories.map(cat => (
-                    <SelectItem key={cat.value} value={cat.value}>
-                      {cat.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Label>Catégories</Label>
+              <Popover open={categoryPopoverOpen} onOpenChange={setCategoryPopoverOpen}>
+                <PopoverTrigger asChild>
+                  <button 
+                    type="button"
+                    className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-card px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                  >
+                    <span className="truncate">
+                      {selectedCategories.length > 0 
+                        ? selectedCategories.map(c => categories.find(cat => cat.value === c)?.label).join(', ')
+                        : 'Sélectionner des catégories'}
+                    </span>
+                    <ChevronDown className="h-4 w-4 shrink-0 opacity-50" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[200px] p-0 bg-popover" align="start">
+                  <Command>
+                    <CommandGroup>
+                      {categories.map(cat => (
+                        <CommandItem
+                          key={cat.value}
+                          onSelect={() => toggleCategory(cat.value)}
+                          className="cursor-pointer"
+                        >
+                          <div className={cn(
+                            "mr-2 h-4 w-4 rounded-sm border border-input flex items-center justify-center",
+                            selectedCategories.includes(cat.value) && "bg-primary border-primary"
+                          )}>
+                            {selectedCategories.includes(cat.value) && (
+                              <Check className="h-3 w-3 text-primary-foreground" />
+                            )}
+                          </div>
+                          {cat.label}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </Command>
+                </PopoverContent>
+              </Popover>
             </div>
 
             <div className="space-y-2">

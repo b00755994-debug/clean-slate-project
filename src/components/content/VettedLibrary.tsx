@@ -130,7 +130,12 @@ export function VettedLibrary({
   };
 
   const filteredContents = contents
-    .filter(c => selectedCategories.length === 0 || selectedCategories.includes(c.category || 'general'))
+    .filter(c => {
+      if (selectedCategories.length === 0) return true;
+      // Support comma-separated categories in content
+      const contentCategories = (c.category || 'general').split(',').filter(Boolean);
+      return contentCategories.some(cat => selectedCategories.includes(cat));
+    })
     .filter(c => !showBookmarksOnly || bookmarkedContents.has(c.id))
     .filter(c => {
       if (dateFilter === 'all') return true;
@@ -171,7 +176,7 @@ export function VettedLibrary({
           {/* Table header */}
           <div className="flex items-center gap-4 px-3 py-2 bg-muted/40 border-b border-border/50 text-xs font-medium text-muted-foreground">
             <div className="flex-1 min-w-0">Titre</div>
-            <div className="w-24 text-center hidden sm:block">Catégorie</div>
+            <div className="w-32 text-center hidden sm:block">Catégories</div>
             <div className="w-24 text-center hidden md:block">Date</div>
             <div className="w-28 text-right">Actions</div>
           </div>
