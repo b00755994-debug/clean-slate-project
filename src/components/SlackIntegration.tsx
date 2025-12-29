@@ -875,7 +875,7 @@ const SlackIntegration = () => {
                         <Zap className="h-2.5 w-2.5 text-white" />
                       </div>
                       <span className="text-sm truncate flex-1 relative z-10">superpump</span>
-                      <img src={slackLogo} alt="App" className="h-3.5 w-3.5 relative z-10" />
+                      <Badge variant="secondary" className="text-[8px] px-1 py-0 h-3.5 bg-[#1264A3] text-white border-none relative z-10">APP</Badge>
                     </button>
                   </div>
 
@@ -908,7 +908,7 @@ const SlackIntegration = () => {
                           <Zap className="h-3 w-3 text-white" />
                         </div> : <Hash className="h-5 w-5" />}
                       {channels.find(c => c.id === activeChannel)?.data.name.replace('#', '')}
-                      {activeChannel === "dm" && <img src={slackLogo} alt="App" className="h-4 w-4" />}
+                      {activeChannel === "dm" && <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 bg-[#1264A3] text-white border-none">APP</Badge>}
                     </h3>
                     <p className="text-sm text-muted-foreground">
                       {channels.find(c => c.id === activeChannel)?.data.description}
@@ -938,7 +938,7 @@ const SlackIntegration = () => {
                           {/* Header */}
                           <div className="flex items-baseline gap-2 mb-0.5">
                             <span className="font-bold text-[15px] text-[hsl(var(--slack-text-primary))] font-lato">{msg.user}</span>
-                            {msg.user === "superpump" && <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4">APP</Badge>}
+                            {msg.user === "superpump" && <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 bg-[#1264A3] text-white border-none">APP</Badge>}
                             <span className="text-[11px] text-[hsl(var(--slack-text-secondary))]">{msg.time}</span>
                           </div>
 
