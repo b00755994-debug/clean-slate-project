@@ -167,18 +167,28 @@ export function VettedLibrary({
           )}
         </div>
       ) : viewMode === 'list' ? (
-        <div className="space-y-2 w-full overflow-hidden">
-          {filteredContents.map(content => (
-            <VettedContentListItem
-              key={content.id}
-              content={content}
-              isBookmarked={bookmarkedContents.has(content.id)}
-              isAdmin={isAdmin}
-              onToggleBookmark={handleToggleBookmark}
-              onEdit={handleEdit}
-              onDelete={handleDeleteClick}
-            />
-          ))}
+        <div className="w-full overflow-hidden border border-border/50 rounded-lg">
+          {/* Table header */}
+          <div className="flex items-center gap-4 px-3 py-2 bg-muted/30 border-b border-border/50 text-xs font-medium text-muted-foreground">
+            <div className="flex-1 min-w-0">Titre</div>
+            <div className="w-24 text-center hidden sm:block">Catégorie</div>
+            <div className="w-24 text-center hidden md:block">Date</div>
+            <div className="w-28 text-right">Actions</div>
+          </div>
+          {/* Table rows */}
+          <div className="divide-y divide-border/30">
+            {filteredContents.map(content => (
+              <VettedContentListItem
+                key={content.id}
+                content={content}
+                isBookmarked={bookmarkedContents.has(content.id)}
+                isAdmin={isAdmin}
+                onToggleBookmark={handleToggleBookmark}
+                onEdit={handleEdit}
+                onDelete={handleDeleteClick}
+              />
+            ))}
+          </div>
         </div>
       ) : (
         <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

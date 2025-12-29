@@ -71,49 +71,44 @@ export function VettedContentListItem({
   const category = content.category || 'general';
 
   return (
-    <div className="flex items-center gap-4 p-3 border border-border/50 rounded-lg hover:bg-muted/30 transition-colors max-w-full overflow-hidden">
-      {/* Image thumbnail */}
-      {content.image_url && (
-        <div className="w-12 h-12 flex-shrink-0 rounded overflow-hidden">
-          <img 
-            src={content.image_url} 
-            alt={content.title}
-            className="w-full h-full object-cover"
-          />
-        </div>
-      )}
-
-      {/* Content */}
+    <div className="flex items-center gap-4 px-3 py-2.5 hover:bg-muted/50 transition-colors group">
+      {/* Title column - flexible width */}
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-1">
-          <Badge className={cn("text-xs", categoryColors[category])}>
-            {categoryLabels[category] || category}
-          </Badge>
-          <span className="text-xs text-muted-foreground">
-            {formatDistanceToNow(new Date(content.created_at), { addSuffix: true, locale: fr })}
-          </span>
-        </div>
-        <h3 className="font-medium text-foreground truncate">{content.title}</h3>
-        <p className="text-sm text-muted-foreground truncate">{content.content}</p>
+        <p className="font-medium text-sm text-foreground truncate">{content.title}</p>
+        <p className="text-xs text-muted-foreground truncate">{content.content}</p>
       </div>
 
-      {/* Actions */}
-      <div className="flex items-center gap-1 flex-shrink-0">
+      {/* Category column - fixed width */}
+      <div className="w-24 hidden sm:flex justify-center">
+        <Badge className={cn("text-xs", categoryColors[category])}>
+          {categoryLabels[category] || category}
+        </Badge>
+      </div>
+
+      {/* Date column - fixed width */}
+      <div className="w-24 hidden md:block text-center">
+        <span className="text-xs text-muted-foreground">
+          {formatDistanceToNow(new Date(content.created_at), { addSuffix: true, locale: fr })}
+        </span>
+      </div>
+
+      {/* Actions column - fixed width */}
+      <div className="w-28 flex items-center justify-end gap-0.5">
         <Button
           variant="ghost"
           size="icon"
           onClick={handleBookmark}
-          className={cn("h-8 w-8", bookmarked && "text-primary")}
+          className={cn("h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity", bookmarked && "opacity-100 text-primary")}
         >
-          <Bookmark className={cn("h-4 w-4", bookmarked && "fill-current")} />
+          <Bookmark className={cn("h-3.5 w-3.5", bookmarked && "fill-current")} />
         </Button>
         <Button
           variant="ghost"
           size="icon"
           onClick={handleCopy}
-          className="h-8 w-8"
+          className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
         >
-          {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+          {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
         </Button>
         {isAdmin && (
           <>
@@ -121,17 +116,17 @@ export function VettedContentListItem({
               variant="ghost"
               size="icon"
               onClick={() => onEdit?.(content)}
-              className="h-8 w-8"
+              className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
             >
-              <Edit className="h-4 w-4" />
+              <Edit className="h-3.5 w-3.5" />
             </Button>
             <Button
               variant="ghost"
               size="icon"
               onClick={() => onDelete?.(content.id)}
-              className="h-8 w-8 text-destructive hover:text-destructive"
+              className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive"
             >
-              <Trash2 className="h-4 w-4" />
+              <Trash2 className="h-3.5 w-3.5" />
             </Button>
           </>
         )}
