@@ -84,7 +84,7 @@ export default function DashboardContent() {
     <DashboardLayout>
       <div className="flex flex-col h-full overflow-hidden">
         {/* Sticky Header */}
-        <div className="flex-shrink-0 space-y-6 pb-4">
+        <div className="flex-shrink-0 space-y-6 pb-4 border-b border-border shadow-sm bg-background">
           {/* Header with title on left and toggle on right */}
           <div className="flex items-start justify-between gap-4 flex-wrap">
             <div className="flex flex-col gap-1">
