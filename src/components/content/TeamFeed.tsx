@@ -35,17 +35,18 @@ export function TeamFeed({
 
   if (loading) {
     return (
-      <div className="space-y-4">
+      <div className="max-w-[600px] mx-auto space-y-2">
         {[1, 2, 3].map(i => (
-          <div key={i} className="p-4 border rounded-lg">
+          <div key={i} className="bg-card p-4 border border-border/40 rounded-lg">
             <div className="flex items-center gap-3 mb-3">
-              <Skeleton className="h-10 w-10 rounded-full" />
+              <Skeleton className="h-12 w-12 rounded-full" />
               <div>
                 <Skeleton className="h-4 w-32 mb-1" />
                 <Skeleton className="h-3 w-20" />
               </div>
             </div>
-            <Skeleton className="h-16 w-full" />
+            <Skeleton className="h-20 w-full mb-3" />
+            <Skeleton className="h-10 w-full" />
           </div>
         ))}
       </div>
@@ -53,13 +54,13 @@ export function TeamFeed({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="max-w-[600px] mx-auto">
       {filteredAndSortedPosts.length === 0 ? (
-        <div className="text-center py-12 text-muted-foreground">
+        <div className="text-center py-12 text-muted-foreground bg-card rounded-lg border border-border/40">
           <p>Aucun post trouvé</p>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-2">
           {filteredAndSortedPosts.map(post => (
             <PostCard
               key={post.id}
