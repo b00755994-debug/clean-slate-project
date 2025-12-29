@@ -24,12 +24,12 @@ interface VettedContentListItemProps {
 }
 
 const categoryColors: Record<string, string> = {
-  general: 'bg-muted text-muted-foreground',
-  announcement: 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300',
-  product: 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300',
-  culture: 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300',
-  event: 'bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300',
-  stats: 'bg-cyan-100 text-cyan-700 dark:bg-cyan-900 dark:text-cyan-300',
+  general: 'bg-muted text-muted-foreground hover:bg-muted',
+  announcement: 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900',
+  product: 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300 hover:bg-green-100 dark:hover:bg-green-900',
+  culture: 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300 hover:bg-purple-100 dark:hover:bg-purple-900',
+  event: 'bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300 hover:bg-orange-100 dark:hover:bg-orange-900',
+  stats: 'bg-cyan-100 text-cyan-700 dark:bg-cyan-900 dark:text-cyan-300 hover:bg-cyan-100 dark:hover:bg-cyan-900',
 };
 
 const categoryLabels: Record<string, string> = {
