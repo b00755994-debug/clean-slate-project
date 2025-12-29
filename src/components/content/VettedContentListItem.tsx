@@ -68,7 +68,7 @@ export function VettedContentListItem({
     }
   };
 
-  const category = content.category || 'general';
+  const categories = (content.category || 'general').split(',').filter(Boolean);
 
   return (
     <div className="flex items-center gap-4 px-3 py-2.5 hover:bg-muted/50 transition-colors group">
@@ -79,10 +79,15 @@ export function VettedContentListItem({
       </div>
 
       {/* Category column - fixed width */}
-      <div className="w-24 hidden sm:flex justify-center">
-        <Badge className={cn("text-xs", categoryColors[category])}>
-          {categoryLabels[category] || category}
-        </Badge>
+      <div className="w-32 hidden sm:flex justify-center gap-1 flex-wrap">
+        {categories.slice(0, 2).map(cat => (
+          <Badge key={cat} className={cn("text-xs", categoryColors[cat] || categoryColors.general)}>
+            {categoryLabels[cat] || cat}
+          </Badge>
+        ))}
+        {categories.length > 2 && (
+          <Badge className="text-xs bg-muted text-muted-foreground">+{categories.length - 2}</Badge>
+        )}
       </div>
 
       {/* Date column - fixed width */}

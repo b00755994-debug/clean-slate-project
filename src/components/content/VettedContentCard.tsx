@@ -69,7 +69,7 @@ export function VettedContentCard({
     }
   };
 
-  const category = content.category || 'general';
+  const categories = (content.category || 'general').split(',').filter(Boolean);
 
   return (
     <Card className="border-border/50 shadow-sm hover:shadow-md transition-shadow h-full flex flex-col">
@@ -85,9 +85,16 @@ export function VettedContentCard({
       <CardHeader className="py-2 px-3">
         <div className="flex items-start justify-between gap-1">
           <div className="flex-1 min-w-0">
-            <Badge className={cn("text-[10px] px-1.5 py-0 mb-1", categoryColors[category])}>
-              {categoryLabels[category] || category}
-            </Badge>
+            <div className="flex flex-wrap gap-1 mb-1">
+              {categories.slice(0, 2).map(cat => (
+                <Badge key={cat} className={cn("text-[10px] px-1.5 py-0", categoryColors[cat] || categoryColors.general)}>
+                  {categoryLabels[cat] || cat}
+                </Badge>
+              ))}
+              {categories.length > 2 && (
+                <Badge className="text-[10px] px-1.5 py-0 bg-muted text-muted-foreground">+{categories.length - 2}</Badge>
+              )}
+            </div>
             <h3 className="font-medium text-sm text-foreground line-clamp-2">
               {content.title}
             </h3>
