@@ -18,7 +18,7 @@ const Features = () => {
         },
         {
           icon: Sparkles,
-          title: "Rapports Personnels & Coach IA",
+          title: "Analyses Individuelles & Coaching",
           description: "Chaque collaborateur accède à son propre tableau de bord : tendances de visibilité, évolution de l'engagement, recommandations personnalisées. L'IA suggère quand poster et quels formats privilégier, en s'appuyant sur la Content Library curatée par vos admins."
         },
         {
@@ -45,7 +45,7 @@ const Features = () => {
         },
         {
           icon: Sparkles,
-          title: "Personal AI Coach",
+          title: "Individual Analytics & Coaching",
           description: "Provide private performance insights and AI guidance for every employee, including performance trends, sharing recommendations, content suggestions and more."
         },
         {
