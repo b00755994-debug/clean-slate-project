@@ -16,38 +16,47 @@ export type Database = {
     Tables: {
       billable_users: {
         Row: {
-          actor_id: string | null
           avatar_url: string | null
           billability_validated: boolean | null
+          billable_user_type:
+            | Database["public"]["Enums"]["billable_user_type"]
+            | null
           created_at: string | null
           id: string
           linkedin_url: string
           profile_name: string
           slack_user_id: string | null
+          urn: string | null
           user_id: string
           workspace_id: string | null
         }
         Insert: {
-          actor_id?: string | null
           avatar_url?: string | null
           billability_validated?: boolean | null
+          billable_user_type?:
+            | Database["public"]["Enums"]["billable_user_type"]
+            | null
           created_at?: string | null
           id?: string
           linkedin_url: string
           profile_name: string
           slack_user_id?: string | null
+          urn?: string | null
           user_id: string
           workspace_id?: string | null
         }
         Update: {
-          actor_id?: string | null
           avatar_url?: string | null
           billability_validated?: boolean | null
+          billable_user_type?:
+            | Database["public"]["Enums"]["billable_user_type"]
+            | null
           created_at?: string | null
           id?: string
           linkedin_url?: string
           profile_name?: string
           slack_user_id?: string | null
+          urn?: string | null
           user_id?: string
           workspace_id?: string | null
         }
@@ -107,35 +116,53 @@ export type Database = {
           },
         ]
       }
-      history: {
+      post_history: {
         Row: {
-          content: string | null
+          appreciation: number | null
+          comment: number | null
           created_at: string
+          empathy: number | null
           id: string
+          impressions: number | null
+          interest: number | null
+          likes: number | null
           linkedin_post_id: string | null
-          people_id: string | null
           post_id: string | null
-          type: string | null
+          praise: number | null
+          reactions: number | null
+          shares: number | null
           url: string | null
         }
         Insert: {
-          content?: string | null
+          appreciation?: number | null
+          comment?: number | null
           created_at?: string
+          empathy?: number | null
           id: string
+          impressions?: number | null
+          interest?: number | null
+          likes?: number | null
           linkedin_post_id?: string | null
-          people_id?: string | null
           post_id?: string | null
-          type?: string | null
+          praise?: number | null
+          reactions?: number | null
+          shares?: number | null
           url?: string | null
         }
         Update: {
-          content?: string | null
+          appreciation?: number | null
+          comment?: number | null
           created_at?: string
+          empathy?: number | null
           id?: string
+          impressions?: number | null
+          interest?: number | null
+          likes?: number | null
           linkedin_post_id?: string | null
-          people_id?: string | null
           post_id?: string | null
-          type?: string | null
+          praise?: number | null
+          reactions?: number | null
+          shares?: number | null
           url?: string | null
         }
         Relationships: [
@@ -148,52 +175,21 @@ export type Database = {
           },
         ]
       }
-      people: {
-        Row: {
-          connexions: number | null
-          id: string | null
-          internal_actor_id: string | null
-          interractions_with_supermpump_users: number | null
-          post_id: string | null
-          profile_url: string | null
-        }
-        Insert: {
-          connexions?: number | null
-          id?: string | null
-          internal_actor_id?: string | null
-          interractions_with_supermpump_users?: number | null
-          post_id?: string | null
-          profile_url?: string | null
-        }
-        Update: {
-          connexions?: number | null
-          id?: string | null
-          internal_actor_id?: string | null
-          interractions_with_supermpump_users?: number | null
-          post_id?: string | null
-          profile_url?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "people_post_id_fkey"
-            columns: ["post_id"]
-            isOneToOne: false
-            referencedRelation: "posts"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       posts: {
         Row: {
+          appreciation: number | null
+          avatar_url: string | null
           comments: number | null
           content: string | null
           created_at: string
           empathy: number | null
           id: string
           impressions: number | null
+          interest: number | null
           likes: number | null
           linkedin_post_id: string | null
           linkedin_profiles: string | null
+          monitored_by_supermpup: boolean | null
           praise: number | null
           reactions: number | null
           shares: number | null
@@ -203,15 +199,19 @@ export type Database = {
           workspace_id: string | null
         }
         Insert: {
+          appreciation?: number | null
+          avatar_url?: string | null
           comments?: number | null
           content?: string | null
           created_at?: string
           empathy?: number | null
-          id: string
+          id?: string
           impressions?: number | null
+          interest?: number | null
           likes?: number | null
           linkedin_post_id?: string | null
           linkedin_profiles?: string | null
+          monitored_by_supermpup?: boolean | null
           praise?: number | null
           reactions?: number | null
           shares?: number | null
@@ -221,15 +221,19 @@ export type Database = {
           workspace_id?: string | null
         }
         Update: {
+          appreciation?: number | null
+          avatar_url?: string | null
           comments?: number | null
           content?: string | null
           created_at?: string
           empathy?: number | null
           id?: string
           impressions?: number | null
+          interest?: number | null
           likes?: number | null
           linkedin_post_id?: string | null
           linkedin_profiles?: string | null
+          monitored_by_supermpup?: boolean | null
           praise?: number | null
           reactions?: number | null
           shares?: number | null
@@ -251,6 +255,66 @@ export type Database = {
             columns: ["workspace_id"]
             isOneToOne: false
             referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      posts_activity: {
+        Row: {
+          billable_user_id: string | null
+          commentary: string | null
+          created_at: string
+          id: string
+          linkedin_post_id: string | null
+          linkedin_urn: string | null
+          name: string | null
+          picture_url: string | null
+          post_id: string | null
+          published_at: string | null
+          reaction_id: string | null
+          type: string | null
+        }
+        Insert: {
+          billable_user_id?: string | null
+          commentary?: string | null
+          created_at?: string
+          id?: string
+          linkedin_post_id?: string | null
+          linkedin_urn?: string | null
+          name?: string | null
+          picture_url?: string | null
+          post_id?: string | null
+          published_at?: string | null
+          reaction_id?: string | null
+          type?: string | null
+        }
+        Update: {
+          billable_user_id?: string | null
+          commentary?: string | null
+          created_at?: string
+          id?: string
+          linkedin_post_id?: string | null
+          linkedin_urn?: string | null
+          name?: string | null
+          picture_url?: string | null
+          post_id?: string | null
+          published_at?: string | null
+          reaction_id?: string | null
+          type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_billable_user_id_fkey"
+            columns: ["billable_user_id"]
+            isOneToOne: false
+            referencedRelation: "billable_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posts_activity_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
             referencedColumns: ["id"]
           },
         ]
@@ -484,7 +548,8 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
-      post_status: "stopped" | "ongoing" | "done"
+      billable_user_type: "employee" | "marketing"
+      post_status: "new" | "stopped" | "ongoing" | "old"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -613,7 +678,8 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
-      post_status: ["stopped", "ongoing", "done"],
+      billable_user_type: ["employee", "marketing"],
+      post_status: ["new", "stopped", "ongoing", "old"],
     },
   },
 } as const
