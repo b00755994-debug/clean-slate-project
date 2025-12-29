@@ -167,9 +167,9 @@ export function VettedLibrary({
           )}
         </div>
       ) : viewMode === 'list' ? (
-        <div className="w-full overflow-hidden border border-border/50 rounded-lg">
+        <div className="w-full overflow-hidden border border-border/50 rounded-lg bg-background shadow-sm">
           {/* Table header */}
-          <div className="flex items-center gap-4 px-3 py-2 bg-muted/30 border-b border-border/50 text-xs font-medium text-muted-foreground">
+          <div className="flex items-center gap-4 px-3 py-2 bg-muted/40 border-b border-border/50 text-xs font-medium text-muted-foreground">
             <div className="flex-1 min-w-0">Titre</div>
             <div className="w-24 text-center hidden sm:block">Catégorie</div>
             <div className="w-24 text-center hidden md:block">Date</div>
