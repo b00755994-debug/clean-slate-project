@@ -34,7 +34,7 @@ const menuItems = [
 export function DashboardSidebar() {
   return (
     <Sidebar 
-      className="w-16 min-w-16 max-w-16 border-r border-border/40 bg-card"
+      className="w-16 min-w-16 max-w-16 border-r border-border/30 bg-background"
       collapsible="none"
     >
       <SidebarContent className="pt-4">
