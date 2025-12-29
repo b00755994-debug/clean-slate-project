@@ -7,7 +7,7 @@ const Features = () => {
 
   const translations = {
     fr: {
-      title1: "Activez. Coachez.",
+      title1: "Activez. Soutenez.",
       title2: "Mesurez.",
       subtitle: "Transformez chaque collaborateur en ambassadeur LinkedIn.",
       features: [
@@ -34,7 +34,7 @@ const Features = () => {
       ]
     },
     en: {
-      title1: "Activate. Coach.",
+      title1: "Activate. Support.",
       title2: "Measure.",
       subtitle: "Turn every employee into a LinkedIn ambassador.",
       features: [
