@@ -167,7 +167,7 @@ export function VettedLibrary({
           )}
         </div>
       ) : viewMode === 'list' ? (
-        <div className="space-y-2">
+        <div className="space-y-2 w-full overflow-hidden">
           {filteredContents.map(content => (
             <VettedContentListItem
               key={content.id}
