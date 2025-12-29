@@ -167,7 +167,7 @@ export function VettedLibrary({
           )}
         </div>
       ) : viewMode === 'list' ? (
-        <div className="w-full overflow-hidden border border-border/50 rounded-lg bg-background shadow-sm">
+        <div className="w-full overflow-hidden border border-border/50 rounded-lg bg-card shadow-sm">
           {/* Table header */}
           <div className="flex items-center gap-4 px-3 py-2 bg-muted/40 border-b border-border/50 text-xs font-medium text-muted-foreground">
             <div className="flex-1 min-w-0">Titre</div>
@@ -191,7 +191,7 @@ export function VettedLibrary({
           </div>
         </div>
       ) : (
-        <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 bg-background rounded-lg p-4 shadow-sm border border-border/50">
+        <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 bg-card rounded-lg p-4 shadow-sm border border-border/50">
           {filteredContents.map(content => (
             <VettedContentCard
               key={content.id}

@@ -168,7 +168,7 @@ export default function DashboardContent() {
                   <Popover>
                     <PopoverTrigger asChild>
                       <button 
-                        className="flex h-10 w-[160px] items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                        className="flex h-10 w-[160px] items-center justify-between rounded-md border border-input bg-card px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                       >
                         <span className="truncate">
                           {selectedCategories.length > 0 
@@ -204,7 +204,7 @@ export default function DashboardContent() {
                   </Popover>
 
                   <Select value={dateFilter} onValueChange={setDateFilter}>
-                    <SelectTrigger className="w-[140px] bg-background">
+                    <SelectTrigger className="w-[140px] bg-card">
                       <SelectValue placeholder="Date" />
                     </SelectTrigger>
                     <SelectContent>
