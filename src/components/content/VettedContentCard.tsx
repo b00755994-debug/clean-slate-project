@@ -87,12 +87,12 @@ export function VettedContentCard({
           <div className="flex-1 min-w-0">
             <div className="flex flex-wrap gap-1 mb-1">
               {categories.slice(0, 2).map(cat => (
-                <Badge key={cat} className={cn("text-[10px] px-1.5 py-0", categoryColors[cat] || categoryColors.general)}>
+                <Badge key={cat} className={cn("text-[10px] px-1.5 py-0 cursor-default hover:opacity-100", categoryColors[cat] || categoryColors.general)}>
                   {categoryLabels[cat] || cat}
                 </Badge>
               ))}
               {categories.length > 2 && (
-                <Badge className="text-[10px] px-1.5 py-0 bg-muted text-muted-foreground">+{categories.length - 2}</Badge>
+                <Badge className="text-[10px] px-1.5 py-0 bg-muted text-muted-foreground cursor-default hover:opacity-100">+{categories.length - 2}</Badge>
               )}
             </div>
             <h3 className="font-medium text-sm text-foreground line-clamp-2">
