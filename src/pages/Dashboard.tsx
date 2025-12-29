@@ -16,6 +16,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { useSlackMembers } from '@/hooks/useSlackMembers';
 import { useWorkspace } from '@/hooks/useWorkspace';
 import { useLinkedInProfiles } from '@/hooks/useLinkedInProfiles';
+import { supabase } from '@/integrations/supabase/client';
 
 interface SlackMember {
   id: string;
@@ -81,7 +82,7 @@ export default function Dashboard() {
     setEditingProfileId(null);
     setEditSlackUserId('');
   };
-  const handleConnectSlack = () => {
+  const handleConnectSlack = async () => {
     if (!user?.id) {
       toast({
         title: 'Erreur',
@@ -91,11 +92,50 @@ export default function Dashboard() {
       return;
     }
 
-    // Get current URL origin + path for redirect after OAuth
-    const redirectUrl = `${window.location.origin}/dashboard`;
+    try {
+      // Get current session for auth token
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast({
+          title: 'Erreur',
+          description: 'Session expirée. Veuillez vous reconnecter.',
+          variant: 'destructive'
+        });
+        return;
+      }
 
-    // Redirect to Slack OAuth via edge function with redirect URL
-    window.location.href = `https://hvmrjymweajxxkoiupzf.supabase.co/functions/v1/slack-auth?user_id=${user.id}&redirect_url=${encodeURIComponent(redirectUrl)}`;
+      // Get current URL origin + path for redirect after OAuth
+      const redirectUrl = `${window.location.origin}/dashboard`;
+
+      // Call the authenticated edge function
+      const response = await fetch(
+        `https://hvmrjymweajxxkoiupzf.supabase.co/functions/v1/slack-auth?redirect_url=${encodeURIComponent(redirectUrl)}`,
+        {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${session.access_token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Erreur lors de la connexion Slack');
+      }
+
+      const { authUrl } = await response.json();
+      
+      // Redirect to Slack OAuth
+      window.location.href = authUrl;
+    } catch (error) {
+      console.error('Slack connection error:', error);
+      toast({
+        title: 'Erreur',
+        description: error instanceof Error ? error.message : 'Impossible de connecter Slack',
+        variant: 'destructive'
+      });
+    }
   };
   const handleDisconnectSlack = async () => {
     if (!slackWorkspace?.id) return;

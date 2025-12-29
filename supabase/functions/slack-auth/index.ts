@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -12,17 +13,35 @@ serve(async (req) => {
   }
 
   try {
-    const url = new URL(req.url);
-    const userId = url.searchParams.get('user_id');
-    const redirectUrl = url.searchParams.get('redirect_url') || 'https://superpump.lovable.app/dashboard';
-
-    if (!userId) {
-      console.error('Missing user_id parameter');
+    // Get authenticated user from JWT
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      console.error('Missing Authorization header');
       return new Response(
-        JSON.stringify({ error: 'Missing user_id parameter' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ error: 'Authentication required' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } }
+    });
+
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) {
+      console.error('Invalid authentication:', userError?.message);
+      return new Response(
+        JSON.stringify({ error: 'Invalid authentication' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Use the authenticated user's ID, not from query params
+    const userId = user.id;
+    const url = new URL(req.url);
+    const redirectUrl = url.searchParams.get('redirect_url') || 'https://superpump.lovable.app/dashboard';
 
     const clientId = Deno.env.get('SLACK_CLIENT_ID');
     if (!clientId) {
@@ -46,16 +65,16 @@ serve(async (req) => {
     slackAuthUrl.searchParams.set('redirect_uri', redirectUri);
     slackAuthUrl.searchParams.set('state', state);
 
-    console.log(`Redirecting user ${userId} to Slack OAuth, will redirect back to ${redirectUrl}`);
+    console.log(`Redirecting verified user ${userId} to Slack OAuth, will redirect back to ${redirectUrl}`);
 
-    // Redirect to Slack authorization page
-    return new Response(null, {
-      status: 302,
-      headers: {
-        ...corsHeaders,
-        'Location': slackAuthUrl.toString(),
-      },
-    });
+    // Return the Slack auth URL for the client to redirect to
+    return new Response(
+      JSON.stringify({ authUrl: slackAuthUrl.toString() }),
+      { 
+        status: 200, 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+      }
+    );
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     console.error('Error in slack-auth:', error);
