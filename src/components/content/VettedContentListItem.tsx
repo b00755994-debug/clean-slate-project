@@ -81,12 +81,12 @@ export function VettedContentListItem({
       {/* Category column - fixed width */}
       <div className="w-32 hidden sm:flex justify-center gap-1 flex-wrap">
         {categories.slice(0, 2).map(cat => (
-          <Badge key={cat} className={cn("text-xs", categoryColors[cat] || categoryColors.general)}>
+          <Badge key={cat} className={cn("text-xs cursor-default hover:opacity-100", categoryColors[cat] || categoryColors.general)}>
             {categoryLabels[cat] || cat}
           </Badge>
         ))}
         {categories.length > 2 && (
-          <Badge className="text-xs bg-muted text-muted-foreground">+{categories.length - 2}</Badge>
+          <Badge className="text-xs bg-muted text-muted-foreground cursor-default hover:opacity-100">+{categories.length - 2}</Badge>
         )}
       </div>
 
