@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Bookmark, MessageCircle, Repeat2, Send, ThumbsUp, Globe, MoreHorizontal } from 'lucide-react';
+import { Bookmark, Globe, MoreHorizontal, ExternalLink } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
@@ -27,6 +27,27 @@ interface PostCardProps {
   isBookmarked?: boolean;
   onToggleBookmark?: (postId: string) => void;
 }
+
+// LinkedIn reaction icons as SVG-like colored circles
+const ReactionIcon = ({ type }: { type: 'like' | 'celebrate' | 'love' | 'insightful' }) => {
+  const configs = {
+    like: { bg: '#0A66C2', emoji: '👍' },
+    celebrate: { bg: '#44712E', emoji: '👏' },
+    love: { bg: '#DF704D', emoji: '❤️' },
+    insightful: { bg: '#F5BB5C', emoji: '💡' },
+  };
+  
+  const config = configs[type];
+  
+  return (
+    <span 
+      className="inline-flex items-center justify-center h-[18px] w-[18px] rounded-full text-[10px] border-2 border-card"
+      style={{ backgroundColor: config.bg }}
+    >
+      {config.emoji}
+    </span>
+  );
+};
 
 export function PostCard({ post, author, isBookmarked = false, onToggleBookmark }: PostCardProps) {
   const [bookmarked, setBookmarked] = useState(isBookmarked);
@@ -89,10 +110,7 @@ export function PostCard({ post, author, isBookmarked = false, onToggleBookmark 
               >
                 {author?.profile_name || 'Utilisateur inconnu'}
               </a>
-              <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">
-                {/* Placeholder for title/headline if available */}
-              </p>
-              <div className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5">
+              <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
                 <span>{formatDistanceToNow(new Date(post.created_at), { addSuffix: false, locale: fr })}</span>
                 <span>•</span>
                 <Globe className="h-3 w-3" />
@@ -145,18 +163,12 @@ export function PostCard({ post, author, isBookmarked = false, onToggleBookmark 
             <div className="flex items-center gap-1">
               {totalReactions > 0 && (
                 <>
-                  <div className="flex -space-x-1">
-                    <span className="inline-flex items-center justify-center h-4 w-4 rounded-full bg-[#0A66C2] text-white text-[10px]">
-                      <ThumbsUp className="h-2.5 w-2.5" />
-                    </span>
-                    <span className="inline-flex items-center justify-center h-4 w-4 rounded-full bg-[#F5BB5C] text-white text-[10px]">
-                      👏
-                    </span>
-                    <span className="inline-flex items-center justify-center h-4 w-4 rounded-full bg-[#DF704D] text-white text-[10px]">
-                      ❤️
-                    </span>
+                  <div className="flex -space-x-1.5">
+                    <ReactionIcon type="like" />
+                    <ReactionIcon type="celebrate" />
+                    <ReactionIcon type="love" />
                   </div>
-                  <span className="ml-1">{formatNumber(totalReactions)}</span>
+                  <span className="ml-1.5">{formatNumber(totalReactions)}</span>
                 </>
               )}
             </div>
@@ -171,50 +183,17 @@ export function PostCard({ post, author, isBookmarked = false, onToggleBookmark 
           </div>
         )}
 
-        {/* Action Buttons */}
-        <div className="border-t border-border/40 px-2 py-1">
-          <div className="flex items-center justify-between">
-            <Button 
-              variant="ghost" 
-              className="flex-1 h-10 gap-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg text-sm font-medium"
-            >
-              <ThumbsUp className="h-4 w-4" />
-              <span className="hidden sm:inline">J'aime</span>
-            </Button>
-            <Button 
-              variant="ghost" 
-              className="flex-1 h-10 gap-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg text-sm font-medium"
-            >
-              <MessageCircle className="h-4 w-4" />
-              <span className="hidden sm:inline">Commenter</span>
-            </Button>
-            <Button 
-              variant="ghost" 
-              className="flex-1 h-10 gap-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg text-sm font-medium"
-            >
-              <Repeat2 className="h-4 w-4" />
-              <span className="hidden sm:inline">Republier</span>
-            </Button>
-            <Button 
-              variant="ghost" 
-              className="flex-1 h-10 gap-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg text-sm font-medium"
-            >
-              <Send className="h-4 w-4" />
-              <span className="hidden sm:inline">Envoyer</span>
-            </Button>
-          </div>
-        </div>
-
-        {/* View on LinkedIn Link */}
+        {/* View on LinkedIn Link - More prominent */}
         {post.url && (
-          <div className="px-4 pb-3 pt-1">
+          <div className="border-t border-border/40 px-4 py-3">
             <a 
               href={post.url} 
               target="_blank" 
               rel="noopener noreferrer"
-              className="text-xs text-primary hover:underline"
+              className="inline-flex items-center gap-2 text-sm text-primary hover:underline font-medium"
             >
-              Voir sur LinkedIn →
+              <ExternalLink className="h-4 w-4" />
+              Voir sur LinkedIn
             </a>
           </div>
         )}
