@@ -71,7 +71,7 @@ export function VettedContentListItem({
   const category = content.category || 'general';
 
   return (
-    <div className="flex items-center gap-4 p-3 border border-border/50 rounded-lg hover:bg-muted/30 transition-colors">
+    <div className="flex items-center gap-4 p-3 border border-border/50 rounded-lg hover:bg-muted/30 transition-colors max-w-full overflow-hidden">
       {/* Image thumbnail */}
       {content.image_url && (
         <div className="w-12 h-12 flex-shrink-0 rounded overflow-hidden">
