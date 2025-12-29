@@ -121,7 +121,7 @@ export default function DashboardContent() {
               {activeTab === 'feed' ? (
                 <>
                   <Select value={sortBy} onValueChange={(v: 'recent' | 'impressions' | 'reactions') => setSortBy(v)}>
-                    <SelectTrigger className="w-[150px]">
+                    <SelectTrigger className="w-[150px] bg-background">
                       <SelectValue placeholder="Trier par" />
                     </SelectTrigger>
                     <SelectContent>
@@ -132,7 +132,7 @@ export default function DashboardContent() {
                   </Select>
 
                   <Select value={authorFilter} onValueChange={setAuthorFilter}>
-                    <SelectTrigger className="w-[160px]">
+                    <SelectTrigger className="w-[160px] bg-background">
                       <SelectValue placeholder="Filtrer par auteur" />
                     </SelectTrigger>
                     <SelectContent>
@@ -204,7 +204,7 @@ export default function DashboardContent() {
                   </Popover>
 
                   <Select value={dateFilter} onValueChange={setDateFilter}>
-                    <SelectTrigger className="w-[140px]">
+                    <SelectTrigger className="w-[140px] bg-background">
                       <SelectValue placeholder="Date" />
                     </SelectTrigger>
                     <SelectContent>
