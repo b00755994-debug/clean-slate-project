@@ -19,7 +19,7 @@ const Features = () => {
         {
           icon: Rss,
           title: "Team Feed",
-          description: "Centralisez tous les posts LinkedIn de votre équipe dans un flux unique. Suivez les performances en temps réel, identifiez les meilleurs contenus et analysez l'engagement global."
+          description: "Centralisez tous les posts LinkedIn de votre équipe dans un flux unique. Suivez les performances en temps réel, identifiez les meilleurs contenus et inspirez-vous en pour créer de nouveaux posts."
         },
         {
           icon: Sparkles,
@@ -46,7 +46,7 @@ const Features = () => {
         {
           icon: Rss,
           title: "Team Feed",
-          description: "Centralize all your team's LinkedIn posts in a single feed. Track performance in real-time, identify top-performing content, and analyze overall engagement."
+          description: "Centralize all your team's LinkedIn posts in a single feed. Track performance in real-time, identify top-performing content, and get inspired to remix winning formats."
         },
         {
           icon: Sparkles,
