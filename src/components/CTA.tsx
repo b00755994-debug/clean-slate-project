@@ -1,8 +1,7 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Rocket } from "lucide-react";
+import { ArrowRight, Rocket, Sparkles, Star } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
-
 const CTA = () => {
   const { language } = useLanguage();
 
@@ -34,6 +33,19 @@ const CTA = () => {
       <div className="absolute -bottom-20 left-0 w-[450px] h-[450px] bg-destructive/15 rounded-full blur-[90px]" />
       <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-transparent to-background/60" />
 
+      {/* Floating celebration elements */}
+      <div className="hidden md:block absolute top-20 left-[15%] animate-float opacity-50">
+        <Sparkles className="h-6 w-6 text-primary" />
+      </div>
+      <div className="hidden md:block absolute top-32 right-[12%] animate-float-delayed opacity-40">
+        <Star className="h-5 w-5 text-destructive" />
+      </div>
+      <div className="hidden md:block absolute bottom-24 left-[10%] animate-float-slow opacity-45">
+        <Star className="h-4 w-4 text-primary" />
+      </div>
+      <div className="hidden md:block absolute bottom-32 right-[18%] animate-float-delayed-2 opacity-50">
+        <Sparkles className="h-5 w-5 text-destructive" />
+      </div>
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-4xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/5 border border-primary/10 mb-8">

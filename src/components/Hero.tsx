@@ -1,9 +1,11 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Users, Linkedin } from "lucide-react";
+import { ArrowRight, Users, Linkedin, ThumbsUp, Eye, MessageSquare } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import slackLogo from "@/assets/slack-logo.png";
-
+import FloatingMetric from "@/components/visuals/FloatingMetric";
+import MiniTrendChart from "@/components/visuals/MiniTrendChart";
+import ReactionBubble from "@/components/visuals/ReactionBubble";
 const Hero = () => {
   const { language } = useLanguage();
 
@@ -40,6 +42,38 @@ const Hero = () => {
       <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-primary/8 rounded-full blur-[140px]" />
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/30 to-background" />
       
+      {/* Floating visual elements */}
+      <FloatingMetric
+        icon={ThumbsUp}
+        value="+34"
+        className="absolute top-32 left-[8%] opacity-75"
+        animation="float"
+        variant="primary"
+      />
+      <FloatingMetric
+        icon={Eye}
+        value="847"
+        label="views"
+        className="absolute top-48 right-[10%] opacity-70"
+        animation="float-delayed"
+      />
+      <FloatingMetric
+        icon={MessageSquare}
+        value="12"
+        label="comments"
+        className="absolute bottom-48 left-[12%] opacity-65"
+        animation="float-delayed-2"
+      />
+      <MiniTrendChart
+        trend="up"
+        className="absolute bottom-36 right-[8%] opacity-70"
+        animation="float-slow"
+      />
+      <ReactionBubble
+        className="absolute top-1/2 right-[5%] opacity-60"
+        animation="float-delayed"
+      />
+
       <div className="container mx-auto px-4 relative z-10 -mt-16">
         <div className="max-w-4xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 px-4 py-2 mb-8 rounded-full bg-primary/5 border border-primary/10">
