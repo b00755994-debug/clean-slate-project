@@ -22,16 +22,17 @@ const Features = () => {
           description: "Centralisez tous les posts LinkedIn de votre équipe dans un flux unique. Suivez les performances en temps réel, identifiez les meilleurs contenus et inspirez-vous en pour créer de nouveaux posts."
         },
         {
-          icon: Sparkles,
-          title: "Rapports Individuels & Coaching",
-          description: "Chaque collaborateur accède à son propre tableau de bord : tendances de visibilité, évolution de l'engagement, recommandations personnalisées. Découvrez quand poster et quels formats privilégier."
-        },
-        {
           icon: BarChart3,
           title: "Audience & Brand Analytics",
           description: "Obtenez une vue claire de la présence LinkedIn de votre équipe avec des données agrégées et anonymisées. Suivez les métriques globales (impressions, réactions, commentaires) et analysez la qualité de l'audience par secteur, fonction, séniorité et taille d'entreprise."
         },
-      ]
+      ],
+      // FEATURE À REMETTRE PLUS TARD:
+      // {
+      //   icon: Sparkles,
+      //   title: "Rapports Individuels & Coaching",
+      //   description: "Chaque collaborateur accède à son propre tableau de bord : tendances de visibilité, évolution de l'engagement, recommandations personnalisées. Découvrez quand poster et quels formats privilégier."
+      // },
     },
     en: {
       title1: "Activate. Support.",
@@ -49,16 +50,17 @@ const Features = () => {
           description: "Centralize all your team's LinkedIn posts in a single feed. Track performance in real-time, identify top-performing content, and get inspired to remix winning formats."
         },
         {
-          icon: Sparkles,
-          title: "Individual Reports & Coaching",
-          description: "Provide private performance insights and guidance for every employee, including performance trends, sharing recommendations, and more."
-        },
-        {
           icon: BarChart3,
           title: "Audience & Brand Analytics",
           description: "Get a clear view of your team's LinkedIn presence with aggregated, anonymized data. Track your global reach metrics and analyze your audience quality by industry, role, seniority, and company size."
         },
       ]
+      // FEATURE TO ADD BACK LATER:
+      // {
+      //   icon: Sparkles,
+      //   title: "Individual Reports & Coaching",
+      //   description: "Provide private performance insights and guidance for every employee, including performance trends, sharing recommendations, and more."
+      // },
     }
   };
 
@@ -81,7 +83,7 @@ const Features = () => {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
           {t.features.map((feature, index) => (
             <Card
               key={index}
