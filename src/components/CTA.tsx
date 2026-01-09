@@ -28,11 +28,11 @@ const CTA = () => {
   const t = translations[language];
   return (
     <section className="py-20 bg-background relative overflow-hidden">
-      {/* Background elements for depth */}
-      <div className="absolute inset-0 bg-grid-pattern opacity-[0.02]" />
-      <div className="absolute top-0 right-1/4 w-[400px] h-[400px] bg-primary/12 rounded-full blur-[130px]" />
-      <div className="absolute bottom-0 left-1/3 w-[350px] h-[350px] bg-destructive/10 rounded-full blur-[110px]" />
-      <div className="absolute inset-0 bg-gradient-to-b from-background/50 via-transparent to-background/50" />
+      {/* Background elements for depth - more visible */}
+      <div className="absolute inset-0 bg-grid-pattern opacity-[0.06]" />
+      <div className="absolute -top-20 right-0 w-[500px] h-[500px] bg-primary/30 rounded-full blur-[80px]" />
+      <div className="absolute -bottom-20 left-0 w-[450px] h-[450px] bg-destructive/25 rounded-full blur-[70px]" />
+      <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-transparent to-background/60" />
 
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-4xl mx-auto text-center">
