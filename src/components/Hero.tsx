@@ -33,6 +33,13 @@ const Hero = () => {
   const t = translations[language];
   return (
     <section className="relative overflow-hidden pt-0 pb-12 min-h-screen flex items-center bg-background">
+      {/* Background elements for depth */}
+      <div className="absolute inset-0 bg-grid-pattern opacity-[0.03]" />
+      <div className="absolute top-1/4 right-1/4 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[150px]" />
+      <div className="absolute bottom-1/3 left-1/5 w-[400px] h-[400px] bg-destructive/8 rounded-full blur-[120px]" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-violet/5 rounded-full blur-[180px]" />
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/80" />
+      
       <div className="container mx-auto px-4 relative z-10 -mt-16">
         <div className="max-w-4xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 px-4 py-2 mb-8 rounded-full bg-primary/5 border border-primary/10">
