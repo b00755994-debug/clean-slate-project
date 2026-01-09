@@ -45,7 +45,7 @@ const Hero = () => {
           <div className="inline-flex items-center gap-2 px-4 py-2 mb-8 rounded-full bg-primary/5 border border-primary/10">
             <img src={slackLogo} alt="Slack" className="h-4 w-4" />
             <span className="text-sm font-bold text-primary tracking-wide">
-              #1 Employee Influence Slack App
+              Leading Employee Influence Slack App
             </span>
           </div>
 
