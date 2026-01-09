@@ -19,7 +19,7 @@ const Features = () => {
         {
           icon: Sparkles,
           title: "Rapports Individuels & Coaching",
-          description: "Chaque collaborateur accède à son propre tableau de bord : tendances de visibilité, évolution de l'engagement, recommandations personnalisées. L'IA suggère quand poster et quels formats privilégier."
+          description: "Chaque collaborateur accède à son propre tableau de bord : tendances de visibilité, évolution de l'engagement, recommandations personnalisées. Découvrez quand poster et quels formats privilégier."
         },
         {
           icon: BarChart3,
@@ -41,7 +41,7 @@ const Features = () => {
         {
           icon: Sparkles,
           title: "Individual Reports & Coaching",
-          description: "Provide private performance insights and AI guidance for every employee, including performance trends, sharing recommendations, and more."
+          description: "Provide private performance insights and guidance for every employee, including performance trends, sharing recommendations, and more."
         },
         {
           icon: BarChart3,
@@ -75,7 +75,7 @@ const Features = () => {
           {t.features.map((feature, index) => (
             <Card
               key={index}
-              className="border-border bg-card/50 backdrop-blur-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-2 hover:border-primary/50 group relative"
+              className="border border-border bg-card/50 backdrop-blur-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-2 hover:border-primary/50 group relative"
             >
               <CardContent className="p-6">
                 <div className="mb-4">
