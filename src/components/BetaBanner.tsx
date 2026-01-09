@@ -8,13 +8,13 @@ const BetaBanner = () => {
   const translations = {
     fr: {
       closedBeta: "Bêta privée",
-      text1: "avec nos partenaires pilotes jusqu'en décembre 2025.",
+      text1: "avec nos partenaires pilotes.",
       signUp: "Contactez-nous",
       text2: "pour en faire partie et avoir accès en priorité au nouvel outil."
     },
     en: {
       closedBeta: "Private Beta",
-      text1: "with our pilot partners until December 2025.",
+      text1: "with our pilot partners.",
       signUp: "Book a call with us",
       text2: "to be part of it and get priority access to the new tool."
     }
