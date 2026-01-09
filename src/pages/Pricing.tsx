@@ -49,7 +49,6 @@ const translations = {
         description: "Amplifiez la voix de votre équipe",
         features: [
           "Tout ce qui est inclus dans Individual",
-          "Banque de contenu validé par l'entreprise",
           "Analyses complètes de la performance de votre équipe",
           "Classements gamifiés",
           "Détection de leads ICP",
@@ -109,11 +108,9 @@ const translations = {
         description: "Amplify your team's voice",
         features: [
           "Everything in Individual",
-          "Vetted content library",
           "Team-scale advanced analytics",
           "Personal AI coach for your teams",
           "Audience & brand insights",
-          
           "Priority support"
         ]
       },

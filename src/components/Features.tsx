@@ -1,4 +1,4 @@
-import { Zap, Sparkles, BarChart3, BookOpen } from "lucide-react";
+import { Zap, Sparkles, BarChart3 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -19,12 +19,7 @@ const Features = () => {
         {
           icon: Sparkles,
           title: "Rapports Individuels & Coaching",
-          description: "Chaque collaborateur accède à son propre tableau de bord : tendances de visibilité, évolution de l'engagement, recommandations personnalisées. L'IA suggère quand poster et quels formats privilégier, en s'appuyant sur la Content Library curatée par vos admins."
-        },
-        {
-          icon: BookOpen,
-          title: "Content Library",
-          description: "Créez et partagez du contenu approuvé avec votre équipe. Les admins peuvent constituer une bibliothèque de templates, idées et ressources que les collaborateurs peuvent utiliser pour s'inspirer et garantir une communication cohérente."
+          description: "Chaque collaborateur accède à son propre tableau de bord : tendances de visibilité, évolution de l'engagement, recommandations personnalisées. L'IA suggère quand poster et quels formats privilégier."
         },
         {
           icon: BarChart3,
@@ -46,12 +41,7 @@ const Features = () => {
         {
           icon: Sparkles,
           title: "Individual Reports & Coaching",
-          description: "Provide private performance insights and AI guidance for every employee, including performance trends, sharing recommendations, content suggestions and more."
-        },
-        {
-          icon: BookOpen,
-          title: "Content Library",
-          description: "Curate and share approved content with your team. Admins can build a library of post templates, ideas, and resources that employees can use for inspiration and consistent messaging."
+          description: "Provide private performance insights and AI guidance for every employee, including performance trends, sharing recommendations, and more."
         },
         {
           icon: BarChart3,
