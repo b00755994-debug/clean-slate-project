@@ -370,7 +370,7 @@ const SlackIntegration = () => {
         },
         dm: {
           name: "superpump",
-          description: "Your employee advocacy AI agent",
+          description: "Your employee advocacy agent",
           isDM: true,
           messages: [{
             user: "superpump",
@@ -699,7 +699,7 @@ const SlackIntegration = () => {
         },
         dm: {
           name: "superpump",
-          description: "Your employee advocacy AI agent",
+          description: "Your employee advocacy agent",
           isDM: true,
           messages: [{
             user: "superpump",
