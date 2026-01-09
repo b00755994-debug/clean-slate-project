@@ -1,4 +1,4 @@
-import { Zap, Sparkles, BarChart3 } from "lucide-react";
+import { Zap, Sparkles, BarChart3, Rss } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -15,6 +15,11 @@ const Features = () => {
           icon: Zap,
           title: "Alertes Slack Intelligentes",
           description: "Notification instantanée dans Slack dès qu'un membre publie. Aperçu du post, lien direct, et call-to-action clair pour engager en quelques secondes."
+        },
+        {
+          icon: Rss,
+          title: "Team Feed",
+          description: "Centralisez tous les posts LinkedIn de votre équipe dans un flux unique. Suivez les performances en temps réel, identifiez les meilleurs contenus et analysez l'engagement global."
         },
         {
           icon: Sparkles,
@@ -37,6 +42,11 @@ const Features = () => {
           icon: Zap,
           title: "Smart Slack Activation Alerts",
           description: "Instantly notify the right Slack channels when a team member posts on LinkedIn. Each alert includes a post preview, direct link, and clear actions to drive fast, coordinated engagement."
+        },
+        {
+          icon: Rss,
+          title: "Team Feed",
+          description: "Centralize all your team's LinkedIn posts in a single feed. Track performance in real-time, identify top-performing content, and analyze overall engagement."
         },
         {
           icon: Sparkles,
@@ -71,7 +81,7 @@ const Features = () => {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
           {t.features.map((feature, index) => (
             <Card
               key={index}
