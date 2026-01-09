@@ -6,6 +6,7 @@ import slackLogo from "@/assets/slack-logo.png";
 import FloatingMetric from "@/components/visuals/FloatingMetric";
 import MiniTrendChart from "@/components/visuals/MiniTrendChart";
 import ReactionBubble from "@/components/visuals/ReactionBubble";
+import SlackNotificationBubble from "@/components/visuals/SlackNotificationBubble";
 const Hero = () => {
   const { language } = useLanguage();
 
@@ -45,33 +46,47 @@ const Hero = () => {
       {/* Floating visual elements */}
       <FloatingMetric
         icon={ThumbsUp}
-        value="+34"
-        className="absolute top-32 left-[8%] opacity-75"
+        value="+247"
+        className="absolute top-24 left-[2%] opacity-75 hidden lg:flex"
         animation="float"
         variant="primary"
       />
       <FloatingMetric
         icon={Eye}
-        value="847"
-        label="views"
-        className="absolute top-48 right-[10%] opacity-70"
+        value="24,782"
+        label="impressions"
+        className="absolute top-20 right-[2%] opacity-70 hidden lg:flex"
         animation="float-delayed"
       />
       <FloatingMetric
         icon={MessageSquare}
-        value="12"
+        value="156"
         label="comments"
-        className="absolute bottom-48 left-[12%] opacity-65"
+        className="absolute bottom-56 left-[3%] opacity-65 hidden lg:flex"
         animation="float-delayed-2"
       />
       <MiniTrendChart
         trend="up"
-        className="absolute bottom-36 right-[8%] opacity-70"
+        className="absolute bottom-48 right-[2%] opacity-70 hidden lg:flex"
         animation="float-slow"
       />
       <ReactionBubble
-        className="absolute top-1/2 right-[5%] opacity-60"
+        className="absolute top-[38%] right-[1%] opacity-60 hidden xl:flex"
         animation="float-delayed"
+      />
+      
+      {/* Slack notification bubbles */}
+      <SlackNotificationBubble
+        channel="#sales-team"
+        message="Paul vient de poster sur LinkedIn! 🔗"
+        className="absolute top-40 left-[4%] opacity-80 hidden lg:block"
+        animation="float-delayed"
+      />
+      <SlackNotificationBubble
+        channel="#marketing"
+        message="Nouveau post: 2.4k impressions! 🚀"
+        className="absolute bottom-40 right-[4%] opacity-75 hidden lg:block"
+        animation="float-delayed-2"
       />
 
       <div className="container mx-auto px-4 relative z-10 -mt-16">
