@@ -1,12 +1,12 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Users, Linkedin, ThumbsUp, Eye, MessageSquare } from "lucide-react";
+import { ArrowRight, Users, Linkedin, ThumbsUp, Eye, MessageSquare, Heart, PartyPopper } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import slackLogo from "@/assets/slack-logo.png";
 import FloatingMetric from "@/components/visuals/FloatingMetric";
-import MiniTrendChart from "@/components/visuals/MiniTrendChart";
-import ReactionBubble from "@/components/visuals/ReactionBubble";
 import SlackNotificationBubble from "@/components/visuals/SlackNotificationBubble";
+import SingleReaction from "@/components/visuals/SingleReaction";
+
 const Hero = () => {
   const { language } = useLanguage();
 
@@ -43,50 +43,61 @@ const Hero = () => {
       <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-primary/8 rounded-full blur-[140px]" />
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/30 to-background" />
       
-      {/* Floating visual elements */}
+      {/* Floating visual elements - left side */}
       <FloatingMetric
         icon={ThumbsUp}
         value="+247"
-        className="absolute top-24 left-[2%] opacity-75 hidden lg:flex"
+        className="absolute top-[18%] left-[8%] opacity-75 hidden lg:flex"
         animation="float"
         variant="primary"
       />
-      <FloatingMetric
-        icon={Eye}
-        value="24,782"
-        label="impressions"
-        className="absolute top-20 right-[2%] opacity-70 hidden lg:flex"
+      <SlackNotificationBubble
+        channel="#sales-team"
+        message="Paul vient de poster sur LinkedIn! 🔗"
+        className="absolute top-[42%] left-[6%] opacity-80 hidden lg:block"
         animation="float-delayed"
       />
       <FloatingMetric
         icon={MessageSquare}
         value="156"
         label="comments"
-        className="absolute bottom-56 left-[3%] opacity-65 hidden lg:flex"
+        className="absolute bottom-[22%] left-[10%] opacity-65 hidden lg:flex"
         animation="float-delayed-2"
       />
-      <MiniTrendChart
-        trend="up"
-        className="absolute bottom-48 right-[2%] opacity-70 hidden lg:flex"
-        animation="float-slow"
-      />
-      <ReactionBubble
-        className="absolute top-[38%] right-[1%] opacity-60 hidden xl:flex"
-        animation="float-delayed"
-      />
       
-      {/* Slack notification bubbles */}
-      <SlackNotificationBubble
-        channel="#sales-team"
-        message="Paul vient de poster sur LinkedIn! 🔗"
-        className="absolute top-40 left-[4%] opacity-80 hidden lg:block"
+      {/* Floating visual elements - right side */}
+      <FloatingMetric
+        icon={Eye}
+        value="24,782"
+        label="impressions"
+        className="absolute top-[15%] right-[8%] opacity-70 hidden lg:flex"
         animation="float-delayed"
       />
       <SlackNotificationBubble
         channel="#marketing"
         message="Nouveau post: 2.4k impressions! 🚀"
-        className="absolute bottom-40 right-[4%] opacity-75 hidden lg:block"
+        className="absolute bottom-[35%] right-[6%] opacity-75 hidden lg:block"
         animation="float-delayed-2"
+      />
+      
+      {/* Individual reaction bubbles - scattered */}
+      <SingleReaction
+        icon={ThumbsUp}
+        color="#0A66C2"
+        className="absolute top-[32%] right-[12%] opacity-70 hidden xl:flex"
+        animation="float"
+      />
+      <SingleReaction
+        icon={Heart}
+        color="#DF704D"
+        className="absolute bottom-[45%] left-[14%] opacity-65 hidden xl:flex"
+        animation="float-slow"
+      />
+      <SingleReaction
+        icon={PartyPopper}
+        color="#6DAE4F"
+        className="absolute bottom-[18%] right-[14%] opacity-60 hidden xl:flex"
+        animation="float-delayed"
       />
 
       <div className="container mx-auto px-4 relative z-10 -mt-16">
