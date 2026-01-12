@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Bookmark, Globe, MoreHorizontal, ExternalLink } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Bookmark, Globe, MoreHorizontal, ExternalLink, Flame } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
@@ -26,6 +27,7 @@ interface PostCardProps {
   };
   isBookmarked?: boolean;
   onToggleBookmark?: (postId: string) => void;
+  isTopPerformer?: boolean;
 }
 
 // LinkedIn reaction icons as SVG-like colored circles
@@ -49,7 +51,7 @@ const ReactionIcon = ({ type }: { type: 'like' | 'celebrate' | 'love' | 'insight
   );
 };
 
-export function PostCard({ post, author, isBookmarked = false, onToggleBookmark }: PostCardProps) {
+export function PostCard({ post, author, isBookmarked = false, onToggleBookmark, isTopPerformer = false }: PostCardProps) {
   const [bookmarked, setBookmarked] = useState(isBookmarked);
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -118,6 +120,12 @@ export function PostCard({ post, author, isBookmarked = false, onToggleBookmark 
             </div>
           </div>
           <div className="flex items-center gap-1">
+            {isTopPerformer && (
+              <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white border-0 text-xs px-2 py-0.5">
+                <Flame className="h-3 w-3 mr-1" />
+                Top
+              </Badge>
+            )}
             <Button
               variant="ghost"
               size="icon"
