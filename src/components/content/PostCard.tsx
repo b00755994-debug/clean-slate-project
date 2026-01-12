@@ -51,14 +51,8 @@ const reactionIcons = {
 type ReactionType = keyof typeof reactionIcons;
 
 const ReactionIcon = ({ type }: { type: ReactionType }) => {
-  // Love et Insightful ont déjà un tour blanc intégré dans leur design
-  const needsWhiteRing = !['love', 'insightful'].includes(type);
-  
   return (
-    <div className={cn(
-      "h-[18px] w-[18px] rounded-full flex-shrink-0",
-      needsWhiteRing && "ring-2 ring-white"
-    )}>
+    <div className="h-[18px] w-[18px] rounded-full flex-shrink-0 ring-2 ring-white">
       <img 
         src={reactionIcons[type]} 
         alt={type}
