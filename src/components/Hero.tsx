@@ -37,13 +37,22 @@ const Hero = () => {
   return (
     <section className="relative overflow-hidden pt-0 pb-12 min-h-screen flex items-center bg-background">
       {/* Background elements for depth */}
-      <div className="absolute inset-0 bg-grid-pattern opacity-[0.05]" />
+      <div className="absolute inset-0 bg-grid-pattern opacity-[0.08]" />
+      <div className="absolute inset-0 bg-dot-pattern opacity-[0.4]" />
       <div className="absolute -top-20 right-0 w-[700px] h-[700px] bg-primary/15 rounded-full blur-[120px]" />
       <div className="absolute bottom-0 -left-20 w-[600px] h-[600px] bg-destructive/12 rounded-full blur-[100px]" />
       <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-primary/8 rounded-full blur-[140px]" />
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/30 to-background" />
       
-      {/* Floating visual elements - left side */}
+      {/* Static decorative geometric elements */}
+      <div className="absolute top-[20%] left-[10%] w-32 h-32 border border-primary/10 rounded-full hidden lg:block" />
+      <div className="absolute top-[15%] left-[8%] w-48 h-48 border border-primary/5 rounded-full hidden lg:block" />
+      <div className="absolute bottom-[25%] right-[8%] w-40 h-40 border border-destructive/10 rounded-full hidden lg:block" />
+      <div className="absolute bottom-[30%] right-[12%] w-24 h-24 border border-destructive/5 rounded-full hidden lg:block" />
+      <div className="absolute top-[40%] right-[5%] w-px h-32 bg-gradient-to-b from-transparent via-primary/20 to-transparent hidden lg:block" />
+      <div className="absolute bottom-[15%] left-[15%] w-px h-24 bg-gradient-to-b from-transparent via-destructive/15 to-transparent hidden lg:block" />
+      
+      {/* Floating visual elements - HIDDEN FOR NOW
       <FloatingMetric
         icon={ThumbsUp}
         value="+247"
@@ -64,8 +73,6 @@ const Hero = () => {
         className="absolute bottom-[22%] left-[10%] opacity-65 hidden lg:flex"
         animation="float-delayed-2"
       />
-      
-      {/* Floating visual elements - right side */}
       <FloatingMetric
         icon={Eye}
         value="24,782"
@@ -79,8 +86,6 @@ const Hero = () => {
         className="absolute bottom-[35%] right-[6%] opacity-75 hidden lg:block"
         animation="float-delayed-2"
       />
-      
-      {/* Individual reaction bubbles - scattered */}
       <SingleReaction
         icon={ThumbsUp}
         color="#0A66C2"
@@ -99,6 +104,7 @@ const Hero = () => {
         className="absolute bottom-[18%] right-[14%] opacity-60 hidden xl:flex"
         animation="float-delayed"
       />
+      */}
 
       <div className="container mx-auto px-4 relative z-10 -mt-16">
         <div className="max-w-4xl mx-auto text-center">
