@@ -191,4 +191,19 @@ All colors MUST be HSL.
       linear-gradient(to bottom, hsl(var(--border)) 1px, transparent 1px);
     background-size: 4rem 4rem;
   }
+
+  .bg-dot-pattern {
+    background-image: radial-gradient(circle, hsl(var(--border)) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  .bg-diagonal-lines {
+    background-image: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 40px,
+      hsl(var(--border) / 0.3) 40px,
+      hsl(var(--border) / 0.3) 41px
+    );
+  }
 }
