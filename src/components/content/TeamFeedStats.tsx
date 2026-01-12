@@ -6,6 +6,7 @@ interface TeamFeedStatsProps {
   totalImpressions: number;
   engagementRate: number;
   activeMembers: number;
+  layout?: 'row' | 'grid';
 }
 
 const formatNumber = (num: number) => {
@@ -18,7 +19,8 @@ export function TeamFeedStats({
   totalPosts, 
   totalImpressions, 
   engagementRate, 
-  activeMembers 
+  activeMembers,
+  layout = 'row'
 }: TeamFeedStatsProps) {
   const stats = [
     {
@@ -52,7 +54,7 @@ export function TeamFeedStats({
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+    <div className={layout === 'grid' ? 'grid grid-cols-2 gap-2' : 'grid grid-cols-2 md:grid-cols-4 gap-3'}>
       {stats.map((stat) => (
         <Card 
           key={stat.label} 

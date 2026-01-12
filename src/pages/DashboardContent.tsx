@@ -62,41 +62,31 @@ export default function DashboardContent() {
       <div className="flex flex-col h-full overflow-hidden">
         {/* Sticky Header */}
         <div className="flex-shrink-0 space-y-4 pb-4 border-b border-border shadow-sm bg-background">
-        {/* Header row: Title only */}
-        <div className="flex flex-col gap-1">
-          <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
-            <Newspaper className="w-8 h-8 text-primary" />
-            Team Feed
-          </h1>
-          <p className="text-muted-foreground">
-            Explorez les posts LinkedIn de votre équipe
-          </p>
-        </div>
+          {/* Header row: Title + Stats 2x2 */}
+          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+            <div className="flex flex-col gap-1">
+              <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
+                <Newspaper className="w-8 h-8 text-primary" />
+                Team Feed
+              </h1>
+              <p className="text-muted-foreground">
+                Explorez les posts LinkedIn de votre équipe
+              </p>
+            </div>
 
-        {/* Search bar + Stats Cards - Same row */}
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-          <div className="relative max-w-xs w-full">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Rechercher..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 bg-card"
-            />
+            {/* Stats Cards - 2x2 Grid */}
+            {!statsLoading && (
+              <TeamFeedStats 
+                totalPosts={stats.totalPosts}
+                totalImpressions={stats.totalImpressions}
+                engagementRate={stats.engagementRate}
+                activeMembers={stats.activeMembers}
+                layout="grid"
+              />
+            )}
           </div>
 
-          {/* Stats Cards - Right side */}
-          {!statsLoading && (
-            <TeamFeedStats 
-              totalPosts={stats.totalPosts}
-              totalImpressions={stats.totalImpressions}
-              engagementRate={stats.engagementRate}
-              activeMembers={stats.activeMembers}
-            />
-          )}
-        </div>
-
-          {/* Filters line */}
+          {/* Filters + Search bar on the right */}
           <div className="flex items-center gap-3 flex-wrap">
             <Select value={sortBy} onValueChange={(v: 'recent' | 'impressions' | 'reactions') => setSortBy(v)}>
               <SelectTrigger className="w-[150px] bg-card">
@@ -110,7 +100,7 @@ export default function DashboardContent() {
             </Select>
 
             <Select value={timePeriod} onValueChange={(v: TimePeriod) => setTimePeriod(v)}>
-              <SelectTrigger className="w-[160px] bg-card">
+              <SelectTrigger className="w-[180px] bg-card">
                 <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
                 <SelectValue placeholder="Période" />
               </SelectTrigger>
@@ -152,6 +142,17 @@ export default function DashboardContent() {
                 Effacer
               </Button>
             )}
+
+            {/* Search bar - Right side */}
+            <div className="relative w-[200px] ml-auto">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Rechercher..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 bg-card"
+              />
+            </div>
           </div>
         </div>
 
