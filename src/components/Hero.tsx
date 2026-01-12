@@ -44,57 +44,60 @@ const Hero = () => {
       <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-primary/8 rounded-full blur-[140px]" />
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/30 to-background" />
       
-      {/* Premium grouped vertical lines - LEFT SIDE */}
-      {/* Group 1: 3 lines */}
-      <div className="absolute top-0 left-[2%] w-px h-full bg-gradient-to-t from-primary/20 via-primary/8 to-transparent hidden lg:block" />
-      <div className="absolute top-0 left-[3.5%] w-px h-full bg-gradient-to-t from-primary/15 via-primary/5 to-transparent hidden lg:block" />
-      <div className="absolute top-0 left-[5%] w-px h-full bg-gradient-to-t from-primary/20 via-primary/8 to-transparent hidden lg:block" />
-      
-      {/* Group 2: 2 lines */}
-      <div className="absolute top-0 left-[12%] w-px h-full bg-gradient-to-t from-primary/18 via-primary/6 to-transparent hidden lg:block" />
-      <div className="absolute top-0 left-[13.5%] w-px h-full bg-gradient-to-t from-primary/18 via-primary/6 to-transparent hidden lg:block" />
-      
-      {/* Group 3: 4 lines */}
-      <div className="absolute top-0 left-[21%] w-px h-full bg-gradient-to-t from-primary/15 via-primary/5 to-transparent hidden lg:block" />
-      <div className="absolute top-0 left-[22.5%] w-px h-full bg-gradient-to-t from-primary/20 via-primary/8 to-transparent hidden lg:block" />
-      <div className="absolute top-0 left-[24%] w-px h-full bg-gradient-to-t from-primary/15 via-primary/5 to-transparent hidden lg:block" />
-      <div className="absolute top-0 left-[25.5%] w-px h-full bg-gradient-to-t from-primary/12 via-primary/4 to-transparent hidden lg:block" />
-      
-      {/* Premium grouped vertical lines - RIGHT SIDE (mirrored) */}
-      {/* Group 3: 4 lines */}
-      <div className="absolute top-0 right-[25.5%] w-px h-full bg-gradient-to-t from-primary/12 via-primary/4 to-transparent hidden lg:block" />
-      <div className="absolute top-0 right-[24%] w-px h-full bg-gradient-to-t from-primary/15 via-primary/5 to-transparent hidden lg:block" />
-      <div className="absolute top-0 right-[22.5%] w-px h-full bg-gradient-to-t from-primary/20 via-primary/8 to-transparent hidden lg:block" />
-      <div className="absolute top-0 right-[21%] w-px h-full bg-gradient-to-t from-primary/15 via-primary/5 to-transparent hidden lg:block" />
-      
-      {/* Group 2: 2 lines */}
-      <div className="absolute top-0 right-[13.5%] w-px h-full bg-gradient-to-t from-primary/18 via-primary/6 to-transparent hidden lg:block" />
-      <div className="absolute top-0 right-[12%] w-px h-full bg-gradient-to-t from-primary/18 via-primary/6 to-transparent hidden lg:block" />
-      
-      {/* Group 1: 3 lines */}
-      <div className="absolute top-0 right-[5%] w-px h-full bg-gradient-to-t from-primary/20 via-primary/8 to-transparent hidden lg:block" />
-      <div className="absolute top-0 right-[3.5%] w-px h-full bg-gradient-to-t from-primary/15 via-primary/5 to-transparent hidden lg:block" />
-      <div className="absolute top-0 right-[2%] w-px h-full bg-gradient-to-t from-primary/20 via-primary/8 to-transparent hidden lg:block" />
-      
-      {/* Premium grouped horizontal lines - TOP */}
-      {/* Group 1: 2 lines */}
-      <div className="absolute top-[8%] left-0 h-px w-full bg-gradient-to-r from-primary/18 via-transparent to-primary/18 hidden lg:block" />
-      <div className="absolute top-[10%] left-0 h-px w-full bg-gradient-to-r from-primary/15 via-transparent to-primary/15 hidden lg:block" />
-      
-      {/* Group 2: 3 lines */}
-      <div className="absolute top-[22%] left-0 h-px w-full bg-gradient-to-r from-primary/20 via-transparent to-primary/20 hidden lg:block" />
-      <div className="absolute top-[24%] left-0 h-px w-full bg-gradient-to-r from-primary/15 via-transparent to-primary/15 hidden lg:block" />
-      <div className="absolute top-[26%] left-0 h-px w-full bg-gradient-to-r from-primary/12 via-transparent to-primary/12 hidden lg:block" />
-      
-      {/* Premium grouped horizontal lines - BOTTOM */}
-      {/* Group 3: 3 lines */}
-      <div className="absolute top-[74%] left-0 h-px w-full bg-gradient-to-r from-primary/12 via-transparent to-primary/12 hidden lg:block" />
-      <div className="absolute top-[76%] left-0 h-px w-full bg-gradient-to-r from-primary/15 via-transparent to-primary/15 hidden lg:block" />
-      <div className="absolute top-[78%] left-0 h-px w-full bg-gradient-to-r from-primary/20 via-transparent to-primary/20 hidden lg:block" />
-      
-      {/* Group 4: 2 lines */}
-      <div className="absolute top-[90%] left-0 h-px w-full bg-gradient-to-r from-primary/15 via-transparent to-primary/15 hidden lg:block" />
-      <div className="absolute top-[92%] left-0 h-px w-full bg-gradient-to-r from-primary/18 via-transparent to-primary/18 hidden lg:block" />
+      {/* Premium background grid - blurred and behind content */}
+      <div className="absolute inset-0 z-0 blur-[0.5px] pointer-events-none hidden lg:block">
+        {/* Premium grouped vertical lines - LEFT SIDE */}
+        {/* Group 1: 3 lines */}
+        <div className="absolute top-0 left-[2%] w-px h-full bg-gradient-to-t from-primary/20 via-primary/8 to-transparent" />
+        <div className="absolute top-0 left-[3.5%] w-px h-full bg-gradient-to-t from-primary/15 via-primary/5 to-transparent" />
+        <div className="absolute top-0 left-[5%] w-px h-full bg-gradient-to-t from-primary/20 via-primary/8 to-transparent" />
+        
+        {/* Group 2: 2 lines */}
+        <div className="absolute top-0 left-[12%] w-px h-full bg-gradient-to-t from-primary/18 via-primary/6 to-transparent" />
+        <div className="absolute top-0 left-[13.5%] w-px h-full bg-gradient-to-t from-primary/18 via-primary/6 to-transparent" />
+        
+        {/* Group 3: 4 lines */}
+        <div className="absolute top-0 left-[21%] w-px h-full bg-gradient-to-t from-primary/15 via-primary/5 to-transparent" />
+        <div className="absolute top-0 left-[22.5%] w-px h-full bg-gradient-to-t from-primary/20 via-primary/8 to-transparent" />
+        <div className="absolute top-0 left-[24%] w-px h-full bg-gradient-to-t from-primary/15 via-primary/5 to-transparent" />
+        <div className="absolute top-0 left-[25.5%] w-px h-full bg-gradient-to-t from-primary/12 via-primary/4 to-transparent" />
+        
+        {/* Premium grouped vertical lines - RIGHT SIDE (mirrored) */}
+        {/* Group 3: 4 lines */}
+        <div className="absolute top-0 right-[25.5%] w-px h-full bg-gradient-to-t from-primary/12 via-primary/4 to-transparent" />
+        <div className="absolute top-0 right-[24%] w-px h-full bg-gradient-to-t from-primary/15 via-primary/5 to-transparent" />
+        <div className="absolute top-0 right-[22.5%] w-px h-full bg-gradient-to-t from-primary/20 via-primary/8 to-transparent" />
+        <div className="absolute top-0 right-[21%] w-px h-full bg-gradient-to-t from-primary/15 via-primary/5 to-transparent" />
+        
+        {/* Group 2: 2 lines */}
+        <div className="absolute top-0 right-[13.5%] w-px h-full bg-gradient-to-t from-primary/18 via-primary/6 to-transparent" />
+        <div className="absolute top-0 right-[12%] w-px h-full bg-gradient-to-t from-primary/18 via-primary/6 to-transparent" />
+        
+        {/* Group 1: 3 lines */}
+        <div className="absolute top-0 right-[5%] w-px h-full bg-gradient-to-t from-primary/20 via-primary/8 to-transparent" />
+        <div className="absolute top-0 right-[3.5%] w-px h-full bg-gradient-to-t from-primary/15 via-primary/5 to-transparent" />
+        <div className="absolute top-0 right-[2%] w-px h-full bg-gradient-to-t from-primary/20 via-primary/8 to-transparent" />
+        
+        {/* Premium grouped horizontal lines - TOP */}
+        {/* Group 1: 2 lines */}
+        <div className="absolute top-[8%] left-0 h-px w-full bg-gradient-to-r from-primary/18 via-transparent to-primary/18" />
+        <div className="absolute top-[10%] left-0 h-px w-full bg-gradient-to-r from-primary/15 via-transparent to-primary/15" />
+        
+        {/* Group 2: 3 lines */}
+        <div className="absolute top-[22%] left-0 h-px w-full bg-gradient-to-r from-primary/20 via-transparent to-primary/20" />
+        <div className="absolute top-[24%] left-0 h-px w-full bg-gradient-to-r from-primary/15 via-transparent to-primary/15" />
+        <div className="absolute top-[26%] left-0 h-px w-full bg-gradient-to-r from-primary/12 via-transparent to-primary/12" />
+        
+        {/* Premium grouped horizontal lines - BOTTOM */}
+        {/* Group 3: 3 lines */}
+        <div className="absolute top-[74%] left-0 h-px w-full bg-gradient-to-r from-primary/12 via-transparent to-primary/12" />
+        <div className="absolute top-[76%] left-0 h-px w-full bg-gradient-to-r from-primary/15 via-transparent to-primary/15" />
+        <div className="absolute top-[78%] left-0 h-px w-full bg-gradient-to-r from-primary/20 via-transparent to-primary/20" />
+        
+        {/* Group 4: 2 lines */}
+        <div className="absolute top-[90%] left-0 h-px w-full bg-gradient-to-r from-primary/15 via-transparent to-primary/15" />
+        <div className="absolute top-[92%] left-0 h-px w-full bg-gradient-to-r from-primary/18 via-transparent to-primary/18" />
+      </div>
       
       {/* Floating visual elements - HIDDEN FOR NOW
       <FloatingMetric
