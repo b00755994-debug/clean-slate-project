@@ -74,7 +74,7 @@ const SlackIntegration = () => {
       title1: "Meilleure ",
       title2: "Application Slack",
       title3: "",
-      subtitle: "Notifications instantanées, analytics, rapports personnalisés et coaching, le tout dans vos canaux Slack préférés.",
+      subtitle: "Alertes instantanées, Team Feed centralisé et analytics d'audience, le tout dans vos canaux Slack préférés.",
       impressionsGenerated: "impressions générées",
       channels: {
         posts: {
@@ -370,30 +370,18 @@ const SlackIntegration = () => {
         },
         dm: {
           name: "superpump",
-          description: "Your employee advocacy agent",
+          description: "Votre rapport hebdomadaire",
           isDM: true,
           messages: [{
             user: "superpump",
             avatar: "🚀",
             time: "Aujourd'hui à 9:00",
-            content: "💥 *Your Weekly Pump*\n\nHey! Here's your weekly summary to maximize your LinkedIn impact this week. 🚀\n\n*📊 Your performance last week:*\n\n• *Impressions:* 2,340 (+18% vs previous week)\n• *Engagement rate:* 6.2%\n• *Comments received:* 12\n• *Profile views:* 89\n\n🎉 Great progress! You're in the top 20% of your team this week.\n\n*💡 Your personalized post suggestion:*\n\n\"The 3 most common mistakes we see when clients launch their employee advocacy program\" - This topic resonates well with your audience and aligns with company messaging.\n\nWant me to draft this post for you? 📝",
+            content: "💥 *Ton Rapport Hebdomadaire*\n\nHey ! Voici ton récap de la semaine. 🚀\n\n*📊 Tes performances cette semaine :*\n\n• *Impressions :* 2,340 (+18% vs semaine précédente)\n• *Taux d'engagement :* 6.2%\n• *Commentaires reçus :* 12\n• *Vues de profil :* 89\n\n🎉 Belle progression ! Tu es dans le top 20% de ton équipe cette semaine.\n\n*📈 Objectif semaine prochaine :* Atteindre 3,000 impressions",
             reactions: [{
               emoji: "🔥",
               count: 1,
               users: ["You"]
             }]
-          }, {
-            user: "You",
-            avatar: "You",
-            time: "Aujourd'hui à 9:15",
-            content: "Other hot topics I can share about the company or the industry?",
-            isUser: true
-          }, {
-            user: "superpump",
-            avatar: "🚀",
-            time: "Aujourd'hui à 9:15",
-            content: "Here are the hot topics of the moment for your company and your industry! 🎯\n\n*🏢 About your company:*\n\n*1. New feature launch* - Your team just shipped the automated workflow feature last week. Great angle to share customer reactions and early wins!\n\n*2. Client success story* - TechCorp hit 500 clients milestone. Perfect for a \"behind the scenes\" post on what made the difference.\n\n*🌍 Industry trend:*\n\n*3. Employee advocacy ROI* - Hot topic right now: employee posts generate 8x more engagement than corporate ads, at $0 cost. A provocative angle that always performs well!\n\nWant me to draft something on any of these? 📝",
-            aiResponse: true
           }]
         }
       }
@@ -403,7 +391,7 @@ const SlackIntegration = () => {
       title1: "Best-in-class ",
       title2: "Slack",
       title3: " App",
-      subtitle: "Instant notifications, analytics, personalized reports & coaching, all in your favorite Slack channels.",
+      subtitle: "Instant alerts, centralized Team Feed and audience analytics, all in your favorite Slack channels.",
       impressionsGenerated: "impressions generated",
       channels: {
         posts: {
@@ -699,30 +687,18 @@ const SlackIntegration = () => {
         },
         dm: {
           name: "superpump",
-          description: "Your employee advocacy agent",
+          description: "Your weekly report",
           isDM: true,
           messages: [{
             user: "superpump",
             avatar: "🚀",
             time: "Today at 9:00 AM",
-            content: "💥 *Your Weekly Pump*\n\nHey! Here's your weekly summary to maximize your LinkedIn impact this week. 🚀\n\n*📊 Your performance last week:*\n\n• *Impressions:* 2,340 (+18% vs previous week)\n• *Engagement rate:* 6.2%\n• *Comments received:* 12\n• *Profile views:* 89\n\n🎉 Great progress! You're in the top 20% of your team this week.\n\n*💡 Your personalized post suggestion:*\n\n\"The 3 most common mistakes we see when clients launch their employee advocacy program\" - This topic resonates well with your audience and aligns with company messaging.\n\nWant me to draft this post for you? 📝",
+            content: "💥 *Your Weekly Report*\n\nHey! Here's your weekly summary. 🚀\n\n*📊 Your performance this week:*\n\n• *Impressions:* 2,340 (+18% vs previous week)\n• *Engagement rate:* 6.2%\n• *Comments received:* 12\n• *Profile views:* 89\n\n🎉 Great progress! You're in the top 20% of your team this week.\n\n*📈 Next week goal:* Reach 3,000 impressions",
             reactions: [{
               emoji: "🔥",
               count: 1,
               users: ["You"]
             }]
-          }, {
-            user: "You",
-            avatar: "You",
-            time: "Today at 9:15 AM",
-            content: "Other hot topics I can share about the company or the industry?",
-            isUser: true
-          }, {
-            user: "superpump",
-            avatar: "🚀",
-            time: "Today at 9:15 AM",
-            content: "Here are the hot topics of the moment for your company and your industry! 🎯\n\n*🏢 About your company:*\n\n*1. New feature launch* - Your team just shipped the automated workflow feature last week. Great angle to share customer reactions and early wins!\n\n*2. Client success story* - TechCorp hit 500 clients milestone. Perfect for a \"behind the scenes\" post on what made the difference.\n\n*🌍 Industry trend:*\n\n*3. Employee advocacy ROI* - Hot topic right now: employee posts generate 8x more engagement than corporate ads, at $0 cost. A provocative angle that always performs well!\n\nWant me to draft something on any of these? 📝",
-            aiResponse: true
           }]
         }
       }
@@ -1259,14 +1235,12 @@ const SlackIntegration = () => {
                       <div className="flex gap-3">
                         {/* Avatar */}
                         <div className="w-9 h-9 rounded flex items-center justify-center flex-shrink-0 text-sm font-semibold" style={{
-                      backgroundColor: msg.isUser ? '#E01E5A' : '#4A154B',
+                      backgroundColor: '#4A154B',
                       color: 'white'
                     }}>
-                          {msg.isUser ? <div className="w-full h-full rounded bg-gradient-to-br from-orange-400 to-pink-500 flex items-center justify-center text-xs font-bold">
-                              You
-                            </div> : <div className="w-full h-full rounded bg-gradient-to-br from-primary to-destructive flex items-center justify-center">
-                              <Zap className="h-5 w-5 text-white" />
-                            </div>}
+                          <div className="w-full h-full rounded bg-gradient-to-br from-primary to-destructive flex items-center justify-center">
+                            <Zap className="h-5 w-5 text-white" />
+                          </div>
                         </div>
 
                         <div className="flex-1 min-w-0">
