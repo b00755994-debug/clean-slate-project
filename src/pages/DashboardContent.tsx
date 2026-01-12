@@ -62,7 +62,8 @@ export default function DashboardContent() {
       <div className="flex flex-col h-full overflow-hidden">
         {/* Sticky Header */}
         <div className="flex-shrink-0 space-y-4 pb-4 border-b border-border shadow-sm bg-background">
-          {/* Header with title */}
+        {/* Header row: Title + Stats */}
+        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
           <div className="flex flex-col gap-1">
             <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
               <Newspaper className="w-8 h-8 text-primary" />
@@ -73,25 +74,28 @@ export default function DashboardContent() {
             </p>
           </div>
 
-          {/* Stats Cards */}
+          {/* Stats Cards - Right side */}
           {!statsLoading && (
-            <TeamFeedStats 
-              totalPosts={stats.totalPosts}
-              totalImpressions={stats.totalImpressions}
-              engagementRate={stats.engagementRate}
-              activeMembers={stats.activeMembers}
-            />
+            <div className="flex-shrink-0">
+              <TeamFeedStats 
+                totalPosts={stats.totalPosts}
+                totalImpressions={stats.totalImpressions}
+                engagementRate={stats.engagementRate}
+                activeMembers={stats.activeMembers}
+              />
+            </div>
           )}
+        </div>
 
-          {/* Search bar */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Rechercher dans les posts..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 bg-card"
-            />
+        {/* Search bar - Reduced width */}
+        <div className="relative max-w-xs">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Rechercher..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10 bg-card"
+          />
           </div>
 
           {/* Filters line */}
