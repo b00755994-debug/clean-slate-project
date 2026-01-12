@@ -102,7 +102,7 @@ export default function DashboardContent() {
             </Select>
 
             <Select value={timePeriod} onValueChange={(v: TimePeriod) => setTimePeriod(v)}>
-              <SelectTrigger className="w-[180px] bg-card">
+              <SelectTrigger className="w-[200px] bg-card">
                 <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
                 <SelectValue placeholder="Période" />
               </SelectTrigger>
