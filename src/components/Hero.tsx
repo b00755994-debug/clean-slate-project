@@ -44,25 +44,21 @@ const Hero = () => {
       <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-primary/8 rounded-full blur-[140px]" />
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/30 to-background" />
       
-      {/* Lignes verticales - dégradé de haut en bas */}
-      <div className="absolute top-0 left-[5%] w-px h-full bg-gradient-to-b from-border/25 to-transparent hidden lg:block" />
-      <div className="absolute top-0 left-[12%] w-px h-full bg-gradient-to-b from-border/25 via-border/15 to-transparent hidden lg:block" />
-      <div className="absolute top-0 left-[20%] w-px h-full bg-gradient-to-b from-border/25 to-transparent hidden lg:block" />
-      <div className="absolute top-0 left-[28%] w-px h-full bg-gradient-to-b from-border/25 via-border/10 to-transparent hidden lg:block" />
-      <div className="absolute top-0 left-[36%] w-px h-full bg-gradient-to-b from-border/25 to-transparent hidden lg:block" />
-      <div className="absolute top-0 right-[36%] w-px h-full bg-gradient-to-b from-border/25 to-transparent hidden lg:block" />
-      <div className="absolute top-0 right-[28%] w-px h-full bg-gradient-to-b from-border/25 via-border/10 to-transparent hidden lg:block" />
-      <div className="absolute top-0 right-[20%] w-px h-full bg-gradient-to-b from-border/25 to-transparent hidden lg:block" />
-      <div className="absolute top-0 right-[12%] w-px h-full bg-gradient-to-b from-border/25 via-border/15 to-transparent hidden lg:block" />
-      <div className="absolute top-0 right-[5%] w-px h-full bg-gradient-to-b from-border/25 to-transparent hidden lg:block" />
+      {/* Lignes verticales symétriques - dégradé de haut en bas */}
+      <div className="absolute top-0 left-[10%] w-px h-full bg-gradient-to-b from-border/25 to-transparent hidden lg:block" />
+      <div className="absolute top-0 left-[20%] w-px h-full bg-gradient-to-b from-border/25 via-border/15 to-transparent hidden lg:block" />
+      <div className="absolute top-0 left-[30%] w-px h-full bg-gradient-to-b from-border/25 to-transparent hidden lg:block" />
+      <div className="absolute top-0 left-[40%] w-px h-full bg-gradient-to-b from-border/25 via-border/10 to-transparent hidden lg:block" />
+      <div className="absolute top-0 right-[40%] w-px h-full bg-gradient-to-b from-border/25 via-border/10 to-transparent hidden lg:block" />
+      <div className="absolute top-0 right-[30%] w-px h-full bg-gradient-to-b from-border/25 to-transparent hidden lg:block" />
+      <div className="absolute top-0 right-[20%] w-px h-full bg-gradient-to-b from-border/25 via-border/15 to-transparent hidden lg:block" />
+      <div className="absolute top-0 right-[10%] w-px h-full bg-gradient-to-b from-border/25 to-transparent hidden lg:block" />
       
-      {/* Lignes horizontales - dégradé latéral depuis les bords */}
-      <div className="absolute top-[15%] left-0 h-px w-full bg-gradient-to-r from-border/25 via-transparent to-border/25 hidden lg:block" />
-      <div className="absolute top-[30%] left-0 h-px w-full bg-gradient-to-r from-border/25 via-border/10 to-border/25 hidden lg:block" />
-      <div className="absolute top-[45%] left-0 h-px w-full bg-gradient-to-r from-border/25 via-transparent to-border/25 hidden lg:block" />
-      <div className="absolute top-[60%] left-0 h-px w-full bg-gradient-to-r from-border/25 via-border/10 to-border/25 hidden lg:block" />
-      <div className="absolute top-[75%] left-0 h-px w-full bg-gradient-to-r from-border/25 via-transparent to-border/25 hidden lg:block" />
-      <div className="absolute top-[90%] left-0 h-px w-full bg-gradient-to-r from-border/25 via-border/10 to-border/25 hidden lg:block" />
+      {/* Lignes horizontales symétriques - dégradé latéral depuis les bords */}
+      <div className="absolute top-[20%] left-0 h-px w-full bg-gradient-to-r from-border/25 via-transparent to-border/25 hidden lg:block" />
+      <div className="absolute top-[40%] left-0 h-px w-full bg-gradient-to-r from-border/25 via-border/10 to-border/25 hidden lg:block" />
+      <div className="absolute top-[60%] left-0 h-px w-full bg-gradient-to-r from-border/25 via-transparent to-border/25 hidden lg:block" />
+      <div className="absolute top-[80%] left-0 h-px w-full bg-gradient-to-r from-border/25 via-border/10 to-border/25 hidden lg:block" />
       
       {/* Floating visual elements - HIDDEN FOR NOW
       <FloatingMetric
