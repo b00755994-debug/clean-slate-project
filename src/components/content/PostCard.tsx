@@ -13,7 +13,6 @@ import likeIcon from '@/assets/linkedin-reactions/like.png';
 import celebrateIcon from '@/assets/linkedin-reactions/celebrate.png';
 import loveIcon from '@/assets/linkedin-reactions/love.png';
 import insightfulIcon from '@/assets/linkedin-reactions/insightful.png';
-import curiousIcon from '@/assets/linkedin-reactions/curious.png';
 import supportIcon from '@/assets/linkedin-reactions/support.png';
 import funnyIcon from '@/assets/linkedin-reactions/funny.png';
 
@@ -45,7 +44,6 @@ const reactionIcons = {
   celebrate: celebrateIcon,
   love: loveIcon,
   insightful: insightfulIcon,
-  curious: curiousIcon,
   support: supportIcon,
   funny: funnyIcon,
 };
@@ -53,8 +51,14 @@ const reactionIcons = {
 type ReactionType = keyof typeof reactionIcons;
 
 const ReactionIcon = ({ type }: { type: ReactionType }) => {
+  // Love et Insightful ont déjà un tour blanc intégré dans leur design
+  const needsWhiteRing = !['love', 'insightful'].includes(type);
+  
   return (
-    <div className="h-[18px] w-[18px] rounded-full ring-2 ring-white flex-shrink-0">
+    <div className={cn(
+      "h-[18px] w-[18px] rounded-full flex-shrink-0",
+      needsWhiteRing && "ring-2 ring-white"
+    )}>
       <img 
         src={reactionIcons[type]} 
         alt={type}
