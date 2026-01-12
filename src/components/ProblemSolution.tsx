@@ -19,10 +19,10 @@ const ProblemSolution = () => {
       ],
       solutionTitle: "La solution",
       solutionHeading: "L'engagement d'équipe, orchestré depuis Slack",
-      solutionDesc: "Slack devient votre hub d'employee advocacy. Alertes intelligentes, coaching IA et analyse d'audience intégrée transforment votre équipe en ambassadeurs actifs.",
+      solutionDesc: "Slack devient votre hub d'employee advocacy. Alertes intelligentes, Team Feed unifié et analyse d'audience intégrée transforment votre équipe en ambassadeurs actifs.",
       solutionPoints: [
         "Alertes automatiques sur Slack à chaque post",
-        "Boostez votre équipe grâce au coaching IA individuel sur Slack",
+        "Centralisez tous les posts dans un Team Feed unique",
         "Portée décuplée, notoriété amplifiée"
       ],
       metric: "d'impressions en moyenne"
@@ -41,10 +41,10 @@ const ProblemSolution = () => {
       ],
       solutionTitle: "The Solution",
       solutionHeading: "Team engagement, orchestrated from Slack",
-      solutionDesc: "Slack becomes your employee advocacy hub. Smart Slack alerts, AI coaching and built-in audience analysis turn your team into active brand ambassadors.",
+      solutionDesc: "Slack becomes your employee advocacy hub. Smart Slack alerts, unified Team Feed and built-in audience analysis turn your team into active brand ambassadors.",
       solutionPoints: [
         "Automatic Slack alerts for every post",
-        "Boost your team through individual AI coaching on Slack",
+        "Centralize all posts in a unified Team Feed",
         "Amplify reach and exposure to your target audience"
       ],
       metric: "average impressions"
