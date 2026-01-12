@@ -45,24 +45,24 @@ const Hero = () => {
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/30 to-background" />
       
       {/* Lignes verticales - grille régulière asymétrique */}
-      <div className="absolute top-0 left-[5%] w-px h-full bg-border/12 hidden lg:block" />
-      <div className="absolute top-0 left-[12%] w-px h-full bg-primary/10 hidden lg:block" />
-      <div className="absolute top-0 left-[20%] w-px h-full bg-border/15 hidden lg:block" />
-      <div className="absolute top-0 left-[28%] w-px h-full bg-border/10 hidden lg:block" />
-      <div className="absolute top-0 left-[36%] w-px h-full bg-border/12 hidden lg:block" />
-      <div className="absolute top-0 right-[36%] w-px h-full bg-border/10 hidden lg:block" />
-      <div className="absolute top-0 right-[28%] w-px h-full bg-border/12 hidden lg:block" />
-      <div className="absolute top-0 right-[20%] w-px h-full bg-border/15 hidden lg:block" />
-      <div className="absolute top-0 right-[12%] w-px h-full bg-destructive/10 hidden lg:block" />
-      <div className="absolute top-0 right-[5%] w-px h-full bg-border/12 hidden lg:block" />
+      <div className="absolute top-0 left-[5%] w-px h-full bg-border/20 hidden lg:block" />
+      <div className="absolute top-0 left-[12%] w-px h-full bg-primary/20 hidden lg:block" />
+      <div className="absolute top-0 left-[20%] w-px h-full bg-border/25 hidden lg:block" />
+      <div className="absolute top-0 left-[28%] w-px h-full bg-border/20 hidden lg:block" />
+      <div className="absolute top-0 left-[36%] w-px h-full bg-border/22 hidden lg:block" />
+      <div className="absolute top-0 right-[36%] w-px h-full bg-border/20 hidden lg:block" />
+      <div className="absolute top-0 right-[28%] w-px h-full bg-border/22 hidden lg:block" />
+      <div className="absolute top-0 right-[20%] w-px h-full bg-border/25 hidden lg:block" />
+      <div className="absolute top-0 right-[12%] w-px h-full bg-destructive/20 hidden lg:block" />
+      <div className="absolute top-0 right-[5%] w-px h-full bg-border/20 hidden lg:block" />
       
       {/* Lignes horizontales - espacement régulier */}
-      <div className="absolute top-[15%] left-0 h-px w-full bg-border/10 hidden lg:block" />
-      <div className="absolute top-[30%] left-0 h-px w-full bg-border/15 hidden lg:block" />
-      <div className="absolute top-[45%] left-0 h-px w-full bg-primary/8 hidden lg:block" />
-      <div className="absolute top-[60%] left-0 h-px w-full bg-border/12 hidden lg:block" />
-      <div className="absolute top-[75%] left-0 h-px w-full bg-border/15 hidden lg:block" />
-      <div className="absolute top-[90%] left-0 h-px w-full bg-border/10 hidden lg:block" />
+      <div className="absolute top-[15%] left-0 h-px w-full bg-border/20 hidden lg:block" />
+      <div className="absolute top-[30%] left-0 h-px w-full bg-border/25 hidden lg:block" />
+      <div className="absolute top-[45%] left-0 h-px w-full bg-primary/20 hidden lg:block" />
+      <div className="absolute top-[60%] left-0 h-px w-full bg-border/22 hidden lg:block" />
+      <div className="absolute top-[75%] left-0 h-px w-full bg-border/25 hidden lg:block" />
+      <div className="absolute top-[90%] left-0 h-px w-full bg-border/20 hidden lg:block" />
       
       {/* Floating visual elements - HIDDEN FOR NOW
       <FloatingMetric
