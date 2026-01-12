@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
-import { TeamFeed } from '@/components/content/TeamFeed';
-import { Newspaper, Bookmark, X } from 'lucide-react';
+import { TeamFeed, useTeamFeedStats } from '@/components/content/TeamFeed';
+import { TeamFeedStats } from '@/components/content/TeamFeedStats';
+import { Newspaper, Bookmark, X, Search, Calendar } from 'lucide-react';
 import { Toggle } from '@/components/ui/toggle';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
 
 interface BillableUser {
@@ -13,12 +15,19 @@ interface BillableUser {
   profile_name: string;
 }
 
+type TimePeriod = 'all' | 'today' | 'week' | 'month';
+
 export default function DashboardContent() {
   const [showBookmarksOnly, setShowBookmarksOnly] = useState(false);
   
   // Team Feed filters
   const [sortBy, setSortBy] = useState<'recent' | 'impressions' | 'reactions'>('recent');
   const [authorFilter, setAuthorFilter] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [timePeriod, setTimePeriod] = useState<TimePeriod>('all');
+
+  // Get stats
+  const { stats, loading: statsLoading } = useTeamFeedStats();
 
   // Use React Query for authors with caching
   const { data: authors = [] } = useQuery({
@@ -32,18 +41,27 @@ export default function DashboardContent() {
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  const hasActiveFeedFilters = sortBy !== 'recent' || authorFilter !== 'all';
+  const hasActiveFeedFilters = sortBy !== 'recent' || authorFilter !== 'all' || searchQuery !== '' || timePeriod !== 'all';
 
   const clearFeedFilters = () => {
     setSortBy('recent');
     setAuthorFilter('all');
+    setSearchQuery('');
+    setTimePeriod('all');
+  };
+
+  const timePeriodLabels: Record<TimePeriod, string> = {
+    all: 'Toutes les dates',
+    today: "Aujourd'hui",
+    week: 'Cette semaine',
+    month: 'Ce mois',
   };
 
   return (
     <DashboardLayout>
       <div className="flex flex-col h-full overflow-hidden">
         {/* Sticky Header */}
-        <div className="flex-shrink-0 space-y-6 pb-4 border-b border-border shadow-sm bg-background">
+        <div className="flex-shrink-0 space-y-4 pb-4 border-b border-border shadow-sm bg-background">
           {/* Header with title */}
           <div className="flex flex-col gap-1">
             <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
@@ -53,6 +71,27 @@ export default function DashboardContent() {
             <p className="text-muted-foreground">
               Explorez les posts LinkedIn de votre équipe
             </p>
+          </div>
+
+          {/* Stats Cards */}
+          {!statsLoading && (
+            <TeamFeedStats 
+              totalPosts={stats.totalPosts}
+              totalImpressions={stats.totalImpressions}
+              engagementRate={stats.engagementRate}
+              activeMembers={stats.activeMembers}
+            />
+          )}
+
+          {/* Search bar */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Rechercher dans les posts..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 bg-card"
+            />
           </div>
 
           {/* Filters line */}
@@ -65,6 +104,19 @@ export default function DashboardContent() {
                 <SelectItem value="recent">Plus récents</SelectItem>
                 <SelectItem value="impressions">Plus vus</SelectItem>
                 <SelectItem value="reactions">Plus de réactions</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select value={timePeriod} onValueChange={(v: TimePeriod) => setTimePeriod(v)}>
+              <SelectTrigger className="w-[160px] bg-card">
+                <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
+                <SelectValue placeholder="Période" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{timePeriodLabels.all}</SelectItem>
+                <SelectItem value="today">{timePeriodLabels.today}</SelectItem>
+                <SelectItem value="week">{timePeriodLabels.week}</SelectItem>
+                <SelectItem value="month">{timePeriodLabels.month}</SelectItem>
               </SelectContent>
             </Select>
 
@@ -107,6 +159,8 @@ export default function DashboardContent() {
             showBookmarksOnly={showBookmarksOnly}
             sortBy={sortBy}
             authorFilter={authorFilter}
+            searchQuery={searchQuery}
+            timePeriod={timePeriod}
           />
         </div>
       </div>
