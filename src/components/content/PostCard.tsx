@@ -8,6 +8,15 @@ import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 
+// Import LinkedIn reaction icons
+import likeIcon from '@/assets/linkedin-reactions/like.png';
+import celebrateIcon from '@/assets/linkedin-reactions/celebrate.png';
+import loveIcon from '@/assets/linkedin-reactions/love.png';
+import insightfulIcon from '@/assets/linkedin-reactions/insightful.png';
+import curiousIcon from '@/assets/linkedin-reactions/curious.png';
+import supportIcon from '@/assets/linkedin-reactions/support.png';
+import funnyIcon from '@/assets/linkedin-reactions/funny.png';
+
 interface PostCardProps {
   post: {
     id: string;
@@ -30,24 +39,26 @@ interface PostCardProps {
   isTopPerformer?: boolean;
 }
 
-// LinkedIn reaction icons as SVG-like colored circles
-const ReactionIcon = ({ type }: { type: 'like' | 'celebrate' | 'love' | 'insightful' }) => {
-  const configs = {
-    like: { bg: '#0A66C2', emoji: '👍' },
-    celebrate: { bg: '#44712E', emoji: '👏' },
-    love: { bg: '#DF704D', emoji: '❤️' },
-    insightful: { bg: '#F5BB5C', emoji: '💡' },
-  };
-  
-  const config = configs[type];
-  
+// LinkedIn reaction icons mapping
+const reactionIcons = {
+  like: likeIcon,
+  celebrate: celebrateIcon,
+  love: loveIcon,
+  insightful: insightfulIcon,
+  curious: curiousIcon,
+  support: supportIcon,
+  funny: funnyIcon,
+};
+
+type ReactionType = keyof typeof reactionIcons;
+
+const ReactionIcon = ({ type }: { type: ReactionType }) => {
   return (
-    <span 
-      className="inline-flex items-center justify-center h-[18px] w-[18px] rounded-full text-[10px] border-2 border-card"
-      style={{ backgroundColor: config.bg }}
-    >
-      {config.emoji}
-    </span>
+    <img 
+      src={reactionIcons[type]} 
+      alt={type}
+      className="h-[18px] w-[18px] object-contain"
+    />
   );
 };
 
