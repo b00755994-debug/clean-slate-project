@@ -27,6 +27,11 @@ interface PostCardProps {
     shares: number | null;
     reactions: number | null;
     created_at: string;
+    // Detailed reactions
+    praise?: number | null;
+    empathy?: number | null;
+    appreciation?: number | null;
+    interest?: number | null;
   };
   author?: {
     profile_name: string;
@@ -94,6 +99,25 @@ export function PostCard({ post, author, isBookmarked = false, onToggleBookmark,
 
   const totalReactions = post.reactions || post.likes || 0;
   const totalComments = post.comments || 0;
+
+  // Get top 3 reactions based on their counts
+  const getTopReactions = (): ReactionType[] => {
+    const reactionCounts: { type: ReactionType; count: number }[] = [
+      { type: 'like', count: post.likes || 0 },
+      { type: 'celebrate', count: post.praise || 0 },
+      { type: 'love', count: post.appreciation || 0 },
+      { type: 'support', count: post.empathy || 0 },
+      { type: 'insightful', count: post.interest || 0 },
+    ];
+
+    return reactionCounts
+      .filter(r => r.count > 0)
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 3)
+      .map(r => r.type);
+  };
+
+  const topReactions = getTopReactions();
 
   return (
     <Card className="bg-card border border-border/40 rounded-lg shadow-sm hover:shadow-md transition-shadow">
@@ -183,9 +207,13 @@ export function PostCard({ post, author, isBookmarked = false, onToggleBookmark,
               {totalReactions > 0 && (
                 <>
                   <div className="flex -space-x-1.5">
-                    <ReactionIcon type="like" />
-                    <ReactionIcon type="celebrate" />
-                    <ReactionIcon type="love" />
+                    {topReactions.length > 0 ? (
+                      topReactions.map((type) => (
+                        <ReactionIcon key={type} type={type} />
+                      ))
+                    ) : (
+                      <ReactionIcon type="like" />
+                    )}
                   </div>
                   <span className="ml-1.5">{formatNumber(totalReactions)}</span>
                 </>
