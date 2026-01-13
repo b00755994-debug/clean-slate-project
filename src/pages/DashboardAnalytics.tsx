@@ -4,10 +4,8 @@ import { BarChart3, Activity, Zap } from 'lucide-react';
 import { AnalyticsOverview } from '@/components/analytics/AnalyticsOverview';
 import { AnalyticsTeamActivation } from '@/components/analytics/AnalyticsTeamActivation';
 import { AnalyticsReachImpact } from '@/components/analytics/AnalyticsReachImpact';
-
 export default function DashboardAnalytics() {
-  return (
-    <DashboardLayout>
+  return <DashboardLayout>
       <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -42,7 +40,7 @@ export default function DashboardAnalytics() {
             </TabsTrigger>
             <TabsTrigger value="reach" className="flex items-center gap-2">
               <Zap className="w-4 h-4" />
-              <span className="hidden sm:inline">Portée & Impact</span>
+              <span className="hidden sm:inline">Audience & Reach    </span>
               <span className="sm:hidden">Portée</span>
             </TabsTrigger>
           </TabsList>
@@ -60,6 +58,5 @@ export default function DashboardAnalytics() {
           </TabsContent>
         </Tabs>
       </div>
-    </DashboardLayout>
-  );
+    </DashboardLayout>;
 }
