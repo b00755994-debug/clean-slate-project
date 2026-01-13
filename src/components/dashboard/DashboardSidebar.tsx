@@ -12,7 +12,7 @@ import {
 
 const menuItems = [
   {
-    title: 'Dashboard',
+    title: 'Team Feed',
     url: '/dashboard',
     icon: LayoutDashboard,
     available: true,
