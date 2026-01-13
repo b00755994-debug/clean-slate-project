@@ -52,7 +52,7 @@ type ReactionType = keyof typeof reactionIcons;
 
 const ReactionIcon = ({ type }: { type: ReactionType }) => {
   return (
-    <div className="h-[18px] w-[18px] rounded-full flex-shrink-0 bg-white ring-1 ring-white overflow-hidden">
+    <div className="h-[18px] w-[18px] rounded-full flex-shrink-0 bg-white ring-[0.8px] ring-white overflow-hidden">
       <img 
         src={reactionIcons[type]} 
         alt={type}
