@@ -16,6 +16,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { useSlackMembers } from '@/hooks/useSlackMembers';
 import { useWorkspace } from '@/hooks/useWorkspace';
 import { useLinkedInProfiles } from '@/hooks/useLinkedInProfiles';
+import { useTeamFeedStats } from '@/components/content/TeamFeed';
 import { supabase } from '@/integrations/supabase/client';
 interface SlackMember {
   id: string;
@@ -50,6 +51,7 @@ export default function Dashboard() {
     data: slackMembers = [],
     isLoading: isLoadingMembers
   } = useSlackMembers(slackWorkspace?.is_connected || false);
+  const { stats: teamStats } = useTeamFeedStats();
   const [newProfileName, setNewProfileName] = useState('');
   const [newProfileUrl, setNewProfileUrl] = useState('');
   const [selectedSlackUserId, setSelectedSlackUserId] = useState<string>('');
@@ -309,10 +311,15 @@ export default function Dashboard() {
                   <span className="font-semibold">{linkedinProfiles.length}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Posts
-                </span>
+                  <span className="text-sm text-muted-foreground">Posts</span>
                   <span className="font-semibold">
                     {linkedinProfiles.reduce((acc, p) => acc + (p.posts_count || 0), 0)}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">Impressions</span>
+                  <span className="font-semibold">
+                    {teamStats.totalImpressions.toLocaleString()}
                   </span>
                 </div>
               </div>
