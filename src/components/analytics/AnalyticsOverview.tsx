@@ -11,11 +11,14 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } fro
 import { KPICard } from './KPICard';
 import { overviewKPIs, trendData } from './mockData';
 
-const chartConfig = {
+const postsChartConfig = {
   posts: {
     label: 'Posts',
     color: 'hsl(210 90% 40%)',
   },
+};
+
+const impressionsChartConfig = {
   impressions: {
     label: 'Impressions',
     color: 'hsl(263 70% 55%)',
@@ -70,76 +73,101 @@ export function AnalyticsOverview() {
         />
       </div>
 
-      {/* Trend Chart */}
-      <Card className="border-border/50 shadow-md">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-base font-semibold">
-            Évolution des publications et impressions
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ChartContainer config={chartConfig} className="h-[300px] w-full">
-            <LineChart
-              data={trendData}
-              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" />
-              <XAxis
-                dataKey="month"
-                tickLine={false}
-                axisLine={false}
-                className="text-xs fill-muted-foreground"
-              />
-              <YAxis
-                yAxisId="left"
-                tickLine={false}
-                axisLine={false}
-                className="text-xs fill-muted-foreground"
-                tickFormatter={(value) => `${value}`}
-              />
-              <YAxis
-                yAxisId="right"
-                orientation="right"
-                tickLine={false}
-                axisLine={false}
-                className="text-xs fill-muted-foreground"
-                tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
-              />
-              <ChartTooltip
-                content={
-                  <ChartTooltipContent
-                    formatter={(value, name) => {
-                      if (name === 'impressions') {
-                        return [`${Number(value).toLocaleString()}`, 'Impressions'];
-                      }
-                      return [value, 'Posts'];
-                    }}
-                  />
-                }
-              />
-              <ChartLegend content={<ChartLegendContent />} />
-              <Line
-                yAxisId="left"
-                type="monotone"
-                dataKey="posts"
-                stroke="var(--color-posts)"
-                strokeWidth={2}
-                dot={{ fill: 'var(--color-posts)', strokeWidth: 2 }}
-                activeDot={{ r: 6 }}
-              />
-              <Line
-                yAxisId="right"
-                type="monotone"
-                dataKey="impressions"
-                stroke="var(--color-impressions)"
-                strokeWidth={2}
-                dot={{ fill: 'var(--color-impressions)', strokeWidth: 2 }}
-                activeDot={{ r: 6 }}
-              />
-            </LineChart>
-          </ChartContainer>
-        </CardContent>
-      </Card>
+      {/* Trend Charts - Two separate charts */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Posts Trend Chart */}
+        <Card className="border-border/50 shadow-md">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base font-semibold flex items-center gap-2">
+              <FileText className="w-4 h-4 text-blue-600" />
+              Évolution des publications
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ChartContainer config={postsChartConfig} className="h-[220px] w-full">
+              <LineChart
+                data={trendData}
+                margin={{ top: 10, right: 10, left: -10, bottom: 0 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" />
+                <XAxis
+                  dataKey="month"
+                  tickLine={false}
+                  axisLine={false}
+                  className="text-xs fill-muted-foreground"
+                />
+                <YAxis
+                  tickLine={false}
+                  axisLine={false}
+                  className="text-xs fill-muted-foreground"
+                />
+                <ChartTooltip
+                  content={
+                    <ChartTooltipContent
+                      formatter={(value) => [`${value}`, 'Posts']}
+                    />
+                  }
+                />
+                <Line
+                  type="monotone"
+                  dataKey="posts"
+                  stroke="var(--color-posts)"
+                  strokeWidth={2}
+                  dot={{ fill: 'var(--color-posts)', strokeWidth: 2 }}
+                  activeDot={{ r: 6 }}
+                />
+              </LineChart>
+            </ChartContainer>
+          </CardContent>
+        </Card>
+
+        {/* Impressions Trend Chart */}
+        <Card className="border-border/50 shadow-md">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base font-semibold flex items-center gap-2">
+              <Eye className="w-4 h-4 text-violet-600" />
+              Évolution des impressions
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ChartContainer config={impressionsChartConfig} className="h-[220px] w-full">
+              <LineChart
+                data={trendData}
+                margin={{ top: 10, right: 10, left: -10, bottom: 0 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" />
+                <XAxis
+                  dataKey="month"
+                  tickLine={false}
+                  axisLine={false}
+                  className="text-xs fill-muted-foreground"
+                />
+                <YAxis
+                  tickLine={false}
+                  axisLine={false}
+                  className="text-xs fill-muted-foreground"
+                  tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
+                />
+                <ChartTooltip
+                  content={
+                    <ChartTooltipContent
+                      formatter={(value) => [`${Number(value).toLocaleString()}`, 'Impressions']}
+                    />
+                  }
+                />
+                <Line
+                  type="monotone"
+                  dataKey="impressions"
+                  stroke="var(--color-impressions)"
+                  strokeWidth={2}
+                  dot={{ fill: 'var(--color-impressions)', strokeWidth: 2 }}
+                  activeDot={{ r: 6 }}
+                />
+              </LineChart>
+            </ChartContainer>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
