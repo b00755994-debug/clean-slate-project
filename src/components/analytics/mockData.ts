@@ -10,17 +10,17 @@ export const overviewKPIs = {
 };
 
 export const trendData = [
-  { week: 'S1', posts: 10, impressions: 58000 },
-  { week: 'S2', posts: 12, impressions: 72000 },
-  { week: 'S3', posts: 11, impressions: 68000 },
-  { week: 'S4', posts: 14, impressions: 86500 },
+  { month: 'Sep', posts: 38, impressions: 195000 },
+  { month: 'Oct', posts: 42, impressions: 238000 },
+  { month: 'Nov', posts: 45, impressions: 262000 },
+  { month: 'Déc', posts: 47, impressions: 284500 },
 ];
 
 export const activationData = [
-  { week: 'S1', activeContributors: 8, avgPosts: 3.2, supportRate: 58 },
-  { week: 'S2', activeContributors: 10, avgPosts: 3.6, supportRate: 62 },
-  { week: 'S3', activeContributors: 9, avgPosts: 3.8, supportRate: 65 },
-  { week: 'S4', activeContributors: 12, avgPosts: 3.9, supportRate: 67 },
+  { month: 'Sep', activeContributors: 8, avgPosts: 3.2, supportRate: 58 },
+  { month: 'Oct', activeContributors: 10, avgPosts: 3.6, supportRate: 62 },
+  { month: 'Nov', activeContributors: 11, avgPosts: 3.8, supportRate: 65 },
+  { month: 'Déc', activeContributors: 12, avgPosts: 3.9, supportRate: 67 },
 ];
 
 export const activationKPIs = {
@@ -33,10 +33,10 @@ export const reachKPIs = {
 };
 
 export const impressionsTrendData = [
-  { week: 'S1', impressions: 58000, withSupport: 42000 },
-  { week: 'S2', impressions: 72000, withSupport: 55000 },
-  { week: 'S3', impressions: 68000, withSupport: 51000 },
-  { week: 'S4', impressions: 86500, withSupport: 68000 },
+  { month: 'Sep', impressions: 195000, withSupport: 142000 },
+  { month: 'Oct', impressions: 238000, withSupport: 185000 },
+  { month: 'Nov', impressions: 262000, withSupport: 198000 },
+  { month: 'Déc', impressions: 284500, withSupport: 218000 },
 ];
 
 export const impressionsDistribution = [
