@@ -85,7 +85,7 @@ export function AnalyticsOverview() {
             >
               <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" />
               <XAxis
-                dataKey="week"
+                dataKey="month"
                 tickLine={false}
                 axisLine={false}
                 className="text-xs fill-muted-foreground"

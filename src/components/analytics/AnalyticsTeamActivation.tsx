@@ -63,7 +63,7 @@ export function AnalyticsTeamActivation() {
               Contributeurs actifs par semaine
             </CardTitle>
             <CardDescription className="text-xs">
-              Nombre de membres ayant publié au moins une fois par période
+              Nombre de membres ayant publié au moins une fois par mois
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -71,7 +71,7 @@ export function AnalyticsTeamActivation() {
               <BarChart data={activationData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" vertical={false} />
                 <XAxis
-                  dataKey="week"
+                  dataKey="month"
                   tickLine={false}
                   axisLine={false}
                   className="text-xs fill-muted-foreground"
@@ -109,7 +109,7 @@ export function AnalyticsTeamActivation() {
               <LineChart data={activationData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" />
                 <XAxis
-                  dataKey="week"
+                  dataKey="month"
                   tickLine={false}
                   axisLine={false}
                   className="text-xs fill-muted-foreground"
@@ -152,7 +152,7 @@ export function AnalyticsTeamActivation() {
             <LineChart data={activationData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" />
               <XAxis
-                dataKey="week"
+                dataKey="month"
                 tickLine={false}
                 axisLine={false}
                 className="text-xs fill-muted-foreground"
