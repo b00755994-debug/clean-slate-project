@@ -12,12 +12,6 @@ import {
 
 const menuItems = [
   {
-    title: 'Analytics',
-    url: '/dashboard/analytics',
-    icon: BarChart3,
-    available: false,
-  },
-  {
     title: 'Team Feed',
     url: '/dashboard',
     icon: LayoutDashboard,
@@ -27,6 +21,12 @@ const menuItems = [
     title: 'Content Library',
     url: '/dashboard/content',
     icon: Library,
+    available: false,
+  },
+  {
+    title: 'Analytics',
+    url: '/dashboard/analytics',
+    icon: BarChart3,
     available: false,
   },
 ];
