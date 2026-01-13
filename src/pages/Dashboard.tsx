@@ -17,7 +17,6 @@ import { useSlackMembers } from '@/hooks/useSlackMembers';
 import { useWorkspace } from '@/hooks/useWorkspace';
 import { useLinkedInProfiles } from '@/hooks/useLinkedInProfiles';
 import { supabase } from '@/integrations/supabase/client';
-
 interface SlackMember {
   id: string;
   name: string;
@@ -33,18 +32,24 @@ export default function Dashboard() {
   const {
     toast
   } = useToast();
-  
+
   // Use React Query hooks for caching
-  const { workspace: slackWorkspace, refetch: refetchWorkspace, disconnect: disconnectSlack } = useWorkspace();
-  const { 
-    linkedinProfiles, 
-    addProfile, 
-    isAddingProfile, 
-    deleteProfile, 
-    updateSlackUser 
+  const {
+    workspace: slackWorkspace,
+    refetch: refetchWorkspace,
+    disconnect: disconnectSlack
+  } = useWorkspace();
+  const {
+    linkedinProfiles,
+    addProfile,
+    isAddingProfile,
+    deleteProfile,
+    updateSlackUser
   } = useLinkedInProfiles();
-  const { data: slackMembers = [], isLoading: isLoadingMembers } = useSlackMembers(slackWorkspace?.is_connected || false);
-  
+  const {
+    data: slackMembers = [],
+    isLoading: isLoadingMembers
+  } = useSlackMembers(slackWorkspace?.is_connected || false);
   const [newProfileName, setNewProfileName] = useState('');
   const [newProfileUrl, setNewProfileUrl] = useState('');
   const [selectedSlackUserId, setSelectedSlackUserId] = useState<string>('');
@@ -64,7 +69,7 @@ export default function Dashboard() {
       await addProfile({
         profileName: newProfileName,
         linkedinUrl: newProfileUrl,
-        slackUserId: selectedSlackUserId || undefined,
+        slackUserId: selectedSlackUserId || undefined
       });
       setNewProfileName('');
       setNewProfileUrl('');
@@ -78,7 +83,10 @@ export default function Dashboard() {
     deleteProfile(profileId);
   };
   const handleUpdateSlackUser = (profileId: string, slackUserId: string | null) => {
-    updateSlackUser({ profileId, slackUserId });
+    updateSlackUser({
+      profileId,
+      slackUserId
+    });
     setEditingProfileId(null);
     setEditSlackUserId('');
   };
@@ -91,10 +99,13 @@ export default function Dashboard() {
       });
       return;
     }
-
     try {
       // Get current session for auth token
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: {
+          session
+        }
+      } = await supabase.auth.getSession();
       if (!session) {
         toast({
           title: 'Erreur',
@@ -108,24 +119,21 @@ export default function Dashboard() {
       const redirectUrl = `${window.location.origin}/dashboard`;
 
       // Call the authenticated edge function
-      const response = await fetch(
-        `https://hvmrjymweajxxkoiupzf.supabase.co/functions/v1/slack-auth?redirect_url=${encodeURIComponent(redirectUrl)}`,
-        {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${session.access_token}`,
-            'Content-Type': 'application/json',
-          },
+      const response = await fetch(`https://hvmrjymweajxxkoiupzf.supabase.co/functions/v1/slack-auth?redirect_url=${encodeURIComponent(redirectUrl)}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json'
         }
-      );
-
+      });
       if (!response.ok) {
         const error = await response.json();
         throw new Error(error.error || 'Erreur lors de la connexion Slack');
       }
+      const {
+        authUrl
+      } = await response.json();
 
-      const { authUrl } = await response.json();
-      
       // Redirect to Slack OAuth
       window.location.href = authUrl;
     } catch (error) {
@@ -301,7 +309,8 @@ export default function Dashboard() {
                   <span className="font-semibold">{linkedinProfiles.length}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Posts (30j)</span>
+                  <span className="text-sm text-muted-foreground">Posts
+                </span>
                   <span className="font-semibold">
                     {linkedinProfiles.reduce((acc, p) => acc + (p.posts_count || 0), 0)}
                   </span>
