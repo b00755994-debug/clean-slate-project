@@ -21,7 +21,9 @@ export type Database = {
           billable_user_type:
             | Database["public"]["Enums"]["billable_user_type"]
             | null
+          connections: number | null
           created_at: string | null
+          followers: number | null
           id: string
           linkedin_url: string
           profile_name: string
@@ -36,7 +38,9 @@ export type Database = {
           billable_user_type?:
             | Database["public"]["Enums"]["billable_user_type"]
             | null
+          connections?: number | null
           created_at?: string | null
+          followers?: number | null
           id?: string
           linkedin_url: string
           profile_name: string
@@ -51,7 +55,9 @@ export type Database = {
           billable_user_type?:
             | Database["public"]["Enums"]["billable_user_type"]
             | null
+          connections?: number | null
           created_at?: string | null
+          followers?: number | null
           id?: string
           linkedin_url?: string
           profile_name?: string
@@ -115,6 +121,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      people: {
+        Row: {
+          connections: number | null
+          created_at: string
+          current_job: string | null
+          first_name: string | null
+          followerCount: number | null
+          id: string
+          last_name: string | null
+          post_activies: string[] | null
+          post_id: string[] | null
+          public_url: string | null
+          urn: string | null
+        }
+        Insert: {
+          connections?: number | null
+          created_at?: string
+          current_job?: string | null
+          first_name?: string | null
+          followerCount?: number | null
+          id?: string
+          last_name?: string | null
+          post_activies?: string[] | null
+          post_id?: string[] | null
+          public_url?: string | null
+          urn?: string | null
+        }
+        Update: {
+          connections?: number | null
+          created_at?: string
+          current_job?: string | null
+          first_name?: string | null
+          followerCount?: number | null
+          id?: string
+          last_name?: string | null
+          post_activies?: string[] | null
+          post_id?: string[] | null
+          public_url?: string | null
+          urn?: string | null
+        }
+        Relationships: []
       }
       post_history: {
         Row: {
@@ -268,6 +316,7 @@ export type Database = {
           linkedin_post_id: string | null
           linkedin_urn: string | null
           name: string | null
+          people_id: string | null
           picture_url: string | null
           post_id: string | null
           published_at: string | null
@@ -282,6 +331,7 @@ export type Database = {
           linkedin_post_id?: string | null
           linkedin_urn?: string | null
           name?: string | null
+          people_id?: string | null
           picture_url?: string | null
           post_id?: string | null
           published_at?: string | null
@@ -296,6 +346,7 @@ export type Database = {
           linkedin_post_id?: string | null
           linkedin_urn?: string | null
           name?: string | null
+          people_id?: string | null
           picture_url?: string | null
           post_id?: string | null
           published_at?: string | null
@@ -308,6 +359,13 @@ export type Database = {
             columns: ["billable_user_id"]
             isOneToOne: false
             referencedRelation: "billable_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posts_activity_people_id_fkey"
+            columns: ["people_id"]
+            isOneToOne: false
+            referencedRelation: "people"
             referencedColumns: ["id"]
           },
           {

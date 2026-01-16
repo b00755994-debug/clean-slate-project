@@ -1,4 +1,4 @@
-import { Users, MessageCircle } from 'lucide-react';
+import { Users, UserCheck, FileText, HeartHandshake, MessageCircle, Percent } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import {
   ChartContainer,
@@ -7,71 +7,120 @@ import {
 } from '@/components/ui/chart';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { KPICard } from './KPICard';
-import { activationData, activationKPIs } from './mockData';
 
-const activeContributorsConfig = {
+// Mock data for Team Activation
+const activationTimeData = [
+  { period: 'S1', activeContributors: 8 },
+  { period: 'S2', activeContributors: 10 },
+  { period: 'S3', activeContributors: 9 },
+  { period: 'S4', activeContributors: 12 },
+  { period: 'S5', activeContributors: 11 },
+  { period: 'S6', activeContributors: 14 },
+  { period: 'S7', activeContributors: 13 },
+  { period: 'S8', activeContributors: 15 },
+];
+
+const supportRateData = [
+  { period: 'S1', supportRate: 42 },
+  { period: 'S2', supportRate: 45 },
+  { period: 'S3', supportRate: 48 },
+  { period: 'S4', supportRate: 52 },
+  { period: 'S5', supportRate: 55 },
+  { period: 'S6', supportRate: 58 },
+  { period: 'S7', supportRate: 61 },
+  { period: 'S8', supportRate: 64 },
+];
+
+const activationChartConfig = {
   activeContributors: {
     label: 'Contributeurs actifs',
-    color: 'hsl(152 60% 45%)',
+    color: 'hsl(221 83% 53%)',
   },
 };
 
-const avgPostsConfig = {
-  avgPosts: {
-    label: 'Moy. posts/contributeur',
-    color: 'hsl(152 60% 35%)',
-  },
-};
-
-const supportRateConfig = {
+const supportChartConfig = {
   supportRate: {
     label: 'Taux de support',
-    color: 'hsl(152 60% 50%)',
+    color: 'hsl(262 83% 58%)',
   },
 };
 
 export function AnalyticsTeamActivation() {
   return (
     <div className="space-y-6">
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {/* 6 KPI Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         <KPICard
           icon={Users}
-          label="Contributeurs actifs (30j)"
-          value={activationKPIs.contributorsActivePercent.value}
-          change={activationKPIs.contributorsActivePercent.change}
-          tooltip="Share of connected users who posted at least once in the last 30 days."
+          label="Contributeurs actifs"
+          value={15}
+          change={12}
+          tooltip="Nombre de membres connectés ayant publié au moins un post sur la période sélectionnée."
+          color="blue"
+        />
+        <KPICard
+          icon={Percent}
+          label="% Contributeurs actifs"
+          value={68}
+          change={8}
+          tooltip="Part des membres connectés ayant publié au moins un post sur la période."
+          color="blue"
+          suffix="%"
+        />
+        <KPICard
+          icon={FileText}
+          label="Moy. posts / contributeur"
+          value="2.4"
+          change={5}
+          tooltip="Nombre moyen de posts publiés par contributeur actif."
+          color="violet"
+        />
+        <KPICard
+          icon={HeartHandshake}
+          label="Taux de support collectif"
+          value={64}
+          change={6}
+          tooltip="Pourcentage des interactions internes potentielles réellement effectuées. Calculé : (likes + commentaires internes) ÷ (nb posts × nb membres connectés)."
+          color="violet"
+          suffix="%"
+        />
+        <KPICard
+          icon={UserCheck}
+          label="Posts avec support interne"
+          value={78}
+          change={4}
+          tooltip="Pourcentage des posts ayant reçu au moins un like ou commentaire interne."
           color="emerald"
           suffix="%"
         />
         <KPICard
           icon={MessageCircle}
-          label="Moy. interactions internes/post"
-          value={activationKPIs.avgInternalInteractions.value}
-          change={activationKPIs.avgInternalInteractions.change}
-          tooltip="Average number of internal likes or comments received per post (aggregated)."
+          label="Moy. interactions / post"
+          value="3.2"
+          change={9}
+          tooltip="Nombre moyen de likes et commentaires internes par post (agrégé)."
           color="emerald"
         />
       </div>
 
-      {/* Charts Grid */}
+      {/* 2 Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Active Contributors Bar Chart */}
+        {/* Chart 1 — Team Activation Over Time */}
         <Card className="border-border/50 shadow-md">
           <CardHeader className="pb-2">
             <CardTitle className="text-base font-semibold">
-              Contributeurs actifs par semaine
+              Activation de l'équipe
             </CardTitle>
             <CardDescription className="text-xs">
-              Nombre de membres ayant publié au moins une fois par mois
+              Nombre de contributeurs actifs par semaine
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ChartContainer config={activeContributorsConfig} className="h-[220px] w-full">
-              <BarChart data={activationData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+            <ChartContainer config={activationChartConfig} className="h-[240px] w-full">
+              <BarChart data={activationTimeData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" vertical={false} />
                 <XAxis
-                  dataKey="month"
+                  dataKey="period"
                   tickLine={false}
                   axisLine={false}
                   className="text-xs fill-muted-foreground"
@@ -82,7 +131,11 @@ export function AnalyticsTeamActivation() {
                   className="text-xs fill-muted-foreground"
                 />
                 <ChartTooltip
-                  content={<ChartTooltipContent />}
+                  content={
+                    <ChartTooltipContent
+                      formatter={(value) => [`${value} `, 'Contributeurs']}
+                    />
+                  }
                 />
                 <Bar
                   dataKey="activeContributors"
@@ -94,22 +147,22 @@ export function AnalyticsTeamActivation() {
           </CardContent>
         </Card>
 
-        {/* Avg Posts per Contributor Line Chart */}
+        {/* Chart 2 — Collective Support Over Time */}
         <Card className="border-border/50 shadow-md">
           <CardHeader className="pb-2">
             <CardTitle className="text-base font-semibold">
-              Moy. publications par contributeur
+              Évolution du support collectif
             </CardTitle>
             <CardDescription className="text-xs">
-              Régularité de publication au sein de l'équipe
+              Taux de support collectif par semaine
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ChartContainer config={avgPostsConfig} className="h-[220px] w-full">
-              <LineChart data={activationData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+            <ChartContainer config={supportChartConfig} className="h-[240px] w-full">
+              <LineChart data={supportRateData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" />
                 <XAxis
-                  dataKey="month"
+                  dataKey="period"
                   tickLine={false}
                   axisLine={false}
                   className="text-xs fill-muted-foreground"
@@ -118,17 +171,22 @@ export function AnalyticsTeamActivation() {
                   tickLine={false}
                   axisLine={false}
                   className="text-xs fill-muted-foreground"
-                  domain={[0, 5]}
+                  domain={[0, 100]}
+                  tickFormatter={(value) => `${value}%`}
                 />
                 <ChartTooltip
-                  content={<ChartTooltipContent />}
+                  content={
+                    <ChartTooltipContent
+                      formatter={(value) => [`${value} %`, 'Taux de support']}
+                    />
+                  }
                 />
                 <Line
                   type="monotone"
-                  dataKey="avgPosts"
-                  stroke="var(--color-avgPosts)"
+                  dataKey="supportRate"
+                  stroke="var(--color-supportRate)"
                   strokeWidth={2}
-                  dot={{ fill: 'var(--color-avgPosts)', strokeWidth: 2 }}
+                  dot={{ fill: 'var(--color-supportRate)', strokeWidth: 2 }}
                   activeDot={{ r: 6 }}
                 />
               </LineChart>
@@ -136,53 +194,6 @@ export function AnalyticsTeamActivation() {
           </CardContent>
         </Card>
       </div>
-
-      {/* Support Rate Chart - Full Width */}
-      <Card className="border-border/50 shadow-md">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-base font-semibold">
-            Évolution du taux de support collectif
-          </CardTitle>
-          <CardDescription className="text-xs">
-            Pourcentage d'interactions internes réalisées par rapport au potentiel total
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ChartContainer config={supportRateConfig} className="h-[220px] w-full">
-            <LineChart data={activationData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" />
-              <XAxis
-                dataKey="month"
-                tickLine={false}
-                axisLine={false}
-                className="text-xs fill-muted-foreground"
-              />
-              <YAxis
-                tickLine={false}
-                axisLine={false}
-                className="text-xs fill-muted-foreground"
-                domain={[0, 100]}
-                tickFormatter={(value) => `${value}%`}
-              />
-              <ChartTooltip
-                content={
-                  <ChartTooltipContent
-                    formatter={(value) => [`${value} %`, 'Taux de support']}
-                  />
-                }
-              />
-              <Line
-                type="monotone"
-                dataKey="supportRate"
-                stroke="var(--color-supportRate)"
-                strokeWidth={2}
-                dot={{ fill: 'var(--color-supportRate)', strokeWidth: 2 }}
-                activeDot={{ r: 6 }}
-              />
-            </LineChart>
-          </ChartContainer>
-        </CardContent>
-      </Card>
     </div>
   );
 }
