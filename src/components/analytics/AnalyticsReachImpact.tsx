@@ -1,4 +1,4 @@
-import { Eye } from 'lucide-react';
+import { Eye, TrendingUp, MousePointerClick, Target } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import {
   ChartContainer,
@@ -9,16 +9,16 @@ import {
 } from '@/components/ui/chart';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { KPICard } from './KPICard';
-import { reachKPIs, impressionsTrendData, impressionsDistribution } from './mockData';
+import { reachKPIs, reachEngagementTrendData, impressionsDistribution } from './mockData';
 
-const impressionsConfig = {
+const trendConfig = {
   impressions: {
-    label: 'Total impressions',
+    label: 'Impressions',
     color: 'hsl(263 70% 55%)',
   },
-  withSupport: {
-    label: 'Avec support interne',
-    color: 'hsl(263 70% 75%)',
+  engagementRate: {
+    label: "Taux d'engagement (%)",
+    color: 'hsl(199 89% 48%)',
   },
 };
 
@@ -32,56 +32,97 @@ const distributionConfig = {
 export function AnalyticsReachImpact() {
   return (
     <div className="space-y-6">
-      {/* KPI Card */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      {/* 4 KPI Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <KPICard
           icon={Eye}
-          label="Moy. impressions par post"
-          value={reachKPIs.avgImpressionsPerPost.value}
-          change={reachKPIs.avgImpressionsPerPost.change}
-          tooltip="Average visibility generated per post during the period."
+          label="Impressions totales"
+          value={reachKPIs.totalImpressions.value.toLocaleString()}
+          change={reachKPIs.totalImpressions.change}
+          tooltip="Nombre total de fois où les posts ont été affichés sur LinkedIn pendant la période sélectionnée (agrégé)."
           color="violet"
+        />
+        <KPICard
+          icon={TrendingUp}
+          label="Moy. impressions / post"
+          value={reachKPIs.avgImpressionsPerPost.value.toLocaleString()}
+          change={reachKPIs.avgImpressionsPerPost.change}
+          tooltip="Nombre moyen d'impressions générées par post."
+          color="blue"
+        />
+        <KPICard
+          icon={MousePointerClick}
+          label="Taux d'engagement"
+          value={reachKPIs.engagementRate.value}
+          change={reachKPIs.engagementRate.change}
+          tooltip="Ratio entre le total des interactions (likes et commentaires) et le total des impressions sur la période."
+          color="emerald"
+          suffix="%"
+        />
+        <KPICard
+          icon={Target}
+          label="Engagement ICP"
+          value={reachKPIs.icpEngagementRate.value}
+          change={reachKPIs.icpEngagementRate.change}
+          tooltip="Part estimée des interactions provenant de profils correspondant à l'ICP de l'entreprise, basée sur des signaux publics agrégés (secteur, rôle, séniorité)."
+          color="amber"
+          suffix="%"
         />
       </div>
 
-      {/* Impressions Trend Chart */}
+      {/* Chart 1 — Reach & Engagement Over Time */}
       <Card className="border-border/50 shadow-md">
         <CardHeader className="pb-2">
           <CardTitle className="text-base font-semibold">
-            Évolution des impressions totales
+            Portée & engagement dans le temps
           </CardTitle>
           <CardDescription className="text-xs">
-            Comparaison entre toutes les impressions et celles des posts ayant reçu du support interne
+            Évolution hebdomadaire des impressions et du taux d'engagement
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <ChartContainer config={impressionsConfig} className="h-[280px] w-full">
+          <ChartContainer config={trendConfig} className="h-[280px] w-full">
             <LineChart
-              data={impressionsTrendData}
+              data={reachEngagementTrendData}
               margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
             >
               <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" />
               <XAxis
-                dataKey="month"
+                dataKey="week"
                 tickLine={false}
                 axisLine={false}
                 className="text-xs fill-muted-foreground"
               />
               <YAxis
+                yAxisId="left"
                 tickLine={false}
                 axisLine={false}
                 className="text-xs fill-muted-foreground"
                 tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
               />
+              <YAxis
+                yAxisId="right"
+                orientation="right"
+                tickLine={false}
+                axisLine={false}
+                className="text-xs fill-muted-foreground"
+                tickFormatter={(value) => `${value}%`}
+              />
               <ChartTooltip
                 content={
                   <ChartTooltipContent
-                    formatter={(value) => [`${Number(value).toLocaleString()} `, 'Impressions']}
+                    formatter={(value, name) => {
+                      if (name === 'impressions') {
+                        return [`${Number(value).toLocaleString()}`, 'Impressions'];
+                      }
+                      return [`${value}%`, "Taux d'engagement"];
+                    }}
                   />
                 }
               />
               <ChartLegend content={<ChartLegendContent />} />
               <Line
+                yAxisId="left"
                 type="monotone"
                 dataKey="impressions"
                 stroke="var(--color-impressions)"
@@ -90,12 +131,13 @@ export function AnalyticsReachImpact() {
                 activeDot={{ r: 6 }}
               />
               <Line
+                yAxisId="right"
                 type="monotone"
-                dataKey="withSupport"
-                stroke="var(--color-withSupport)"
+                dataKey="engagementRate"
+                stroke="var(--color-engagementRate)"
                 strokeWidth={2}
                 strokeDasharray="5 5"
-                dot={{ fill: 'var(--color-withSupport)', strokeWidth: 2 }}
+                dot={{ fill: 'var(--color-engagementRate)', strokeWidth: 2 }}
                 activeDot={{ r: 6 }}
               />
             </LineChart>
@@ -103,14 +145,14 @@ export function AnalyticsReachImpact() {
         </CardContent>
       </Card>
 
-      {/* Distribution Chart */}
+      {/* Chart 2 — Posts Distribution by Impressions */}
       <Card className="border-border/50 shadow-md">
         <CardHeader className="pb-2">
           <CardTitle className="text-base font-semibold">
-            Distribution des impressions par post
+            Distribution des posts par impressions
           </CardTitle>
           <CardDescription className="text-xs">
-            Répartition des posts par tranches de visibilité
+            Répartition des posts selon leur niveau de visibilité
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -134,7 +176,7 @@ export function AnalyticsReachImpact() {
               <ChartTooltip
                 content={
                   <ChartTooltipContent
-                    formatter={(value) => [`${value} `, 'posts']}
+                    formatter={(value) => [`${value}`, 'posts']}
                   />
                 }
               />
