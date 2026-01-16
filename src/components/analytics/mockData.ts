@@ -7,6 +7,7 @@ export const overviewKPIs = {
   activeContributors: { value: 12, change: 20 },
   avgPostsPerContributor: { value: 3.9, change: -5.1 },
   collectiveSupportRate: { value: 67, change: 4.3 },
+  engagementRate: { value: 4.8, change: 6.7 },
 };
 
 export const trendData = [
