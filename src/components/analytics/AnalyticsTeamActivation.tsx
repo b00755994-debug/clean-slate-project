@@ -95,7 +95,7 @@ export function AnalyticsTeamActivation() {
         />
         <KPICard
           icon={MessageCircle}
-          label="Moy. interactions / post"
+          label="Interactions internes / post"
           value="3.2"
           change={9}
           tooltip="Nombre moyen de likes et commentaires internes par post (agrégé)."
