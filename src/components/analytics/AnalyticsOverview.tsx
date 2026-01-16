@@ -113,7 +113,7 @@ export function AnalyticsOverview() {
                 <ChartTooltip
                   content={
                     <ChartTooltipContent
-                      formatter={(value) => [`${value} `, 'Posts']}
+                      formatter={(value) => [`${value}`, 'Posts']}
                     />
                   }
                 />
@@ -160,7 +160,7 @@ export function AnalyticsOverview() {
                 <ChartTooltip
                   content={
                     <ChartTooltipContent
-                      formatter={(value) => [`${Number(value).toLocaleString()} `, 'Impressions']}
+                      formatter={(value) => [`${Number(value).toLocaleString()}`, 'Impressions']}
                     />
                   }
                 />
