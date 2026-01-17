@@ -51,7 +51,9 @@ export const reachEngagementTrendData = [
 
 // Posts distribution by impressions
 export const impressionsDistribution = [
-  { bucket: '0-1k', count: 8 },
-  { bucket: '1k-5k', count: 24 },
-  { bucket: '5k+', count: 15 },
+  { bucket: '0-2k', count: 12 },
+  { bucket: '2k-5k', count: 18 },
+  { bucket: '5k-10k', count: 10 },
+  { bucket: '10k-20k', count: 5 },
+  { bucket: '20k+', count: 2 },
 ];
