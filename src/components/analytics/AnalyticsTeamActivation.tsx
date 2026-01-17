@@ -69,7 +69,7 @@ export function AnalyticsTeamActivation() {
         />
         <KPICard
           icon={FileText}
-          label="Moy. posts / contributeur"
+          label="Posts / contributeur"
           value="2.4"
           change={5}
           tooltip="Nombre moyen de posts publiés par contributeur actif."
