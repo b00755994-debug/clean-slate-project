@@ -113,9 +113,9 @@ export function AnalyticsReachImpact() {
                   <ChartTooltipContent
                     formatter={(value, name) => {
                       if (name === 'impressions') {
-                        return [`${Number(value).toLocaleString()}`, 'Impressions'];
+                        return [`${Number(value).toLocaleString()} `, 'Impressions'];
                       }
-                      return [`${value}%`, "Taux d'engagement"];
+                      return [`${value} %`, "Taux d'engagement"];
                     }}
                   />
                 }
@@ -176,7 +176,7 @@ export function AnalyticsReachImpact() {
               <ChartTooltip
                 content={
                   <ChartTooltipContent
-                    formatter={(value) => [`${value}`, 'posts']}
+                    formatter={(value) => [`${value} `, 'posts']}
                   />
                 }
               />

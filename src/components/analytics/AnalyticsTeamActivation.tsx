@@ -133,7 +133,7 @@ export function AnalyticsTeamActivation() {
                 <ChartTooltip
                   content={
                     <ChartTooltipContent
-                      formatter={(value) => [`${value}`, 'Contributeurs']}
+                      formatter={(value) => [`${value} `, 'Contributeurs']}
                     />
                   }
                 />
@@ -177,7 +177,7 @@ export function AnalyticsTeamActivation() {
                 <ChartTooltip
                   content={
                     <ChartTooltipContent
-                      formatter={(value) => [`${value}%`, 'Taux de support']}
+                      formatter={(value) => [`${value} %`, 'Taux de support']}
                     />
                   }
                 />
