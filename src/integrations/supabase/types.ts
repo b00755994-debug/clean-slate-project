@@ -25,8 +25,10 @@ export type Database = {
           created_at: string | null
           followers: number | null
           id: string
+          linkedin_title: string | null
           linkedin_url: string
           profile_name: string
+          profile_picture: string | null
           slack_user_id: string | null
           urn: string | null
           user_id: string
@@ -42,8 +44,10 @@ export type Database = {
           created_at?: string | null
           followers?: number | null
           id?: string
+          linkedin_title?: string | null
           linkedin_url: string
           profile_name: string
+          profile_picture?: string | null
           slack_user_id?: string | null
           urn?: string | null
           user_id: string
@@ -59,8 +63,10 @@ export type Database = {
           created_at?: string | null
           followers?: number | null
           id?: string
+          linkedin_title?: string | null
           linkedin_url?: string
           profile_name?: string
+          profile_picture?: string | null
           slack_user_id?: string | null
           urn?: string | null
           user_id?: string
@@ -131,7 +137,6 @@ export type Database = {
           followerCount: number | null
           id: string
           last_name: string | null
-          post_activies: string[] | null
           post_id: string[] | null
           public_url: string | null
           urn: string | null
@@ -144,7 +149,6 @@ export type Database = {
           followerCount?: number | null
           id?: string
           last_name?: string | null
-          post_activies?: string[] | null
           post_id?: string[] | null
           public_url?: string | null
           urn?: string | null
@@ -157,7 +161,6 @@ export type Database = {
           followerCount?: number | null
           id?: string
           last_name?: string | null
-          post_activies?: string[] | null
           post_id?: string[] | null
           public_url?: string | null
           urn?: string | null
@@ -311,6 +314,7 @@ export type Database = {
         Row: {
           billable_user_id: string | null
           commentary: string | null
+          company_url: string | null
           created_at: string
           id: string
           linkedin_post_id: string | null
@@ -322,10 +326,12 @@ export type Database = {
           published_at: string | null
           reaction_id: string | null
           type: string | null
+          user_type: string | null
         }
         Insert: {
           billable_user_id?: string | null
           commentary?: string | null
+          company_url?: string | null
           created_at?: string
           id?: string
           linkedin_post_id?: string | null
@@ -337,10 +343,12 @@ export type Database = {
           published_at?: string | null
           reaction_id?: string | null
           type?: string | null
+          user_type?: string | null
         }
         Update: {
           billable_user_id?: string | null
           commentary?: string | null
+          company_url?: string | null
           created_at?: string
           id?: string
           linkedin_post_id?: string | null
@@ -352,6 +360,7 @@ export type Database = {
           published_at?: string | null
           reaction_id?: string | null
           type?: string | null
+          user_type?: string | null
         }
         Relationships: [
           {
@@ -364,7 +373,7 @@ export type Database = {
           {
             foreignKeyName: "posts_activity_people_id_fkey"
             columns: ["people_id"]
-            isOneToOne: false
+            isOneToOne: true
             referencedRelation: "people"
             referencedColumns: ["id"]
           },
