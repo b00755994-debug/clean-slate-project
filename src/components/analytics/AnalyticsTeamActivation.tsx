@@ -60,7 +60,7 @@ export function AnalyticsTeamActivation() {
         />
         <KPICard
           icon={Percent}
-          label="% Contributeurs actifs"
+          label="Contributeurs actifs (%)"
           value={68}
           change={8}
           tooltip="Part des membres connectés ayant publié au moins un post sur la période."
