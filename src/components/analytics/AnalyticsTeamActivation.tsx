@@ -52,7 +52,7 @@ export function AnalyticsTeamActivation() {
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         <KPICard
           icon={Users}
-          label="Contributeurs actifs"
+          label="Contributeurs actifs (#)"
           value={15}
           change={12}
           tooltip="Nombre de membres connectés ayant publié au moins un post sur la période sélectionnée."
