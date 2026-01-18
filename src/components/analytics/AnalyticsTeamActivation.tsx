@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Users, UserCheck, FileText, HeartHandshake, MessageCircle, Percent } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import {
@@ -7,28 +8,38 @@ import {
 } from '@/components/ui/chart';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { KPICard } from './KPICard';
+import { PeriodSelector } from './PeriodSelector';
 
-// Mock data for Team Activation
+// 12 months of mock data for Team Activation
 const activationTimeData = [
-  { period: 'S1', activeContributors: 8 },
-  { period: 'S2', activeContributors: 10 },
-  { period: 'S3', activeContributors: 9 },
-  { period: 'S4', activeContributors: 12 },
-  { period: 'S5', activeContributors: 11 },
-  { period: 'S6', activeContributors: 14 },
-  { period: 'S7', activeContributors: 13 },
-  { period: 'S8', activeContributors: 15 },
+  { month: 'Jan', activeContributors: 6 },
+  { month: 'Fév', activeContributors: 7 },
+  { month: 'Mar', activeContributors: 8 },
+  { month: 'Avr', activeContributors: 8 },
+  { month: 'Mai', activeContributors: 9 },
+  { month: 'Juin', activeContributors: 10 },
+  { month: 'Juil', activeContributors: 9 },
+  { month: 'Août', activeContributors: 8 },
+  { month: 'Sep', activeContributors: 11 },
+  { month: 'Oct', activeContributors: 12 },
+  { month: 'Nov', activeContributors: 14 },
+  { month: 'Déc', activeContributors: 15 },
 ];
 
+// 12 months of support rate data
 const supportRateData = [
-  { period: 'S1', supportRate: 42 },
-  { period: 'S2', supportRate: 45 },
-  { period: 'S3', supportRate: 48 },
-  { period: 'S4', supportRate: 52 },
-  { period: 'S5', supportRate: 55 },
-  { period: 'S6', supportRate: 58 },
-  { period: 'S7', supportRate: 61 },
-  { period: 'S8', supportRate: 64 },
+  { month: 'Jan', supportRate: 38 },
+  { month: 'Fév', supportRate: 40 },
+  { month: 'Mar', supportRate: 42 },
+  { month: 'Avr', supportRate: 44 },
+  { month: 'Mai', supportRate: 47 },
+  { month: 'Juin', supportRate: 50 },
+  { month: 'Juil', supportRate: 48 },
+  { month: 'Août', supportRate: 45 },
+  { month: 'Sep', supportRate: 52 },
+  { month: 'Oct', supportRate: 56 },
+  { month: 'Nov', supportRate: 60 },
+  { month: 'Déc', supportRate: 64 },
 ];
 
 const activationChartConfig = {
@@ -46,6 +57,12 @@ const supportChartConfig = {
 };
 
 export function AnalyticsTeamActivation() {
+  const [activationPeriod, setActivationPeriod] = useState<'6' | '12'>('6');
+  const [supportPeriod, setSupportPeriod] = useState<'6' | '12'>('6');
+
+  const activationData = activationPeriod === '6' ? activationTimeData.slice(-6) : activationTimeData;
+  const supportData = supportPeriod === '6' ? supportRateData.slice(-6) : supportRateData;
+
   return (
     <div className="space-y-6">
       {/* 6 KPI Cards */}
@@ -108,19 +125,24 @@ export function AnalyticsTeamActivation() {
         {/* Chart 1 — Team Activation Over Time */}
         <Card className="border-border/50 shadow-md">
           <CardHeader className="pb-2">
-            <CardTitle className="text-base font-semibold">
-              Activation de l'équipe
-            </CardTitle>
-            <CardDescription className="text-xs">
-              Nombre de contributeurs actifs par semaine
-            </CardDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-base font-semibold">
+                  Activation de l'équipe
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  Nombre de contributeurs actifs par mois
+                </CardDescription>
+              </div>
+              <PeriodSelector value={activationPeriod} onChange={setActivationPeriod} />
+            </div>
           </CardHeader>
           <CardContent>
             <ChartContainer config={activationChartConfig} className="h-[240px] w-full">
-              <BarChart data={activationTimeData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+              <BarChart data={activationData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" vertical={false} />
                 <XAxis
-                  dataKey="period"
+                  dataKey="month"
                   tickLine={false}
                   axisLine={false}
                   className="text-xs fill-muted-foreground"
@@ -150,19 +172,24 @@ export function AnalyticsTeamActivation() {
         {/* Chart 2 — Collective Support Over Time */}
         <Card className="border-border/50 shadow-md">
           <CardHeader className="pb-2">
-            <CardTitle className="text-base font-semibold">
-              Évolution du support collectif
-            </CardTitle>
-            <CardDescription className="text-xs">
-              Taux de support collectif par semaine
-            </CardDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-base font-semibold">
+                  Évolution du support collectif
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  Taux de support collectif par mois
+                </CardDescription>
+              </div>
+              <PeriodSelector value={supportPeriod} onChange={setSupportPeriod} />
+            </div>
           </CardHeader>
           <CardContent>
             <ChartContainer config={supportChartConfig} className="h-[240px] w-full">
-              <LineChart data={supportRateData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+              <LineChart data={supportData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" />
                 <XAxis
-                  dataKey="period"
+                  dataKey="month"
                   tickLine={false}
                   axisLine={false}
                   className="text-xs fill-muted-foreground"
