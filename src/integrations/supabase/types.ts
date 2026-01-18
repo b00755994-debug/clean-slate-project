@@ -128,6 +128,54 @@ export type Database = {
           },
         ]
       }
+      kpis: {
+        Row: {
+          billable_user_id: string | null
+          created_at: string
+          id: number
+          name: string | null
+          period: string | null
+          type: string | null
+          value: number | null
+          workspace_id: string | null
+        }
+        Insert: {
+          billable_user_id?: string | null
+          created_at?: string
+          id?: number
+          name?: string | null
+          period?: string | null
+          type?: string | null
+          value?: number | null
+          workspace_id?: string | null
+        }
+        Update: {
+          billable_user_id?: string | null
+          created_at?: string
+          id?: number
+          name?: string | null
+          period?: string | null
+          type?: string | null
+          value?: number | null
+          workspace_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kpis_billable_user_id_fkey"
+            columns: ["billable_user_id"]
+            isOneToOne: false
+            referencedRelation: "billable_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kpis_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       people: {
         Row: {
           connections: number | null
@@ -189,7 +237,7 @@ export type Database = {
           comment?: number | null
           created_at?: string
           empathy?: number | null
-          id: string
+          id?: string
           impressions?: number | null
           interest?: number | null
           likes?: number | null
@@ -241,6 +289,7 @@ export type Database = {
           linkedin_post_id: string | null
           linkedin_profiles: string | null
           monitored_by_supermpup: boolean | null
+          post_image: string | null
           praise: number | null
           reactions: number | null
           shares: number | null
@@ -263,6 +312,7 @@ export type Database = {
           linkedin_post_id?: string | null
           linkedin_profiles?: string | null
           monitored_by_supermpup?: boolean | null
+          post_image?: string | null
           praise?: number | null
           reactions?: number | null
           shares?: number | null
@@ -285,6 +335,7 @@ export type Database = {
           linkedin_post_id?: string | null
           linkedin_profiles?: string | null
           monitored_by_supermpup?: boolean | null
+          post_image?: string | null
           praise?: number | null
           reactions?: number | null
           shares?: number | null
@@ -431,6 +482,7 @@ export type Database = {
         Row: {
           id: string
           installed_at: string
+          post_channel: string | null
           scopes: string | null
           slack_id: string | null
           superpump_workspace_id: string | null
@@ -439,6 +491,7 @@ export type Database = {
         Insert: {
           id?: string
           installed_at?: string
+          post_channel?: string | null
           scopes?: string | null
           slack_id?: string | null
           superpump_workspace_id?: string | null
@@ -447,6 +500,7 @@ export type Database = {
         Update: {
           id?: string
           installed_at?: string
+          post_channel?: string | null
           scopes?: string | null
           slack_id?: string | null
           superpump_workspace_id?: string | null
@@ -548,8 +602,6 @@ export type Database = {
           created_at: string | null
           id: string
           is_connected: boolean | null
-          linkedin_profiles_id: string | null
-          posts_id: string | null
           slack_workspace_auth: string | null
           user_id: string
           workspace_name: string
@@ -559,8 +611,6 @@ export type Database = {
           created_at?: string | null
           id?: string
           is_connected?: boolean | null
-          linkedin_profiles_id?: string | null
-          posts_id?: string | null
           slack_workspace_auth?: string | null
           user_id: string
           workspace_name: string
@@ -570,27 +620,11 @@ export type Database = {
           created_at?: string | null
           id?: string
           is_connected?: boolean | null
-          linkedin_profiles_id?: string | null
-          posts_id?: string | null
           slack_workspace_auth?: string | null
           user_id?: string
           workspace_name?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "workspaces_linkedin_profiles_id_fkey"
-            columns: ["linkedin_profiles_id"]
-            isOneToOne: false
-            referencedRelation: "billable_users"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "workspaces_posts_id_fkey"
-            columns: ["posts_id"]
-            isOneToOne: false
-            referencedRelation: "posts"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "workspaces_slack_workspace_auth_fkey"
             columns: ["slack_workspace_auth"]
