@@ -10,7 +10,16 @@ export const overviewKPIs = {
   engagementRate: { value: 4.8, change: 6.7 },
 };
 
+// 12 months of trend data for month-over-month charts
 export const trendData = [
+  { month: 'Jan', posts: 28, impressions: 142000 },
+  { month: 'Fév', posts: 31, impressions: 158000 },
+  { month: 'Mar', posts: 35, impressions: 178000 },
+  { month: 'Avr', posts: 33, impressions: 165000 },
+  { month: 'Mai', posts: 38, impressions: 192000 },
+  { month: 'Juin', posts: 40, impressions: 205000 },
+  { month: 'Juil', posts: 36, impressions: 185000 },
+  { month: 'Août', posts: 32, impressions: 168000 },
   { month: 'Sep', posts: 38, impressions: 195000 },
   { month: 'Oct', posts: 42, impressions: 238000 },
   { month: 'Nov', posts: 45, impressions: 262000 },
@@ -18,6 +27,14 @@ export const trendData = [
 ];
 
 export const activationData = [
+  { month: 'Jan', activeContributors: 5, avgPosts: 2.8, supportRate: 48 },
+  { month: 'Fév', activeContributors: 6, avgPosts: 2.9, supportRate: 50 },
+  { month: 'Mar', activeContributors: 6, avgPosts: 3.0, supportRate: 52 },
+  { month: 'Avr', activeContributors: 7, avgPosts: 3.1, supportRate: 54 },
+  { month: 'Mai', activeContributors: 7, avgPosts: 3.2, supportRate: 55 },
+  { month: 'Juin', activeContributors: 8, avgPosts: 3.3, supportRate: 56 },
+  { month: 'Juil', activeContributors: 7, avgPosts: 3.2, supportRate: 55 },
+  { month: 'Août', activeContributors: 6, avgPosts: 3.0, supportRate: 52 },
   { month: 'Sep', activeContributors: 8, avgPosts: 3.2, supportRate: 58 },
   { month: 'Oct', activeContributors: 10, avgPosts: 3.6, supportRate: 62 },
   { month: 'Nov', activeContributors: 11, avgPosts: 3.8, supportRate: 65 },
@@ -37,16 +54,20 @@ export const reachKPIs = {
   icpEngagementRate: { value: 2.1, change: 12.3 },
 };
 
-// Reach & Engagement trend (weekly)
+// 12 months of Reach & Engagement trend data
 export const reachEngagementTrendData = [
-  { week: 'S1', impressions: 48000, engagementRate: 3.8 },
-  { week: 'S2', impressions: 52000, engagementRate: 4.1 },
-  { week: 'S3', impressions: 61000, engagementRate: 4.5 },
-  { week: 'S4', impressions: 58000, engagementRate: 4.2 },
-  { week: 'S5', impressions: 72000, engagementRate: 5.1 },
-  { week: 'S6', impressions: 68000, engagementRate: 4.9 },
-  { week: 'S7', impressions: 75000, engagementRate: 5.3 },
-  { week: 'S8', impressions: 78500, engagementRate: 5.6 },
+  { month: 'Jan', impressions: 142000, engagementRate: 3.2 },
+  { month: 'Fév', impressions: 158000, engagementRate: 3.4 },
+  { month: 'Mar', impressions: 178000, engagementRate: 3.6 },
+  { month: 'Avr', impressions: 165000, engagementRate: 3.5 },
+  { month: 'Mai', impressions: 192000, engagementRate: 3.8 },
+  { month: 'Juin', impressions: 205000, engagementRate: 4.0 },
+  { month: 'Juil', impressions: 185000, engagementRate: 3.9 },
+  { month: 'Août', impressions: 168000, engagementRate: 3.6 },
+  { month: 'Sep', impressions: 195000, engagementRate: 4.2 },
+  { month: 'Oct', impressions: 238000, engagementRate: 4.5 },
+  { month: 'Nov', impressions: 262000, engagementRate: 4.9 },
+  { month: 'Déc', impressions: 284500, engagementRate: 5.2 },
 ];
 
 // Posts distribution by impressions

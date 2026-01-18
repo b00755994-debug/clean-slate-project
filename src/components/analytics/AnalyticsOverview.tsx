@@ -1,14 +1,14 @@
+import { useState } from 'react';
 import { FileText, Eye, Users, TrendingUp, Heart, MousePointerClick } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-  ChartLegend,
-  ChartLegendContent,
 } from '@/components/ui/chart';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { KPICard } from './KPICard';
+import { PeriodSelector } from './PeriodSelector';
 import { overviewKPIs, trendData } from './mockData';
 
 const postsChartConfig = {
@@ -26,6 +26,12 @@ const impressionsChartConfig = {
 };
 
 export function AnalyticsOverview() {
+  const [postsPeriod, setPostsPeriod] = useState<'6' | '12'>('6');
+  const [impressionsPeriod, setImpressionsPeriod] = useState<'6' | '12'>('6');
+
+  const postsData = postsPeriod === '6' ? trendData.slice(-6) : trendData;
+  const impressionsData = impressionsPeriod === '6' ? trendData.slice(-6) : trendData;
+
   return (
     <div className="space-y-6">
       {/* KPI Cards Grid */}
@@ -87,15 +93,18 @@ export function AnalyticsOverview() {
         {/* Posts Trend Chart */}
         <Card className="border-border/50 shadow-md">
           <CardHeader className="pb-2">
-            <CardTitle className="text-base font-semibold flex items-center gap-2">
-              <FileText className="w-4 h-4 text-blue-600" />
-              Évolution des publications
-            </CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-base font-semibold flex items-center gap-2">
+                <FileText className="w-4 h-4 text-blue-600" />
+                Évolution des publications
+              </CardTitle>
+              <PeriodSelector value={postsPeriod} onChange={setPostsPeriod} />
+            </div>
           </CardHeader>
           <CardContent>
             <ChartContainer config={postsChartConfig} className="h-[220px] w-full">
               <LineChart
-                data={trendData}
+                data={postsData}
                 margin={{ top: 10, right: 10, left: -10, bottom: 0 }}
               >
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" />
@@ -133,15 +142,18 @@ export function AnalyticsOverview() {
         {/* Impressions Trend Chart */}
         <Card className="border-border/50 shadow-md">
           <CardHeader className="pb-2">
-            <CardTitle className="text-base font-semibold flex items-center gap-2">
-              <Eye className="w-4 h-4 text-violet-600" />
-              Évolution des impressions
-            </CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-base font-semibold flex items-center gap-2">
+                <Eye className="w-4 h-4 text-violet-600" />
+                Évolution des impressions
+              </CardTitle>
+              <PeriodSelector value={impressionsPeriod} onChange={setImpressionsPeriod} />
+            </div>
           </CardHeader>
           <CardContent>
             <ChartContainer config={impressionsChartConfig} className="h-[220px] w-full">
               <LineChart
-                data={trendData}
+                data={impressionsData}
                 margin={{ top: 10, right: 10, left: -10, bottom: 0 }}
               >
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" />

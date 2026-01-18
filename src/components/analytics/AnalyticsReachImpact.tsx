@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Eye, TrendingUp, MousePointerClick, Target } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import {
@@ -9,6 +10,7 @@ import {
 } from '@/components/ui/chart';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { KPICard } from './KPICard';
+import { PeriodSelector } from './PeriodSelector';
 import { reachKPIs, reachEngagementTrendData, impressionsDistribution } from './mockData';
 
 const trendConfig = {
@@ -30,6 +32,10 @@ const distributionConfig = {
 };
 
 export function AnalyticsReachImpact() {
+  const [trendPeriod, setTrendPeriod] = useState<'6' | '12'>('6');
+  
+  const trendData = trendPeriod === '6' ? reachEngagementTrendData.slice(-6) : reachEngagementTrendData;
+
   return (
     <div className="space-y-6">
       {/* 4 KPI Cards */}
@@ -75,22 +81,27 @@ export function AnalyticsReachImpact() {
         {/* Chart 1 — Reach & Engagement Over Time */}
         <Card className="border-border/50 shadow-md">
           <CardHeader className="pb-2">
-            <CardTitle className="text-base font-semibold">
-              Portée & engagement dans le temps
-            </CardTitle>
-            <CardDescription className="text-xs">
-              Évolution hebdomadaire des impressions et du taux d'engagement
-            </CardDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-base font-semibold">
+                  Portée & engagement dans le temps
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  Évolution mensuelle des impressions et du taux d'engagement
+                </CardDescription>
+              </div>
+              <PeriodSelector value={trendPeriod} onChange={setTrendPeriod} />
+            </div>
           </CardHeader>
           <CardContent>
             <ChartContainer config={trendConfig} className="h-[280px] w-full">
               <LineChart
-                data={reachEngagementTrendData}
+                data={trendData}
                 margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
               >
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" />
                 <XAxis
-                  dataKey="week"
+                  dataKey="month"
                   tickLine={false}
                   axisLine={false}
                   className="text-xs fill-muted-foreground"
