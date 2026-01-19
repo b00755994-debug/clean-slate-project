@@ -51,7 +51,7 @@ export const reachKPIs = {
   totalImpressions: { value: 284500, change: 8.2 },
   avgImpressionsPerPost: { value: 6053, change: 15.2 },
   engagementRate: { value: 4.8, change: 6.7 },
-  icpEngagementRate: { value: 2.1, change: 12.3 },
+  commentRate: { value: 12.3, change: 2.1 },
 };
 
 // 12 months of Reach & Engagement trend data
