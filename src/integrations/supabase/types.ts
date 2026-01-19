@@ -480,6 +480,7 @@ export type Database = {
       }
       slack_workspace_auth: {
         Row: {
+          bot_user_id: string | null
           id: string
           installed_at: string
           post_channel: string | null
@@ -489,6 +490,7 @@ export type Database = {
           token: string | null
         }
         Insert: {
+          bot_user_id?: string | null
           id?: string
           installed_at?: string
           post_channel?: string | null
@@ -498,6 +500,7 @@ export type Database = {
           token?: string | null
         }
         Update: {
+          bot_user_id?: string | null
           id?: string
           installed_at?: string
           post_channel?: string | null

@@ -1,4 +1,4 @@
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { cn } from '@/lib/utils';
 
 interface PeriodSelectorProps {
   value: '6' | '12';
@@ -7,24 +7,29 @@ interface PeriodSelectorProps {
 
 export function PeriodSelector({ value, onChange }: PeriodSelectorProps) {
   return (
-    <ToggleGroup
-      type="single"
-      value={value}
-      onValueChange={(v) => v && onChange(v as '6' | '12')}
-      className="border rounded-md p-0.5 bg-muted/50"
-    >
-      <ToggleGroupItem
-        value="6"
-        className="text-xs px-2.5 py-1 h-auto data-[state=on]:bg-background data-[state=on]:shadow-sm"
+    <div className="inline-flex items-center rounded-lg border border-border bg-muted/40 p-1 gap-1">
+      <button
+        onClick={() => onChange('6')}
+        className={cn(
+          "text-xs font-medium px-3 py-1.5 rounded-md transition-all duration-200",
+          value === '6'
+            ? "bg-background text-foreground shadow-sm border border-border/50"
+            : "text-muted-foreground hover:text-foreground hover:bg-muted"
+        )}
       >
         6 mois
-      </ToggleGroupItem>
-      <ToggleGroupItem
-        value="12"
-        className="text-xs px-2.5 py-1 h-auto data-[state=on]:bg-background data-[state=on]:shadow-sm"
+      </button>
+      <button
+        onClick={() => onChange('12')}
+        className={cn(
+          "text-xs font-medium px-3 py-1.5 rounded-md transition-all duration-200",
+          value === '12'
+            ? "bg-background text-foreground shadow-sm border border-border/50"
+            : "text-muted-foreground hover:text-foreground hover:bg-muted"
+        )}
       >
         12 mois
-      </ToggleGroupItem>
-    </ToggleGroup>
+      </button>
+    </div>
   );
 }
