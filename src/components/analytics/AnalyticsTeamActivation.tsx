@@ -65,8 +65,8 @@ export function AnalyticsTeamActivation() {
 
   return (
     <div className="space-y-6">
-      {/* 6 KPI Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+      {/* First row: 3 KPI Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <KPICard
           icon={Users}
           label="Contributeurs actifs (#)"
@@ -92,35 +92,9 @@ export function AnalyticsTeamActivation() {
           tooltip="Nombre moyen de posts publiés par contributeur actif."
           color="violet"
         />
-        <KPICard
-          icon={HeartHandshake}
-          label="Taux de support collectif"
-          value={64}
-          change={6}
-          tooltip="Pourcentage des interactions internes potentielles réellement effectuées. Calculé : (likes + commentaires internes) ÷ (nb posts × nb membres connectés)."
-          color="violet"
-          suffix="%"
-        />
-        <KPICard
-          icon={UserCheck}
-          label="Posts avec support interne"
-          value={78}
-          change={4}
-          tooltip="Pourcentage des posts ayant reçu au moins un like ou commentaire interne."
-          color="emerald"
-          suffix="%"
-        />
-        <KPICard
-          icon={MessageCircle}
-          label="Interactions internes / post"
-          value="3.2"
-          change={9}
-          tooltip="Nombre moyen de likes et commentaires internes par post (agrégé)."
-          color="emerald"
-        />
       </div>
 
-      {/* 2 Charts */}
+      {/* 2 Charts side by side */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Chart 1 — Team Activation Over Time */}
         <Card className="border-border/50 shadow-md">
@@ -220,6 +194,36 @@ export function AnalyticsTeamActivation() {
             </ChartContainer>
           </CardContent>
         </Card>
+      </div>
+
+      {/* Second row: 3 Support KPI Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <KPICard
+          icon={HeartHandshake}
+          label="Taux de support collectif"
+          value={64}
+          change={6}
+          tooltip="Pourcentage des interactions internes potentielles réellement effectuées. Calculé : (likes + commentaires internes) ÷ (nb posts × nb membres connectés)."
+          color="violet"
+          suffix="%"
+        />
+        <KPICard
+          icon={UserCheck}
+          label="Posts avec support interne"
+          value={78}
+          change={4}
+          tooltip="Pourcentage des posts ayant reçu au moins un like ou commentaire interne."
+          color="emerald"
+          suffix="%"
+        />
+        <KPICard
+          icon={MessageCircle}
+          label="Interactions internes / post"
+          value="3.2"
+          change={9}
+          tooltip="Nombre moyen de likes et commentaires internes par post (agrégé)."
+          color="emerald"
+        />
       </div>
     </div>
   );
