@@ -88,7 +88,7 @@ export function TeamFeed({
 
   if (loading) {
     return (
-      <div className="max-w-[600px] mx-auto space-y-2">
+      <div className="w-full max-w-[700px] space-y-2">
         {[1, 2, 3].map(i => (
           <div key={i} className="bg-card p-4 border border-border/40 rounded-lg">
             <div className="flex items-center gap-3 mb-3">
@@ -107,7 +107,7 @@ export function TeamFeed({
   }
 
   return (
-    <div className="max-w-[600px] mx-auto">
+    <div className="w-full max-w-[700px]">
       {filteredAndSortedPosts.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground bg-card rounded-lg border border-border/40">
           <p>Aucun post trouvé</p>

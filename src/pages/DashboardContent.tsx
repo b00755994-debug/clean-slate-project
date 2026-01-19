@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
 import { TeamFeed, useTeamFeedStats } from '@/components/content/TeamFeed';
 import { TeamFeedStats } from '@/components/content/TeamFeedStats';
+import { FeedLeaderboards } from '@/components/content/FeedLeaderboards';
 import { Newspaper, Bookmark, X, Search, Calendar } from 'lucide-react';
 import { Toggle } from '@/components/ui/toggle';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -158,15 +159,27 @@ export default function DashboardContent() {
           </div>
         </div>
 
-        {/* Scrollable Content */}
+        {/* Scrollable Content - Two Column Layout */}
         <div className="flex-1 overflow-y-auto pt-4">
-          <TeamFeed 
-            showBookmarksOnly={showBookmarksOnly}
-            sortBy={sortBy}
-            authorFilter={authorFilter}
-            searchQuery={searchQuery}
-            timePeriod={timePeriod}
-          />
+          <div className="flex gap-6">
+            {/* Feed Column - 70% */}
+            <div className="flex-1 min-w-0">
+              <TeamFeed 
+                showBookmarksOnly={showBookmarksOnly}
+                sortBy={sortBy}
+                authorFilter={authorFilter}
+                searchQuery={searchQuery}
+                timePeriod={timePeriod}
+              />
+            </div>
+            
+            {/* Leaderboards Column - 30% */}
+            <div className="hidden lg:block w-[320px] flex-shrink-0">
+              <div className="sticky top-0">
+                <FeedLeaderboards />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </DashboardLayout>
