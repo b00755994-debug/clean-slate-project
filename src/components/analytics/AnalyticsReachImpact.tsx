@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Eye, TrendingUp, MousePointerClick, Target } from 'lucide-react';
+import { Eye, TrendingUp, MousePointerClick, MessageCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import {
   ChartContainer,
@@ -66,11 +66,11 @@ export function AnalyticsReachImpact() {
           suffix="%"
         />
         <KPICard
-          icon={Target}
-          label="Engagement ICP"
-          value={reachKPIs.icpEngagementRate.value}
-          change={reachKPIs.icpEngagementRate.change}
-          tooltip="Part estimée des interactions provenant de profils correspondant à l'ICP de l'entreprise, basée sur des signaux publics agrégés (secteur, rôle, séniorité)."
+          icon={MessageCircle}
+          label="Taux de commentaires"
+          value={reachKPIs.commentRate.value}
+          change={reachKPIs.commentRate.change}
+          tooltip="Ratio entre le nombre total de commentaires et le total des interactions (likes + commentaires) sur la période sélectionnée."
           color="amber"
           suffix="%"
         />
