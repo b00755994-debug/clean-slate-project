@@ -120,7 +120,7 @@ export function PostCard({ post, author, isBookmarked = false, onToggleBookmark,
   const topReactions = getTopReactions();
 
   return (
-    <Card className="bg-card border border-border/40 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+    <Card className="bg-card border border-border/40 rounded-lg shadow-sm hover:shadow-md transition-shadow font-linkedin">
       <CardContent className="p-0">
         {/* Author Header */}
         <div className="flex items-start justify-between p-4 pb-0">
@@ -143,7 +143,7 @@ export function PostCard({ post, author, isBookmarked = false, onToggleBookmark,
                 href={author?.linkedin_url} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="font-semibold text-foreground hover:text-primary hover:underline transition-colors text-sm leading-tight block"
+                className="font-semibold text-foreground hover:text-primary hover:underline transition-colors text-[13px] leading-tight block"
               >
                 {author?.profile_name || 'Utilisateur inconnu'}
               </a>
@@ -184,14 +184,14 @@ export function PostCard({ post, author, isBookmarked = false, onToggleBookmark,
 
         {/* Content */}
         <div className="px-4 py-3">
-          <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
+          <p className="text-[14px] text-foreground whitespace-pre-wrap leading-[1.45] font-normal">
             {displayContent}
             {shouldTruncate && !isExpanded && (
               <>
                 ...{' '}
                 <button 
                   onClick={() => setIsExpanded(true)}
-                  className="text-muted-foreground hover:text-primary hover:underline font-medium"
+                  className="text-muted-foreground hover:text-primary hover:underline font-semibold text-[13px]"
                 >
                   voir plus
                 </button>
