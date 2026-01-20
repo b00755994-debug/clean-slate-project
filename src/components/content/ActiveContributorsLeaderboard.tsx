@@ -68,18 +68,18 @@ export function ActiveContributorsLeaderboard({ contributors, loading }: ActiveC
   }
 
   return (
-    <Card className="border-border/40">
+    <Card className="border-border/40 h-fit">
       <CardHeader className="pb-3">
         <CardTitle className="text-base font-semibold flex items-center gap-2">
           <Users className="h-4 w-4 text-primary" />
           Contributeurs actifs
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-2">
+      <CardContent className="space-y-3">
         {contributors.map((contributor, index) => (
           <div
             key={contributor.id}
-            className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/30 transition-colors"
+            className="flex items-center gap-3 p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors"
           >
             {/* Rank */}
             <span className={`
@@ -109,7 +109,6 @@ export function ActiveContributorsLeaderboard({ contributors, loading }: ActiveC
             </div>
           </div>
         ))}
-
       </CardContent>
     </Card>
   );

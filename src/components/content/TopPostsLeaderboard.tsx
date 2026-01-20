@@ -85,7 +85,7 @@ export function TopPostsLeaderboard({ posts, loading }: TopPostsLeaderboardProps
   }
 
   return (
-    <Card className="border-border/40">
+    <Card className="border-border/40 h-fit">
       <CardHeader className="pb-3">
         <CardTitle className="text-base font-semibold flex items-center gap-2">
           <Trophy className="h-4 w-4 text-amber-500" />
