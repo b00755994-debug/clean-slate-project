@@ -74,7 +74,6 @@ export function ActiveContributorsLeaderboard({ contributors, loading }: ActiveC
           <Users className="h-4 w-4 text-primary" />
           Contributeurs actifs
         </CardTitle>
-        <p className="text-xs text-muted-foreground">30 derniers jours</p>
       </CardHeader>
       <CardContent className="space-y-2">
         {contributors.map((contributor, index) => (
@@ -111,12 +110,6 @@ export function ActiveContributorsLeaderboard({ contributors, loading }: ActiveC
           </div>
         ))}
 
-        {/* Disclaimer */}
-        <p className="text-[10px] text-muted-foreground/70 text-center pt-2 border-t border-border/30 mt-3">
-          Basé sur l'activité de publication des 30 derniers jours.
-          <br />
-          Ce n'est pas un classement de performance.
-        </p>
       </CardContent>
     </Card>
   );
