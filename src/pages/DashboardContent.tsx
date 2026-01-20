@@ -159,28 +159,26 @@ export default function DashboardContent() {
           </div>
         </div>
 
-        {/* Scrollable Content - Two Column Layout */}
-        <div className="flex-1 overflow-y-auto pt-4">
-          <div className="flex gap-0">
-            {/* Feed Column - Fixed LinkedIn-like width */}
-            <div className="w-full lg:w-[552px] flex-shrink-0">
-              <TeamFeed 
-                showBookmarksOnly={showBookmarksOnly}
-                sortBy={sortBy}
-                authorFilter={authorFilter}
-                searchQuery={searchQuery}
-                timePeriod={timePeriod}
-              />
-            </div>
-            
-            {/* Visual Separator */}
-            <div className="hidden lg:block w-px bg-border mx-6 flex-shrink-0" />
-            
-            {/* Leaderboards Column */}
-            <div className="hidden lg:block flex-1 min-w-0">
-              <div className="sticky top-0">
-                <FeedLeaderboards />
-              </div>
+        {/* Content - Two Column Layout */}
+        <div className="flex-1 flex gap-0 pt-4 overflow-hidden">
+          {/* Feed Column - Fixed LinkedIn-like width with its own scroll */}
+          <div className="w-full lg:w-[552px] flex-shrink-0 overflow-y-auto pr-2">
+            <TeamFeed 
+              showBookmarksOnly={showBookmarksOnly}
+              sortBy={sortBy}
+              authorFilter={authorFilter}
+              searchQuery={searchQuery}
+              timePeriod={timePeriod}
+            />
+          </div>
+          
+          {/* Visual Separator */}
+          <div className="hidden lg:block w-px bg-border mx-6 flex-shrink-0" />
+          
+          {/* Leaderboards Column */}
+          <div className="hidden lg:block flex-1 min-w-0 overflow-y-auto">
+            <div className="sticky top-0">
+              <FeedLeaderboards />
             </div>
           </div>
         </div>
