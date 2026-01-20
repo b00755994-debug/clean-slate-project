@@ -162,7 +162,7 @@ export default function DashboardContent() {
         {/* Content - Two Column Layout */}
         <div className="flex-1 flex gap-0 pt-4 overflow-hidden">
           {/* Feed Column - Fixed LinkedIn-like width with its own scroll */}
-          <div className="w-full lg:w-[552px] flex-shrink-0 overflow-y-auto pr-2">
+          <div className="w-full lg:w-[552px] flex-shrink-0 overflow-y-auto pr-4 mr-2">
             <TeamFeed 
               showBookmarksOnly={showBookmarksOnly}
               sortBy={sortBy}
