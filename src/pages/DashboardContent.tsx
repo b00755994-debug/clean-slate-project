@@ -161,9 +161,9 @@ export default function DashboardContent() {
 
         {/* Scrollable Content - Two Column Layout */}
         <div className="flex-1 overflow-y-auto pt-4">
-          <div className="flex gap-6">
-            {/* Feed Column - 70% */}
-            <div className="flex-1 min-w-0">
+          <div className="flex gap-0">
+            {/* Feed Column - Fixed LinkedIn-like width */}
+            <div className="w-full lg:w-[552px] flex-shrink-0">
               <TeamFeed 
                 showBookmarksOnly={showBookmarksOnly}
                 sortBy={sortBy}
@@ -173,8 +173,11 @@ export default function DashboardContent() {
               />
             </div>
             
-            {/* Leaderboards Column - 30% */}
-            <div className="hidden lg:block w-[320px] flex-shrink-0">
+            {/* Visual Separator */}
+            <div className="hidden lg:block w-px bg-border mx-6 flex-shrink-0" />
+            
+            {/* Leaderboards Column */}
+            <div className="hidden lg:block flex-1 min-w-0">
               <div className="sticky top-0">
                 <FeedLeaderboards />
               </div>

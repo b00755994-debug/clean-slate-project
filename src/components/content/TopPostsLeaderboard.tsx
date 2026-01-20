@@ -91,7 +91,6 @@ export function TopPostsLeaderboard({ posts, loading }: TopPostsLeaderboardProps
           <Trophy className="h-4 w-4 text-amber-500" />
           Top Posts
         </CardTitle>
-        <p className="text-xs text-muted-foreground">30 derniers jours</p>
       </CardHeader>
       <CardContent className="space-y-3">
         {posts.map((post, index) => (
