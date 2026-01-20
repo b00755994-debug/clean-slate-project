@@ -17,6 +17,7 @@ export default {
         'lato': ['Lato', 'sans-serif'],
         'serif': ['"Reddit Sans"', 'sans-serif'],
         'sans': ['Sora', 'system-ui', '-apple-system', 'sans-serif'],
+        'linkedin': ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Text"', 'system-ui', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
