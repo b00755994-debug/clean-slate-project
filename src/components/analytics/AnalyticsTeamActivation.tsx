@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Users, FileText, Percent } from 'lucide-react';
+import { Users, FileText, Percent, CalendarCheck } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import {
   ChartContainer,
@@ -42,8 +42,8 @@ export function AnalyticsTeamActivation() {
 
   return (
     <div className="space-y-6">
-      {/* 3 KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {/* 4 KPI Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <KPICard
           icon={Users}
           label="Contributeurs actifs (#)"
@@ -68,6 +68,15 @@ export function AnalyticsTeamActivation() {
           change={5}
           tooltip="Nombre moyen de posts publiés par contributeur actif."
           color="violet"
+        />
+        <KPICard
+          icon={CalendarCheck}
+          label="Régularité de publication"
+          value={42}
+          change={6}
+          tooltip="Pourcentage de contributeurs actifs publiant au moins une fois par semaine (sur les 4 dernières semaines)."
+          color="emerald"
+          suffix="%"
         />
       </div>
 
