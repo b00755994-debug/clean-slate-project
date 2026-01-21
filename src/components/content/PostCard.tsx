@@ -204,15 +204,9 @@ export function PostCard({ post, author, isBookmarked = false, onToggleBookmark,
         {/* Stats Line */}
         {(totalReactions > 0 || totalComments > 0 || (post.impressions || 0) > 0) && (
           <div className="px-4 py-2 flex items-center justify-between text-xs text-muted-foreground">
-            <div className="flex items-center gap-3">
-              {(post.impressions || 0) > 0 && (
-                <div className="flex items-center gap-1">
-                  <Eye className="h-3.5 w-3.5" />
-                  <span>{formatNumber(post.impressions)}</span>
-                </div>
-              )}
+            <div className="flex items-center gap-1">
               {totalReactions > 0 && (
-                <div className="flex items-center gap-1">
+                <>
                   <div className="flex -space-x-1.5">
                     {topReactions.length > 0 ? (
                       topReactions.map((type) => (
@@ -223,10 +217,16 @@ export function PostCard({ post, author, isBookmarked = false, onToggleBookmark,
                     )}
                   </div>
                   <span className="ml-1.5">{formatNumber(totalReactions)}</span>
-                </div>
+                </>
               )}
             </div>
             <div className="flex items-center gap-3">
+              {(post.impressions || 0) > 0 && (
+                <div className="flex items-center gap-1">
+                  <Eye className="h-3.5 w-3.5" />
+                  <span>{formatNumber(post.impressions)}</span>
+                </div>
+              )}
               {totalComments > 0 && (
                 <span>{formatNumber(totalComments)} commentaire{totalComments > 1 ? 's' : ''}</span>
               )}
