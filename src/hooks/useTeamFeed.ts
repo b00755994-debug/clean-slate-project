@@ -7,6 +7,7 @@ interface Post {
   id: string;
   content: string | null;
   url: string | null;
+  avatar_url: string | null;
   impressions: number | null;
   likes: number | null;
   comments: number | null;

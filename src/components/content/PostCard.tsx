@@ -21,6 +21,7 @@ interface PostCardProps {
     id: string;
     content: string | null;
     url: string | null;
+    avatar_url: string | null;
     impressions: number | null;
     likes: number | null;
     comments: number | null;
@@ -132,7 +133,7 @@ export function PostCard({ post, author, isBookmarked = false, onToggleBookmark,
               className="flex-shrink-0"
             >
               <Avatar className="h-12 w-12 border-2 border-background shadow-sm">
-                <AvatarImage src={author?.avatar_url || undefined} alt={author?.profile_name} />
+                <AvatarImage src={post.avatar_url || author?.avatar_url || undefined} alt={author?.profile_name} />
                 <AvatarFallback className="bg-primary/10 text-primary text-sm font-semibold">
                   {author ? getInitials(author.profile_name) : '??'}
                 </AvatarFallback>
