@@ -162,14 +162,23 @@ export default function DashboardContent() {
         {/* Content - Two Column Layout */}
         <div className="flex-1 flex gap-0 pt-4 overflow-hidden">
           {/* Feed Column - Fixed LinkedIn-like width with its own scroll */}
-          <div className="w-full lg:w-[552px] flex-shrink-0 overflow-y-auto pr-4 mr-2">
-            <TeamFeed 
-              showBookmarksOnly={showBookmarksOnly}
-              sortBy={sortBy}
-              authorFilter={authorFilter}
-              searchQuery={searchQuery}
-              timePeriod={timePeriod}
-            />
+          <div className="w-full lg:w-[552px] flex-shrink-0 flex flex-col overflow-hidden">
+            {/* Feed Section Header */}
+            <div className="flex items-center gap-2 pb-3 flex-shrink-0">
+              <Newspaper className="h-5 w-5 text-primary" />
+              <h2 className="text-lg font-semibold text-foreground">Latest posts from your team</h2>
+            </div>
+            
+            {/* Scrollable Feed */}
+            <div className="flex-1 overflow-y-auto pr-4 mr-2">
+              <TeamFeed 
+                showBookmarksOnly={showBookmarksOnly}
+                sortBy={sortBy}
+                authorFilter={authorFilter}
+                searchQuery={searchQuery}
+                timePeriod={timePeriod}
+              />
+            </div>
           </div>
           
           {/* Visual Separator */}
