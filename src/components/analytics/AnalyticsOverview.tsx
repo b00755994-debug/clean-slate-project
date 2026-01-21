@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FileText, Eye, Users, TrendingUp, Heart, MousePointerClick } from 'lucide-react';
+import { FileText, Eye, Users, TrendingUp } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   ChartContainer,
@@ -35,7 +35,7 @@ export function AnalyticsOverview() {
   return (
     <div className="space-y-6">
       {/* KPI Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <KPICard
           icon={FileText}
           label="Total Posts"
@@ -67,24 +67,6 @@ export function AnalyticsOverview() {
           change={overviewKPIs.avgPostsPerContributor.change}
           tooltip="Average number of posts published per active contributor."
           color="amber"
-        />
-        <KPICard
-          icon={Heart}
-          label="Taux de support collectif"
-          value={overviewKPIs.collectiveSupportRate.value}
-          change={overviewKPIs.collectiveSupportRate.change}
-          tooltip="Percentage of potential internal support interactions that actually occurred. Calculated as: (Total internal likes and comments) ÷ (Number of posts × Number of connected team members)."
-          color="rose"
-          suffix="%"
-        />
-        <KPICard
-          icon={MousePointerClick}
-          label="Taux d'engagement"
-          value={overviewKPIs.engagementRate.value}
-          change={overviewKPIs.engagementRate.change}
-          tooltip="Taux d'engagement moyen des posts. Calculé : (Réactions + Commentaires + Partages) ÷ Impressions × 100."
-          color="blue"
-          suffix="%"
         />
       </div>
 
