@@ -32,7 +32,7 @@ export function TeamFeedStats({
   ];
 
   return (
-    <div className={layout === 'grid' ? 'grid grid-cols-2 gap-2' : 'flex gap-3'}>
+    <div className={layout === 'grid' ? 'grid grid-cols-2 gap-2' : 'flex gap-3 justify-end'}>
       {stats.map((stat) => (
         <Card 
           key={stat.label} 
