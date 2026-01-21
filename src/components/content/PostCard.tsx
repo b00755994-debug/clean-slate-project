@@ -3,7 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Bookmark, Globe, MoreHorizontal, ExternalLink, Flame } from 'lucide-react';
+import { Bookmark, Globe, MoreHorizontal, ExternalLink, Flame, Eye } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
@@ -202,11 +202,17 @@ export function PostCard({ post, author, isBookmarked = false, onToggleBookmark,
         </div>
 
         {/* Stats Line */}
-        {(totalReactions > 0 || totalComments > 0) && (
+        {(totalReactions > 0 || totalComments > 0 || (post.impressions || 0) > 0) && (
           <div className="px-4 py-2 flex items-center justify-between text-xs text-muted-foreground">
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-3">
+              {(post.impressions || 0) > 0 && (
+                <div className="flex items-center gap-1">
+                  <Eye className="h-3.5 w-3.5" />
+                  <span>{formatNumber(post.impressions)}</span>
+                </div>
+              )}
               {totalReactions > 0 && (
-                <>
+                <div className="flex items-center gap-1">
                   <div className="flex -space-x-1.5">
                     {topReactions.length > 0 ? (
                       topReactions.map((type) => (
@@ -217,7 +223,7 @@ export function PostCard({ post, author, isBookmarked = false, onToggleBookmark,
                     )}
                   </div>
                   <span className="ml-1.5">{formatNumber(totalReactions)}</span>
-                </>
+                </div>
               )}
             </div>
             <div className="flex items-center gap-3">
