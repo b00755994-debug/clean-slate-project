@@ -25,7 +25,7 @@ export function TeamFeedStats({
     {
       icon: Users,
       value: activeMembers,
-      label: 'Contributeurs actifs',
+      label: 'Membres',
       color: 'text-amber-500',
       bgColor: 'bg-amber-500/10',
     },
