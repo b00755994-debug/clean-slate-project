@@ -319,7 +319,7 @@ export default function Dashboard() {
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-muted-foreground">Impressions</span>
                   <span className="font-semibold">
-                    {teamStats.totalImpressions.toLocaleString()}
+                    {Math.round(teamStats.totalImpressions).toLocaleString()}
                   </span>
                 </div>
               </div>
