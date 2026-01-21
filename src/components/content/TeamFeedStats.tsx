@@ -1,4 +1,4 @@
-import { FileText, Eye, TrendingUp, Users } from 'lucide-react';
+import { FileText, Users } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 
 interface TeamFeedStatsProps {
@@ -9,16 +9,8 @@ interface TeamFeedStatsProps {
   layout?: 'row' | 'grid';
 }
 
-const formatNumber = (num: number) => {
-  if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
-  if (num >= 1000) return `${(num / 1000).toFixed(1)}k`;
-  return num.toString();
-};
-
 export function TeamFeedStats({ 
   totalPosts, 
-  totalImpressions, 
-  engagementRate, 
   activeMembers,
   layout = 'row'
 }: TeamFeedStatsProps) {
@@ -26,35 +18,21 @@ export function TeamFeedStats({
     {
       icon: FileText,
       value: totalPosts,
-      label: 'Posts',
+      label: 'Posts (30j)',
       color: 'text-blue-500',
       bgColor: 'bg-blue-500/10',
     },
     {
-      icon: Eye,
-      value: formatNumber(totalImpressions),
-      label: 'Impressions',
-      color: 'text-violet-500',
-      bgColor: 'bg-violet-500/10',
-    },
-    {
-      icon: TrendingUp,
-      value: `${engagementRate.toFixed(1)}%`,
-      label: 'Engagement',
-      color: 'text-emerald-500',
-      bgColor: 'bg-emerald-500/10',
-    },
-    {
       icon: Users,
       value: activeMembers,
-      label: 'Membres',
+      label: 'Contributeurs (30j)',
       color: 'text-amber-500',
       bgColor: 'bg-amber-500/10',
     },
   ];
 
   return (
-    <div className={layout === 'grid' ? 'grid grid-cols-2 gap-2' : 'grid grid-cols-2 md:grid-cols-4 gap-3'}>
+    <div className={layout === 'grid' ? 'grid grid-cols-2 gap-2' : 'grid grid-cols-2 gap-3'}>
       {stats.map((stat) => (
         <Card 
           key={stat.label} 
