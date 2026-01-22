@@ -3,6 +3,16 @@ import { useTeamFeed } from '@/hooks/useTeamFeed';
 import { PostCard } from './PostCard';
 import { Skeleton } from '@/components/ui/skeleton';
 import { differenceInDays, isToday } from 'date-fns';
+import { useLanguage } from '@/contexts/LanguageContext';
+
+const translations = {
+  fr: {
+    noPostsFound: 'Aucun post trouvé',
+  },
+  en: {
+    noPostsFound: 'No posts found',
+  }
+};
 
 type ViewMode = 'grid' | 'list';
 type TimePeriod = 'all' | 'today' | 'week' | 'month';
@@ -30,6 +40,8 @@ export function TeamFeed({
   searchQuery = '',
   timePeriod = 'all'
 }: TeamFeedProps) {
+  const { language } = useLanguage();
+  const t = translations[language];
   const { posts, profiles, bookmarkedPosts, loading, toggleBookmark } = useTeamFeed();
 
   // Filter posts by time period
@@ -110,7 +122,7 @@ export function TeamFeed({
     <div className="w-full max-w-[700px]">
       {filteredAndSortedPosts.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground bg-card rounded-lg border border-border/40">
-          <p>Aucun post trouvé</p>
+          <p>{t.noPostsFound}</p>
         </div>
       ) : (
         <div className="space-y-2">
