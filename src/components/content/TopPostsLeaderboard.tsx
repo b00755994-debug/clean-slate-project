@@ -3,6 +3,22 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useLanguage } from '@/contexts/LanguageContext';
+
+const translations = {
+  fr: {
+    topPosts: 'Top Posts',
+    noPostsInLast30Days: 'Aucun post dans les 30 derniers jours',
+    interactions: 'interactions',
+    noContent: 'Pas de contenu',
+  },
+  en: {
+    topPosts: 'Top Posts',
+    noPostsInLast30Days: 'No posts in the last 30 days',
+    interactions: 'interactions',
+    noContent: 'No content',
+  }
+};
 
 interface TopPost {
   id: string;
@@ -34,20 +50,23 @@ function formatNumber(num: number): string {
   return num.toString();
 }
 
-function truncateContent(content: string | null, maxLength: number = 80): string {
-  if (!content) return 'Pas de contenu';
+function truncateContent(content: string | null, noContentText: string, maxLength: number = 80): string {
+  if (!content) return noContentText;
   if (content.length <= maxLength) return content;
   return content.slice(0, maxLength).trim() + '...';
 }
 
 export function TopPostsLeaderboard({ posts, loading }: TopPostsLeaderboardProps) {
+  const { language } = useLanguage();
+  const t = translations[language];
+
   if (loading) {
     return (
       <Card className="border-border/40">
         <CardHeader className="pb-3">
           <CardTitle className="text-base font-semibold flex items-center gap-2">
             <Trophy className="h-4 w-4 text-amber-500" />
-            Top Posts
+            {t.topPosts}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -72,12 +91,12 @@ export function TopPostsLeaderboard({ posts, loading }: TopPostsLeaderboardProps
         <CardHeader className="pb-3">
           <CardTitle className="text-base font-semibold flex items-center gap-2">
             <Trophy className="h-4 w-4 text-amber-500" />
-            Top Posts
+            {t.topPosts}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground text-center py-4">
-            Aucun post dans les 30 derniers jours
+            {t.noPostsInLast30Days}
           </p>
         </CardContent>
       </Card>
@@ -89,7 +108,7 @@ export function TopPostsLeaderboard({ posts, loading }: TopPostsLeaderboardProps
       <CardHeader className="pb-3">
         <CardTitle className="text-base font-semibold flex items-center gap-2">
           <Trophy className="h-4 w-4 text-amber-500" />
-          Top Posts
+          {t.topPosts}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
@@ -121,7 +140,7 @@ export function TopPostsLeaderboard({ posts, loading }: TopPostsLeaderboardProps
 
             {/* Post excerpt */}
             <p className="text-xs text-muted-foreground line-clamp-2 mb-2">
-              {truncateContent(post.content)}
+              {truncateContent(post.content, t.noContent)}
             </p>
 
             {/* Metrics and CTA */}
@@ -130,7 +149,7 @@ export function TopPostsLeaderboard({ posts, loading }: TopPostsLeaderboardProps
                 <span className="flex items-center gap-1">
                   <ThumbsUp className="h-3 w-3" />
                   <MessageCircle className="h-3 w-3" />
-                  {formatNumber(post.interactions)} interactions
+                  {formatNumber(post.interactions)} {t.interactions}
                 </span>
               </div>
               {post.url && (

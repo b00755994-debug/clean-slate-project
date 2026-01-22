@@ -2,6 +2,22 @@ import { Users, FileText } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useLanguage } from '@/contexts/LanguageContext';
+
+const translations = {
+  fr: {
+    activeContributors: 'Contributeurs actifs',
+    noActivityInLast30Days: 'Aucune activité dans les 30 derniers jours',
+    postPublished: 'post publié',
+    postsPublished: 'posts publiés',
+  },
+  en: {
+    activeContributors: 'Active Contributors',
+    noActivityInLast30Days: 'No activity in the last 30 days',
+    postPublished: 'post published',
+    postsPublished: 'posts published',
+  }
+};
 
 interface ActiveContributor {
   id: string;
@@ -25,13 +41,16 @@ function getInitials(name: string): string {
 }
 
 export function ActiveContributorsLeaderboard({ contributors, loading }: ActiveContributorsLeaderboardProps) {
+  const { language } = useLanguage();
+  const t = translations[language];
+
   if (loading) {
     return (
       <Card className="border-border/40">
         <CardHeader className="pb-3">
           <CardTitle className="text-base font-semibold flex items-center gap-2">
             <Users className="h-4 w-4 text-primary" />
-            Contributeurs actifs
+            {t.activeContributors}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -55,12 +74,12 @@ export function ActiveContributorsLeaderboard({ contributors, loading }: ActiveC
         <CardHeader className="pb-3">
           <CardTitle className="text-base font-semibold flex items-center gap-2">
             <Users className="h-4 w-4 text-primary" />
-            Contributeurs actifs
+            {t.activeContributors}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground text-center py-4">
-            Aucune activité dans les 30 derniers jours
+            {t.noActivityInLast30Days}
           </p>
         </CardContent>
       </Card>
@@ -72,7 +91,7 @@ export function ActiveContributorsLeaderboard({ contributors, loading }: ActiveC
       <CardHeader className="pb-3">
         <CardTitle className="text-base font-semibold flex items-center gap-2">
           <Users className="h-4 w-4 text-primary" />
-          Contributeurs actifs
+          {t.activeContributors}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
@@ -104,7 +123,7 @@ export function ActiveContributorsLeaderboard({ contributors, loading }: ActiveC
               </p>
               <p className="text-xs text-muted-foreground flex items-center gap-1">
                 <FileText className="h-3 w-3" />
-                {contributor.postCount} post{contributor.postCount > 1 ? 's' : ''} publié{contributor.postCount > 1 ? 's' : ''}
+                {contributor.postCount} {contributor.postCount > 1 ? t.postsPublished : t.postPublished}
               </p>
             </div>
           </div>
