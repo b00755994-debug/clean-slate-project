@@ -50,7 +50,7 @@ const translations = {
         features: [
           "Tout ce qui est inclus dans Individual",
           "Analyses complètes de la performance de votre équipe",
-          "Classements gamifiés",
+          "Content library pour accompagner votre équipe",
           "Détection de leads ICP",
           "Export vers votre CRM",
           "Support prioritaire"
@@ -109,7 +109,7 @@ const translations = {
         features: [
           "Everything in Individual",
           "Team-scale advanced analytics",
-          "Personal AI coach for your teams",
+          "Content library to follow your team",
           "Audience & brand insights",
           "Priority support"
         ]
