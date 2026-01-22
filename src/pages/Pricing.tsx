@@ -382,7 +382,7 @@ const Pricing = () => {
           </Card>
 
           {/* Business Plan */}
-          <Card className="relative border border-border flex flex-col">
+          <Card className="relative border border-border flex flex-col hover:border-primary/50 hover:shadow-lg transition-all">
             <CardHeader className="pb-4">
               <CardTitle className="text-2xl">{t.plans.business.name}</CardTitle>
               <CardDescription>{t.plans.business.description}</CardDescription>
