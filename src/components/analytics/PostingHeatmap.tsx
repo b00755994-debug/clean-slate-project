@@ -100,11 +100,11 @@ export function PostingHeatmap({ data }: PostingHeatmapProps) {
 
   return (
     <TooltipProvider delayDuration={100}>
-      <div className="w-full">
+      <div className="w-full h-[220px] flex flex-col">
         {/* Grid */}
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-0.5 flex-1">
           {/* Header row - Days */}
-          <div className="flex gap-1 ml-10">
+          <div className="flex gap-0.5 ml-8">
             {t.days.map((day, index) => (
               <div
                 key={day}
@@ -117,9 +117,9 @@ export function PostingHeatmap({ data }: PostingHeatmapProps) {
 
           {/* Data rows */}
           {HOURS_KEYS.map((hourKey, hourIndex) => (
-            <div key={hourKey} className="flex gap-1 items-center">
+            <div key={hourKey} className="flex gap-0.5 items-center flex-1">
               {/* Hour label */}
-              <div className="w-10 text-xs text-muted-foreground text-right pr-2">
+              <div className="w-8 text-[10px] text-muted-foreground text-right pr-1">
                 {t.hours[hourIndex]}
               </div>
               
@@ -133,7 +133,7 @@ export function PostingHeatmap({ data }: PostingHeatmapProps) {
                   <Tooltip key={`${dayKey}-${hourKey}`}>
                     <TooltipTrigger asChild>
                       <div
-                        className={`flex-1 aspect-[2/1] rounded-sm ${colorClass} transition-colors cursor-default min-h-[24px] ${
+                        className={`flex-1 rounded-sm ${colorClass} transition-colors cursor-default min-h-[18px] ${
                           isTopPerforming ? 'ring-2 ring-orange-500 ring-offset-1 ring-offset-background' : ''
                         }`}
                         onMouseEnter={() => setHoveredCell({ day: dayKey, hour: hourKey, count })}
@@ -157,7 +157,7 @@ export function PostingHeatmap({ data }: PostingHeatmapProps) {
         </div>
 
         {/* Legend */}
-        <div className="flex items-center justify-center gap-4 mt-4 text-xs text-muted-foreground">
+        <div className="flex items-center justify-center gap-3 mt-2 text-[10px] text-muted-foreground">
           <div className="flex items-center gap-2">
             <span>{t.less}</span>
             <div className="flex gap-0.5">
