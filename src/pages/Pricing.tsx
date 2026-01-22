@@ -63,7 +63,7 @@ const translations = {
           "Tout ce qui est inclus dans Pro",
           "Audience analytics & ICP scoring",
           "Internal support insights",
-          "Export CSV des prospects engagés"
+          "Engaged prospects export (CSV/CRM)"
         ]
       }
     }
@@ -118,7 +118,7 @@ const translations = {
           "Everything in Pro",
           "Audience analytics & ICP scoring",
           "Internal support insights",
-          "Export CSV of engaged prospects"
+          "Engaged prospects export (CSV/CRM)"
         ]
       }
     }
