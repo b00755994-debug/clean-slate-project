@@ -84,9 +84,9 @@ export function AnalyticsOverview() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* KPI Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         <KPICard
           icon={FileText}
           label={t.totalPosts}
@@ -122,20 +122,20 @@ export function AnalyticsOverview() {
       </div>
 
       {/* Trend Charts - Two separate charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Posts Trend Chart */}
         <Card className="border-border/50 shadow-md">
-          <CardHeader className="pb-2">
+          <CardHeader className="pb-1 pt-3 px-4">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-base font-semibold flex items-center gap-2">
+              <CardTitle className="text-sm font-semibold flex items-center gap-2">
                 <FileText className="w-4 h-4 text-blue-600" />
                 {t.chartTitles.postsTrend}
               </CardTitle>
               <PeriodSelector value={postsPeriod} onChange={setPostsPeriod} />
             </div>
           </CardHeader>
-          <CardContent>
-            <ChartContainer config={postsChartConfig} className="h-[220px] w-full">
+          <CardContent className="pb-3 px-4">
+            <ChartContainer config={postsChartConfig} className="h-[160px] w-full">
               <LineChart
                 data={postsData}
                 margin={{ top: 10, right: 10, left: -10, bottom: 0 }}
@@ -175,17 +175,17 @@ export function AnalyticsOverview() {
 
         {/* Impressions Trend Chart */}
         <Card className="border-border/50 shadow-md">
-          <CardHeader className="pb-2">
+          <CardHeader className="pb-1 pt-3 px-4">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-base font-semibold flex items-center gap-2">
+              <CardTitle className="text-sm font-semibold flex items-center gap-2">
                 <Eye className="w-4 h-4 text-violet-600" />
                 {t.chartTitles.impressionsTrend}
               </CardTitle>
               <PeriodSelector value={impressionsPeriod} onChange={setImpressionsPeriod} />
             </div>
           </CardHeader>
-          <CardContent>
-            <ChartContainer config={impressionsChartConfig} className="h-[220px] w-full">
+          <CardContent className="pb-3 px-4">
+            <ChartContainer config={impressionsChartConfig} className="h-[160px] w-full">
               <LineChart
                 data={impressionsData}
                 margin={{ top: 10, right: 10, left: -10, bottom: 0 }}
