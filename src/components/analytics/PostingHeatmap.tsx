@@ -20,6 +20,7 @@ const translations = {
     more: 'Plus',
     post: 'post',
     posts: 'posts',
+    bestPerformance: 'Meilleure performance',
   },
   en: {
     days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
@@ -28,6 +29,7 @@ const translations = {
     more: 'More',
     post: 'post',
     posts: 'posts',
+    bestPerformance: 'Best performance',
   },
 };
 
@@ -60,7 +62,7 @@ export function PostingHeatmap({ data }: PostingHeatmapProps) {
   const DAYS_KEYS = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
   const HOURS_KEYS = ['6h', '8h', '10h', '12h', '14h', '16h', '18h', '20h'];
 
-  const { grid, maxCount } = useMemo(() => {
+  const { grid, maxCount, topPerformingSlots } = useMemo(() => {
     const grid: Record<string, Record<string, number>> = {};
     let maxCount = 0;
 
@@ -72,15 +74,28 @@ export function PostingHeatmap({ data }: PostingHeatmapProps) {
       });
     });
 
-    // Fill with data
+    // Fill with data and collect all cells with counts
+    const allCells: { day: string; hour: string; count: number }[] = [];
     data.forEach(cell => {
       if (grid[cell.day] && grid[cell.day][cell.hour] !== undefined) {
         grid[cell.day][cell.hour] = cell.count;
         if (cell.count > maxCount) maxCount = cell.count;
+        if (cell.count > 0) {
+          allCells.push({ day: cell.day, hour: cell.hour, count: cell.count });
+        }
       }
     });
 
-    return { grid, maxCount };
+    // Find top 3 performing slots (highest counts)
+    const topPerformingSlots = new Set<string>();
+    allCells
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 3)
+      .forEach(cell => {
+        topPerformingSlots.add(`${cell.day}-${cell.hour}`);
+      });
+
+    return { grid, maxCount, topPerformingSlots };
   }, [data]);
 
   return (
@@ -112,21 +127,27 @@ export function PostingHeatmap({ data }: PostingHeatmapProps) {
               {DAYS_KEYS.map((dayKey, dayIndex) => {
                 const count = grid[dayKey][hourKey];
                 const colorClass = getColorIntensity(count, maxCount);
+                const isTopPerforming = topPerformingSlots.has(`${dayKey}-${hourKey}`);
                 
                 return (
                   <Tooltip key={`${dayKey}-${hourKey}`}>
                     <TooltipTrigger asChild>
                       <div
-                        className={`flex-1 aspect-[2/1] rounded-sm ${colorClass} transition-colors cursor-default min-h-[24px]`}
+                        className={`flex-1 aspect-[2/1] rounded-sm ${colorClass} transition-colors cursor-default min-h-[24px] ${
+                          isTopPerforming ? 'ring-2 ring-orange-500 ring-offset-1 ring-offset-background' : ''
+                        }`}
                         onMouseEnter={() => setHoveredCell({ day: dayKey, hour: hourKey, count })}
                         onMouseLeave={() => setHoveredCell(null)}
                         role="gridcell"
-                        aria-label={`${t.days[dayIndex]} ${t.hours[hourIndex]}: ${count} ${count !== 1 ? t.posts : t.post}`}
+                        aria-label={`${t.days[dayIndex]} ${t.hours[hourIndex]}: ${count} ${count !== 1 ? t.posts : t.post}${isTopPerforming ? ` - ${t.bestPerformance}` : ''}`}
                       />
                     </TooltipTrigger>
                     <TooltipContent>
                       <p className="text-sm font-medium">{t.days[dayIndex]} {t.hours[hourIndex]}</p>
                       <p className="text-xs text-muted-foreground">{count} {count !== 1 ? t.posts : t.post}</p>
+                      {isTopPerforming && (
+                        <p className="text-xs text-orange-500 font-medium mt-1">🔥 {t.bestPerformance}</p>
+                      )}
                     </TooltipContent>
                   </Tooltip>
                 );
@@ -136,16 +157,22 @@ export function PostingHeatmap({ data }: PostingHeatmapProps) {
         </div>
 
         {/* Legend */}
-        <div className="flex items-center justify-center gap-2 mt-4 text-xs text-muted-foreground">
-          <span>{t.less}</span>
-          <div className="flex gap-0.5">
-            <div className="w-4 h-3 rounded-sm bg-muted" />
-            <div className="w-4 h-3 rounded-sm bg-primary/20" />
-            <div className="w-4 h-3 rounded-sm bg-primary/40" />
-            <div className="w-4 h-3 rounded-sm bg-primary/60" />
-            <div className="w-4 h-3 rounded-sm bg-primary" />
+        <div className="flex items-center justify-center gap-4 mt-4 text-xs text-muted-foreground">
+          <div className="flex items-center gap-2">
+            <span>{t.less}</span>
+            <div className="flex gap-0.5">
+              <div className="w-4 h-3 rounded-sm bg-muted" />
+              <div className="w-4 h-3 rounded-sm bg-primary/20" />
+              <div className="w-4 h-3 rounded-sm bg-primary/40" />
+              <div className="w-4 h-3 rounded-sm bg-primary/60" />
+              <div className="w-4 h-3 rounded-sm bg-primary" />
+            </div>
+            <span>{t.more}</span>
           </div>
-          <span>{t.more}</span>
+          <div className="flex items-center gap-1.5">
+            <div className="w-4 h-3 rounded-sm bg-primary/40 ring-2 ring-orange-500 ring-offset-1 ring-offset-background" />
+            <span className="text-orange-500 font-medium">{t.bestPerformance}</span>
+          </div>
         </div>
       </div>
     </TooltipProvider>
