@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Check, PlusCircle } from "lucide-react";
-import { useLanguage } from "@/contexts/LanguageContext";
+
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -125,8 +125,8 @@ const translations = {
 };
 
 const Pricing = () => {
-  const { language } = useLanguage();
-  const t = translations[language];
+  // Force English only for pricing page
+  const t = translations.en;
 
   const [isAnnual, setIsAnnual] = useState(true);
   const [proUsers, setProUsers] = useState([10]);
@@ -340,7 +340,7 @@ const Pricing = () => {
 
                 {/* User input */}
                 <div className="flex items-center justify-between mb-3">
-                  <span className="text-sm text-muted-foreground">{language === 'fr' ? 'Nombre d\'utilisateurs' : 'Number of users'}</span>
+                  <span className="text-sm text-muted-foreground">Number of users</span>
                   <div className="flex items-center gap-2">
                     <Input
                       type="number"
@@ -385,7 +385,7 @@ const Pricing = () => {
           <Card className="relative border border-border hover:border-primary/50 hover:shadow-lg transition-all flex flex-col">
             <div className="absolute -top-3 right-4">
               <Badge variant="secondary" className="bg-muted text-muted-foreground text-xs px-2 py-0.5">
-                {language === 'fr' ? 'Bientôt disponible' : 'Coming soon'}
+                Coming soon
               </Badge>
             </div>
             <CardHeader className="pb-4">
@@ -447,7 +447,7 @@ const Pricing = () => {
 
                 {/* User input */}
                 <div className="flex items-center justify-between mb-3">
-                  <span className="text-sm text-muted-foreground">{language === 'fr' ? 'Nombre d\'utilisateurs' : 'Number of users'}</span>
+                  <span className="text-sm text-muted-foreground">Number of users</span>
                   <div className="flex items-center gap-2">
                     <Input
                       type="number"

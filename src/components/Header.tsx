@@ -1,16 +1,10 @@
 import { Button } from "@/components/ui/button";
-import { Zap, Languages } from "lucide-react";
+import { Zap } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 const Header = () => {
-  const { language, setLanguage } = useLanguage();
+  const { language } = useLanguage();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -77,22 +71,6 @@ const Header = () => {
           </nav>
 
           <div className="flex items-center gap-4">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="gap-2 hover:bg-primary/10 hover:text-primary transition-all">
-                  <Languages className="h-4 w-4" />
-                  <span className="text-sm font-medium">{language.toUpperCase()}</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => setLanguage('fr')}>
-                  <span className="mr-2">🇫🇷</span> Français
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setLanguage('en')}>
-                  <span className="mr-2">🇬🇧</span> English
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
             <Link to="/auth">
               <Button variant="ghost" className="hidden sm:inline-flex hover:bg-primary/10 hover:text-primary transition-all">{t.login}</Button>
             </Link>
