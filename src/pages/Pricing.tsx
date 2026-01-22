@@ -61,8 +61,8 @@ const translations = {
         description: "De l'engagement aux opportunités",
         features: [
           "Tout ce qui est inclus dans Pro",
+          "Audience analytics & ICP scoring",
           "Internal support insights",
-          "Scoring ICP automatique",
           "Export CSV des prospects engagés"
         ]
       }
@@ -116,8 +116,8 @@ const translations = {
         description: "From engagement to opportunities",
         features: [
           "Everything in Pro",
+          "Audience analytics & ICP scoring",
           "Internal support insights",
-          "Automatic ICP scoring",
           "Export CSV of engaged prospects"
         ]
       }
