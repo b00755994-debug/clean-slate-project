@@ -23,7 +23,7 @@ const BetaBanner = () => {
   const t = translations[language];
 
   return (
-    <div className="border-b border-border bg-primary/5">
+    <div className="border-b border-border bg-[#eef4fb]">
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-center gap-3 text-sm">
           <Info className="h-4 w-4 flex-shrink-0 text-primary" />
