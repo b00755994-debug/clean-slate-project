@@ -50,7 +50,7 @@ const translations = {
         features: [
           "Tout ce qui est inclus dans Individual",
           "Analyses avancées à l'échelle de votre équipe",
-          "Feed",
+          "Feed des contenus de votre équipe",
           "Audience & brand insights",
           "Support prioritaire"
         ]
