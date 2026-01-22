@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -9,11 +10,22 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Zap, LogOut, Settings, ChevronDown, User } from 'lucide-react';
+import { Zap, LogOut, Settings, ChevronDown, User, Languages } from 'lucide-react';
+
+const translations = {
+  fr: {
+    signOut: 'Se déconnecter',
+  },
+  en: {
+    signOut: 'Sign out',
+  }
+};
 
 export function DashboardHeader() {
   const { user, profile, isAdmin, signOut } = useAuth();
   const navigate = useNavigate();
+  const { language, setLanguage } = useLanguage();
+  const t = translations[language];
 
   const handleLogout = async () => {
     await signOut();
@@ -30,6 +42,32 @@ export function DashboardHeader() {
           <span className="text-lg font-bold text-foreground">superpump</span>
         </div>
 
+        {/* Language Selector */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="sm" className="gap-2">
+              <Languages className="w-4 h-4" />
+              <span className="uppercase">{language}</span>
+              <ChevronDown className="w-3 h-3" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="bg-background">
+            <DropdownMenuItem 
+              onClick={() => setLanguage('en')} 
+              className={`cursor-pointer ${language === 'en' ? 'bg-muted' : ''}`}
+            >
+              🇬🇧 English
+            </DropdownMenuItem>
+            <DropdownMenuItem 
+              onClick={() => setLanguage('fr')} 
+              className={`cursor-pointer ${language === 'fr' ? 'bg-muted' : ''}`}
+            >
+              🇫🇷 Français
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        {/* User Menu */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="sm" className="gap-2">
@@ -38,7 +76,7 @@ export function DashboardHeader() {
               <ChevronDown className="w-4 h-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
+          <DropdownMenuContent align="end" className="w-56 bg-background">
             <DropdownMenuItem disabled className="text-xs text-muted-foreground">
               {profile?.email || user?.email}
             </DropdownMenuItem>
@@ -57,7 +95,7 @@ export function DashboardHeader() {
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout} className="gap-2 cursor-pointer text-destructive">
               <LogOut className="w-4 h-4" />
-              Se déconnecter
+              {t.signOut}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
