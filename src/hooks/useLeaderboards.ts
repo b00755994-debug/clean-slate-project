@@ -36,12 +36,14 @@ export function useLeaderboards() {
       .map(post => {
         const interactions = (post.likes || 0) + (post.comments || 0);
         const author = post.linkedin_profiles ? profiles[post.linkedin_profiles] : null;
+        // Prioritize post.avatar_url, fallback to author profile
+        const avatarUrl = post.avatar_url || author?.avatar_url || null;
         return {
           id: post.id,
           content: post.content,
           url: post.url,
           authorName: author?.profile_name || 'Anonyme',
-          authorAvatar: author?.avatar_url || null,
+          authorAvatar: avatarUrl,
           interactions,
           impressions: post.impressions || 0,
         };
