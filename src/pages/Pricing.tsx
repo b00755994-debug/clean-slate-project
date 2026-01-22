@@ -56,18 +56,15 @@ const translations = {
           "Support prioritaire"
         ]
       },
-      enterprise: {
-        name: "Enterprise",
-        description: "Pour les grandes organisations",
+      business: {
+        name: "Business",
+        description: "Pour les équipes ambitieuses",
         features: [
           "Tout ce qui est inclus dans Pro",
-          "Intégration CRM native",
-          "SSO / SAML",
-          "Account Manager dédié",
-          "SLA garanti",
-          "Formation personnalisée"
-        ],
-        valueProposition: "Transformez chaque employé en ambassadeur de marque. Bénéficiez d'un accompagnement personnalisé et d'une intégration fluide avec vos outils existants."
+          "Advanced brand & audience analytics",
+          "Internal support insights",
+          "Intégration CRM"
+        ]
       }
     }
   },
@@ -114,18 +111,15 @@ const translations = {
           "Priority support"
         ]
       },
-      enterprise: {
-        name: "Enterprise",
-        description: "For large organizations",
+      business: {
+        name: "Business",
+        description: "For ambitious teams",
         features: [
           "Everything in Pro",
-          "Native CRM integration",
-          "SSO / SAML",
-          "Dedicated Account Manager",
-          "Guaranteed SLA",
-          "Custom training"
-        ],
-        valueProposition: "Turn every employee into a brand ambassador. Get personalized support and seamless integration with your existing tools."
+          "Advanced brand & audience analytics",
+          "Internal support insights",
+          "CRM integration"
+        ]
       }
     }
   }
@@ -137,11 +131,14 @@ const Pricing = () => {
 
   const [isAnnual, setIsAnnual] = useState(true);
   const [proUsers, setProUsers] = useState([10]);
+  const [businessUsers, setBusinessUsers] = useState([10]);
 
   // Pricing constants - simple per-user pricing
   const PRO_PRICE_PER_USER = 3.00;
+  const BUSINESS_PRICE_PER_USER = 5.00;
   const MIN_USERS = 1;
   const PRO_MAX = 200;
+  const BUSINESS_MAX = 200;
   const ANNUAL_DISCOUNT = 0.20;
 
   // Calculate price based on users and period
@@ -155,8 +152,10 @@ const Pricing = () => {
   };
 
   const proPrice = calculatePrice(PRO_PRICE_PER_USER, proUsers[0], isAnnual);
+  const businessPrice = calculatePrice(BUSINESS_PRICE_PER_USER, businessUsers[0], isAnnual);
 
   const proSavings = isAnnual ? calculatePrice(PRO_PRICE_PER_USER, proUsers[0], false) * 12 - proPrice : 0;
+  const businessSavings = isAnnual ? calculatePrice(BUSINESS_PRICE_PER_USER, businessUsers[0], false) * 12 - businessPrice : 0;
 
   const formatPrice = (price: number) => {
     return price.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).replace('.', ',');
@@ -166,6 +165,12 @@ const Pricing = () => {
     const num = parseInt(value) || MIN_USERS;
     const clamped = Math.min(Math.max(num, MIN_USERS), PRO_MAX);
     setProUsers([clamped]);
+  };
+
+  const handleBusinessInputChange = (value: string) => {
+    const num = parseInt(value) || MIN_USERS;
+    const clamped = Math.min(Math.max(num, MIN_USERS), BUSINESS_MAX);
+    setBusinessUsers([clamped]);
   };
 
   return (
@@ -375,30 +380,43 @@ const Pricing = () => {
             </CardContent>
           </Card>
 
-          {/* Enterprise Plan */}
+          {/* Business Plan */}
           <Card className="relative border border-border hover:border-primary/50 hover:shadow-lg transition-all flex flex-col">
             <CardHeader className="pb-4">
-              <CardTitle className="text-2xl">{t.plans.enterprise.name}</CardTitle>
-              <CardDescription>{t.plans.enterprise.description}</CardDescription>
+              <CardTitle className="text-2xl">{t.plans.business.name}</CardTitle>
+              <CardDescription>{t.plans.business.description}</CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col flex-grow">
               {/* Price + Features container */}
               <div className="flex-grow">
                 {/* Price display */}
                 <div className="min-h-[100px]">
-                  <div className="flex items-baseline gap-1">
+                  <div className="flex items-baseline gap-1 flex-wrap">
                     <span className="text-4xl font-bold text-foreground">
-                      {t.customQuote}
+                      {formatPrice(isAnnual ? calculateMonthlyEquivalent(businessPrice) : businessPrice)}€
+                    </span>
+                    <span className="text-muted-foreground">
+                      {t.perMonth}
                     </span>
                   </div>
                   <p className="text-sm text-muted-foreground mt-1">
-                    {language === 'fr' ? 'Adapté à vos besoins' : 'Tailored to your needs'}
+                    {isAnnual
+                      ? formatPrice(BUSINESS_PRICE_PER_USER * (1 - ANNUAL_DISCOUNT))
+                      : BUSINESS_PRICE_PER_USER.toFixed(2).replace('.', ',')}€ {t.perUser}
                   </p>
+                  {isAnnual && (
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {formatPrice(businessPrice)}€ {t.perYear}
+                      {businessSavings > 0 && (
+                        <span className="text-success ml-2">({t.save} {formatPrice(businessSavings)}€)</span>
+                      )}
+                    </p>
+                  )}
                 </div>
 
                 {/* Features */}
                 <ul className="space-y-3 mt-4">
-                  {t.plans.enterprise.features.map((feature, i) => (
+                  {t.plans.business.features.map((feature, i) => (
                     <li key={i} className="flex items-start gap-2 text-sm">
                       {i === 0 ? (
                         <Check className="h-4 w-4 text-primary mt-0.5 shrink-0" />
@@ -414,16 +432,52 @@ const Pricing = () => {
               {/* Separator */}
               <div className="border-t border-border/50 my-4" />
 
-              {/* Value proposition */}
-              <div className="min-h-[140px]">
-                <p className="text-sm text-muted-foreground italic leading-relaxed">
-                  {t.plans.enterprise.valueProposition}
+              {/* Simulator section */}
+              <div className="bg-muted/30 rounded-xl p-4 border border-border/50 min-h-[140px]">
+                {/* Simulator header */}
+                <p className="text-sm font-semibold text-foreground mb-4">
+                  {t.simulatorTitle}
                 </p>
+
+                {/* User input */}
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-sm text-muted-foreground">{language === 'fr' ? 'Nombre d\'utilisateurs' : 'Number of users'}</span>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      type="number"
+                      value={businessUsers[0]}
+                      onChange={(e) => handleBusinessInputChange(e.target.value)}
+                      min={MIN_USERS}
+                      max={BUSINESS_MAX}
+                      className="w-16 h-8 text-center text-sm bg-background border-primary/30 focus:border-primary"
+                    />
+                  </div>
+                </div>
+
+                {/* Enhanced slider */}
+                <div className="space-y-2">
+                  <Slider
+                    value={businessUsers}
+                    onValueChange={setBusinessUsers}
+                    min={MIN_USERS}
+                    max={BUSINESS_MAX}
+                    step={1}
+                    className="w-full"
+                  />
+                  <div className="flex justify-between text-xs text-muted-foreground">
+                    <span>{MIN_USERS}</span>
+                    <span className="text-muted-foreground/60">50</span>
+                    <span className="text-muted-foreground/60">100</span>
+                    <span className="text-muted-foreground/60">150</span>
+                    <span>{BUSINESS_MAX}+</span>
+                  </div>
+                </div>
+
               </div>
 
               {/* CTA */}
-              <Button asChild variant="outline" className="w-full mt-4 border-2 border-primary bg-card text-primary hover:bg-primary/10 hover:scale-105 transition-all">
-                <Link to="/beta">{t.contactUs}</Link>
+              <Button asChild variant="hero" className="w-full mt-4">
+                <Link to="/beta">{t.getStarted}</Link>
               </Button>
             </CardContent>
           </Card>
