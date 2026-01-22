@@ -478,7 +478,7 @@ const Pricing = () => {
 
               {/* CTA */}
               <div className="mt-4">
-                <Button disabled className="w-full bg-gray-300 text-gray-600 cursor-not-allowed hover:bg-gray-300">
+                <Button disabled className="w-full bg-gray-300 text-gray-700 font-semibold cursor-not-allowed hover:bg-gray-300">
                   🥷 Coming soon
                 </Button>
               </div>
