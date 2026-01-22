@@ -105,9 +105,9 @@ export function AnalyticsTeamActivation() {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {/* 4 KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <KPICard
           icon={Users}
           label={t.kpis.activeContributorsCount}
@@ -145,13 +145,13 @@ export function AnalyticsTeamActivation() {
       </div>
 
       {/* 2 Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Chart 1 — Team Activation Over Time */}
         <Card className="border-border/50 shadow-md">
-          <CardHeader className="pb-1 pt-3 px-4">
+          <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="text-sm font-semibold">
+                <CardTitle className="text-base font-semibold">
                   {t.chart.title}
                 </CardTitle>
                 <CardDescription className="text-xs">
@@ -161,8 +161,8 @@ export function AnalyticsTeamActivation() {
               <PeriodSelector value={activationPeriod} onChange={setActivationPeriod} />
             </div>
           </CardHeader>
-          <CardContent className="pb-3 px-4">
-            <ChartContainer config={activationChartConfig} className="h-[160px] w-full">
+          <CardContent>
+            <ChartContainer config={activationChartConfig} className="h-[240px] w-full">
               <BarChart data={activationData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" vertical={false} />
                 <XAxis
@@ -196,9 +196,9 @@ export function AnalyticsTeamActivation() {
 
         {/* Chart 2 — Posting Heatmap */}
         <Card className="border-border/50 shadow-md">
-          <CardHeader className="pb-1 pt-3 px-4">
+          <CardHeader className="pb-2">
             <div>
-              <CardTitle className="text-sm font-semibold">
+              <CardTitle className="text-base font-semibold">
                 {t.heatmap.title}
               </CardTitle>
               <CardDescription className="text-xs">
@@ -206,7 +206,7 @@ export function AnalyticsTeamActivation() {
               </CardDescription>
             </div>
           </CardHeader>
-          <CardContent className="pb-3 px-4">
+          <CardContent>
             <PostingHeatmap data={postingHeatmapData} />
           </CardContent>
         </Card>

@@ -39,7 +39,7 @@ export default function DashboardAnalytics() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-4 flex-1 min-h-0">
+      <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex flex-col gap-1">
@@ -57,7 +57,7 @@ export default function DashboardAnalytics() {
         </div>
 
         {/* Tabs */}
-        <Tabs defaultValue="overview" className="space-y-4">
+        <Tabs defaultValue="overview" className="space-y-6">
           <TabsList className="grid w-full grid-cols-3 lg:w-auto lg:inline-grid">
             <TabsTrigger value="overview" className="flex items-center gap-2">
               <BarChart3 className="w-4 h-4" />
@@ -76,15 +76,15 @@ export default function DashboardAnalytics() {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="overview" className="mt-4">
+          <TabsContent value="overview" className="mt-6">
             <AnalyticsOverview />
           </TabsContent>
 
-          <TabsContent value="activation" className="mt-4">
+          <TabsContent value="activation" className="mt-6">
             <AnalyticsTeamActivation />
           </TabsContent>
 
-          <TabsContent value="reach" className="mt-4">
+          <TabsContent value="reach" className="mt-6">
             <AnalyticsReachImpact />
           </TabsContent>
         </Tabs>
