@@ -877,7 +877,7 @@ const SlackIntegration = () => {
               {/* Main Content Area */}
               <div className="flex-1 flex flex-col bg-background">
                 {/* Channel Header */}
-                <div className="border-b border-border p-4 font-lato flex items-center justify-between">
+                <div className="border-b border-border p-4 font-lato flex items-center justify-between bg-white">
                   <div>
                     <h3 className="text-lg font-semibold flex items-center gap-2">
                       {activeChannel === "dm" ? <div className="w-5 h-5 rounded bg-gradient-to-br from-primary to-destructive flex items-center justify-center">
