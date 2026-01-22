@@ -42,32 +42,34 @@ export function DashboardHeader() {
           <span className="text-lg font-bold text-foreground">superpump</span>
         </div>
 
-        {/* Language Selector */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" className="gap-2">
-              <Languages className="w-4 h-4" />
-              <span className="uppercase">{language}</span>
-              <ChevronDown className="w-3 h-3" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="bg-background">
-            <DropdownMenuItem 
-              onClick={() => setLanguage('en')} 
-              className={`cursor-pointer ${language === 'en' ? 'bg-muted' : ''}`}
-            >
-              🇬🇧 English
-            </DropdownMenuItem>
-            <DropdownMenuItem 
-              onClick={() => setLanguage('fr')} 
-              className={`cursor-pointer ${language === 'fr' ? 'bg-muted' : ''}`}
-            >
-              🇫🇷 Français
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        {/* Right side: Language + User Menu */}
+        <div className="flex items-center gap-2">
+          {/* Language Selector */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="gap-2">
+                <Languages className="w-4 h-4" />
+                <span className="uppercase">{language}</span>
+                <ChevronDown className="w-3 h-3" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="bg-background">
+              <DropdownMenuItem 
+                onClick={() => setLanguage('en')} 
+                className={`cursor-pointer ${language === 'en' ? 'bg-muted' : ''}`}
+              >
+                🇬🇧 English
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={() => setLanguage('fr')} 
+                className={`cursor-pointer ${language === 'fr' ? 'bg-muted' : ''}`}
+              >
+                🇫🇷 Français
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
 
-        {/* User Menu */}
+          {/* User Menu */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="sm" className="gap-2">
@@ -97,8 +99,9 @@ export function DashboardHeader() {
               <LogOut className="w-4 h-4" />
               {t.signOut}
             </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
     </header>
   );

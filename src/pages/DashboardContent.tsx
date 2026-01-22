@@ -10,6 +10,42 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
+import { useLanguage } from '@/contexts/LanguageContext';
+
+const translations = {
+  fr: {
+    subtitle: 'Explorez les posts LinkedIn de votre équipe',
+    sortBy: 'Trier par',
+    mostRecent: 'Plus récents',
+    mostViewed: 'Plus vus',
+    mostReactions: 'Plus de réactions',
+    allTime: 'Toutes les dates',
+    today: "Aujourd'hui",
+    thisWeek: 'Cette semaine',
+    last30Days: '30 derniers jours',
+    filterByAuthor: 'Filtrer par auteur',
+    allAuthors: 'Tous les auteurs',
+    favorites: 'Favoris',
+    clear: 'Effacer',
+    search: 'Rechercher...',
+  },
+  en: {
+    subtitle: "Explore your team's LinkedIn posts",
+    sortBy: 'Sort by',
+    mostRecent: 'Most recent',
+    mostViewed: 'Most viewed',
+    mostReactions: 'Most reactions',
+    allTime: 'All time',
+    today: 'Today',
+    thisWeek: 'This week',
+    last30Days: 'Last 30 days',
+    filterByAuthor: 'Filter by author',
+    allAuthors: 'All authors',
+    favorites: 'Favorites',
+    clear: 'Clear',
+    search: 'Search...',
+  }
+};
 
 interface BillableUser {
   id: string;
@@ -19,6 +55,9 @@ interface BillableUser {
 type TimePeriod = 'all' | 'today' | 'week' | 'month';
 
 export default function DashboardContent() {
+  const { language } = useLanguage();
+  const t = translations[language];
+  
   const [showBookmarksOnly, setShowBookmarksOnly] = useState(false);
   
   // Team Feed filters
@@ -52,10 +91,10 @@ export default function DashboardContent() {
   };
 
   const timePeriodLabels: Record<TimePeriod, string> = {
-    all: 'Toutes les dates',
-    today: "Aujourd'hui",
-    week: 'Cette semaine',
-    month: '30 derniers jours',
+    all: t.allTime,
+    today: t.today,
+    week: t.thisWeek,
+    month: t.last30Days,
   };
 
   return (
@@ -70,9 +109,7 @@ export default function DashboardContent() {
                 <Newspaper className="w-8 h-8 text-primary" />
                 Team Feed
               </h1>
-              <p className="text-muted-foreground">
-                Explorez les posts LinkedIn de votre équipe
-              </p>
+              <p className="text-muted-foreground">{t.subtitle}</p>
             </div>
 
             {/* Stats Cards - Row aligned right, half width */}
@@ -93,19 +130,19 @@ export default function DashboardContent() {
           <div className="flex items-center gap-3 flex-wrap">
             <Select value={sortBy} onValueChange={(v: 'recent' | 'impressions' | 'reactions') => setSortBy(v)}>
               <SelectTrigger className="w-[150px] bg-card">
-                <SelectValue placeholder="Trier par" />
+                <SelectValue placeholder={t.sortBy} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="recent">Plus récents</SelectItem>
-                <SelectItem value="impressions">Plus vus</SelectItem>
-                <SelectItem value="reactions">Plus de réactions</SelectItem>
+                <SelectItem value="recent">{t.mostRecent}</SelectItem>
+                <SelectItem value="impressions">{t.mostViewed}</SelectItem>
+                <SelectItem value="reactions">{t.mostReactions}</SelectItem>
               </SelectContent>
             </Select>
 
             <Select value={timePeriod} onValueChange={(v: TimePeriod) => setTimePeriod(v)}>
               <SelectTrigger className="w-[200px] bg-card">
                 <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
-                <SelectValue placeholder="Période" />
+                <SelectValue placeholder="Period" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">{timePeriodLabels.all}</SelectItem>
@@ -117,10 +154,10 @@ export default function DashboardContent() {
 
             <Select value={authorFilter} onValueChange={setAuthorFilter}>
               <SelectTrigger className="w-[160px] bg-card">
-                <SelectValue placeholder="Filtrer par auteur" />
+                <SelectValue placeholder={t.filterByAuthor} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Tous les auteurs</SelectItem>
+                <SelectItem value="all">{t.allAuthors}</SelectItem>
                 {authors.map(author => (
                   <SelectItem key={author.id} value={author.id}>
                     {author.profile_name}
@@ -133,16 +170,16 @@ export default function DashboardContent() {
               pressed={showBookmarksOnly}
               onPressedChange={setShowBookmarksOnly}
               className="flex items-center gap-2"
-              aria-label="Filtrer les favoris"
+              aria-label={t.favorites}
             >
               <Bookmark className="h-4 w-4" />
-              <span className="hidden sm:inline">Favoris</span>
+              <span className="hidden sm:inline">{t.favorites}</span>
             </Toggle>
 
             {hasActiveFeedFilters && (
               <Button variant="ghost" size="sm" onClick={clearFeedFilters} className="h-8 px-3">
                 <X className="h-3 w-3 mr-1" />
-                Effacer
+                {t.clear}
               </Button>
             )}
 
@@ -150,7 +187,7 @@ export default function DashboardContent() {
             <div className="relative w-[200px] ml-auto">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Rechercher..."
+                placeholder={t.search}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10 bg-card"

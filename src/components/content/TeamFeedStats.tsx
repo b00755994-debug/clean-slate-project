@@ -1,5 +1,17 @@
 import { FileText, Users } from 'lucide-react';
 import { Card } from '@/components/ui/card';
+import { useLanguage } from '@/contexts/LanguageContext';
+
+const translations = {
+  fr: {
+    posts: 'Posts',
+    members: 'Membres',
+  },
+  en: {
+    posts: 'Posts',
+    members: 'Members',
+  }
+};
 
 interface TeamFeedStatsProps {
   totalPosts: number;
@@ -14,18 +26,21 @@ export function TeamFeedStats({
   activeMembers,
   layout = 'row'
 }: TeamFeedStatsProps) {
+  const { language } = useLanguage();
+  const t = translations[language];
+
   const stats = [
     {
       icon: FileText,
       value: totalPosts,
-      label: 'Posts',
+      label: t.posts,
       color: 'text-blue-500',
       bgColor: 'bg-blue-500/10',
     },
     {
       icon: Users,
       value: activeMembers,
-      label: 'Membres',
+      label: t.members,
       color: 'text-amber-500',
       bgColor: 'bg-amber-500/10',
     },
