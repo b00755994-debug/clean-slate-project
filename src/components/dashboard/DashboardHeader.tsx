@@ -10,7 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Zap, LogOut, Settings, ChevronDown, User, Languages } from 'lucide-react';
+import { Zap, LogOut, Settings, User, Menu, Check } from 'lucide-react';
 
 const translations = {
   fr: {
@@ -42,43 +42,19 @@ export function DashboardHeader() {
           <span className="text-lg font-bold text-foreground">superpump</span>
         </div>
 
-        {/* Right side: Language + User Menu */}
-        <div className="flex items-center gap-2">
-          {/* Language Selector */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="gap-2">
-                <Languages className="w-4 h-4" />
-                <span className="uppercase">{language}</span>
-                <ChevronDown className="w-3 h-3" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-background">
-              <DropdownMenuItem 
-                onClick={() => setLanguage('en')} 
-                className={`cursor-pointer ${language === 'en' ? 'bg-muted' : ''}`}
-              >
-                🇬🇧 English
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={() => setLanguage('fr')} 
-                className={`cursor-pointer ${language === 'fr' ? 'bg-muted' : ''}`}
-              >
-                🇫🇷 Français
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          {/* User Menu */}
+        {/* Right side: Combined Menu */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" className="gap-2">
-              <User className="w-4 h-4" />
-              <span className="hidden sm:inline">{profile?.full_name || user?.email}</span>
-              <ChevronDown className="w-4 h-4" />
+            <Button variant="ghost" size="icon">
+              <Menu className="w-5 h-5" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56 bg-background">
+            {/* User Info */}
+            <div className="px-2 py-1.5 flex items-center gap-2">
+              <User className="w-4 h-4 text-muted-foreground" />
+              <span className="text-sm font-medium truncate">{profile?.full_name || user?.email}</span>
+            </div>
             <DropdownMenuItem disabled className="text-xs text-muted-foreground">
               {profile?.email || user?.email}
             </DropdownMenuItem>
@@ -87,21 +63,42 @@ export function DashboardHeader() {
                 <Badge variant="outline" className="text-xs">Admin</Badge>
               </DropdownMenuItem>
             )}
+            
             <DropdownMenuSeparator />
+            
+            {/* Language Selection */}
+            <DropdownMenuItem 
+              onClick={() => setLanguage('en')} 
+              className="cursor-pointer justify-between"
+            >
+              <span>🇬🇧 English</span>
+              {language === 'en' && <Check className="w-4 h-4" />}
+            </DropdownMenuItem>
+            <DropdownMenuItem 
+              onClick={() => setLanguage('fr')} 
+              className="cursor-pointer justify-between"
+            >
+              <span>🇫🇷 Français</span>
+              {language === 'fr' && <Check className="w-4 h-4" />}
+            </DropdownMenuItem>
+            
+            <DropdownMenuSeparator />
+            
+            {/* Admin Settings */}
             {isAdmin && (
               <DropdownMenuItem onClick={() => navigate('/admin')} className="gap-2 cursor-pointer">
                 <Settings className="w-4 h-4" />
                 Admin
               </DropdownMenuItem>
             )}
-            <DropdownMenuSeparator />
+            
+            {/* Sign Out */}
             <DropdownMenuItem onClick={handleLogout} className="gap-2 cursor-pointer text-destructive">
               <LogOut className="w-4 h-4" />
               {t.signOut}
             </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </header>
   );
