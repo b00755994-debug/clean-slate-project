@@ -328,7 +328,7 @@ export default function Dashboard() {
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {/* Plan Section */}
-          <Card className="border-border/50 shadow-md">
+          <Card className="border-border/50 shadow-md flex flex-col">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg flex items-center gap-2">
@@ -342,9 +342,9 @@ export default function Dashboard() {
                 </Badge>
               </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="flex flex-col flex-grow">
               <p className="text-sm text-muted-foreground mb-4" dangerouslySetInnerHTML={{ __html: t.planDescription }} />
-              <div className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-muted/50 border border-dashed border-border text-muted-foreground text-sm">
+              <div className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-muted/50 border border-dashed border-border text-muted-foreground text-sm mt-auto">
                 <Settings className="w-4 h-4" />
                 <span>{t.manageSubscription}</span>
                 <Badge variant="secondary" className="ml-auto text-[10px] px-2 py-0.5">
