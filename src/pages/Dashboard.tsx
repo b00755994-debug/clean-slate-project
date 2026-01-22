@@ -355,7 +355,7 @@ export default function Dashboard() {
           </Card>
 
           {/* Slack Integration */}
-          <Card id="slack-integration-card" className="border-border/50 shadow-md transition-all duration-300">
+          <Card id="slack-integration-card" className="border-border/50 shadow-md transition-all duration-300 flex flex-col">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg flex items-center gap-2">
@@ -375,7 +375,7 @@ export default function Dashboard() {
                 )}
               </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="flex flex-col flex-grow">
               {slackWorkspace?.is_connected ? (
                 <p className="text-sm text-muted-foreground mb-4">
                   {t.connectedTo} <strong>{slackWorkspace.workspace_name}</strong>
@@ -412,10 +412,12 @@ export default function Dashboard() {
                   </Button>
                 </div>
               ) : (
-                <Button size="sm" className="w-full gap-2 bg-[#4A154B] hover:bg-[#3a1039] text-white" onClick={handleConnectSlack}>
-                  <img src={slackLogo} alt="Slack" className="w-4 h-4" />
-                  {t.connectSlack}
-                </Button>
+                <div className="mt-auto pt-4">
+                  <Button size="sm" className="w-full gap-2 bg-[#4A154B] hover:bg-[#3a1039] text-white" onClick={handleConnectSlack}>
+                    <img src={slackLogo} alt="Slack" className="w-4 h-4" />
+                    {t.connectSlack}
+                  </Button>
+                </div>
               )}
             </CardContent>
           </Card>
