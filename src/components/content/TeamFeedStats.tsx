@@ -51,7 +51,7 @@ export function TeamFeedStats({
       {stats.map((stat) => (
         <Card 
           key={stat.label} 
-          className="p-2 sm:p-3 flex items-center gap-2 sm:gap-3 bg-card border-border/40 min-w-0 overflow-hidden"
+          className="p-2 sm:p-3 flex items-center gap-2 sm:gap-3 bg-card border-border/40 w-[100px] sm:w-[120px]"
         >
           <div className={`p-1.5 sm:p-2 rounded-lg flex-shrink-0 ${stat.bgColor}`}>
             <stat.icon className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${stat.color}`} />

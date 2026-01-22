@@ -127,39 +127,39 @@ export default function DashboardContent() {
           </div>
 
           {/* Filters + Search bar on the right */}
-          <div className="flex items-center gap-3 flex-wrap">
+          <div className="flex items-center gap-2 flex-wrap">
             <Select value={sortBy} onValueChange={(v: 'recent' | 'impressions' | 'reactions') => setSortBy(v)}>
-              <SelectTrigger className="w-[150px] bg-card">
+              <SelectTrigger className="w-[130px] h-8 text-xs bg-card">
                 <SelectValue placeholder={t.sortBy} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="recent">{t.mostRecent}</SelectItem>
-                <SelectItem value="impressions">{t.mostViewed}</SelectItem>
-                <SelectItem value="reactions">{t.mostReactions}</SelectItem>
+                <SelectItem value="recent" className="text-xs">{t.mostRecent}</SelectItem>
+                <SelectItem value="impressions" className="text-xs">{t.mostViewed}</SelectItem>
+                <SelectItem value="reactions" className="text-xs">{t.mostReactions}</SelectItem>
               </SelectContent>
             </Select>
 
             <Select value={timePeriod} onValueChange={(v: TimePeriod) => setTimePeriod(v)}>
-              <SelectTrigger className="w-[200px] bg-card">
-                <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
+              <SelectTrigger className="w-[160px] h-8 text-xs bg-card">
+                <Calendar className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
                 <SelectValue placeholder="Period" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">{timePeriodLabels.all}</SelectItem>
-                <SelectItem value="today">{timePeriodLabels.today}</SelectItem>
-                <SelectItem value="week">{timePeriodLabels.week}</SelectItem>
-                <SelectItem value="month">{timePeriodLabels.month}</SelectItem>
+                <SelectItem value="all" className="text-xs">{timePeriodLabels.all}</SelectItem>
+                <SelectItem value="today" className="text-xs">{timePeriodLabels.today}</SelectItem>
+                <SelectItem value="week" className="text-xs">{timePeriodLabels.week}</SelectItem>
+                <SelectItem value="month" className="text-xs">{timePeriodLabels.month}</SelectItem>
               </SelectContent>
             </Select>
 
             <Select value={authorFilter} onValueChange={setAuthorFilter}>
-              <SelectTrigger className="w-[160px] bg-card">
+              <SelectTrigger className="w-[140px] h-8 text-xs bg-card">
                 <SelectValue placeholder={t.filterByAuthor} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">{t.allAuthors}</SelectItem>
+                <SelectItem value="all" className="text-xs">{t.allAuthors}</SelectItem>
                 {authors.map(author => (
-                  <SelectItem key={author.id} value={author.id}>
+                  <SelectItem key={author.id} value={author.id} className="text-xs">
                     {author.profile_name}
                   </SelectItem>
                 ))}
@@ -169,28 +169,28 @@ export default function DashboardContent() {
             <Toggle
               pressed={showBookmarksOnly}
               onPressedChange={setShowBookmarksOnly}
-              className="flex items-center gap-2"
+              className="flex items-center gap-1.5 h-8 text-xs px-2"
               aria-label={t.favorites}
             >
-              <Bookmark className="h-4 w-4" />
+              <Bookmark className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">{t.favorites}</span>
             </Toggle>
 
             {hasActiveFeedFilters && (
-              <Button variant="ghost" size="sm" onClick={clearFeedFilters} className="h-8 px-3">
+              <Button variant="ghost" size="sm" onClick={clearFeedFilters} className="h-8 px-2 text-xs">
                 <X className="h-3 w-3 mr-1" />
                 {t.clear}
               </Button>
             )}
 
             {/* Search bar - Right side */}
-            <div className="relative w-[200px] ml-auto">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <div className="relative w-[160px] ml-auto">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
               <Input
                 placeholder={t.search}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 bg-card"
+                className="pl-8 h-8 text-xs bg-card"
               />
             </div>
           </div>
