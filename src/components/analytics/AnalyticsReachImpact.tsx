@@ -107,9 +107,9 @@ export function AnalyticsReachImpact() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* 4 KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         <KPICard
           icon={Eye}
           label={t.kpis.totalImpressions}
@@ -147,13 +147,13 @@ export function AnalyticsReachImpact() {
       </div>
 
       {/* 2 Charts side by side */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Chart 1 — Reach & Engagement Over Time */}
         <Card className="border-border/50 shadow-md">
-          <CardHeader className="pb-2">
+          <CardHeader className="pb-1 pt-3 px-4">
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="text-base font-semibold">
+                <CardTitle className="text-sm font-semibold">
                   {t.charts.trendTitle}
                 </CardTitle>
                 <CardDescription className="text-xs">
@@ -163,8 +163,8 @@ export function AnalyticsReachImpact() {
               <PeriodSelector value={trendPeriod} onChange={setTrendPeriod} />
             </div>
           </CardHeader>
-          <CardContent>
-            <ChartContainer config={trendConfig} className="h-[280px] w-full">
+          <CardContent className="pb-3 px-4">
+            <ChartContainer config={trendConfig} className="h-[180px] w-full">
               <LineChart
                 data={trendData}
                 margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
@@ -231,16 +231,16 @@ export function AnalyticsReachImpact() {
 
         {/* Chart 2 — Posts Distribution by Impressions */}
         <Card className="border-border/50 shadow-md">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base font-semibold">
+          <CardHeader className="pb-1 pt-3 px-4">
+            <CardTitle className="text-sm font-semibold">
               {t.charts.distributionTitle}
             </CardTitle>
             <CardDescription className="text-xs">
               {t.charts.distributionDescription}
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <ChartContainer config={distributionConfig} className="h-[280px] w-full">
+          <CardContent className="pb-3 px-4">
+            <ChartContainer config={distributionConfig} className="h-[180px] w-full">
               <BarChart
                 data={impressionsDistribution}
                 margin={{ top: 10, right: 30, left: 20, bottom: 5 }}
