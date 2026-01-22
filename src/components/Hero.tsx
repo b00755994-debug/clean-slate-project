@@ -93,7 +93,7 @@ const Hero = () => {
 
       <div className="container mx-auto px-4 relative z-10 -mt-16">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 mb-8 rounded-full bg-[#eef4fb] border border-[#d6e4f5]">
+          <div className="inline-flex items-center gap-2 px-4 py-2 mb-8 rounded-full border border-primary/10" style={{ backgroundColor: 'color-mix(in srgb, hsl(210 90% 40%) 5%, hsl(340 100% 99%))' }}>
             <img src={slackLogo} alt="Slack" className="h-4 w-4" />
             <span className="text-sm font-bold text-primary tracking-wide">
               Leading Employee Influence Slack App
