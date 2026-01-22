@@ -62,10 +62,15 @@ export function useLeaderboards() {
       const existing = contributorMap.get(post.linkedin_profiles);
       if (existing) {
         existing.postCount += 1;
+        // Update avatar if we find one from post and don't have one yet
+        if (!existing.avatarUrl && post.avatar_url) {
+          existing.avatarUrl = post.avatar_url;
+        }
       } else {
+        // Prioritize post.avatar_url, fallback to author profile
         contributorMap.set(post.linkedin_profiles, {
           name: author.profile_name,
-          avatarUrl: author.avatar_url,
+          avatarUrl: post.avatar_url || author.avatar_url,
           postCount: 1,
         });
       }
