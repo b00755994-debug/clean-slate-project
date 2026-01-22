@@ -164,7 +164,7 @@ export function AnalyticsReachImpact() {
             </div>
           </CardHeader>
           <CardContent>
-            <ChartContainer config={trendConfig} className="h-[280px] w-full">
+            <ChartContainer config={trendConfig} className="h-[220px] w-full">
               <LineChart
                 data={trendData}
                 margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
@@ -240,7 +240,7 @@ export function AnalyticsReachImpact() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ChartContainer config={distributionConfig} className="h-[280px] w-full">
+            <ChartContainer config={distributionConfig} className="h-[220px] w-full">
               <BarChart
                 data={impressionsDistribution}
                 margin={{ top: 10, right: 30, left: 20, bottom: 5 }}
