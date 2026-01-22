@@ -129,37 +129,37 @@ export default function DashboardContent() {
           {/* Filters + Search bar on the right */}
           <div className="flex items-center gap-2 flex-wrap">
             <Select value={sortBy} onValueChange={(v: 'recent' | 'impressions' | 'reactions') => setSortBy(v)}>
-              <SelectTrigger className="w-[130px] h-8 text-xs bg-card">
+              <SelectTrigger className="w-[130px] h-8 text-sm bg-card">
                 <SelectValue placeholder={t.sortBy} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="recent" className="text-xs">{t.mostRecent}</SelectItem>
-                <SelectItem value="impressions" className="text-xs">{t.mostViewed}</SelectItem>
-                <SelectItem value="reactions" className="text-xs">{t.mostReactions}</SelectItem>
+                <SelectItem value="recent" className="text-sm">{t.mostRecent}</SelectItem>
+                <SelectItem value="impressions" className="text-sm">{t.mostViewed}</SelectItem>
+                <SelectItem value="reactions" className="text-sm">{t.mostReactions}</SelectItem>
               </SelectContent>
             </Select>
 
             <Select value={timePeriod} onValueChange={(v: TimePeriod) => setTimePeriod(v)}>
-              <SelectTrigger className="w-[160px] h-8 text-xs bg-card">
+              <SelectTrigger className="w-[160px] h-8 text-sm bg-card">
                 <Calendar className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
                 <SelectValue placeholder="Period" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all" className="text-xs">{timePeriodLabels.all}</SelectItem>
-                <SelectItem value="today" className="text-xs">{timePeriodLabels.today}</SelectItem>
-                <SelectItem value="week" className="text-xs">{timePeriodLabels.week}</SelectItem>
-                <SelectItem value="month" className="text-xs">{timePeriodLabels.month}</SelectItem>
+                <SelectItem value="all" className="text-sm">{timePeriodLabels.all}</SelectItem>
+                <SelectItem value="today" className="text-sm">{timePeriodLabels.today}</SelectItem>
+                <SelectItem value="week" className="text-sm">{timePeriodLabels.week}</SelectItem>
+                <SelectItem value="month" className="text-sm">{timePeriodLabels.month}</SelectItem>
               </SelectContent>
             </Select>
 
             <Select value={authorFilter} onValueChange={setAuthorFilter}>
-              <SelectTrigger className="w-[140px] h-8 text-xs bg-card">
+              <SelectTrigger className="w-[140px] h-8 text-sm bg-card">
                 <SelectValue placeholder={t.filterByAuthor} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all" className="text-xs">{t.allAuthors}</SelectItem>
+                <SelectItem value="all" className="text-sm">{t.allAuthors}</SelectItem>
                 {authors.map(author => (
-                  <SelectItem key={author.id} value={author.id} className="text-xs">
+                  <SelectItem key={author.id} value={author.id} className="text-sm">
                     {author.profile_name}
                   </SelectItem>
                 ))}
@@ -169,7 +169,7 @@ export default function DashboardContent() {
             <Toggle
               pressed={showBookmarksOnly}
               onPressedChange={setShowBookmarksOnly}
-              className="flex items-center gap-1.5 h-8 text-xs px-2"
+              className="flex items-center gap-1.5 h-8 text-sm px-2"
               aria-label={t.favorites}
             >
               <Bookmark className="h-3.5 w-3.5" />
@@ -177,7 +177,7 @@ export default function DashboardContent() {
             </Toggle>
 
             {hasActiveFeedFilters && (
-              <Button variant="ghost" size="sm" onClick={clearFeedFilters} className="h-8 px-2 text-xs">
+              <Button variant="ghost" size="sm" onClick={clearFeedFilters} className="h-8 px-2 text-sm">
                 <X className="h-3 w-3 mr-1" />
                 {t.clear}
               </Button>
@@ -190,7 +190,7 @@ export default function DashboardContent() {
                 placeholder={t.search}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-8 h-8 text-xs bg-card"
+                className="pl-8 h-8 text-sm bg-card"
               />
             </div>
           </div>
