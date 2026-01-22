@@ -49,10 +49,9 @@ const translations = {
         description: "Amplifiez la voix de votre équipe",
         features: [
           "Tout ce qui est inclus dans Individual",
-          "Analyses complètes de la performance de votre équipe",
+          "Analyses avancées à l'échelle de votre équipe",
           "Content library pour accompagner votre équipe",
-          "Détection de leads ICP",
-          "Export vers votre CRM",
+          "Audience & brand insights",
           "Support prioritaire"
         ]
       },
@@ -259,9 +258,11 @@ const Pricing = () => {
 
               {/* Value proposition */}
               <div className="min-h-[140px]">
-                <p className="text-sm text-muted-foreground italic leading-relaxed">
+              <div className="bg-primary/5 rounded-lg p-3 border border-primary/10">
+                <p className="text-sm text-muted-foreground leading-relaxed">
                   {t.plans.free.valueProposition}
                 </p>
+              </div>
               </div>
 
               {/* CTA */}
@@ -382,6 +383,11 @@ const Pricing = () => {
 
           {/* Business Plan */}
           <Card className="relative border border-border hover:border-primary/50 hover:shadow-lg transition-all flex flex-col">
+            <div className="absolute -top-3 right-4">
+              <Badge variant="secondary" className="bg-muted text-muted-foreground text-xs px-2 py-0.5">
+                {language === 'fr' ? 'Bientôt disponible' : 'Coming soon'}
+              </Badge>
+            </div>
             <CardHeader className="pb-4">
               <CardTitle className="text-2xl">{t.plans.business.name}</CardTitle>
               <CardDescription>{t.plans.business.description}</CardDescription>
