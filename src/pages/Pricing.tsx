@@ -382,12 +382,7 @@ const Pricing = () => {
           </Card>
 
           {/* Business Plan */}
-          <Card className="relative border border-border hover:border-primary/50 hover:shadow-lg transition-all flex flex-col">
-            <div className="absolute -top-3 right-4">
-              <Badge variant="secondary" className="bg-muted text-muted-foreground text-xs px-2 py-0.5">
-                Coming soon
-              </Badge>
-            </div>
+          <Card className="relative border border-border flex flex-col">
             <CardHeader className="pb-4">
               <CardTitle className="text-2xl">{t.plans.business.name}</CardTitle>
               <CardDescription>{t.plans.business.description}</CardDescription>
@@ -482,9 +477,16 @@ const Pricing = () => {
               </div>
 
               {/* CTA */}
-              <Button asChild variant="hero" className="w-full mt-4">
-                <Link to="/beta">{t.getStarted}</Link>
-              </Button>
+              <div className="flex flex-col gap-2 mt-4">
+                <Button disabled className="w-full bg-muted text-muted-foreground cursor-not-allowed hover:bg-muted">
+                  {t.getStarted}
+                </Button>
+                <div className="flex justify-center">
+                  <Badge variant="secondary" className="bg-muted/50 text-muted-foreground text-xs px-3 py-1">
+                    🥷 Coming soon
+                  </Badge>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>
