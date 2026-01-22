@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Zap } from "lucide-react";
+import { Zap, Languages } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
@@ -80,7 +80,7 @@ const Header = () => {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="sm" className="gap-2 hover:bg-primary/10 hover:text-primary transition-all">
-                  <span className="text-base">{language === 'fr' ? '🇫🇷' : '🇬🇧'}</span>
+                  <Languages className="h-4 w-4" />
                   <span className="text-sm font-medium">{language.toUpperCase()}</span>
                 </Button>
               </DropdownMenuTrigger>
