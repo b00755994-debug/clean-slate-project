@@ -36,13 +36,6 @@ const Hero = () => {
   const t = translations[language];
   return (
     <section className="relative overflow-hidden pt-0 pb-12 min-h-screen flex items-center bg-transparent">
-      {/* Background elements for depth */}
-      <div className="absolute inset-0 bg-grid-pattern opacity-[0.08]" />
-      <div className="absolute inset-0 bg-dot-pattern opacity-[0.4]" />
-      <div className="absolute -top-20 right-0 w-[700px] h-[700px] bg-primary/15 rounded-full blur-[120px]" />
-      <div className="absolute bottom-0 -left-20 w-[600px] h-[600px] bg-destructive/12 rounded-full blur-[100px]" />
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-primary/8 rounded-full blur-[140px]" />
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/30 to-background" />
       
       {/* Floating visual elements - HIDDEN FOR NOW
       <FloatingMetric

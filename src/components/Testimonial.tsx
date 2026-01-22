@@ -73,10 +73,7 @@ const Testimonial = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {t.testimonials.map((testimonial, index) => (
               <div key={index} className="relative group">
-                {/* Decorative gradient blur */}
-                <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-accent/10 to-primary/20 rounded-2xl blur-lg opacity-60 group-hover:opacity-80 transition-opacity" />
-                
-                <div className="relative bg-card border border-border/50 rounded-2xl p-6 shadow-sm h-full flex flex-col">
+                <div className="relative bg-card border border-border/50 rounded-2xl p-6 shadow-sm h-full flex flex-col hover:border-primary/30 transition-all duration-300">
                   {/* Quote icon */}
                   <div className="absolute -top-4 left-6">
                     <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center shadow-md">
