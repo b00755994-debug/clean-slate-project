@@ -120,10 +120,10 @@ export function TopPostsLeaderboard({ posts, loading }: TopPostsLeaderboardProps
             {/* Rank badge */}
             <div className="flex items-center gap-2 mb-2">
               <span className={`
-                flex items-center justify-center w-5 h-5 rounded-full text-xs font-bold
-                ${index === 0 ? 'bg-amber-500/20 text-amber-600' : ''}
-                ${index === 1 ? 'bg-gray-400/20 text-gray-500' : ''}
-                ${index === 2 ? 'bg-orange-400/20 text-orange-500' : ''}
+                flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold shadow-sm
+                ${index === 0 ? 'bg-gradient-to-br from-amber-400 to-amber-600 text-white ring-2 ring-amber-300/50' : ''}
+                ${index === 1 ? 'bg-gradient-to-br from-slate-300 to-slate-500 text-white ring-2 ring-slate-200/50' : ''}
+                ${index === 2 ? 'bg-gradient-to-br from-orange-400 to-orange-600 text-white ring-2 ring-orange-300/50' : ''}
               `}>
                 {index + 1}
               </span>
