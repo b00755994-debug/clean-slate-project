@@ -58,12 +58,12 @@ const translations = {
       },
       business: {
         name: "Business",
-        description: "Pour les équipes ambitieuses",
+        description: "De l'engagement aux opportunités",
         features: [
           "Tout ce qui est inclus dans Pro",
-          "Advanced brand & audience analytics",
           "Internal support insights",
-          "Intégration CRM"
+          "Scoring ICP automatique",
+          "Export CSV des prospects engagés"
         ]
       }
     }
@@ -113,12 +113,12 @@ const translations = {
       },
       business: {
         name: "Business",
-        description: "For ambitious teams",
+        description: "From engagement to opportunities",
         features: [
           "Everything in Pro",
-          "Advanced brand & audience analytics",
           "Internal support insights",
-          "CRM integration"
+          "Automatic ICP scoring",
+          "Export CSV of engaged prospects"
         ]
       }
     }
