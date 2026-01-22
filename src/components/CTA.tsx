@@ -27,11 +27,6 @@ const CTA = () => {
   const t = translations[language];
   return (
     <section className="py-20 bg-background relative overflow-hidden">
-      {/* Background elements for depth */}
-      <div className="absolute inset-0 bg-grid-pattern opacity-[0.04]" />
-      <div className="absolute -top-20 right-0 w-[500px] h-[500px] bg-primary/18 rounded-full blur-[100px]" />
-      <div className="absolute -bottom-20 left-0 w-[450px] h-[450px] bg-destructive/15 rounded-full blur-[90px]" />
-      <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-transparent to-background/60" />
 
       {/* Floating celebration elements */}
       <div className="hidden md:block absolute top-20 left-[15%] animate-float opacity-50">

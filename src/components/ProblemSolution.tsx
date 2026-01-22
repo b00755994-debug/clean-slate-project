@@ -72,7 +72,6 @@ const ProblemSolution = () => {
         <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
           {/* Problem Card */}
           <div className="group relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 via-red-500/5 to-muted/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-300" />
             <div className="relative bg-card border border-orange-200/30 dark:border-orange-900/30 rounded-2xl p-8 hover:border-orange-300/50 dark:hover:border-orange-800/50 transition-all duration-300">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center">
@@ -106,8 +105,7 @@ const ProblemSolution = () => {
 
           {/* Solution Card */}
           <div className="group relative md:translate-y-8">
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-accent/20 to-primary/10 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-300" />
-            <div className="relative bg-card border border-primary/20 rounded-2xl p-8 hover:border-primary/40 transition-all duration-300 hover:shadow-2xl">
+            <div className="relative bg-card border border-primary/20 rounded-2xl p-8 hover:border-primary/40 transition-all duration-300 hover:shadow-xl">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-destructive flex items-center justify-center">
                   <Zap className="h-6 w-6 text-primary-foreground" />
