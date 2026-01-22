@@ -4,8 +4,41 @@ import { BarChart3, Activity, Zap } from 'lucide-react';
 import { AnalyticsOverview } from '@/components/analytics/AnalyticsOverview';
 import { AnalyticsTeamActivation } from '@/components/analytics/AnalyticsTeamActivation';
 import { AnalyticsReachImpact } from '@/components/analytics/AnalyticsReachImpact';
+import { useLanguage } from '@/contexts/LanguageContext';
+
+const translations = {
+  fr: {
+    subtitle: "Métriques agrégées de l'activité LinkedIn de votre équipe",
+    periodBadge: '30 derniers jours',
+    tabs: {
+      overview: "Vue d'ensemble",
+      overviewMobile: 'Aperçu',
+      activation: 'Activation équipe',
+      activationMobile: 'Équipe',
+      reach: 'Audience & Reach',
+      reachMobile: 'Portée',
+    },
+  },
+  en: {
+    subtitle: "Aggregated metrics from your team's LinkedIn activity",
+    periodBadge: 'Last 30 days',
+    tabs: {
+      overview: 'Overview',
+      overviewMobile: 'Overview',
+      activation: 'Team Activation',
+      activationMobile: 'Team',
+      reach: 'Audience & Reach',
+      reachMobile: 'Reach',
+    },
+  },
+};
+
 export default function DashboardAnalytics() {
-  return <DashboardLayout>
+  const { language } = useLanguage();
+  const t = translations[language];
+
+  return (
+    <DashboardLayout>
       <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -14,13 +47,11 @@ export default function DashboardAnalytics() {
               <BarChart3 className="w-8 h-8 text-primary" />
               Analytics
             </h1>
-            <p className="text-muted-foreground">
-              Métriques agrégées de l'activité LinkedIn de votre équipe
-            </p>
+            <p className="text-muted-foreground">{t.subtitle}</p>
           </div>
           <div className="flex items-center">
             <span className="text-xs text-muted-foreground bg-muted px-3 py-1.5 rounded-full">
-              30 derniers jours
+              {t.periodBadge}
             </span>
           </div>
         </div>
@@ -30,18 +61,18 @@ export default function DashboardAnalytics() {
           <TabsList className="grid w-full grid-cols-3 lg:w-auto lg:inline-grid">
             <TabsTrigger value="overview" className="flex items-center gap-2">
               <BarChart3 className="w-4 h-4" />
-              <span className="hidden sm:inline">Vue d'ensemble</span>
-              <span className="sm:hidden">Aperçu</span>
+              <span className="hidden sm:inline">{t.tabs.overview}</span>
+              <span className="sm:hidden">{t.tabs.overviewMobile}</span>
             </TabsTrigger>
             <TabsTrigger value="activation" className="flex items-center gap-2">
               <Activity className="w-4 h-4" />
-              <span className="hidden sm:inline">Activation équipe</span>
-              <span className="sm:hidden">Équipe</span>
+              <span className="hidden sm:inline">{t.tabs.activation}</span>
+              <span className="sm:hidden">{t.tabs.activationMobile}</span>
             </TabsTrigger>
             <TabsTrigger value="reach" className="flex items-center gap-2">
               <Zap className="w-4 h-4" />
-              <span className="hidden sm:inline">Audience & Reach    </span>
-              <span className="sm:hidden">Portée</span>
+              <span className="hidden sm:inline">{t.tabs.reach}</span>
+              <span className="sm:hidden">{t.tabs.reachMobile}</span>
             </TabsTrigger>
           </TabsList>
 
@@ -58,5 +89,6 @@ export default function DashboardAnalytics() {
           </TabsContent>
         </Tabs>
       </div>
-    </DashboardLayout>;
+    </DashboardLayout>
+  );
 }

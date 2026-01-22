@@ -10,27 +10,78 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { KPICard } from './KPICard';
 import { PeriodSelector } from './PeriodSelector';
 import { overviewKPIs, trendData } from './mockData';
+import { useLanguage } from '@/contexts/LanguageContext';
 
-const postsChartConfig = {
-  posts: {
-    label: 'Posts',
-    color: 'hsl(210 90% 40%)',
+const translations = {
+  fr: {
+    totalPosts: 'Total Posts',
+    totalImpressions: 'Total Impressions',
+    activeContributors: 'Contributeurs actifs',
+    avgPostsPerContributor: 'Moy. posts/contributeur',
+    tooltips: {
+      totalPosts: 'Nombre total de posts LinkedIn publiés par les membres connectés pendant la période sélectionnée.',
+      totalImpressions: 'Nombre total de fois où ces posts ont été affichés sur LinkedIn (agrégé).',
+      activeContributors: 'Nombre de membres connectés ayant publié au moins un post pendant la période.',
+      avgPostsPerContributor: 'Nombre moyen de posts publiés par contributeur actif.',
+    },
+    chartTitles: {
+      postsTrend: 'Évolution des publications',
+      impressionsTrend: 'Évolution des impressions',
+    },
+    months: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'],
+  },
+  en: {
+    totalPosts: 'Total Posts',
+    totalImpressions: 'Total Impressions',
+    activeContributors: 'Active Contributors',
+    avgPostsPerContributor: 'Avg. Posts/Contributor',
+    tooltips: {
+      totalPosts: 'Total number of LinkedIn posts published by connected team members during the selected period.',
+      totalImpressions: 'Total number of times these posts were displayed on LinkedIn (aggregated).',
+      activeContributors: 'Number of connected team members who published at least one post during the period.',
+      avgPostsPerContributor: 'Average number of posts published per active contributor.',
+    },
+    chartTitles: {
+      postsTrend: 'Posts Trend',
+      impressionsTrend: 'Impressions Trend',
+    },
+    months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
   },
 };
 
-const impressionsChartConfig = {
-  impressions: {
-    label: 'Impressions',
-    color: 'hsl(263 70% 55%)',
-  },
+const monthKeyToIndex: Record<string, number> = {
+  'Jan': 0, 'Fév': 1, 'Mar': 2, 'Avr': 3, 'Mai': 4, 'Juin': 5,
+  'Juil': 6, 'Août': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Déc': 11,
 };
 
 export function AnalyticsOverview() {
   const [postsPeriod, setPostsPeriod] = useState<'6' | '12'>('6');
   const [impressionsPeriod, setImpressionsPeriod] = useState<'6' | '12'>('6');
+  const { language } = useLanguage();
+  const t = translations[language];
 
   const postsData = postsPeriod === '6' ? trendData.slice(-6) : trendData;
   const impressionsData = impressionsPeriod === '6' ? trendData.slice(-6) : trendData;
+
+  // Translate month labels
+  const translateMonth = (month: string) => {
+    const index = monthKeyToIndex[month];
+    return index !== undefined ? t.months[index] : month;
+  };
+
+  const postsChartConfig = {
+    posts: {
+      label: 'Posts',
+      color: 'hsl(210 90% 40%)',
+    },
+  };
+
+  const impressionsChartConfig = {
+    impressions: {
+      label: 'Impressions',
+      color: 'hsl(263 70% 55%)',
+    },
+  };
 
   return (
     <div className="space-y-6">
@@ -38,34 +89,34 @@ export function AnalyticsOverview() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <KPICard
           icon={FileText}
-          label="Total Posts"
+          label={t.totalPosts}
           value={overviewKPIs.totalPosts.value}
           change={overviewKPIs.totalPosts.change}
-          tooltip="Total number of LinkedIn posts published by connected team members during the selected period."
+          tooltip={t.tooltips.totalPosts}
           color="blue"
         />
         <KPICard
           icon={Eye}
-          label="Total Impressions"
+          label={t.totalImpressions}
           value={overviewKPIs.totalImpressions.value}
           change={overviewKPIs.totalImpressions.change}
-          tooltip="Total number of times these posts were displayed on LinkedIn (aggregated)."
+          tooltip={t.tooltips.totalImpressions}
           color="violet"
         />
         <KPICard
           icon={Users}
-          label="Contributeurs actifs"
+          label={t.activeContributors}
           value={overviewKPIs.activeContributors.value}
           change={overviewKPIs.activeContributors.change}
-          tooltip="Number of connected team members who published at least one post during the period."
+          tooltip={t.tooltips.activeContributors}
           color="emerald"
         />
         <KPICard
           icon={TrendingUp}
-          label="Moy. posts/contributeur"
+          label={t.avgPostsPerContributor}
           value={overviewKPIs.avgPostsPerContributor.value}
           change={overviewKPIs.avgPostsPerContributor.change}
-          tooltip="Average number of posts published per active contributor."
+          tooltip={t.tooltips.avgPostsPerContributor}
           color="amber"
         />
       </div>
@@ -78,7 +129,7 @@ export function AnalyticsOverview() {
             <div className="flex items-center justify-between">
               <CardTitle className="text-base font-semibold flex items-center gap-2">
                 <FileText className="w-4 h-4 text-blue-600" />
-                Évolution des publications
+                {t.chartTitles.postsTrend}
               </CardTitle>
               <PeriodSelector value={postsPeriod} onChange={setPostsPeriod} />
             </div>
@@ -95,6 +146,7 @@ export function AnalyticsOverview() {
                   tickLine={false}
                   axisLine={false}
                   className="text-xs fill-muted-foreground"
+                  tickFormatter={translateMonth}
                 />
                 <YAxis
                   tickLine={false}
@@ -127,7 +179,7 @@ export function AnalyticsOverview() {
             <div className="flex items-center justify-between">
               <CardTitle className="text-base font-semibold flex items-center gap-2">
                 <Eye className="w-4 h-4 text-violet-600" />
-                Évolution des impressions
+                {t.chartTitles.impressionsTrend}
               </CardTitle>
               <PeriodSelector value={impressionsPeriod} onChange={setImpressionsPeriod} />
             </div>
@@ -144,6 +196,7 @@ export function AnalyticsOverview() {
                   tickLine={false}
                   axisLine={false}
                   className="text-xs fill-muted-foreground"
+                  tickFormatter={translateMonth}
                 />
                 <YAxis
                   tickLine={false}

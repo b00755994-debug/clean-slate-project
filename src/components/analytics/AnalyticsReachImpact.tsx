@@ -12,29 +12,99 @@ import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'rec
 import { KPICard } from './KPICard';
 import { PeriodSelector } from './PeriodSelector';
 import { reachKPIs, reachEngagementTrendData, impressionsDistribution } from './mockData';
+import { useLanguage } from '@/contexts/LanguageContext';
 
-const trendConfig = {
-  impressions: {
-    label: 'Impressions',
-    color: 'hsl(263 70% 55%)',
+const translations = {
+  fr: {
+    kpis: {
+      totalImpressions: 'Impressions totales',
+      avgImpressionsPerPost: 'Moy. impressions / post',
+      engagementRate: "Taux d'engagement",
+      commentRate: 'Taux de commentaires',
+    },
+    tooltips: {
+      totalImpressions: "Nombre total de fois où les posts ont été affichés sur LinkedIn pendant la période sélectionnée (agrégé).",
+      avgImpressionsPerPost: "Nombre moyen d'impressions générées par post.",
+      engagementRate: "Ratio entre le total des interactions (likes et commentaires) et le total des impressions sur la période.",
+      commentRate: "Ratio entre le nombre total de commentaires et le total des interactions (likes + commentaires) sur la période sélectionnée.",
+    },
+    charts: {
+      trendTitle: 'Portée & engagement dans le temps',
+      trendDescription: "Évolution mensuelle des impressions et du taux d'engagement",
+      distributionTitle: 'Distribution des posts par impressions',
+      distributionDescription: 'Répartition des posts selon leur niveau de visibilité',
+    },
+    labels: {
+      impressions: 'Impressions',
+      engagementRate: "Taux d'engagement (%)",
+      numberOfPosts: 'Nombre de posts',
+      posts: 'posts',
+    },
+    months: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'],
   },
-  engagementRate: {
-    label: "Taux d'engagement (%)",
-    color: 'hsl(199 89% 48%)',
+  en: {
+    kpis: {
+      totalImpressions: 'Total Impressions',
+      avgImpressionsPerPost: 'Avg. Impressions / Post',
+      engagementRate: 'Engagement Rate',
+      commentRate: 'Comment Rate',
+    },
+    tooltips: {
+      totalImpressions: "Total number of times posts were displayed on LinkedIn during the selected period (aggregated).",
+      avgImpressionsPerPost: "Average number of impressions generated per post.",
+      engagementRate: "Ratio between total interactions (likes and comments) and total impressions during the period.",
+      commentRate: "Ratio between total comments and total interactions (likes + comments) during the selected period.",
+    },
+    charts: {
+      trendTitle: 'Reach & Engagement Over Time',
+      trendDescription: 'Monthly evolution of impressions and engagement rate',
+      distributionTitle: 'Posts Distribution by Impressions',
+      distributionDescription: 'Distribution of posts by visibility level',
+    },
+    labels: {
+      impressions: 'Impressions',
+      engagementRate: 'Engagement Rate (%)',
+      numberOfPosts: 'Number of posts',
+      posts: 'posts',
+    },
+    months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
   },
 };
 
-const distributionConfig = {
-  count: {
-    label: 'Nombre de posts',
-    color: 'hsl(263 70% 55%)',
-  },
+const monthKeyToIndex: Record<string, number> = {
+  'Jan': 0, 'Fév': 1, 'Mar': 2, 'Avr': 3, 'Mai': 4, 'Juin': 5,
+  'Juil': 6, 'Août': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Déc': 11,
 };
 
 export function AnalyticsReachImpact() {
   const [trendPeriod, setTrendPeriod] = useState<'6' | '12'>('6');
+  const { language } = useLanguage();
+  const t = translations[language];
   
   const trendData = trendPeriod === '6' ? reachEngagementTrendData.slice(-6) : reachEngagementTrendData;
+
+  const translateMonth = (month: string) => {
+    const index = monthKeyToIndex[month];
+    return index !== undefined ? t.months[index] : month;
+  };
+
+  const trendConfig = {
+    impressions: {
+      label: t.labels.impressions,
+      color: 'hsl(263 70% 55%)',
+    },
+    engagementRate: {
+      label: t.labels.engagementRate,
+      color: 'hsl(199 89% 48%)',
+    },
+  };
+
+  const distributionConfig = {
+    count: {
+      label: t.labels.numberOfPosts,
+      color: 'hsl(263 70% 55%)',
+    },
+  };
 
   return (
     <div className="space-y-6">
@@ -42,35 +112,35 @@ export function AnalyticsReachImpact() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <KPICard
           icon={Eye}
-          label="Impressions totales"
+          label={t.kpis.totalImpressions}
           value={reachKPIs.totalImpressions.value.toLocaleString()}
           change={reachKPIs.totalImpressions.change}
-          tooltip="Nombre total de fois où les posts ont été affichés sur LinkedIn pendant la période sélectionnée (agrégé)."
+          tooltip={t.tooltips.totalImpressions}
           color="violet"
         />
         <KPICard
           icon={TrendingUp}
-          label="Moy. impressions / post"
+          label={t.kpis.avgImpressionsPerPost}
           value={reachKPIs.avgImpressionsPerPost.value.toLocaleString()}
           change={reachKPIs.avgImpressionsPerPost.change}
-          tooltip="Nombre moyen d'impressions générées par post."
+          tooltip={t.tooltips.avgImpressionsPerPost}
           color="blue"
         />
         <KPICard
           icon={MousePointerClick}
-          label="Taux d'engagement"
+          label={t.kpis.engagementRate}
           value={reachKPIs.engagementRate.value}
           change={reachKPIs.engagementRate.change}
-          tooltip="Ratio entre le total des interactions (likes et commentaires) et le total des impressions sur la période."
+          tooltip={t.tooltips.engagementRate}
           color="emerald"
           suffix="%"
         />
         <KPICard
           icon={MessageCircle}
-          label="Taux de commentaires"
+          label={t.kpis.commentRate}
           value={reachKPIs.commentRate.value}
           change={reachKPIs.commentRate.change}
-          tooltip="Ratio entre le nombre total de commentaires et le total des interactions (likes + commentaires) sur la période sélectionnée."
+          tooltip={t.tooltips.commentRate}
           color="amber"
           suffix="%"
         />
@@ -84,10 +154,10 @@ export function AnalyticsReachImpact() {
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle className="text-base font-semibold">
-                  Portée & engagement dans le temps
+                  {t.charts.trendTitle}
                 </CardTitle>
                 <CardDescription className="text-xs">
-                  Évolution mensuelle des impressions et du taux d'engagement
+                  {t.charts.trendDescription}
                 </CardDescription>
               </div>
               <PeriodSelector value={trendPeriod} onChange={setTrendPeriod} />
@@ -105,6 +175,7 @@ export function AnalyticsReachImpact() {
                   tickLine={false}
                   axisLine={false}
                   className="text-xs fill-muted-foreground"
+                  tickFormatter={translateMonth}
                 />
                 <YAxis
                   yAxisId="left"
@@ -126,9 +197,9 @@ export function AnalyticsReachImpact() {
                     <ChartTooltipContent
                       formatter={(value, name) => {
                         if (name === 'impressions') {
-                          return [`${Number(value).toLocaleString()} `, 'Impressions'];
+                          return [`${Number(value).toLocaleString()} `, t.labels.impressions];
                         }
-                        return [`${value} %`, "Taux d'engagement"];
+                        return [`${value} %`, t.kpis.engagementRate];
                       }}
                     />
                   }
@@ -162,10 +233,10 @@ export function AnalyticsReachImpact() {
         <Card className="border-border/50 shadow-md">
           <CardHeader className="pb-2">
             <CardTitle className="text-base font-semibold">
-              Distribution des posts par impressions
+              {t.charts.distributionTitle}
             </CardTitle>
             <CardDescription className="text-xs">
-              Répartition des posts selon leur niveau de visibilité
+              {t.charts.distributionDescription}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -189,7 +260,7 @@ export function AnalyticsReachImpact() {
                 <ChartTooltip
                   content={
                     <ChartTooltipContent
-                      formatter={(value) => [`${value} `, 'posts']}
+                      formatter={(value) => [`${value} `, t.labels.posts]}
                     />
                   }
                 />
