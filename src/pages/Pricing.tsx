@@ -477,15 +477,13 @@ const Pricing = () => {
               </div>
 
               {/* CTA */}
-              <div className="flex flex-col gap-2 mt-4">
+              <div className="relative mt-4">
                 <Button disabled className="w-full bg-muted text-muted-foreground cursor-not-allowed hover:bg-muted">
                   {t.getStarted}
                 </Button>
-                <div className="flex justify-center">
-                  <Badge variant="secondary" className="bg-muted/50 text-muted-foreground text-xs px-3 py-1">
-                    🥷 Coming soon
-                  </Badge>
-                </div>
+                <Badge variant="secondary" className="absolute -top-2 -right-2 bg-muted text-muted-foreground text-xs px-2 py-0.5">
+                  🥷 Coming soon
+                </Badge>
               </div>
             </CardContent>
           </Card>
