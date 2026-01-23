@@ -29,9 +29,13 @@ export type Database = {
           linkedin_url: string
           profile_name: string
           profile_picture: string | null
+          scrapping_onboarding_done: boolean | null
           slack_user_id: string | null
           urn: string | null
           user_id: string
+          user_status:
+            | Database["public"]["Enums"]["billable_user_status"]
+            | null
           workspace_id: string | null
         }
         Insert: {
@@ -48,9 +52,13 @@ export type Database = {
           linkedin_url: string
           profile_name: string
           profile_picture?: string | null
+          scrapping_onboarding_done?: boolean | null
           slack_user_id?: string | null
           urn?: string | null
           user_id: string
+          user_status?:
+            | Database["public"]["Enums"]["billable_user_status"]
+            | null
           workspace_id?: string | null
         }
         Update: {
@@ -67,14 +75,18 @@ export type Database = {
           linkedin_url?: string
           profile_name?: string
           profile_picture?: string | null
+          scrapping_onboarding_done?: boolean | null
           slack_user_id?: string | null
           urn?: string | null
           user_id?: string
+          user_status?:
+            | Database["public"]["Enums"]["billable_user_status"]
+            | null
           workspace_id?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "linkedin_profiles_workspace_id_fkey"
+            foreignKeyName: "billable_users_workspace_id_fkey"
             columns: ["workspace_id"]
             isOneToOne: false
             referencedRelation: "workspaces"
@@ -266,7 +278,7 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "history_post_id_fkey"
+            foreignKeyName: "post_history_post_id_fkey"
             columns: ["post_id"]
             isOneToOne: false
             referencedRelation: "posts"
@@ -346,7 +358,7 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "post_2_linkedin_profiles_fkey"
+            foreignKeyName: "posts_linkedin_profiles_fkey"
             columns: ["linkedin_profiles"]
             isOneToOne: false
             referencedRelation: "billable_users"
@@ -667,6 +679,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
+      billable_user_status: "onboarding" | "live" | "stopped"
       billable_user_type: "employee" | "marketing"
       post_status: "new" | "stopped" | "ongoing" | "old"
     }
@@ -797,6 +810,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
+      billable_user_status: ["onboarding", "live", "stopped"],
       billable_user_type: ["employee", "marketing"],
       post_status: ["new", "stopped", "ongoing", "old"],
     },
