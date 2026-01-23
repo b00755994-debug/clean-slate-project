@@ -104,7 +104,7 @@ const translations = {
         description: "Amplify your team's voice",
         features: [
           "Everything in Individual",
-          "Team-scale advanced analytics",
+          "Advanced team analytics",
           "Content library to follow your team",
           "Audience & brand insights",
           "Priority support"
