@@ -70,8 +70,8 @@ export function OnboardingFlow() {
       return;
     }
 
-    if (data?.url) {
-      window.location.href = data.url;
+    if (data?.authUrl) {
+      window.location.href = data.authUrl;
     }
   };
 

@@ -40,8 +40,21 @@ serve(async (req) => {
 
     // Use the authenticated user's ID, not from query params
     const userId = user.id;
+    
+    // Support both GET (query params) and POST (JSON body) for redirect URL
     const url = new URL(req.url);
-    const redirectUrl = url.searchParams.get('redirect_url') || 'https://superpump.lovable.app/dashboard';
+    let redirectUrl = url.searchParams.get('redirect_url');
+    
+    if (!redirectUrl && req.method === 'POST') {
+      try {
+        const body = await req.json();
+        redirectUrl = body.redirectUrl;
+      } catch {
+        // Ignore JSON parse errors
+      }
+    }
+    
+    redirectUrl = redirectUrl || 'https://superpump.lovable.app/dashboard';
 
     const clientId = Deno.env.get('SLACK_CLIENT_ID');
     if (!clientId) {

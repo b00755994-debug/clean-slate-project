@@ -298,6 +298,7 @@ export type Database = {
           impressions: number | null
           interest: number | null
           likes: number | null
+          linkedin_created_at: string | null
           linkedin_post_id: string | null
           linkedin_profiles: string | null
           monitored_by_supermpup: boolean | null
@@ -321,6 +322,7 @@ export type Database = {
           impressions?: number | null
           interest?: number | null
           likes?: number | null
+          linkedin_created_at?: string | null
           linkedin_post_id?: string | null
           linkedin_profiles?: string | null
           monitored_by_supermpup?: boolean | null
@@ -344,6 +346,7 @@ export type Database = {
           impressions?: number | null
           interest?: number | null
           likes?: number | null
+          linkedin_created_at?: string | null
           linkedin_post_id?: string | null
           linkedin_profiles?: string | null
           monitored_by_supermpup?: boolean | null
