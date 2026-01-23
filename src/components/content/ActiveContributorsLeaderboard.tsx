@@ -103,7 +103,10 @@ export function ActiveContributorsLeaderboard({ contributors, loading }: ActiveC
             {/* Rank */}
             <span className={`
               flex items-center justify-center w-5 h-5 rounded-full text-xs font-bold
-              ${index === 0 ? 'bg-primary/20 text-primary' : 'bg-muted text-muted-foreground'}
+              ${index === 0 ? 'bg-amber-500/20 text-amber-600' : ''}
+              ${index === 1 ? 'bg-gray-400/20 text-gray-500' : ''}
+              ${index === 2 ? 'bg-orange-400/20 text-orange-500' : ''}
+              ${index > 2 ? 'bg-muted text-muted-foreground' : ''}
             `}>
               {index + 1}
             </span>
