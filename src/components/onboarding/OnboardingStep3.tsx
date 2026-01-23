@@ -132,8 +132,8 @@ export function OnboardingStep3({
 
   // Calculate grid columns based on Slack connection
   const gridCols = isSlackConnected && slackMembers.length > 0 
-    ? "grid-cols-[2fr_2fr_4fr_2fr_auto]" 
-    : "grid-cols-[2fr_2fr_5fr_auto]";
+    ? "grid-cols-[140px_140px_1fr_160px_40px]" 
+    : "grid-cols-[140px_140px_1fr_40px]";
 
   return (
     <Card className="border-2 shadow-xl">
@@ -150,23 +150,23 @@ export function OnboardingStep3({
           </div>
         )}
       </CardHeader>
-      <CardContent className="space-y-4 pt-4">
+      <CardContent className="space-y-5 pt-4 px-6">
         {/* Header row */}
-        <div className={cn("grid gap-2 text-xs text-muted-foreground px-1", gridCols)}>
+        <div className={cn("grid gap-3 text-xs text-muted-foreground px-1", gridCols)}>
           <span>{t.firstName}</span>
           <span>{t.lastName}</span>
           <span>{t.url}</span>
           {isSlackConnected && slackMembers.length > 0 && <span>{t.slack}</span>}
-          <span className="w-8"></span>
+          <span></span>
         </div>
 
         {/* Profile rows */}
-        <div className="space-y-2">
+        <div className="space-y-3">
           {profiles.map((profile) => (
             <div
               key={profile.id}
               className={cn(
-                "grid gap-2 items-center py-1.5 px-1 rounded-md transition-colors",
+                "grid gap-3 items-center py-2 px-1 rounded-md transition-colors",
                 gridCols,
                 isProfileComplete(profile) && "bg-green-50/50 dark:bg-green-950/20"
               )}
@@ -175,19 +175,19 @@ export function OnboardingStep3({
                 ref={(el) => {
                   if (el) inputRefs.current.set(`firstName-${profile.id}`, el);
                 }}
-                className="h-9"
+                className="h-10"
                 placeholder="Jean"
                 value={profile.firstName}
                 onChange={(e) => updateProfile(profile.id, 'firstName', e.target.value)}
               />
               <Input
-                className="h-9"
+                className="h-10"
                 placeholder="Dupont"
                 value={profile.lastName}
                 onChange={(e) => updateProfile(profile.id, 'lastName', e.target.value)}
               />
               <Input
-                className="h-9"
+                className="h-10"
                 placeholder="linkedin.com/in/..."
                 value={profile.linkedinUrl}
                 onChange={(e) => updateProfile(profile.id, 'linkedinUrl', e.target.value)}
@@ -199,7 +199,7 @@ export function OnboardingStep3({
                     updateProfile(profile.id, 'slackUserId', value === 'none' ? null : value)
                   }
                 >
-                  <SelectTrigger className="h-9">
+                  <SelectTrigger className="h-10">
                     <SelectValue placeholder="—" />
                   </SelectTrigger>
                   <SelectContent>
@@ -223,7 +223,7 @@ export function OnboardingStep3({
               <button
                 type="button"
                 className={cn(
-                  "w-8 h-8 flex items-center justify-center rounded-md transition-colors",
+                  "w-10 h-10 flex items-center justify-center rounded-md transition-colors",
                   profiles.length > 1 
                     ? "text-muted-foreground/50 hover:text-destructive hover:bg-destructive/10" 
                     : "text-transparent cursor-default"

@@ -148,7 +148,7 @@ export function OnboardingFlow() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/30 flex flex-col items-center justify-center p-4">
-      <div className="w-full max-w-lg">
+      <div className={`w-full ${currentStep === 3 ? 'max-w-2xl' : 'max-w-lg'}`}>
         <OnboardingStepper
           currentStep={currentStep}
           totalSteps={3}
