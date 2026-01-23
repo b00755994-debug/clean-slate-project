@@ -12,6 +12,11 @@ interface Profile {
   plan: string;
   created_at: string;
   updated_at: string;
+  onboarding_completed: boolean;
+  company_name: string | null;
+  job_role: string | null;
+  acquisition_channel: string | null;
+  team_size: string | null;
 }
 
 interface AuthContextType {
