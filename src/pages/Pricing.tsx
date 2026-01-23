@@ -266,8 +266,8 @@ const Pricing = () => {
               </div>
 
               {/* CTA */}
-              <Button asChild variant="hero" className="w-full mt-4">
-                <Link to="/beta">{t.getStarted}</Link>
+              <Button disabled className="w-full mt-4 bg-gray-300 text-gray-700 font-semibold cursor-not-allowed hover:bg-gray-300">
+                🥷 Coming soon
               </Button>
             </CardContent>
           </Card>
