@@ -65,7 +65,7 @@ export function TeamFeed({
       .filter(post => authorFilter === 'all' || post.linkedin_profiles === authorFilter)
       .filter(post => !showBookmarksOnly || bookmarkedPosts.has(post.id))
       .filter(post => !searchQuery || post.content?.toLowerCase().includes(searchQuery.toLowerCase()))
-      .filter(post => filterByTimePeriod(new Date(post.created_at)))
+      .filter(post => filterByTimePeriod(new Date(post.linkedin_created_at || post.created_at)))
       .sort((a, b) => {
         switch (sortBy) {
           case 'impressions':
@@ -73,7 +73,7 @@ export function TeamFeed({
           case 'reactions':
             return (b.reactions || b.likes || 0) - (a.reactions || a.likes || 0);
           default:
-            return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+            return new Date(b.linkedin_created_at || b.created_at).getTime() - new Date(a.linkedin_created_at || a.created_at).getTime();
         }
       });
   }, [posts, authorFilter, showBookmarksOnly, bookmarkedPosts, searchQuery, timePeriod, sortBy]);
