@@ -439,32 +439,47 @@ export type Database = {
       }
       profiles: {
         Row: {
+          acquisition_channel: string | null
           avatar_url: string | null
+          company_name: string | null
           created_at: string | null
           email: string
           full_name: string | null
           id: string
+          job_role: string | null
+          onboarding_completed: boolean | null
           plan: string | null
+          team_size: string | null
           updated_at: string | null
           workspace_id: string | null
         }
         Insert: {
+          acquisition_channel?: string | null
           avatar_url?: string | null
+          company_name?: string | null
           created_at?: string | null
           email: string
           full_name?: string | null
           id: string
+          job_role?: string | null
+          onboarding_completed?: boolean | null
           plan?: string | null
+          team_size?: string | null
           updated_at?: string | null
           workspace_id?: string | null
         }
         Update: {
+          acquisition_channel?: string | null
           avatar_url?: string | null
+          company_name?: string | null
           created_at?: string | null
           email?: string
           full_name?: string | null
           id?: string
+          job_role?: string | null
+          onboarding_completed?: boolean | null
           plan?: string | null
+          team_size?: string | null
           updated_at?: string | null
           workspace_id?: string | null
         }
