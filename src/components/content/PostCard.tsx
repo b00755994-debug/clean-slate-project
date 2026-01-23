@@ -38,6 +38,7 @@ interface PostCardProps {
     profile_name: string;
     avatar_url: string | null;
     linkedin_url: string;
+    linkedin_title: string | null;
   };
   isBookmarked?: boolean;
   onToggleBookmark?: (postId: string) => void;
@@ -148,7 +149,12 @@ export function PostCard({ post, author, isBookmarked = false, onToggleBookmark,
               >
                 {author?.profile_name || 'Utilisateur inconnu'}
               </a>
-              <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+              {author?.linkedin_title && (
+                <p className="text-xs text-muted-foreground truncate max-w-[200px] mt-0.5">
+                  {author.linkedin_title}
+                </p>
+              )}
+              <div className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5">
                 <span>{formatDistanceToNow(new Date(post.created_at), { addSuffix: false, locale: fr })}</span>
                 <span>•</span>
                 <Globe className="h-3 w-3" />

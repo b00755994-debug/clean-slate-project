@@ -22,6 +22,7 @@ interface BillableUser {
   profile_name: string;
   avatar_url: string | null;
   linkedin_url: string;
+  linkedin_title: string | null;
 }
 
 export function useTeamFeed() {
@@ -33,7 +34,7 @@ export function useTeamFeed() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('billable_users')
-        .select('id, profile_name, avatar_url, linkedin_url');
+        .select('id, profile_name, avatar_url, linkedin_url, linkedin_title');
 
       if (error) throw error;
       
