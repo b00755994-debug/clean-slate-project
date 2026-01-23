@@ -101,7 +101,10 @@ export function OnboardingFlow() {
     }
 
     toast.success(language === 'fr' ? 'Configuration terminée !' : 'Setup complete!');
-    navigate('/dashboard', { replace: true });
+    // AuthContext ne refetch pas automatiquement le profil après cette UPDATE;
+    // du coup ProtectedRoute peut re-rediriger vers /onboarding avec un profil encore "stale".
+    // Un reload garantit la relecture du profil (onboarding_completed=true) avant d'afficher /dashboard.
+    window.location.replace('/dashboard');
   };
 
   const handleStep1Next = (data: Step1Data) => {
