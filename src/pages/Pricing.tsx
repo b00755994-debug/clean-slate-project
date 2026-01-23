@@ -348,7 +348,7 @@ const Pricing = () => {
                       onChange={(e) => handleProInputChange(e.target.value)}
                       min={MIN_USERS}
                       max={PRO_MAX}
-                      className="w-16 h-8 text-center text-sm bg-background border-primary/30 focus:border-primary"
+                      className="w-20 h-8 text-center text-sm bg-background border-primary/30 focus:border-primary"
                     />
                   </div>
                 </div>
@@ -450,7 +450,7 @@ const Pricing = () => {
                       onChange={(e) => handleBusinessInputChange(e.target.value)}
                       min={MIN_USERS}
                       max={BUSINESS_MAX}
-                      className="w-16 h-8 text-center text-sm bg-background border-primary/30 focus:border-primary"
+                      className="w-20 h-8 text-center text-sm bg-background border-primary/30 focus:border-primary"
                     />
                   </div>
                 </div>
