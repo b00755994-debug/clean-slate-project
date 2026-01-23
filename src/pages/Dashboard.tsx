@@ -11,7 +11,7 @@ import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Crown, Linkedin, Plus, Trash2, ExternalLink, CheckCircle2, XCircle, Settings, LogOut, User, Link, Unlink, Lock, MessageSquare } from 'lucide-react';
+import { Crown, Linkedin, Plus, Trash2, ExternalLink, CheckCircle2, XCircle, Settings, LogOut, User, Link, Unlink, Lock, MessageSquare, RefreshCw } from 'lucide-react';
 import slackLogo from '@/assets/slack-logo.png';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useSlackMembers } from '@/hooks/useSlackMembers';
@@ -165,10 +165,13 @@ export default function Dashboard() {
   const t = translations[language];
 
   // Use React Query hooks for caching
-  const { workspace: slackWorkspace, refetch: refetchWorkspace, disconnect: disconnectSlack } = useWorkspace();
+  const { workspace: slackWorkspace, isLoading: isWorkspaceLoading, isFetching: isWorkspaceFetching, refetch: refetchWorkspace, disconnect: disconnectSlack } = useWorkspace();
   const { linkedinProfiles, addProfile, isAddingProfile, deleteProfile, updateSlackUser } = useLinkedInProfiles();
-  const { data: slackMembers = [], isLoading: isLoadingMembers } = useSlackMembers(slackWorkspace?.is_connected || false);
+  const { data: slackMembers = [], isLoading: isLoadingMembers, isFetching: isSlackMembersFetching } = useSlackMembers(slackWorkspace?.is_connected || false);
   const { stats: teamStats } = useTeamFeedStats();
+  
+  // Show syncing indicator only when fetching in background (not initial load)
+  const isSyncing = (isWorkspaceFetching && !isWorkspaceLoading) || (isSlackMembersFetching && !isLoadingMembers);
   
   const [newProfileName, setNewProfileName] = useState('');
   const [newProfileUrl, setNewProfileUrl] = useState('');
@@ -320,9 +323,14 @@ export default function Dashboard() {
     <DashboardLayout>
       <div className="space-y-8">
         <div className="flex flex-col gap-2">
-          <h1 className="text-3xl font-bold text-foreground">
-            {t.greeting} {profile?.full_name?.split(' ')[0] || t.defaultUser} 👋
-          </h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-3xl font-bold text-foreground">
+              {t.greeting} {profile?.full_name?.split(' ')[0] || t.defaultUser} 👋
+            </h1>
+            {isSyncing && (
+              <RefreshCw className="w-4 h-4 text-muted-foreground animate-spin" />
+            )}
+          </div>
           <p className="text-muted-foreground">{t.manageAccount}</p>
         </div>
 
