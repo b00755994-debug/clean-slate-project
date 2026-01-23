@@ -101,7 +101,7 @@ export function OnboardingStep2({ onNext, onSkip, onConnectSlack, isSlackConnect
             </Button>
           </>
         ) : (
-          <div className="flex items-center justify-center gap-2 py-4 text-primary">
+          <div className="flex items-center justify-center gap-2 py-4 text-green-600">
             <CheckCircle2 className="h-5 w-5" />
             <span className="font-medium">{t.connected}</span>
           </div>
