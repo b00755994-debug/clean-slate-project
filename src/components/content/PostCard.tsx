@@ -28,6 +28,7 @@ interface PostCardProps {
     shares: number | null;
     reactions: number | null;
     created_at: string;
+    linkedin_created_at?: string | null;
     // Detailed reactions
     praise?: number | null;
     empathy?: number | null;
@@ -155,7 +156,7 @@ export function PostCard({ post, author, isBookmarked = false, onToggleBookmark,
                 </p>
               )}
               <div className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5">
-                <span>{formatDistanceToNow(new Date(post.created_at), { addSuffix: false, locale: fr })}</span>
+                <span>{formatDistanceToNow(new Date(post.linkedin_created_at || post.created_at), { addSuffix: false, locale: fr })}</span>
                 <span>•</span>
                 <Globe className="h-3 w-3" />
               </div>
