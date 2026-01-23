@@ -13,7 +13,7 @@ interface SlackMember {
 export function useSlackMembers(isConnected: boolean) {
   const { user } = useAuth();
 
-  return useQuery({
+  const query = useQuery({
     queryKey: ['slack-members', user?.id],
     queryFn: async () => {
       const { data, error } = await supabase.functions.invoke('slack-members');
@@ -35,5 +35,11 @@ export function useSlackMembers(isConnected: boolean) {
     staleTime: 10 * 60 * 1000, // 10 minutes - données considérées fraîches
     gcTime: 30 * 60 * 1000, // 30 minutes - garde en cache
     retry: false, // Ne pas réessayer automatiquement en cas d'erreur rate limit
+    placeholderData: (previousData) => previousData,
   });
+
+  return {
+    ...query,
+    isFetching: query.isFetching,
+  };
 }

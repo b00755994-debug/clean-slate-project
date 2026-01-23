@@ -14,7 +14,7 @@ export function useWorkspace() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
-  const { data: workspace, isLoading, refetch } = useQuery({
+  const { data: workspace, isLoading, isFetching, refetch } = useQuery({
     queryKey: ['workspace', user?.id],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -38,6 +38,7 @@ export function useWorkspace() {
     enabled: !!user,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 30 * 60 * 1000, // 30 minutes
+    placeholderData: (previousData) => previousData,
   });
 
   const disconnectMutation = useMutation({
@@ -64,6 +65,7 @@ export function useWorkspace() {
   return {
     workspace,
     isLoading,
+    isFetching,
     refetch,
     disconnect: disconnectMutation.mutate,
     isDisconnecting: disconnectMutation.isPending,
