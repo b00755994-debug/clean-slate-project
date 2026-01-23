@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowRight, SkipForward, CheckCircle2, Loader2 } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import slackLogo from '@/assets/slack-logo.png';
@@ -24,7 +24,7 @@ const translations = {
     connected: "Slack connecté !",
     connectedDesc: "Vous recevrez désormais des alertes dans votre workspace",
     next: "Continuer",
-    skip: "Passer cette étape",
+    skip: "Passer",
   },
   en: {
     title: "Connect your Slack",
@@ -37,7 +37,7 @@ const translations = {
     connected: "Slack connected!",
     connectedDesc: "You will now receive alerts in your workspace",
     next: "Continue",
-    skip: "Skip this step",
+    skip: "Skip",
   },
 };
 
@@ -115,10 +115,14 @@ export function OnboardingStep2({ onNext, onSkip, onConnectSlack, isSlackConnect
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           )}
-          <Button variant="ghost" onClick={onSkip} className="w-full text-muted-foreground">
-            <SkipForward className="mr-2 h-4 w-4" />
-            {t.skip}
-          </Button>
+          <div className="flex justify-center mt-2">
+            <button 
+              onClick={onSkip} 
+              className="text-xs text-muted-foreground/60 hover:text-muted-foreground hover:underline transition-colors"
+            >
+              {t.skip}
+            </button>
+          </div>
         </div>
       </CardContent>
     </Card>
