@@ -1,9 +1,8 @@
-import { useState } from 'react';
-import { Linkedin, Plus, Trash2, CheckCircle2, Loader2 } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { Linkedin, Plus, X, CheckCircle2, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
@@ -12,6 +11,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { cn } from '@/lib/utils';
 
 interface SlackMember {
   id: string;
@@ -38,40 +38,32 @@ interface OnboardingStep3Props {
 
 const translations = {
   fr: {
-    title: "Ajoutez des profils LinkedIn",
-    description: "Suivez les posts de votre équipe et recevez des alertes",
-    firstNameLabel: "Prénom",
-    firstNamePlaceholder: "Jean",
-    lastNameLabel: "Nom",
-    lastNamePlaceholder: "Dupont",
-    urlLabel: "URL LinkedIn",
-    urlPlaceholder: "https://linkedin.com/in/jean-dupont",
-    slackUserLabel: "Utilisateur Slack associé",
-    slackUserPlaceholder: "Sélectionner un membre",
+    title: "Ajoutez votre équipe",
+    description: "1 profil = 1 personne dont vous suivez les posts LinkedIn",
+    firstName: "Prénom",
+    lastName: "Nom",
+    url: "URL LinkedIn",
+    slack: "Slack",
     noSlackUser: "Aucun",
-    addAnother: "Ajouter un autre profil",
-    complete: "Terminer la configuration",
-    completing: "Configuration en cours...",
+    addProfile: "Ajouter un profil",
+    complete: "Continuer",
+    completing: "Configuration...",
     skip: "Passer",
-    profileAdded: "profil(s) ajouté(s)",
+    profilesReady: "profil(s) prêt(s)",
   },
   en: {
-    title: "Add LinkedIn profiles",
-    description: "Track your team's posts and receive alerts",
-    firstNameLabel: "First name",
-    firstNamePlaceholder: "John",
-    lastNameLabel: "Last name",
-    lastNamePlaceholder: "Doe",
-    urlLabel: "LinkedIn URL",
-    urlPlaceholder: "https://linkedin.com/in/john-doe",
-    slackUserLabel: "Associated Slack user",
-    slackUserPlaceholder: "Select a member",
+    title: "Add your team",
+    description: "1 profile = 1 person whose LinkedIn posts you track",
+    firstName: "First name",
+    lastName: "Last name",
+    url: "LinkedIn URL",
+    slack: "Slack",
     noSlackUser: "None",
-    addAnother: "Add another profile",
-    complete: "Complete setup",
+    addProfile: "Add a profile",
+    complete: "Continue",
     completing: "Setting up...",
     skip: "Skip",
-    profileAdded: "profile(s) added",
+    profilesReady: "profile(s) ready",
   },
 };
 
@@ -87,13 +79,27 @@ export function OnboardingStep3({
   const [profiles, setProfiles] = useState<LinkedInProfileInput[]>([
     { id: crypto.randomUUID(), firstName: '', lastName: '', linkedinUrl: '', slackUserId: null },
   ]);
+  const [focusedRowId, setFocusedRowId] = useState<string | null>(null);
+  const inputRefs = useRef<Map<string, HTMLInputElement>>(new Map());
 
   const addProfile = () => {
+    const newId = crypto.randomUUID();
     setProfiles([
       ...profiles,
-      { id: crypto.randomUUID(), firstName: '', lastName: '', linkedinUrl: '', slackUserId: null },
+      { id: newId, firstName: '', lastName: '', linkedinUrl: '', slackUserId: null },
     ]);
+    setFocusedRowId(newId);
   };
+
+  useEffect(() => {
+    if (focusedRowId) {
+      const input = inputRefs.current.get(`firstName-${focusedRowId}`);
+      if (input) {
+        input.focus();
+        setFocusedRowId(null);
+      }
+    }
+  }, [focusedRowId, profiles]);
 
   const removeProfile = (id: string) => {
     if (profiles.length > 1) {
@@ -107,10 +113,12 @@ export function OnboardingStep3({
     );
   };
 
+  const isProfileComplete = (profile: LinkedInProfileInput) => {
+    return profile.firstName.trim() && profile.lastName.trim() && profile.linkedinUrl.trim();
+  };
+
   const handleComplete = async () => {
-    const validProfiles = profiles.filter(
-      (p) => p.firstName.trim() && p.lastName.trim() && p.linkedinUrl.trim()
-    );
+    const validProfiles = profiles.filter(isProfileComplete);
     
     setIsSubmitting(true);
     try {
@@ -120,9 +128,12 @@ export function OnboardingStep3({
     }
   };
 
-  const validCount = profiles.filter(
-    (p) => p.firstName.trim() && p.lastName.trim() && p.linkedinUrl.trim()
-  ).length;
+  const validCount = profiles.filter(isProfileComplete).length;
+
+  // Calculate grid columns based on Slack connection
+  const gridCols = isSlackConnected && slackMembers.length > 0 
+    ? "grid-cols-[2fr_2fr_4fr_2fr_auto]" 
+    : "grid-cols-[2fr_2fr_5fr_auto]";
 
   return (
     <Card className="border-2 shadow-xl">
@@ -132,101 +143,112 @@ export function OnboardingStep3({
         </div>
         <CardTitle className="text-2xl">{t.title}</CardTitle>
         <CardDescription className="text-base">{t.description}</CardDescription>
+        {validCount > 0 && (
+          <div className="flex items-center justify-center gap-1.5 mt-2 text-green-600 text-sm font-medium">
+            <CheckCircle2 className="h-4 w-4" />
+            <span>{validCount} {t.profilesReady}</span>
+          </div>
+        )}
       </CardHeader>
-      <CardContent className="space-y-6 pt-4">
-        <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
-          {profiles.map((profile, index) => (
+      <CardContent className="space-y-4 pt-4">
+        {/* Header row */}
+        <div className={cn("grid gap-2 text-xs text-muted-foreground px-1", gridCols)}>
+          <span>{t.firstName}</span>
+          <span>{t.lastName}</span>
+          <span>{t.url}</span>
+          {isSlackConnected && slackMembers.length > 0 && <span>{t.slack}</span>}
+          <span className="w-8"></span>
+        </div>
+
+        {/* Profile rows */}
+        <div className="space-y-2">
+          {profiles.map((profile) => (
             <div
               key={profile.id}
-              className="border rounded-lg p-4 space-y-4 bg-muted/30 relative"
+              className={cn(
+                "grid gap-2 items-center py-1.5 px-1 rounded-md transition-colors",
+                gridCols,
+                isProfileComplete(profile) && "bg-green-50/50 dark:bg-green-950/20"
+              )}
             >
-              {profiles.length > 1 && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="absolute top-2 right-2 h-8 w-8 text-muted-foreground hover:text-destructive"
-                  onClick={() => removeProfile(profile.id)}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              )}
-              
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-2">
-                  <Label htmlFor={`firstName-${index}`}>{t.firstNameLabel}</Label>
-                  <Input
-                    id={`firstName-${index}`}
-                    placeholder={t.firstNamePlaceholder}
-                    value={profile.firstName}
-                    onChange={(e) => updateProfile(profile.id, 'firstName', e.target.value)}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor={`lastName-${index}`}>{t.lastNameLabel}</Label>
-                  <Input
-                    id={`lastName-${index}`}
-                    placeholder={t.lastNamePlaceholder}
-                    value={profile.lastName}
-                    onChange={(e) => updateProfile(profile.id, 'lastName', e.target.value)}
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor={`url-${index}`}>{t.urlLabel}</Label>
-                <Input
-                  id={`url-${index}`}
-                  placeholder={t.urlPlaceholder}
-                  value={profile.linkedinUrl}
-                  onChange={(e) => updateProfile(profile.id, 'linkedinUrl', e.target.value)}
-                />
-              </div>
-
+              <Input
+                ref={(el) => {
+                  if (el) inputRefs.current.set(`firstName-${profile.id}`, el);
+                }}
+                className="h-9"
+                placeholder="Jean"
+                value={profile.firstName}
+                onChange={(e) => updateProfile(profile.id, 'firstName', e.target.value)}
+              />
+              <Input
+                className="h-9"
+                placeholder="Dupont"
+                value={profile.lastName}
+                onChange={(e) => updateProfile(profile.id, 'lastName', e.target.value)}
+              />
+              <Input
+                className="h-9"
+                placeholder="linkedin.com/in/..."
+                value={profile.linkedinUrl}
+                onChange={(e) => updateProfile(profile.id, 'linkedinUrl', e.target.value)}
+              />
               {isSlackConnected && slackMembers.length > 0 && (
-                <div className="space-y-2">
-                  <Label htmlFor={`slack-${index}`}>{t.slackUserLabel}</Label>
-                  <Select
-                    value={profile.slackUserId || 'none'}
-                    onValueChange={(value) =>
-                      updateProfile(profile.id, 'slackUserId', value === 'none' ? null : value)
-                    }
-                  >
-                    <SelectTrigger id={`slack-${index}`}>
-                      <SelectValue placeholder={t.slackUserPlaceholder} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">{t.noSlackUser}</SelectItem>
-                      {slackMembers.map((member) => (
-                        <SelectItem key={member.id} value={member.id}>
-                          <div className="flex items-center gap-2">
-                            <Avatar className="h-5 w-5">
-                              <AvatarImage src={member.avatar_url || undefined} />
-                              <AvatarFallback className="text-[10px]">
-                                {member.name.slice(0, 2).toUpperCase()}
-                              </AvatarFallback>
-                            </Avatar>
-                            <span>{member.name}</span>
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                <Select
+                  value={profile.slackUserId || 'none'}
+                  onValueChange={(value) =>
+                    updateProfile(profile.id, 'slackUserId', value === 'none' ? null : value)
+                  }
+                >
+                  <SelectTrigger className="h-9">
+                    <SelectValue placeholder="—" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">{t.noSlackUser}</SelectItem>
+                    {slackMembers.map((member) => (
+                      <SelectItem key={member.id} value={member.id}>
+                        <div className="flex items-center gap-2">
+                          <Avatar className="h-5 w-5">
+                            <AvatarImage src={member.avatar_url || undefined} />
+                            <AvatarFallback className="text-[10px]">
+                              {member.name.slice(0, 2).toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                          <span className="truncate">{member.name}</span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               )}
+              <button
+                type="button"
+                className={cn(
+                  "w-8 h-8 flex items-center justify-center rounded-md transition-colors",
+                  profiles.length > 1 
+                    ? "text-muted-foreground/50 hover:text-destructive hover:bg-destructive/10" 
+                    : "text-transparent cursor-default"
+                )}
+                onClick={() => removeProfile(profile.id)}
+                disabled={profiles.length <= 1}
+              >
+                <X className="h-4 w-4" />
+              </button>
             </div>
           ))}
         </div>
 
-        <Button
-          variant="outline"
+        {/* Add button */}
+        <button
+          type="button"
           onClick={addProfile}
-          className="w-full border-dashed"
+          className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors py-2 px-1"
         >
-          <Plus className="mr-2 h-4 w-4" />
-          {t.addAnother}
-        </Button>
+          <Plus className="h-4 w-4" />
+          {t.addProfile}
+        </button>
 
-        <div className="flex flex-col gap-3 pt-2">
+        {/* Actions */}
+        <div className="flex flex-col gap-3 pt-4 border-t">
           <Button
             onClick={handleComplete}
             className="w-full"
@@ -239,18 +261,10 @@ export function OnboardingStep3({
                 {t.completing}
               </>
             ) : (
-              <>
-                <CheckCircle2 className="mr-2 h-4 w-4" />
-                {t.complete}
-                {validCount > 0 && (
-                  <span className="ml-2 text-xs opacity-75">
-                    ({validCount} {t.profileAdded})
-                  </span>
-                )}
-              </>
+              t.complete
             )}
           </Button>
-          <div className="flex justify-center mt-2">
+          <div className="flex justify-center">
             <button 
               onClick={onSkip} 
               className="text-xs text-muted-foreground/60 hover:text-muted-foreground hover:underline transition-colors"
