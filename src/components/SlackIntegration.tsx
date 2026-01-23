@@ -765,7 +765,7 @@ const SlackIntegration = () => {
         </div>
 
         <div className="max-w-6xl mx-auto">
-          <Card className="border-2 border-border bg-card overflow-hidden shadow-lg">
+          <Card className="border-[3px] border-border/80 bg-card overflow-hidden shadow-2xl ring-1 ring-border/50">
             <div className="flex h-[650px]">
               {/* Left Sidebar - Slack Navigation */}
               <div className="w-16 bg-[#350D36] flex flex-col items-center py-4 gap-3 border-r border-white/10">
