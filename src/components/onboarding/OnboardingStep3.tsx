@@ -52,7 +52,7 @@ const translations = {
     addAnother: "Ajouter un autre profil",
     complete: "Terminer la configuration",
     completing: "Configuration en cours...",
-    skip: "Passer et terminer",
+    skip: "Passer",
     profileAdded: "profil(s) ajouté(s)",
   },
   en: {
@@ -70,7 +70,7 @@ const translations = {
     addAnother: "Add another profile",
     complete: "Complete setup",
     completing: "Setting up...",
-    skip: "Skip and finish",
+    skip: "Skip",
     profileAdded: "profile(s) added",
   },
 };
@@ -250,9 +250,14 @@ export function OnboardingStep3({
               </>
             )}
           </Button>
-          <Button variant="ghost" onClick={onSkip} className="w-full text-muted-foreground">
-            {t.skip}
-          </Button>
+          <div className="flex justify-center mt-2">
+            <button 
+              onClick={onSkip} 
+              className="text-xs text-muted-foreground/60 hover:text-muted-foreground hover:underline transition-colors"
+            >
+              {t.skip}
+            </button>
+          </div>
         </div>
       </CardContent>
     </Card>
