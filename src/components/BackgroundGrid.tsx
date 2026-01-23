@@ -7,7 +7,7 @@ const BackgroundGrid = () => {
           linear-gradient(to right, rgba(120, 120, 120, 0.08) 1px, transparent 1px),
           linear-gradient(to bottom, rgba(120, 120, 120, 0.08) 1px, transparent 1px)
         `,
-        backgroundSize: '40px 40px'
+        backgroundSize: '28px 28px'
       }}
     />
   );
