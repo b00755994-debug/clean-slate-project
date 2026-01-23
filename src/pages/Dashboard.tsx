@@ -506,12 +506,12 @@ export default function Dashboard() {
                       </Label>
                       {slackWorkspace?.is_connected && slackMembers.length > 0 ? (
                         <>
-                          <Select value={selectedSlackUserId} onValueChange={setSelectedSlackUserId}>
+                          <Select value={selectedSlackUserId || 'none'} onValueChange={(value) => setSelectedSlackUserId(value === 'none' ? '' : value)}>
                             <SelectTrigger className="w-full">
                               <SelectValue placeholder={t.selectSlackMember} />
                             </SelectTrigger>
                             <SelectContent className="bg-background border border-border">
-                              <SelectItem value="">
+                              <SelectItem value="none">
                                 <span className="text-muted-foreground">{t.none}</span>
                               </SelectItem>
                               {slackMembers.map(member => (
