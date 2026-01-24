@@ -25,6 +25,8 @@ const translations = {
     members: 'membres',
     error: 'Erreur',
     reconnectNeeded: 'Veuillez reconnecter Slack pour accéder aux canaux',
+    legendActive: 'Canal actif',
+    legendBotMember: 'Bot présent',
   },
   en: {
     searchPlaceholder: 'Search channels...',
@@ -34,9 +36,11 @@ const translations = {
     selectChannel: 'Select this channel',
     saving: 'Saving...',
     activeChannel: 'Active channel',
-    members: 'membres',
+    members: 'members',
     error: 'Error',
     reconnectNeeded: 'Please reconnect Slack to access channels',
+    legendActive: 'Active channel',
+    legendBotMember: 'Bot present',
   },
 };
 
@@ -185,6 +189,18 @@ export function SlackChannelSelector({
           )}
         </div>
       </ScrollArea>
+
+      {/* Legend */}
+      <div className="flex items-center gap-4 text-xs text-muted-foreground">
+        <div className="flex items-center gap-1.5">
+          <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+          <span>{t.legendActive}</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <div className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+          <span>{t.legendBotMember}</span>
+        </div>
+      </div>
 
       {/* Action Button */}
       <Button
