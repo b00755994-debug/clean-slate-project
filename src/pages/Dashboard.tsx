@@ -11,13 +11,15 @@ import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Crown, Linkedin, Plus, Trash2, ExternalLink, CheckCircle2, XCircle, Settings, LogOut, User, Link, Unlink, Lock, MessageSquare, RefreshCw } from 'lucide-react';
+import { Crown, Linkedin, Plus, Trash2, ExternalLink, CheckCircle2, XCircle, Settings, LogOut, User, Link, Unlink, Lock, RefreshCw, Hash } from 'lucide-react';
 import slackLogo from '@/assets/slack-logo.png';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useSlackMembers } from '@/hooks/useSlackMembers';
 import { useWorkspace } from '@/hooks/useWorkspace';
 import { useLinkedInProfiles } from '@/hooks/useLinkedInProfiles';
 import { useTeamFeedStats } from '@/components/content/TeamFeed';
+import { useSlackChannels } from '@/hooks/useSlackChannels';
+import { SlackChannelSelector } from '@/components/slack/SlackChannelSelector';
 import { supabase } from '@/integrations/supabase/client';
 
 const translations = {
@@ -84,6 +86,16 @@ const translations = {
     slackError: 'Erreur Slack',
     connectionFailed: 'La connexion a échoué:',
     connectSlackToAssociate: 'Connectez votre workspace Slack pour associer ce profil à un membre de votre équipe',
+    // Channel configuration
+    configureChannel: 'Configurer le canal',
+    channelConfigured: 'Canal configuré',
+    notificationsTo: 'Notifications vers',
+    changeChannel: 'Modifier',
+    chooseChannel: 'Choisir un canal',
+    channelDialogTitle: 'Configurer le canal Slack',
+    channelDialogDescription: 'Choisissez le canal où Superpump enverra les notifications',
+    channelUpdated: 'Canal mis à jour',
+    channelUpdatedDescription: 'Les notifications seront envoyées dans',
   },
   en: {
     greeting: 'Hello,',
@@ -148,6 +160,16 @@ const translations = {
     slackError: 'Slack Error',
     connectionFailed: 'Connection failed:',
     connectSlackToAssociate: 'Connect your Slack workspace to associate this profile with a team member',
+    // Channel configuration
+    configureChannel: 'Configure channel',
+    channelConfigured: 'Channel configured',
+    notificationsTo: 'Notifications to',
+    changeChannel: 'Change',
+    chooseChannel: 'Choose channel',
+    channelDialogTitle: 'Configure Slack channel',
+    channelDialogDescription: 'Choose the channel where Superpump will send notifications',
+    channelUpdated: 'Channel updated',
+    channelUpdatedDescription: 'Notifications will be sent to',
   }
 };
 
@@ -169,6 +191,7 @@ export default function Dashboard() {
   const { linkedinProfiles, addProfile, isAddingProfile, deleteProfile, updateSlackUser } = useLinkedInProfiles();
   const { data: slackMembers = [], isLoading: isLoadingMembers, isFetching: isSlackMembersFetching } = useSlackMembers(slackWorkspace?.is_connected || false);
   const { stats: teamStats } = useTeamFeedStats();
+  const { channels, currentChannel } = useSlackChannels(slackWorkspace?.is_connected || false);
   
   // Show syncing indicator only when fetching in background (not initial load)
   const isSyncing = (isWorkspaceFetching && !isWorkspaceLoading) || (isSlackMembersFetching && !isLoadingMembers);
@@ -179,6 +202,10 @@ export default function Dashboard() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProfileId, setEditingProfileId] = useState<string | null>(null);
   const [editSlackUserId, setEditSlackUserId] = useState<string>('');
+  const [isChannelDialogOpen, setIsChannelDialogOpen] = useState(false);
+  
+  // Get current channel name
+  const currentChannelName = channels.find(c => c.id === currentChannel)?.name;
 
   const handleAddProfile = async () => {
     if (!newProfileName.trim() || !newProfileUrl.trim()) {
@@ -385,36 +412,77 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent className="flex flex-col flex-grow">
               {slackWorkspace?.is_connected ? (
-                <p className="text-sm text-muted-foreground mb-4">
-                  {t.connectedTo} <strong>{slackWorkspace.workspace_name}</strong>
-                  {slackMembers.length > 0 ? (
-                    <span className="block text-xs mt-1">
-                      {slackMembers.length} {t.membersIdentified}
-                    </span>
-                  ) : isLoadingMembers ? (
-                    <span className="block text-xs mt-1 text-muted-foreground">
-                      {t.loadingMembers}
-                    </span>
-                  ) : (
-                    <span className="block text-xs mt-1 text-amber-500">
-                      {t.noMembersFound}
-                    </span>
-                  )}
-                </p>
+                <div className="space-y-3 mb-4">
+                  <p className="text-sm text-muted-foreground">
+                    {t.connectedTo} <strong>{slackWorkspace.workspace_name}</strong>
+                    {slackMembers.length > 0 ? (
+                      <span className="block text-xs mt-1">
+                        {slackMembers.length} {t.membersIdentified}
+                      </span>
+                    ) : isLoadingMembers ? (
+                      <span className="block text-xs mt-1 text-muted-foreground">
+                        {t.loadingMembers}
+                      </span>
+                    ) : (
+                      <span className="block text-xs mt-1 text-amber-500">
+                        {t.noMembersFound}
+                      </span>
+                    )}
+                  </p>
+                  
+                  {/* Channel configuration section */}
+                  <div className="flex items-center justify-between p-2 bg-muted/50 rounded-md">
+                    {currentChannel && currentChannelName ? (
+                      <div className="flex items-center gap-2 text-sm">
+                        <Hash className="w-4 h-4 text-muted-foreground" />
+                        <span>{t.notificationsTo} <strong>#{currentChannelName}</strong></span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2 text-sm text-amber-600 dark:text-amber-400">
+                        <Hash className="w-4 h-4" />
+                        <span>{t.configureChannel}</span>
+                      </div>
+                    )}
+                    <Dialog open={isChannelDialogOpen} onOpenChange={setIsChannelDialogOpen}>
+                      <DialogTrigger asChild>
+                        <Button variant="ghost" size="sm" className="h-7 text-xs">
+                          {currentChannel ? t.changeChannel : t.chooseChannel}
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>{t.channelDialogTitle}</DialogTitle>
+                          <DialogDescription>{t.channelDialogDescription}</DialogDescription>
+                        </DialogHeader>
+                        <SlackChannelSelector
+                          isConnected={slackWorkspace?.is_connected || false}
+                          onChannelSelected={(channelId, channelName) => {
+                            setIsChannelDialogOpen(false);
+                            toast({
+                              title: t.channelUpdated,
+                              description: `${t.channelUpdatedDescription} #${channelName}`
+                            });
+                          }}
+                          language={language}
+                        />
+                      </DialogContent>
+                    </Dialog>
+                  </div>
+                </div>
               ) : (
                 <p className="text-sm text-muted-foreground mb-4">
                   {t.connectSlackDescription}
                 </p>
               )}
               {slackWorkspace?.is_connected ? (
-                <div className="flex gap-2 mt-auto pt-4">
+                <div className="flex gap-2 mt-auto pt-2">
                   <Button size="sm" className="gap-2 flex-1 bg-[#4A154B] hover:bg-[#3a1039] text-white" asChild>
                     <a href="slack://open" target="_blank" rel="noopener noreferrer">
                       <img src={slackLogo} alt="Slack" className="w-4 h-4" />
                       {t.openSlack}
                     </a>
                   </Button>
-                  <Button size="sm" className="gap-1.5 flex-1 bg-red-100 border border-red-200 text-red-600 hover:bg-red-200 hover:text-red-700 dark:bg-red-950/30 dark:border-red-800/50 dark:text-red-400 dark:hover:bg-red-900/40" onClick={handleDisconnectSlack}>
+                  <Button size="sm" className="gap-1.5 flex-1 bg-destructive/10 border border-destructive/20 text-destructive hover:bg-destructive/20" onClick={handleDisconnectSlack}>
                     <LogOut className="w-3.5 h-3.5" />
                     {t.disconnect}
                   </Button>
