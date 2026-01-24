@@ -11,6 +11,7 @@ interface SlackChannel {
   name: string;
   is_private: boolean;
   num_members: number;
+  is_member: boolean;
 }
 
 serve(async (req) => {
@@ -107,6 +108,7 @@ serve(async (req) => {
       name: channel.name,
       is_private: channel.is_private || false,
       num_members: channel.num_members || 0,
+      is_member: channel.is_member || false,
     }));
 
     // Sort by member count (most popular first)
