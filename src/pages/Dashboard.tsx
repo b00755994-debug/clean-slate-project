@@ -429,9 +429,9 @@ export default function Dashboard() {
                         )}
                         <Dialog open={isChannelDialogOpen} onOpenChange={setIsChannelDialogOpen}>
                           <DialogTrigger asChild>
-                            <Button variant="ghost" size="sm" className="h-7 text-xs text-muted-foreground hover:text-foreground">
+                            <button className="text-xs text-muted-foreground hover:text-foreground underline-offset-2 hover:underline transition-colors">
                               {currentChannel ? t.changeChannel : t.chooseChannel}
-                            </Button>
+                            </button>
                           </DialogTrigger>
                           <DialogContent>
                             <DialogHeader>
