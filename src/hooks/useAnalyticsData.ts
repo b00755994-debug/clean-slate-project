@@ -603,12 +603,12 @@ export function useAnalyticsData() {
 
       // Define buckets
       const buckets = [
-        { label: '0-500', min: 0, max: 500 },
-        { label: '500-1K', min: 500, max: 1000 },
+        { label: '0-1K', min: 0, max: 1000 },
         { label: '1K-2K', min: 1000, max: 2000 },
         { label: '2K-5K', min: 2000, max: 5000 },
         { label: '5K-10K', min: 5000, max: 10000 },
-        { label: '10K+', min: 10000, max: Infinity },
+        { label: '10K-20K', min: 10000, max: 20000 },
+        { label: '20K+', min: 20000, max: Infinity },
       ];
 
       const distribution = buckets.map(bucket => {
