@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Hash, Search, Check, Loader2, Users, AlertCircle } from 'lucide-react';
+import { Hash, Search, Check, Loader2, AlertCircle } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -19,14 +19,11 @@ const translations = {
     noChannelsFound: 'Aucun canal trouvé',
     loadingChannels: 'Chargement des canaux...',
     inviteBot: 'Inviter Superpump',
+    configure: 'Configurer',
     inviting: 'Invitation...',
-    botInvited: 'Superpump ajouté à',
+    configured: 'Configuré',
     members: 'membres',
     error: 'Erreur',
-    currentChannel: 'Canal actuel',
-    botPresent: 'Bot présent',
-    selectChannel: 'Sélectionnez un canal',
-    selectThisChannel: 'Sélectionner ce canal',
     reconnectNeeded: 'Veuillez reconnecter Slack pour accéder aux canaux',
   },
   en: {
@@ -34,14 +31,11 @@ const translations = {
     noChannelsFound: 'No channels found',
     loadingChannels: 'Loading channels...',
     inviteBot: 'Invite Superpump',
+    configure: 'Configure',
     inviting: 'Inviting...',
-    botInvited: 'Superpump added to',
+    configured: 'Configured',
     members: 'members',
     error: 'Error',
-    currentChannel: 'Current channel',
-    botPresent: 'Bot joined',
-    selectChannel: 'Select a channel',
-    selectThisChannel: 'Select this channel',
     reconnectNeeded: 'Please reconnect Slack to access channels',
   },
 };
@@ -119,19 +113,22 @@ export function SlackChannelSelector({
     <div className={cn("space-y-4", compact && "space-y-3")}>
       {/* Search Input */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/60" />
         <Input
           type="text"
           placeholder={t.searchPlaceholder}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-9"
+          className="pl-9 h-10 bg-muted/30 border-0 focus-visible:ring-1"
         />
       </div>
 
       {/* Channel List */}
-      <ScrollArea className={cn("border rounded-lg", compact ? "h-[200px]" : "h-[280px]")}>
-        <div className="p-2 space-y-1">
+      <ScrollArea className={cn(
+        "rounded-lg border border-border/50",
+        compact ? "h-[180px]" : "h-[260px]"
+      )}>
+        <div className="p-1.5">
           {filteredChannels.length === 0 ? (
             <div className="flex items-center justify-center py-8 text-muted-foreground text-sm">
               {t.noChannelsFound}
@@ -140,45 +137,42 @@ export function SlackChannelSelector({
             filteredChannels.map((channel) => {
               const isSelected = selectedChannelId === channel.id;
               const isCurrent = currentChannel === channel.id;
+              const hasBot = channel.is_member;
               
               return (
                 <button
                   key={channel.id}
                   onClick={() => handleSelectChannel(channel.id)}
                   className={cn(
-                    "w-full flex items-center justify-between px-3 py-2.5 rounded-md text-left transition-colors",
-                    isSelected 
-                      ? "bg-primary/10 border border-primary/30" 
-                      : "hover:bg-muted/50",
-                    isCurrent && !isSelected && "bg-green-500/10 border border-green-500/30"
+                    "w-full flex items-center justify-between px-3 py-2.5 rounded-md text-left transition-all",
+                    "hover:bg-muted/60",
+                    isSelected && "bg-primary/5 ring-1 ring-primary/20"
                   )}
                 >
                   <div className="flex items-center gap-2 min-w-0">
+                    {/* Status indicator dot */}
+                    <div className="w-4 flex justify-center">
+                      {isCurrent ? (
+                        <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                      ) : hasBot ? (
+                        <div className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+                      ) : null}
+                    </div>
+                    
                     <Hash className={cn(
                       "w-4 h-4 flex-shrink-0",
-                      isSelected ? "text-primary" : "text-muted-foreground"
+                      isSelected ? "text-primary" : "text-muted-foreground/70"
                     )} />
                     <span className={cn(
-                      "font-medium truncate",
-                      isSelected && "text-primary"
+                      "text-sm truncate",
+                      isSelected ? "font-medium text-primary" : "text-foreground"
                     )}>
                       {channel.name}
                     </span>
-                    {isCurrent && (
-                      <span className="text-xs bg-green-500/20 text-green-600 dark:text-green-400 px-1.5 py-0.5 rounded">
-                        {t.currentChannel}
-                      </span>
-                    )}
-                    {channel.is_member && !isCurrent && (
-                      <span className="text-xs bg-blue-500/20 text-blue-600 dark:text-blue-400 px-1.5 py-0.5 rounded flex items-center gap-0.5">
-                        <Check className="w-3 h-3" />
-                        {t.botPresent}
-                      </span>
-                    )}
                   </div>
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    <span className="text-xs text-muted-foreground flex items-center gap-1">
-                      <Users className="w-3 h-3" />
+                  
+                  <div className="flex items-center gap-3 flex-shrink-0">
+                    <span className="text-xs text-muted-foreground/50">
                       {channel.num_members}
                     </span>
                     {isSelected && (
@@ -197,8 +191,9 @@ export function SlackChannelSelector({
         onClick={handleInviteBot}
         disabled={!selectedChannelId || isJoiningChannel || isCurrentlySelected}
         className="w-full bg-[#4A154B] hover:bg-[#3a1039]"
+        size="lg"
       >
-      {isJoiningChannel ? (
+        {isJoiningChannel ? (
           <>
             <Loader2 className="w-4 h-4 mr-2 animate-spin" />
             {t.inviting}
@@ -206,18 +201,12 @@ export function SlackChannelSelector({
         ) : isCurrentlySelected ? (
           <>
             <Check className="w-4 h-4 mr-2" />
-            {t.botInvited} #{selectedChannel?.name}
+            {t.configured}
           </>
         ) : selectedChannel?.is_member ? (
-          <>
-            {t.selectThisChannel}
-            {` → #${selectedChannel.name}`}
-          </>
+          t.configure
         ) : (
-          <>
-            {t.inviteBot}
-            {selectedChannel && ` → #${selectedChannel.name}`}
-          </>
+          t.inviteBot
         )}
       </Button>
     </div>
