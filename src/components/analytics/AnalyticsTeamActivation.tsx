@@ -10,7 +10,6 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { KPICard } from './KPICard';
 import { PeriodSelector } from './PeriodSelector';
 import { PostingHeatmap } from './PostingHeatmap';
-import { postingHeatmapData } from './mockData';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAnalyticsData } from '@/hooks/useAnalyticsData';
 
@@ -69,7 +68,7 @@ export function AnalyticsTeamActivation() {
   const [activationPeriod, setActivationPeriod] = useState<'6' | '12'>('6');
   const { language } = useLanguage();
   const t = translations[language];
-  const { teamActivationKPIs, activationTrendData } = useAnalyticsData();
+  const { teamActivationKPIs, activationTrendData, postingHeatmapData } = useAnalyticsData();
 
   const activationData = activationPeriod === '6' ? activationTrendData.slice(-6) : activationTrendData;
 

@@ -28,6 +28,13 @@ interface ActivationTrendDataPoint {
   activeContributors: number;
 }
 
+interface HeatmapCell {
+  day: string;
+  hour: string;
+  count: number;
+  impressions: number;
+}
+
 export function useAnalyticsData() {
   const { workspace } = useWorkspace();
 
@@ -311,6 +318,83 @@ export function useAnalyticsData() {
     staleTime: 5 * 60 * 1000,
   });
 
+  // Posting heatmap data (real data based on post timestamps)
+  const { data: postingHeatmapData, isLoading: isLoadingHeatmap } = useQuery({
+    queryKey: ['analytics-posting-heatmap', workspace?.id],
+    queryFn: async (): Promise<HeatmapCell[]> => {
+      if (!workspace?.id) return [];
+
+      const DAYS_KEYS = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
+      const HOURS_KEYS = ['6h', '8h', '10h', '12h', '14h', '16h', '18h', '20h'];
+      
+      // Initialize heatmap grid
+      const heatmapGrid: Record<string, Record<string, { count: number; impressions: number }>> = {};
+      DAYS_KEYS.forEach(day => {
+        heatmapGrid[day] = {};
+        HOURS_KEYS.forEach(hour => {
+          heatmapGrid[day][hour] = { count: 0, impressions: 0 };
+        });
+      });
+
+      // Get all posts with their creation timestamps
+      const { data: posts, error } = await supabase
+        .from('posts')
+        .select('id, impressions, linkedin_created_at, created_at')
+        .eq('workspace_id', workspace.id);
+
+      if (error) throw error;
+
+      // Group posts by day and hour
+      posts?.forEach(post => {
+        // Use linkedin_created_at if available, otherwise created_at
+        const timestamp = post.linkedin_created_at || post.created_at;
+        if (!timestamp) return;
+
+        const date = new Date(timestamp);
+        const dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday, etc.
+        const hour = date.getHours();
+
+        // Map to our day keys (reorder to start with Lun)
+        const dayKey = DAYS_KEYS[dayOfWeek];
+        
+        // Map hour to closest 2-hour bucket
+        let hourKey: string;
+        if (hour < 7) hourKey = '6h';
+        else if (hour < 9) hourKey = '8h';
+        else if (hour < 11) hourKey = '10h';
+        else if (hour < 13) hourKey = '12h';
+        else if (hour < 15) hourKey = '14h';
+        else if (hour < 17) hourKey = '16h';
+        else if (hour < 19) hourKey = '18h';
+        else hourKey = '20h';
+
+        if (heatmapGrid[dayKey] && heatmapGrid[dayKey][hourKey]) {
+          heatmapGrid[dayKey][hourKey].count += 1;
+          heatmapGrid[dayKey][hourKey].impressions += Number(post.impressions) || 0;
+        }
+      });
+
+      // Convert to array format expected by PostingHeatmap
+      const result: HeatmapCell[] = [];
+      // Reorder days to start with Monday (Lun)
+      const orderedDays = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+      orderedDays.forEach(day => {
+        HOURS_KEYS.forEach(hour => {
+          result.push({
+            day,
+            hour,
+            count: heatmapGrid[day][hour].count,
+            impressions: heatmapGrid[day][hour].impressions,
+          });
+        });
+      });
+
+      return result;
+    },
+    enabled: !!workspace?.id,
+    staleTime: 5 * 60 * 1000,
+  });
+
   return {
     overviewKPIs: overviewKPIs || {
       totalPosts: { value: 0, change: 0 },
@@ -326,6 +410,7 @@ export function useAnalyticsData() {
       postingRegularity: { value: 0, change: 0 },
     },
     activationTrendData: activationTrendData || [],
-    isLoading: isLoadingKPIs || isLoadingTrend || isLoadingActivation || isLoadingActivationTrend,
+    postingHeatmapData: postingHeatmapData || [],
+    isLoading: isLoadingKPIs || isLoadingTrend || isLoadingActivation || isLoadingActivationTrend || isLoadingHeatmap,
   };
 }
