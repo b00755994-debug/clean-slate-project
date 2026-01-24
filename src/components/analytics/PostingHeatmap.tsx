@@ -63,31 +63,32 @@ export function PostingHeatmap({ data }: PostingHeatmapProps) {
   const DAYS_KEYS = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
   const HOURS_KEYS = ['6h', '8h', '10h', '12h', '14h', '16h', '18h', '20h'];
 
-  const { grid, impressionsGrid, maxCount, topPerformingSlots } = useMemo(() => {
+  const { grid, avgImpressionsGrid, maxCount, topPerformingSlots } = useMemo(() => {
     const grid: Record<string, Record<string, number>> = {};
-    const impressionsGrid: Record<string, Record<string, number>> = {};
+    const avgImpressionsGrid: Record<string, Record<string, number>> = {};
     let maxCount = 0;
 
     // Initialize grids with French keys (matching data)
     DAYS_KEYS.forEach(day => {
       grid[day] = {};
-      impressionsGrid[day] = {};
+      avgImpressionsGrid[day] = {};
       HOURS_KEYS.forEach(hour => {
         grid[day][hour] = 0;
-        impressionsGrid[day][hour] = 0;
+        avgImpressionsGrid[day][hour] = 0;
       });
     });
 
     // Fill with data and collect all cells with impressions
-    const allCells: { day: string; hour: string; count: number; impressions: number; avgImpressions: number }[] = [];
+    const allCells: { day: string; hour: string; count: number; avgImpressions: number }[] = [];
     data.forEach(cell => {
       if (grid[cell.day] && grid[cell.day][cell.hour] !== undefined) {
         grid[cell.day][cell.hour] = cell.count;
-        impressionsGrid[cell.day][cell.hour] = cell.impressions;
+        // Calculate average impressions per post, rounded to nearest 100
+        const avgImpressions = cell.count > 0 ? Math.round(cell.impressions / cell.count / 100) * 100 : 0;
+        avgImpressionsGrid[cell.day][cell.hour] = avgImpressions;
         if (cell.count > maxCount) maxCount = cell.count;
         if (cell.count > 0) {
-          const avgImpressions = cell.impressions / cell.count;
-          allCells.push({ day: cell.day, hour: cell.hour, count: cell.count, impressions: cell.impressions, avgImpressions });
+          allCells.push({ day: cell.day, hour: cell.hour, count: cell.count, avgImpressions });
         }
       }
     });
@@ -101,7 +102,7 @@ export function PostingHeatmap({ data }: PostingHeatmapProps) {
         topPerformingSlots.add(`${cell.day}-${cell.hour}`);
       });
 
-    return { grid, impressionsGrid, maxCount, topPerformingSlots };
+    return { grid, avgImpressionsGrid, maxCount, topPerformingSlots };
   }, [data]);
 
   return (
@@ -142,7 +143,7 @@ export function PostingHeatmap({ data }: PostingHeatmapProps) {
                         className={`flex-1 rounded-sm ${colorClass} transition-colors cursor-default min-h-[18px] ${
                           isTopPerforming ? 'ring-2 ring-orange-500 ring-offset-1 ring-offset-background' : ''
                         }`}
-                        onMouseEnter={() => setHoveredCell({ day: dayKey, hour: hourKey, count, impressions: impressionsGrid[dayKey][hourKey] })}
+                        onMouseEnter={() => setHoveredCell({ day: dayKey, hour: hourKey, count, impressions: avgImpressionsGrid[dayKey][hourKey] })}
                         onMouseLeave={() => setHoveredCell(null)}
                         role="gridcell"
                         aria-label={`${t.days[dayIndex]} ${t.hours[hourIndex]}: ${count} ${count !== 1 ? t.posts : t.post}${isTopPerforming ? ` - ${t.bestPerformance}` : ''}`}
@@ -151,7 +152,7 @@ export function PostingHeatmap({ data }: PostingHeatmapProps) {
                     <TooltipContent>
                       <p className="text-sm font-medium">{t.days[dayIndex]} {t.hours[hourIndex]}</p>
                       <p className="text-xs text-muted-foreground">{count} {count !== 1 ? t.posts : t.post}</p>
-                      <p className="text-xs text-muted-foreground">{impressionsGrid[dayKey][hourKey].toLocaleString()} impressions</p>
+                      <p className="text-xs text-muted-foreground">{avgImpressionsGrid[dayKey][hourKey].toLocaleString()} impressions/post</p>
                       {isTopPerforming && (
                         <p className="text-xs text-orange-500 font-medium mt-1">🔥 {t.bestPerformance}</p>
                       )}
