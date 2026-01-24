@@ -466,16 +466,6 @@ export default function Dashboard() {
                       </div>
                     </div>
                   </div>
-                  
-                  {/* Actions */}
-                  <div className="mt-auto pt-6">
-                    <Button size="sm" className="w-full gap-2 bg-[#4A154B] hover:bg-[#3a1039] text-white" asChild>
-                      <a href="slack://open" target="_blank" rel="noopener noreferrer">
-                        <img src={slackLogo} alt="" className="w-4 h-4" />
-                        {t.openSlack}
-                      </a>
-                    </Button>
-                  </div>
                 </div>
               ) : (
                 <div className="flex flex-col flex-grow">
