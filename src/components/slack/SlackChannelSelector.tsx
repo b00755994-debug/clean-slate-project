@@ -18,10 +18,10 @@ const translations = {
     searchPlaceholder: 'Rechercher un canal...',
     noChannelsFound: 'Aucun canal trouvé',
     loadingChannels: 'Chargement des canaux...',
-    inviteBot: 'Inviter Superpump',
-    configure: 'Configurer',
-    inviting: 'Invitation...',
-    configured: 'Configuré',
+    inviteAndSelect: 'Inviter et sélectionner',
+    selectChannel: 'Sélectionner ce canal',
+    saving: 'Enregistrement...',
+    activeChannel: 'Canal actif',
     members: 'membres',
     error: 'Erreur',
     reconnectNeeded: 'Veuillez reconnecter Slack pour accéder aux canaux',
@@ -30,11 +30,11 @@ const translations = {
     searchPlaceholder: 'Search channels...',
     noChannelsFound: 'No channels found',
     loadingChannels: 'Loading channels...',
-    inviteBot: 'Invite Superpump',
-    configure: 'Configure',
-    inviting: 'Inviting...',
-    configured: 'Configured',
-    members: 'members',
+    inviteAndSelect: 'Invite and select',
+    selectChannel: 'Select this channel',
+    saving: 'Saving...',
+    activeChannel: 'Active channel',
+    members: 'membres',
     error: 'Error',
     reconnectNeeded: 'Please reconnect Slack to access channels',
   },
@@ -196,17 +196,17 @@ export function SlackChannelSelector({
         {isJoiningChannel ? (
           <>
             <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-            {t.inviting}
+            {t.saving}
           </>
         ) : isCurrentlySelected ? (
           <>
             <Check className="w-4 h-4 mr-2" />
-            {t.configured}
+            {t.activeChannel}
           </>
         ) : selectedChannel?.is_member ? (
-          t.configure
+          t.selectChannel
         ) : (
-          t.inviteBot
+          t.inviteAndSelect
         )}
       </Button>
     </div>
