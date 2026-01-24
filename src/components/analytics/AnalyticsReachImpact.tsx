@@ -202,7 +202,7 @@ export function AnalyticsReachImpact() {
                             {name === 'impressions' ? t.labels.impressions : t.kpis.engagementRate}:
                           </span>
                           <span className="font-medium">
-                            {name === 'impressions' ? Number(value).toLocaleString() : `${value} %`}
+                            {name === 'impressions' ? (Math.round(Number(value) / 100) * 100).toLocaleString() : `${value} %`}
                           </span>
                         </span>
                       )}
