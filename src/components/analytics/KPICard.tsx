@@ -36,9 +36,17 @@ export function KPICard({
   suffix = '',
 }: KPICardProps) {
   const isPositive = change !== undefined && change >= 0;
-  const formattedValue = typeof value === 'number' 
-    ? value.toLocaleString() 
-    : value;
+  
+  // Format value: round large numbers to nearest 100, smaller to integer
+  const formatValue = (val: number | string): string => {
+    if (typeof val !== 'number') return val;
+    if (val >= 1000) {
+      return (Math.round(val / 100) * 100).toLocaleString();
+    }
+    return Math.round(val).toLocaleString();
+  };
+  
+  const formattedValue = formatValue(value);
 
   return (
     <Card className="border-border/50 shadow-sm hover:shadow-md transition-shadow">
