@@ -14,7 +14,7 @@ const Hero = () => {
     fr: {
       title1: "Boostez votre portée sur",
       title2: "LinkedIn",
-      subtitle: "Alertes Slack, Team Feed unifié et analytics d'audience - tout en un.",
+      subtitle: "Transformez votre équipe en force de frappe LinkedIn, directement depuis Slack. Notifications instantanées, engagement collectif, impact décuplé.",
       joinBeta: "Rejoindre la Beta",
       viewDemo: "On en parle ?",
       impressions: "Impressions LinkedIn",
@@ -24,7 +24,7 @@ const Hero = () => {
     en: {
       title1: "Supercharge your reach on",
       title2: "LinkedIn",
-      subtitle: "Slack alerts, unified Team Feed and audience analytics - all in one.",
+      subtitle: "Turn your team into a LinkedIn powerhouse, directly from Slack. Instant notifications, built-in analytics, collective engagement.",
       joinBeta: "Join the Beta",
       viewDemo: "Book a call with us",
       impressions: "LinkedIn Impressions",
