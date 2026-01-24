@@ -137,9 +137,9 @@ const ProblemSolution = () => {
               </div>
 
               <div className="mt-6 pt-6 border-t border-border flex items-center gap-2 text-sm">
-                <TrendingUp className="h-4 w-4 text-primary" />
+                <TrendingUp className="h-4 w-4 text-green-500" />
                 <span className="text-muted-foreground">
-                  <span className="font-semibold text-primary">+350%</span> {t.metric}
+                  <span className="font-semibold text-green-500">+350%</span> {t.metric}
                 </span>
               </div>
             </div>
