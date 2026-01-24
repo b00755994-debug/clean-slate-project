@@ -35,6 +35,24 @@ interface HeatmapCell {
   impressions: number;
 }
 
+interface ReachKPIs {
+  totalImpressions: { value: number; change: number };
+  avgImpressionsPerPost: { value: number; change: number };
+  engagementRate: { value: number; change: number };
+  commentRate: { value: number; change: number };
+}
+
+interface ReachTrendDataPoint {
+  month: string;
+  impressions: number;
+  engagementRate: number;
+}
+
+interface ImpressionsDistributionPoint {
+  bucket: string;
+  count: number;
+}
+
 export function useAnalyticsData() {
   const { workspace } = useWorkspace();
 
@@ -395,6 +413,218 @@ export function useAnalyticsData() {
     staleTime: 5 * 60 * 1000,
   });
 
+  // Reach & Impact KPIs
+  const { data: reachKPIs, isLoading: isLoadingReach } = useQuery({
+    queryKey: ['analytics-reach-kpis', workspace?.id],
+    queryFn: async (): Promise<ReachKPIs> => {
+      if (!workspace?.id) {
+        return {
+          totalImpressions: { value: 0, change: 0 },
+          avgImpressionsPerPost: { value: 0, change: 0 },
+          engagementRate: { value: 0, change: 0 },
+          commentRate: { value: 0, change: 0 },
+        };
+      }
+
+      const now = new Date();
+      const thirtyDaysAgo = subDays(now, 30);
+      const sixtyDaysAgo = subDays(now, 60);
+
+      // Get posts for current period with engagement metrics
+      const { data: currentPosts, error: currentError } = await supabase
+        .from('posts')
+        .select('id, impressions, reactions, comments, likes, praise, empathy, appreciation, interest')
+        .eq('workspace_id', workspace.id)
+        .gte('linkedin_created_at', thirtyDaysAgo.toISOString().split('T')[0]);
+
+      if (currentError) throw currentError;
+
+      // Get posts for previous period
+      const { data: previousPosts, error: previousError } = await supabase
+        .from('posts')
+        .select('id, impressions, reactions, comments, likes, praise, empathy, appreciation, interest')
+        .eq('workspace_id', workspace.id)
+        .gte('linkedin_created_at', sixtyDaysAgo.toISOString().split('T')[0])
+        .lt('linkedin_created_at', thirtyDaysAgo.toISOString().split('T')[0]);
+
+      if (previousError) throw previousError;
+
+      // Calculate metrics for current period
+      const currentTotalImpressions = currentPosts?.reduce((sum, p) => sum + (Number(p.impressions) || 0), 0) || 0;
+      const currentTotalPosts = currentPosts?.length || 0;
+      const currentAvgImpressions = currentTotalPosts > 0 ? Math.round(currentTotalImpressions / currentTotalPosts) : 0;
+      
+      // Total reactions = likes + praise + empathy + appreciation + interest (or use reactions field)
+      const currentTotalReactions = currentPosts?.reduce((sum, p) => {
+        const reactions = Number(p.reactions) || (
+          (Number(p.likes) || 0) + 
+          (Number(p.praise) || 0) + 
+          (Number(p.empathy) || 0) + 
+          (Number(p.appreciation) || 0) + 
+          (Number(p.interest) || 0)
+        );
+        return sum + reactions;
+      }, 0) || 0;
+      const currentTotalComments = currentPosts?.reduce((sum, p) => sum + (Number(p.comments) || 0), 0) || 0;
+      const currentTotalInteractions = currentTotalReactions + currentTotalComments;
+      const currentEngagementRate = currentTotalImpressions > 0 
+        ? Math.round((currentTotalInteractions / currentTotalImpressions) * 10000) / 100 
+        : 0;
+      const currentCommentRate = currentTotalInteractions > 0 
+        ? Math.round((currentTotalComments / currentTotalInteractions) * 1000) / 10 
+        : 0;
+
+      // Calculate metrics for previous period
+      const previousTotalImpressions = previousPosts?.reduce((sum, p) => sum + (Number(p.impressions) || 0), 0) || 0;
+      const previousTotalPosts = previousPosts?.length || 0;
+      const previousAvgImpressions = previousTotalPosts > 0 ? Math.round(previousTotalImpressions / previousTotalPosts) : 0;
+      
+      const previousTotalReactions = previousPosts?.reduce((sum, p) => {
+        const reactions = Number(p.reactions) || (
+          (Number(p.likes) || 0) + 
+          (Number(p.praise) || 0) + 
+          (Number(p.empathy) || 0) + 
+          (Number(p.appreciation) || 0) + 
+          (Number(p.interest) || 0)
+        );
+        return sum + reactions;
+      }, 0) || 0;
+      const previousTotalComments = previousPosts?.reduce((sum, p) => sum + (Number(p.comments) || 0), 0) || 0;
+      const previousTotalInteractions = previousTotalReactions + previousTotalComments;
+      const previousEngagementRate = previousTotalImpressions > 0 
+        ? Math.round((previousTotalInteractions / previousTotalImpressions) * 10000) / 100 
+        : 0;
+      const previousCommentRate = previousTotalInteractions > 0 
+        ? Math.round((previousTotalComments / previousTotalInteractions) * 1000) / 10 
+        : 0;
+
+      const calcChange = (current: number, previous: number) => {
+        if (previous === 0) return current > 0 ? 100 : 0;
+        return Math.round(((current - previous) / previous) * 1000) / 10;
+      };
+
+      return {
+        totalImpressions: { 
+          value: currentTotalImpressions, 
+          change: calcChange(currentTotalImpressions, previousTotalImpressions) 
+        },
+        avgImpressionsPerPost: { 
+          value: currentAvgImpressions, 
+          change: calcChange(currentAvgImpressions, previousAvgImpressions) 
+        },
+        engagementRate: { 
+          value: currentEngagementRate, 
+          change: calcChange(currentEngagementRate, previousEngagementRate) 
+        },
+        commentRate: { 
+          value: currentCommentRate, 
+          change: calcChange(currentCommentRate, previousCommentRate) 
+        },
+      };
+    },
+    enabled: !!workspace?.id,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  // Reach trend data (impressions + engagement rate per month)
+  const { data: reachTrendData, isLoading: isLoadingReachTrend } = useQuery({
+    queryKey: ['analytics-reach-trend', workspace?.id],
+    queryFn: async (): Promise<ReachTrendDataPoint[]> => {
+      if (!workspace?.id) return [];
+
+      const monthsData: ReachTrendDataPoint[] = [];
+      const monthKeys = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
+
+      const twelveMonthsAgo = subMonths(new Date(), 12);
+      
+      const { data: posts, error } = await supabase
+        .from('posts')
+        .select('id, impressions, reactions, comments, likes, praise, empathy, appreciation, interest, linkedin_created_at')
+        .eq('workspace_id', workspace.id)
+        .gte('linkedin_created_at', twelveMonthsAgo.toISOString().split('T')[0]);
+
+      if (error) throw error;
+
+      for (let i = 11; i >= 0; i--) {
+        const monthDate = subMonths(new Date(), i);
+        const monthStart = startOfMonth(monthDate);
+        const monthEnd = startOfMonth(subMonths(monthDate, -1));
+        
+        const monthPosts = posts?.filter(p => {
+          if (!p.linkedin_created_at) return false;
+          const postDate = new Date(p.linkedin_created_at);
+          return postDate >= monthStart && postDate < monthEnd;
+        }) || [];
+
+        const impressions = monthPosts.reduce((sum, p) => sum + (Number(p.impressions) || 0), 0);
+        const totalReactions = monthPosts.reduce((sum, p) => {
+          const reactions = Number(p.reactions) || (
+            (Number(p.likes) || 0) + 
+            (Number(p.praise) || 0) + 
+            (Number(p.empathy) || 0) + 
+            (Number(p.appreciation) || 0) + 
+            (Number(p.interest) || 0)
+          );
+          return sum + reactions;
+        }, 0);
+        const totalComments = monthPosts.reduce((sum, p) => sum + (Number(p.comments) || 0), 0);
+        const totalInteractions = totalReactions + totalComments;
+        const engagementRate = impressions > 0 
+          ? Math.round((totalInteractions / impressions) * 10000) / 100 
+          : 0;
+
+        const monthKey = monthKeys[monthDate.getMonth()];
+        
+        monthsData.push({
+          month: monthKey,
+          impressions,
+          engagementRate,
+        });
+      }
+
+      return monthsData;
+    },
+    enabled: !!workspace?.id,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  // Impressions distribution (posts bucketed by impression ranges)
+  const { data: impressionsDistribution, isLoading: isLoadingDistribution } = useQuery({
+    queryKey: ['analytics-impressions-distribution', workspace?.id],
+    queryFn: async (): Promise<ImpressionsDistributionPoint[]> => {
+      if (!workspace?.id) return [];
+
+      const { data: posts, error } = await supabase
+        .from('posts')
+        .select('id, impressions')
+        .eq('workspace_id', workspace.id);
+
+      if (error) throw error;
+
+      // Define buckets
+      const buckets = [
+        { label: '0-500', min: 0, max: 500 },
+        { label: '500-1K', min: 500, max: 1000 },
+        { label: '1K-2K', min: 1000, max: 2000 },
+        { label: '2K-5K', min: 2000, max: 5000 },
+        { label: '5K-10K', min: 5000, max: 10000 },
+        { label: '10K+', min: 10000, max: Infinity },
+      ];
+
+      const distribution = buckets.map(bucket => {
+        const count = posts?.filter(p => {
+          const imp = Number(p.impressions) || 0;
+          return imp >= bucket.min && imp < bucket.max;
+        }).length || 0;
+        return { bucket: bucket.label, count };
+      });
+
+      return distribution;
+    },
+    enabled: !!workspace?.id,
+    staleTime: 5 * 60 * 1000,
+  });
+
   return {
     overviewKPIs: overviewKPIs || {
       totalPosts: { value: 0, change: 0 },
@@ -411,6 +641,14 @@ export function useAnalyticsData() {
     },
     activationTrendData: activationTrendData || [],
     postingHeatmapData: postingHeatmapData || [],
-    isLoading: isLoadingKPIs || isLoadingTrend || isLoadingActivation || isLoadingActivationTrend || isLoadingHeatmap,
+    reachKPIs: reachKPIs || {
+      totalImpressions: { value: 0, change: 0 },
+      avgImpressionsPerPost: { value: 0, change: 0 },
+      engagementRate: { value: 0, change: 0 },
+      commentRate: { value: 0, change: 0 },
+    },
+    reachTrendData: reachTrendData || [],
+    impressionsDistribution: impressionsDistribution || [],
+    isLoading: isLoadingKPIs || isLoadingTrend || isLoadingActivation || isLoadingActivationTrend || isLoadingHeatmap || isLoadingReach || isLoadingReachTrend || isLoadingDistribution,
   };
 }
