@@ -87,7 +87,7 @@ const translations = {
     connectionFailed: 'La connexion a échoué:',
     connectSlackToAssociate: 'Connectez votre workspace Slack pour associer ce profil à un membre de votre équipe',
     // Channel configuration
-    configureChannel: 'Configurer le canal',
+    configureChannel: 'Aucun canal défini',
     channelConfigured: 'Canal configuré',
     notificationsTo: 'Notifications vers',
     changeChannel: 'Modifier',
@@ -419,13 +419,13 @@ export default function Dashboard() {
                     <div>
                       <span className="text-xs text-muted-foreground uppercase tracking-wide">{t.notificationsTo.replace(' :', '')}</span>
                       <div className="flex items-center justify-between mt-1">
-                        {currentChannel && currentChannelName ? (
+                        {currentChannel ? (
                           <div className="flex items-center gap-1.5">
                             <Hash className="w-4 h-4 text-muted-foreground" />
-                            <span className="text-sm font-medium">{currentChannelName}</span>
+                            <span className="text-sm font-medium">{currentChannelName || currentChannel}</span>
                           </div>
                         ) : (
-                          <span className="text-sm text-amber-600 dark:text-amber-400">{t.configureChannel}</span>
+                          <span className="text-sm text-muted-foreground">{t.configureChannel}</span>
                         )}
                         <Dialog open={isChannelDialogOpen} onOpenChange={setIsChannelDialogOpen}>
                           <DialogTrigger asChild>
