@@ -178,26 +178,19 @@ export function OnboardingStep2({ onNext, onSkip, onConnectSlack, isSlackConnect
         {/* Sub-step 2: Channel Selection */}
         {subStep === 2 && (
           <>
-            {channelConfigured ? (
-              <div className="flex flex-col items-center justify-center gap-2 py-4">
-                <div className="flex items-center gap-2 text-green-600">
-                  <CheckCircle2 className="h-5 w-5" />
-                  <span className="font-medium">{t.channelSelected}</span>
-                </div>
-                {selectedChannelName && (
-                  <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                    <Hash className="w-4 h-4" />
-                    {selectedChannelName}
-                  </div>
-                )}
+            <SlackChannelSelector
+              isConnected={isSlackConnected}
+              onChannelSelected={handleChannelSelected}
+              language={language}
+              compact
+            />
+            
+            {/* Inline success message */}
+            {channelConfigured && selectedChannelName && (
+              <div className="flex items-center justify-center gap-2 py-2 text-green-600">
+                <CheckCircle2 className="h-4 w-4" />
+                <span className="text-sm font-medium">{t.channelSelected}</span>
               </div>
-            ) : (
-              <SlackChannelSelector
-                isConnected={isSlackConnected}
-                onChannelSelected={handleChannelSelected}
-                language={language}
-                compact
-              />
             )}
           </>
         )}
