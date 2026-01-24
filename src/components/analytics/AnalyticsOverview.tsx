@@ -9,8 +9,9 @@ import {
 import { LineChart, Line, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { KPICard } from './KPICard';
 import { PeriodSelector } from './PeriodSelector';
-import { overviewKPIs, trendData } from './mockData';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useAnalyticsData } from '@/hooks/useAnalyticsData';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const translations = {
   fr: {
@@ -59,6 +60,7 @@ export function AnalyticsOverview() {
   const [impressionsPeriod, setImpressionsPeriod] = useState<'6' | '12'>('6');
   const { language } = useLanguage();
   const t = translations[language];
+  const { overviewKPIs, trendData, isLoading } = useAnalyticsData();
 
   const postsData = postsPeriod === '6' ? trendData.slice(-6) : trendData;
   const impressionsData = impressionsPeriod === '6' ? trendData.slice(-6) : trendData;
