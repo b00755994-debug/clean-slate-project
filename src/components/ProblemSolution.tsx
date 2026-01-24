@@ -45,7 +45,7 @@ const ProblemSolution = () => {
       solutionPoints: [
         "Automatic Slack alerts for every post",
         "Centralize all posts in a unified Team Feed",
-        "Amplify reach and exposure to your target audience"
+        "Advanced team & audience analytics"
       ],
       metric: "average impressions"
     }
