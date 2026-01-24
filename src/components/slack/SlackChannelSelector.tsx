@@ -74,9 +74,9 @@ export function SlackChannelSelector({
   const handleInviteBot = () => {
     if (!selectedChannelId) return;
     
-    joinChannel(selectedChannelId, {
+    const channel = channels.find(c => c.id === selectedChannelId);
+    joinChannel({ channelId: selectedChannelId, isMember: channel?.is_member || false }, {
       onSuccess: (data) => {
-        const channel = channels.find(c => c.id === selectedChannelId);
         if (channel && onChannelSelected) {
           onChannelSelected(selectedChannelId, channel.name);
         }

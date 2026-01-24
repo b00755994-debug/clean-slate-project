@@ -44,7 +44,7 @@ export function useSlackChannels(isConnected: boolean) {
   });
 
   const joinChannelMutation = useMutation({
-    mutationFn: async (channelId: string) => {
+    mutationFn: async ({ channelId, isMember }: { channelId: string; isMember: boolean }) => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error('Not authenticated');
 
@@ -54,7 +54,7 @@ export function useSlackChannels(isConnected: boolean) {
           'Authorization': `Bearer ${session.access_token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ channelId }),
+        body: JSON.stringify({ channelId, isMember }),
       });
 
       if (!response.ok) {
