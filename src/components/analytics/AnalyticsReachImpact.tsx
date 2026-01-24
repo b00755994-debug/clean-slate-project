@@ -226,8 +226,8 @@ export function AnalyticsReachImpact() {
                   stroke="var(--color-engagementRate)"
                   strokeWidth={2}
                   strokeDasharray="5 5"
-                  dot={{ fill: 'var(--color-engagementRate)', strokeWidth: 2 }}
-                  activeDot={{ r: 6 }}
+                  dot={{ r: 4, fill: 'var(--color-engagementRate)', stroke: 'var(--color-engagementRate)', strokeWidth: 2 }}
+                  activeDot={{ r: 6, fill: 'var(--color-engagementRate)', stroke: 'white', strokeWidth: 2 }}
                 />
               </LineChart>
             </ChartContainer>
