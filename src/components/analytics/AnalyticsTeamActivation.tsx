@@ -12,6 +12,7 @@ import { PeriodSelector } from './PeriodSelector';
 import { PostingHeatmap } from './PostingHeatmap';
 import { postingHeatmapData } from './mockData';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useAnalyticsData } from '@/hooks/useAnalyticsData';
 
 const translations = {
   fr: {
@@ -64,33 +65,18 @@ const translations = {
   },
 };
 
-// 12 months of mock data for Team Activation
-const activationTimeData = [
-  { month: 'Jan', activeContributors: 6 },
-  { month: 'Fév', activeContributors: 7 },
-  { month: 'Mar', activeContributors: 8 },
-  { month: 'Avr', activeContributors: 8 },
-  { month: 'Mai', activeContributors: 9 },
-  { month: 'Juin', activeContributors: 10 },
-  { month: 'Juil', activeContributors: 9 },
-  { month: 'Août', activeContributors: 8 },
-  { month: 'Sep', activeContributors: 11 },
-  { month: 'Oct', activeContributors: 12 },
-  { month: 'Nov', activeContributors: 14 },
-  { month: 'Déc', activeContributors: 15 },
-];
-
-const monthKeyToIndex: Record<string, number> = {
-  'Jan': 0, 'Fév': 1, 'Mar': 2, 'Avr': 3, 'Mai': 4, 'Juin': 5,
-  'Juil': 6, 'Août': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Déc': 11,
-};
-
 export function AnalyticsTeamActivation() {
   const [activationPeriod, setActivationPeriod] = useState<'6' | '12'>('6');
   const { language } = useLanguage();
   const t = translations[language];
+  const { teamActivationKPIs, activationTrendData } = useAnalyticsData();
 
-  const activationData = activationPeriod === '6' ? activationTimeData.slice(-6) : activationTimeData;
+  const activationData = activationPeriod === '6' ? activationTrendData.slice(-6) : activationTrendData;
+
+  const monthKeyToIndex: Record<string, number> = {
+    'Jan': 0, 'Fév': 1, 'Mar': 2, 'Avr': 3, 'Mai': 4, 'Juin': 5,
+    'Juil': 6, 'Août': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Déc': 11,
+  };
 
   const translateMonth = (month: string) => {
     const index = monthKeyToIndex[month];
@@ -111,16 +97,16 @@ export function AnalyticsTeamActivation() {
         <KPICard
           icon={Users}
           label={t.kpis.activeContributorsCount}
-          value={15}
-          change={12}
+          value={teamActivationKPIs.activeContributorsCount.value}
+          change={teamActivationKPIs.activeContributorsCount.change}
           tooltip={t.tooltips.activeContributorsCount}
           color="blue"
         />
         <KPICard
           icon={Percent}
           label={t.kpis.activeContributorsPercent}
-          value={68}
-          change={8}
+          value={teamActivationKPIs.activeContributorsPercent.value}
+          change={teamActivationKPIs.activeContributorsPercent.change}
           tooltip={t.tooltips.activeContributorsPercent}
           color="blue"
           suffix="%"
@@ -128,16 +114,16 @@ export function AnalyticsTeamActivation() {
         <KPICard
           icon={FileText}
           label={t.kpis.postsPerContributor}
-          value="2.4"
-          change={5}
+          value={teamActivationKPIs.postsPerContributor.value}
+          change={teamActivationKPIs.postsPerContributor.change}
           tooltip={t.tooltips.postsPerContributor}
           color="violet"
         />
         <KPICard
           icon={CalendarCheck}
           label={t.kpis.postingRegularity}
-          value={42}
-          change={6}
+          value={teamActivationKPIs.postingRegularity.value}
+          change={teamActivationKPIs.postingRegularity.change}
           tooltip={t.tooltips.postingRegularity}
           color="emerald"
           suffix="%"
