@@ -64,7 +64,7 @@ export default function DashboardContent() {
   const [sortBy, setSortBy] = useState<'recent' | 'impressions' | 'reactions'>('recent');
   const [authorFilter, setAuthorFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [timePeriod, setTimePeriod] = useState<TimePeriod>('month');
+  const [timePeriod, setTimePeriod] = useState<TimePeriod>('all');
 
   // Get stats
   const { stats, loading: statsLoading } = useTeamFeedStats();
