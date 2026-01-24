@@ -45,7 +45,7 @@ const translations = {
   en: {
     kpis: {
       totalImpressions: 'Total Impressions',
-      avgImpressionsPerPost: 'Avg. Impressions / Post',
+      avgImpressionsPerPost: 'Impressions per Post',
       engagementRate: 'Engagement Rate',
       commentRate: 'Comment Rate',
     },
