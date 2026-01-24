@@ -59,17 +59,17 @@ export default function DashboardAnalytics() {
         {/* Tabs */}
         <Tabs defaultValue="overview" className="space-y-6">
           <TabsList className="grid w-full grid-cols-3 lg:w-auto lg:inline-grid">
-            <TabsTrigger value="overview" className="flex items-center gap-2">
+            <TabsTrigger value="overview" className="flex items-center gap-2 uppercase tracking-wide text-xs">
               <BarChart3 className="w-4 h-4" />
               <span className="hidden sm:inline">{t.tabs.overview}</span>
               <span className="sm:hidden">{t.tabs.overviewMobile}</span>
             </TabsTrigger>
-            <TabsTrigger value="activation" className="flex items-center gap-2">
+            <TabsTrigger value="activation" className="flex items-center gap-2 uppercase tracking-wide text-xs">
               <Activity className="w-4 h-4" />
               <span className="hidden sm:inline">{t.tabs.activation}</span>
               <span className="sm:hidden">{t.tabs.activationMobile}</span>
             </TabsTrigger>
-            <TabsTrigger value="reach" className="flex items-center gap-2">
+            <TabsTrigger value="reach" className="flex items-center gap-2 uppercase tracking-wide text-xs">
               <Zap className="w-4 h-4" />
               <span className="hidden sm:inline">{t.tabs.reach}</span>
               <span className="sm:hidden">{t.tabs.reachMobile}</span>
