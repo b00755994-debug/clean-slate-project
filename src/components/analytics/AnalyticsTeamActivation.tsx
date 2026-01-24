@@ -165,7 +165,12 @@ export function AnalyticsTeamActivation() {
                 <ChartTooltip
                   content={
                     <ChartTooltipContent
-                      formatter={(value) => [`${value} `, t.chart.contributors]}
+                      formatter={(value) => (
+                        <span className="flex items-center gap-1">
+                          <span className="text-muted-foreground">{t.chart.contributors}:</span>
+                          <span className="font-medium">{value}</span>
+                        </span>
+                      )}
                     />
                   }
                 />

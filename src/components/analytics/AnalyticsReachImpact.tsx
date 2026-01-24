@@ -196,12 +196,16 @@ export function AnalyticsReachImpact() {
                 <ChartTooltip
                   content={
                     <ChartTooltipContent
-                      formatter={(value, name) => {
-                        if (name === 'impressions') {
-                          return [`${Number(value).toLocaleString()} `, t.labels.impressions];
-                        }
-                        return [`${value} %`, t.kpis.engagementRate];
-                      }}
+                      formatter={(value, name) => (
+                        <span className="flex items-center gap-1">
+                          <span className="text-muted-foreground">
+                            {name === 'impressions' ? t.labels.impressions : t.kpis.engagementRate}:
+                          </span>
+                          <span className="font-medium">
+                            {name === 'impressions' ? Number(value).toLocaleString() : `${value} %`}
+                          </span>
+                        </span>
+                      )}
                     />
                   }
                 />
@@ -261,7 +265,12 @@ export function AnalyticsReachImpact() {
                 <ChartTooltip
                   content={
                     <ChartTooltipContent
-                      formatter={(value) => [`${value} `, t.labels.posts]}
+                      formatter={(value) => (
+                        <span className="flex items-center gap-1">
+                          <span className="text-muted-foreground">{t.labels.numberOfPosts}:</span>
+                          <span className="font-medium">{value}</span>
+                        </span>
+                      )}
                     />
                   }
                 />

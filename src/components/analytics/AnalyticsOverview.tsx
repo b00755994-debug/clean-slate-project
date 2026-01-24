@@ -158,7 +158,12 @@ export function AnalyticsOverview() {
                 <ChartTooltip
                   content={
                     <ChartTooltipContent
-                      formatter={(value) => [`${value} `, 'Posts']}
+                      formatter={(value) => (
+                        <span className="flex items-center gap-1">
+                          <span className="text-muted-foreground">Posts:</span>
+                          <span className="font-medium">{value}</span>
+                        </span>
+                      )}
                     />
                   }
                 />
@@ -209,7 +214,12 @@ export function AnalyticsOverview() {
                 <ChartTooltip
                   content={
                     <ChartTooltipContent
-                      formatter={(value) => [`${Number(value).toLocaleString()} `, 'Impressions']}
+                      formatter={(value) => (
+                        <span className="flex items-center gap-1">
+                          <span className="text-muted-foreground">Impressions:</span>
+                          <span className="font-medium">{Number(value).toLocaleString()}</span>
+                        </span>
+                      )}
                     />
                   }
                 />
