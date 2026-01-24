@@ -367,7 +367,7 @@ export default function Dashboard() {
           {/* Plan Section */}
           <Card className="border-border/50 shadow-md flex flex-col">
             <CardHeader className="pb-3">
-              <CardTitle className="text-lg flex items-center gap-2 uppercase tracking-wide">
+              <CardTitle className="text-lg flex items-center gap-2">
                 <Crown className="w-5 h-5 text-accent" />
                 {t.myPlan}
               </CardTitle>
@@ -389,7 +389,7 @@ export default function Dashboard() {
             <CardHeader className="pb-4">
               <div className="flex items-center gap-2">
                 <img src={slackLogo} alt="Slack" className="w-5 h-5" />
-                <CardTitle className="text-lg uppercase tracking-wide">Slack</CardTitle>
+                <CardTitle className="text-lg">Slack</CardTitle>
                 {slackWorkspace?.is_connected && (
                   <div className="flex items-center gap-1.5 ml-auto">
                     <div className="w-2 h-2 rounded-full bg-green-500" />
@@ -480,7 +480,7 @@ export default function Dashboard() {
           <Card className="border-border/50 shadow-md">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-lg flex items-center gap-2 uppercase tracking-wide">
+                <CardTitle className="text-lg flex items-center gap-2">
                   <Linkedin className="w-5 h-5 text-[#0A66C2]" />
                   {t.summary}
                 </CardTitle>
