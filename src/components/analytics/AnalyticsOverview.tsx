@@ -217,7 +217,7 @@ export function AnalyticsOverview() {
                       formatter={(value) => (
                         <span className="flex items-center gap-1">
                           <span className="text-muted-foreground">Impressions:</span>
-                          <span className="font-medium">{Number(value).toLocaleString()}</span>
+                          <span className="font-medium">{(Math.round(Number(value) / 100) * 100).toLocaleString()}</span>
                         </span>
                       )}
                     />
