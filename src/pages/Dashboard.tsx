@@ -391,108 +391,97 @@ export default function Dashboard() {
 
           {/* Slack Integration */}
           <Card id="slack-integration-card" className="border-border/50 shadow-md transition-all duration-300 flex flex-col">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <img src={slackLogo} alt="Slack" className="w-5 h-5" />
-                  Slack
-                </CardTitle>
-                {slackWorkspace?.is_connected ? (
-                  <Badge variant="outline" className="text-success border-success">
-                    <CheckCircle2 className="w-3 h-3 mr-1" />
-                    {t.connected}
-                  </Badge>
-                ) : (
-                  <Badge variant="outline" className="text-muted-foreground">
-                    <XCircle className="w-3 h-3 mr-1" />
-                    {t.notConnected}
-                  </Badge>
+            <CardHeader className="pb-4">
+              <div className="flex items-center gap-2">
+                <img src={slackLogo} alt="Slack" className="w-5 h-5" />
+                <CardTitle className="text-lg">Slack</CardTitle>
+                {slackWorkspace?.is_connected && (
+                  <div className="flex items-center gap-1.5 ml-auto">
+                    <div className="w-2 h-2 rounded-full bg-green-500" />
+                    <span className="text-xs text-muted-foreground">{t.connected}</span>
+                  </div>
                 )}
               </div>
             </CardHeader>
-            <CardContent className="flex flex-col flex-grow">
+            <CardContent className="flex flex-col flex-grow pt-0">
               {slackWorkspace?.is_connected ? (
-                <div className="space-y-3 mb-4">
-                  <p className="text-sm text-muted-foreground">
-                    {t.connectedTo} <strong>{slackWorkspace.workspace_name}</strong>
-                    {slackMembers.length > 0 ? (
-                      <span className="block text-xs mt-1">
-                        {slackMembers.length} {t.membersIdentified}
-                      </span>
-                    ) : isLoadingMembers ? (
-                      <span className="block text-xs mt-1 text-muted-foreground">
-                        {t.loadingMembers}
-                      </span>
-                    ) : (
-                      <span className="block text-xs mt-1 text-amber-500">
-                        {t.noMembersFound}
-                      </span>
-                    )}
-                  </p>
+                <div className="flex flex-col flex-grow">
+                  {/* Workspace info */}
+                  <div className="space-y-4">
+                    <div>
+                      <span className="text-xs text-muted-foreground uppercase tracking-wide">Workspace</span>
+                      <p className="text-sm font-medium mt-0.5">{slackWorkspace.workspace_name}</p>
+                    </div>
+                    
+                    <div className="h-px bg-border/50" />
+                    
+                    {/* Channel config */}
+                    <div>
+                      <span className="text-xs text-muted-foreground uppercase tracking-wide">{t.notificationsTo.replace(' :', '')}</span>
+                      <div className="flex items-center justify-between mt-1">
+                        {currentChannel && currentChannelName ? (
+                          <div className="flex items-center gap-1.5">
+                            <Hash className="w-4 h-4 text-muted-foreground" />
+                            <span className="text-sm font-medium">{currentChannelName}</span>
+                          </div>
+                        ) : (
+                          <span className="text-sm text-amber-600 dark:text-amber-400">{t.configureChannel}</span>
+                        )}
+                        <Dialog open={isChannelDialogOpen} onOpenChange={setIsChannelDialogOpen}>
+                          <DialogTrigger asChild>
+                            <Button variant="ghost" size="sm" className="h-7 text-xs text-muted-foreground hover:text-foreground">
+                              {currentChannel ? t.changeChannel : t.chooseChannel}
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent>
+                            <DialogHeader>
+                              <DialogTitle>{t.channelDialogTitle}</DialogTitle>
+                              <DialogDescription>{t.channelDialogDescription}</DialogDescription>
+                            </DialogHeader>
+                            <SlackChannelSelector
+                              isConnected={slackWorkspace?.is_connected || false}
+                              onChannelSelected={(channelId, channelName) => {
+                                setIsChannelDialogOpen(false);
+                                toast({
+                                  title: t.channelUpdated,
+                                  description: `${t.channelUpdatedDescription} #${channelName}`
+                                });
+                              }}
+                              language={language}
+                            />
+                          </DialogContent>
+                        </Dialog>
+                      </div>
+                    </div>
+                  </div>
                   
-                  {/* Channel configuration section */}
-                  <div className="flex items-center justify-between p-2 bg-muted/50 rounded-md">
-                    {currentChannel && currentChannelName ? (
-                      <div className="flex items-center gap-2 text-sm">
-                        <Hash className="w-4 h-4 text-muted-foreground" />
-                        <span>{t.notificationsTo} <strong>#{currentChannelName}</strong></span>
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2 text-sm text-amber-600 dark:text-amber-400">
-                        <Hash className="w-4 h-4" />
-                        <span>{t.configureChannel}</span>
-                      </div>
-                    )}
-                    <Dialog open={isChannelDialogOpen} onOpenChange={setIsChannelDialogOpen}>
-                      <DialogTrigger asChild>
-                        <Button variant="ghost" size="sm" className="h-7 text-xs">
-                          {currentChannel ? t.changeChannel : t.chooseChannel}
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>{t.channelDialogTitle}</DialogTitle>
-                          <DialogDescription>{t.channelDialogDescription}</DialogDescription>
-                        </DialogHeader>
-                        <SlackChannelSelector
-                          isConnected={slackWorkspace?.is_connected || false}
-                          onChannelSelected={(channelId, channelName) => {
-                            setIsChannelDialogOpen(false);
-                            toast({
-                              title: t.channelUpdated,
-                              description: `${t.channelUpdatedDescription} #${channelName}`
-                            });
-                          }}
-                          language={language}
-                        />
-                      </DialogContent>
-                    </Dialog>
+                  {/* Actions */}
+                  <div className="mt-auto pt-6 space-y-3">
+                    <Button size="sm" className="w-full gap-2 bg-[#4A154B] hover:bg-[#3a1039] text-white" asChild>
+                      <a href="slack://open" target="_blank" rel="noopener noreferrer">
+                        <img src={slackLogo} alt="" className="w-4 h-4" />
+                        {t.openSlack}
+                      </a>
+                    </Button>
+                    <button 
+                      onClick={handleDisconnectSlack}
+                      className="w-full text-xs text-muted-foreground/60 hover:text-destructive transition-colors"
+                    >
+                      {t.disconnect}
+                    </button>
                   </div>
                 </div>
               ) : (
-                <p className="text-sm text-muted-foreground mb-4">
-                  {t.connectSlackDescription}
-                </p>
-              )}
-              {slackWorkspace?.is_connected ? (
-                <div className="flex gap-2 mt-auto pt-2">
-                  <Button size="sm" className="gap-2 flex-1 bg-[#4A154B] hover:bg-[#3a1039] text-white" asChild>
-                    <a href="slack://open" target="_blank" rel="noopener noreferrer">
-                      <img src={slackLogo} alt="Slack" className="w-4 h-4" />
-                      {t.openSlack}
-                    </a>
-                  </Button>
-                  <Button size="sm" className="gap-1.5 flex-1 bg-destructive/10 border border-destructive/20 text-destructive hover:bg-destructive/20" onClick={handleDisconnectSlack}>
-                    <LogOut className="w-3.5 h-3.5" />
-                    {t.disconnect}
-                  </Button>
-                </div>
-              ) : (
-                <div className="mt-auto pt-4">
-                  <Button size="sm" className="w-full gap-2 bg-[#4A154B] hover:bg-[#3a1039] text-white" onClick={handleConnectSlack}>
-                    <img src={slackLogo} alt="Slack" className="w-4 h-4" />
-                    {t.connectSlack}
-                  </Button>
+                <div className="flex flex-col flex-grow">
+                  <p className="text-sm text-muted-foreground">
+                    {t.connectSlackDescription}
+                  </p>
+                  <div className="mt-auto pt-6">
+                    <Button size="sm" className="w-full gap-2 bg-[#4A154B] hover:bg-[#3a1039] text-white" onClick={handleConnectSlack}>
+                      <img src={slackLogo} alt="" className="w-4 h-4" />
+                      {t.connectSlack}
+                    </Button>
+                  </div>
                 </div>
               )}
             </CardContent>
