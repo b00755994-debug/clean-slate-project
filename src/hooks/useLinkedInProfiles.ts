@@ -2,6 +2,30 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
+import { z } from 'zod';
+
+// Validation schemas for LinkedIn profile data
+const linkedinUrlSchema = z.string()
+  .min(1, 'URL LinkedIn requise')
+  .url('URL invalide')
+  .refine(
+    (url) => {
+      try {
+        const parsed = new URL(url);
+        return parsed.protocol === 'https:' && 
+               (parsed.hostname === 'linkedin.com' || 
+                parsed.hostname === 'www.linkedin.com' ||
+                parsed.hostname.endsWith('.linkedin.com'));
+      } catch {
+        return false;
+      }
+    },
+    'Doit être une URL LinkedIn valide (https://linkedin.com ou https://www.linkedin.com)'
+  );
+
+const profileNameSchema = z.string()
+  .min(1, 'Le nom ne peut pas être vide')
+  .max(100, 'Le nom ne peut pas dépasser 100 caractères');
 
 interface LinkedInProfile {
   id: string;
@@ -64,10 +88,24 @@ export function useLinkedInProfiles() {
       linkedinUrl: string;
       slackUserId?: string;
     }) => {
+      // Validate inputs before database insert
+      const trimmedName = profileName.trim();
+      const trimmedUrl = linkedinUrl.trim();
+      
+      try {
+        profileNameSchema.parse(trimmedName);
+        linkedinUrlSchema.parse(trimmedUrl);
+      } catch (e) {
+        if (e instanceof z.ZodError) {
+          throw new Error(e.errors[0].message);
+        }
+        throw e;
+      }
+
       const { error } = await supabase.from('billable_users').insert({
         user_id: user?.id,
-        profile_name: profileName.trim(),
-        linkedin_url: linkedinUrl.trim(),
+        profile_name: trimmedName,
+        linkedin_url: trimmedUrl,
         slack_user_id: slackUserId || null,
       });
 
@@ -77,8 +115,8 @@ export function useLinkedInProfiles() {
       queryClient.invalidateQueries({ queryKey: ['linkedin-profiles', user?.id] });
       toast.success('Le profil LinkedIn a été ajouté avec succès');
     },
-    onError: () => {
-      toast.error("Impossible d'ajouter le profil");
+    onError: (error: Error) => {
+      toast.error(error.message || "Impossible d'ajouter le profil");
     },
   });
 

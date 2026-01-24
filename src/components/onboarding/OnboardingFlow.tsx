@@ -10,6 +10,30 @@ import { useWorkspace } from '@/hooks/useWorkspace';
 import { useSlackMembers } from '@/hooks/useSlackMembers';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { z } from 'zod';
+
+// Validation schemas for LinkedIn profile data
+const linkedinUrlSchema = z.string()
+  .min(1, 'URL LinkedIn requise')
+  .url('URL invalide')
+  .refine(
+    (url) => {
+      try {
+        const parsed = new URL(url);
+        return parsed.protocol === 'https:' && 
+               (parsed.hostname === 'linkedin.com' || 
+                parsed.hostname === 'www.linkedin.com' ||
+                parsed.hostname.endsWith('.linkedin.com'));
+      } catch {
+        return false;
+      }
+    },
+    'Doit être une URL LinkedIn valide'
+  );
+
+const profileNameSchema = z.string()
+  .min(1, 'Le nom ne peut pas être vide')
+  .max(100, 'Le nom ne peut pas dépasser 100 caractères');
 
 interface LinkedInProfileInput {
   id: string;
@@ -117,12 +141,27 @@ export function OnboardingFlow() {
   };
 
   const handleStep3Complete = async (profiles: LinkedInProfileInput[]) => {
-    // Add LinkedIn profiles
+    // Add LinkedIn profiles with validation
     for (const profile of profiles) {
+      const trimmedName = `${profile.firstName} ${profile.lastName}`.trim();
+      const trimmedUrl = profile.linkedinUrl.trim();
+      
+      // Validate before inserting
+      try {
+        profileNameSchema.parse(trimmedName);
+        linkedinUrlSchema.parse(trimmedUrl);
+      } catch (e) {
+        if (e instanceof z.ZodError) {
+          toast.error(e.errors[0].message);
+          continue; // Skip invalid profiles
+        }
+        continue;
+      }
+      
       const { error } = await supabase.from('billable_users').insert({
         user_id: user?.id,
-        profile_name: `${profile.firstName} ${profile.lastName}`.trim(),
-        linkedin_url: profile.linkedinUrl.trim(),
+        profile_name: trimmedName,
+        linkedin_url: trimmedUrl,
         slack_user_id: profile.slackUserId,
       });
 
