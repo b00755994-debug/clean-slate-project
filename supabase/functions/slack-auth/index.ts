@@ -66,7 +66,7 @@ serve(async (req) => {
     }
 
     const redirectUri = 'https://hvmrjymweajxxkoiupzf.supabase.co/functions/v1/slack-callback';
-    const scopes = ['users:read', 'users:read.email', 'team:read', 'chat:write'];
+    const scopes = ['users:read', 'users:read.email', 'team:read', 'chat:write', 'channels:read', 'channels:join'];
     
     // Encode userId and redirectUrl in state (base64 JSON)
     const stateData = JSON.stringify({ userId, redirectUrl });

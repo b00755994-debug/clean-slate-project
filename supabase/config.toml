@@ -8,3 +8,9 @@ verify_jwt = false
 
 [functions.slack-members]
 verify_jwt = false
+
+[functions.slack-channels]
+verify_jwt = false
+
+[functions.slack-join-channel]
+verify_jwt = false
