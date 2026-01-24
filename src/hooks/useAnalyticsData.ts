@@ -56,7 +56,7 @@ export function useAnalyticsData() {
 
       // Calculate current period metrics
       const currentTotalPosts = currentPosts?.length || 0;
-      const currentTotalImpressions = currentPosts?.reduce((sum, p) => sum + (Number(p.impressions) || 0), 0) || 0;
+      const currentTotalImpressions = Math.round((currentPosts?.reduce((sum, p) => sum + (Number(p.impressions) || 0), 0) || 0) / 100) * 100;
       const currentActiveContributors = new Set(currentPosts?.map(p => p.linkedin_profiles).filter(Boolean)).size;
       const currentAvgPosts = currentActiveContributors > 0 
         ? Math.round((currentTotalPosts / currentActiveContributors) * 10) / 10 
@@ -64,7 +64,7 @@ export function useAnalyticsData() {
 
       // Calculate previous period metrics
       const previousTotalPosts = previousPosts?.length || 0;
-      const previousTotalImpressions = previousPosts?.reduce((sum, p) => sum + (Number(p.impressions) || 0), 0) || 0;
+      const previousTotalImpressions = Math.round((previousPosts?.reduce((sum, p) => sum + (Number(p.impressions) || 0), 0) || 0) / 100) * 100;
       const previousActiveContributors = new Set(previousPosts?.map(p => p.linkedin_profiles).filter(Boolean)).size;
       const previousAvgPosts = previousActiveContributors > 0 
         ? Math.round((previousTotalPosts / previousActiveContributors) * 10) / 10 
