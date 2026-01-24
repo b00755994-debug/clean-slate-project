@@ -130,64 +130,51 @@ export function OnboardingStep3({
 
   const validCount = profiles.filter(isProfileComplete).length;
 
-  // Calculate grid columns based on Slack connection
+  // Calculate grid columns based on Slack connection - fluid proportions
   const gridCols = isSlackConnected && slackMembers.length > 0 
-    ? "grid-cols-[140px_140px_1fr_160px_40px]" 
-    : "grid-cols-[140px_140px_1fr_40px]";
+    ? "grid-cols-[1fr_1fr_2fr_1fr_auto]" 
+    : "grid-cols-[1fr_1fr_2fr_auto]";
 
   return (
-    <Card className="border-2 shadow-xl">
-      <CardHeader className="text-center pb-2">
+    <Card className="border-2 shadow-xl max-w-2xl mx-auto">
+      <CardHeader className="text-center pb-4">
         <div className="mx-auto w-12 h-12 bg-[#0A66C2]/10 rounded-full flex items-center justify-center mb-4">
           <Linkedin className="h-6 w-6 text-[#0A66C2]" />
         </div>
         <CardTitle className="text-2xl">{t.title}</CardTitle>
         <CardDescription className="text-base">{t.description}</CardDescription>
-        {validCount > 0 && (
-          <div className="flex items-center justify-center gap-1.5 mt-2 text-green-600 text-sm font-medium">
-            <CheckCircle2 className="h-4 w-4" />
-            <span>{validCount} {t.profilesReady}</span>
-          </div>
-        )}
       </CardHeader>
-      <CardContent className="space-y-5 pt-4 px-6">
-        {/* Header row */}
-        <div className={cn("grid gap-3 text-xs text-muted-foreground px-1", gridCols)}>
-          <span>{t.firstName}</span>
-          <span>{t.lastName}</span>
-          <span>{t.url}</span>
-          {isSlackConnected && slackMembers.length > 0 && <span>{t.slack}</span>}
-          <span></span>
-        </div>
-
-        {/* Profile rows */}
-        <div className="space-y-3">
+      <CardContent className="space-y-4 pt-2 px-6">
+        {/* Profile rows - no headers, just inputs */}
+        <div className="space-y-2">
           {profiles.map((profile) => (
             <div
               key={profile.id}
               className={cn(
-                "grid gap-3 items-center py-2 px-1 rounded-md transition-colors",
+                "group grid gap-3 items-center py-2 px-3 rounded-lg transition-all",
                 gridCols,
-                isProfileComplete(profile) && "bg-green-50/50 dark:bg-green-950/20"
+                isProfileComplete(profile) 
+                  ? "border-l-2 border-l-green-500/60 bg-green-50/30 dark:bg-green-950/10" 
+                  : "border-l-2 border-l-transparent"
               )}
             >
               <Input
                 ref={(el) => {
                   if (el) inputRefs.current.set(`firstName-${profile.id}`, el);
                 }}
-                className="h-10"
-                placeholder="Jean"
+                className="h-10 border-muted/60"
+                placeholder={t.firstName}
                 value={profile.firstName}
                 onChange={(e) => updateProfile(profile.id, 'firstName', e.target.value)}
               />
               <Input
-                className="h-10"
-                placeholder="Dupont"
+                className="h-10 border-muted/60"
+                placeholder={t.lastName}
                 value={profile.lastName}
                 onChange={(e) => updateProfile(profile.id, 'lastName', e.target.value)}
               />
               <Input
-                className="h-10"
+                className="h-10 border-muted/60"
                 placeholder="linkedin.com/in/..."
                 value={profile.linkedinUrl}
                 onChange={(e) => updateProfile(profile.id, 'linkedinUrl', e.target.value)}
@@ -199,8 +186,8 @@ export function OnboardingStep3({
                     updateProfile(profile.id, 'slackUserId', value === 'none' ? null : value)
                   }
                 >
-                  <SelectTrigger className="h-10">
-                    <SelectValue placeholder="—" />
+                  <SelectTrigger className="h-10 border-muted/60">
+                    <SelectValue placeholder={t.noSlackUser} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none">{t.noSlackUser}</SelectItem>
@@ -223,10 +210,10 @@ export function OnboardingStep3({
               <button
                 type="button"
                 className={cn(
-                  "w-10 h-10 flex items-center justify-center rounded-md transition-colors",
+                  "w-8 h-8 flex items-center justify-center rounded-md transition-all",
                   profiles.length > 1 
-                    ? "text-muted-foreground/50 hover:text-destructive hover:bg-destructive/10" 
-                    : "text-transparent cursor-default"
+                    ? "opacity-0 group-hover:opacity-100 text-muted-foreground/50 hover:text-destructive hover:bg-destructive/10" 
+                    : "opacity-0 pointer-events-none"
                 )}
                 onClick={() => removeProfile(profile.id)}
                 disabled={profiles.length <= 1}
@@ -237,11 +224,11 @@ export function OnboardingStep3({
           ))}
         </div>
 
-        {/* Add button */}
+        {/* Add profile - simple text link */}
         <button
           type="button"
           onClick={addProfile}
-          className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors py-2 px-1"
+          className="flex items-center gap-1.5 text-sm text-muted-foreground/70 hover:text-primary transition-colors py-1 px-3"
         >
           <Plus className="h-4 w-4" />
           {t.addProfile}
@@ -261,7 +248,14 @@ export function OnboardingStep3({
                 {t.completing}
               </>
             ) : (
-              t.complete
+              <>
+                {t.complete}
+                {validCount > 0 && (
+                  <span className="ml-1.5 text-primary-foreground/80">
+                    ({validCount})
+                  </span>
+                )}
+              </>
             )}
           </Button>
           <div className="flex justify-center">
