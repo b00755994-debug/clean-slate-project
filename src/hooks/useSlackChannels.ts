@@ -65,10 +65,17 @@ export function useSlackChannels(isConnected: boolean) {
       return response.json();
     },
     onSuccess: (data) => {
-      // Update the currentChannel in the cache
+      // Update the currentChannel and is_member in the cache
       queryClient.setQueryData(['slack-channels'], (old: ChannelsResponse | undefined) => {
         if (!old) return old;
-        return { ...old, currentChannel: data.channelId };
+        return { 
+          ...old, 
+          currentChannel: data.channelId,
+          // Mark the channel as having the bot as member
+          channels: old.channels.map(ch => 
+            ch.id === data.channelId ? { ...ch, is_member: true } : ch
+          )
+        };
       });
       // Invalidate workspace to refresh channel info
       queryClient.invalidateQueries({ queryKey: ['workspace'] });
