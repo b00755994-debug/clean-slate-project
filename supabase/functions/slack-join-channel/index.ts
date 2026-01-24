@@ -37,7 +37,7 @@ serve(async (req) => {
     }
 
     // Parse request body
-    const { channelId } = await req.json();
+    const { channelId, isMember } = await req.json();
     if (!channelId) {
       return new Response(
         JSON.stringify({ error: 'Channel ID is required' }),
@@ -84,27 +84,33 @@ serve(async (req) => {
       );
     }
 
-    // Join the channel via Slack API
-    const joinResponse = await fetch('https://slack.com/api/conversations.join', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${slackAuth.token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ channel: channelId }),
-    });
+    // Only try to join if bot is not already a member
+    if (!isMember) {
+      const joinResponse = await fetch('https://slack.com/api/conversations.join', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${slackAuth.token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ channel: channelId }),
+      });
 
-    const joinData = await joinResponse.json();
+      const joinData = await joinResponse.json();
 
-    if (!joinData.ok) {
-      // Some errors are acceptable (already in channel)
-      if (joinData.error !== 'already_in_channel') {
-        console.error('Slack join error:', joinData.error);
-        return new Response(
-          JSON.stringify({ error: `Failed to join channel: ${joinData.error}` }),
-          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
+      if (!joinData.ok) {
+        // Some errors are acceptable (already in channel, or missing scope if already member)
+        const acceptableErrors = ['already_in_channel', 'missing_scope'];
+        if (!acceptableErrors.includes(joinData.error)) {
+          console.error('Slack join error:', joinData.error);
+          return new Response(
+            JSON.stringify({ error: `Failed to join channel: ${joinData.error}` }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+        console.log(`Skipping join due to: ${joinData.error}`);
       }
+    } else {
+      console.log(`Bot already member of channel ${channelId}, skipping join`);
     }
 
     // Update the post_channel in slack_workspace_auth
