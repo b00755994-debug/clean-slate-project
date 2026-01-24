@@ -6,6 +6,7 @@ interface HeatmapCell {
   day: string;
   hour: string;
   count: number;
+  impressions: number;
 }
 
 interface PostingHeatmapProps {
@@ -62,40 +63,44 @@ export function PostingHeatmap({ data }: PostingHeatmapProps) {
   const DAYS_KEYS = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
   const HOURS_KEYS = ['6h', '8h', '10h', '12h', '14h', '16h', '18h', '20h'];
 
-  const { grid, maxCount, topPerformingSlots } = useMemo(() => {
+  const { grid, impressionsGrid, maxCount, topPerformingSlots } = useMemo(() => {
     const grid: Record<string, Record<string, number>> = {};
+    const impressionsGrid: Record<string, Record<string, number>> = {};
     let maxCount = 0;
 
-    // Initialize grid with French keys (matching data)
+    // Initialize grids with French keys (matching data)
     DAYS_KEYS.forEach(day => {
       grid[day] = {};
+      impressionsGrid[day] = {};
       HOURS_KEYS.forEach(hour => {
         grid[day][hour] = 0;
+        impressionsGrid[day][hour] = 0;
       });
     });
 
-    // Fill with data and collect all cells with counts
-    const allCells: { day: string; hour: string; count: number }[] = [];
+    // Fill with data and collect all cells with impressions
+    const allCells: { day: string; hour: string; count: number; impressions: number }[] = [];
     data.forEach(cell => {
       if (grid[cell.day] && grid[cell.day][cell.hour] !== undefined) {
         grid[cell.day][cell.hour] = cell.count;
+        impressionsGrid[cell.day][cell.hour] = cell.impressions;
         if (cell.count > maxCount) maxCount = cell.count;
-        if (cell.count > 0) {
-          allCells.push({ day: cell.day, hour: cell.hour, count: cell.count });
+        if (cell.impressions > 0) {
+          allCells.push({ day: cell.day, hour: cell.hour, count: cell.count, impressions: cell.impressions });
         }
       }
     });
 
-    // Find top 3 performing slots (highest counts)
+    // Find top 3 performing slots by IMPRESSIONS (not count)
     const topPerformingSlots = new Set<string>();
     allCells
-      .sort((a, b) => b.count - a.count)
+      .sort((a, b) => b.impressions - a.impressions)
       .slice(0, 3)
       .forEach(cell => {
         topPerformingSlots.add(`${cell.day}-${cell.hour}`);
       });
 
-    return { grid, maxCount, topPerformingSlots };
+    return { grid, impressionsGrid, maxCount, topPerformingSlots };
   }, [data]);
 
   return (
@@ -136,7 +141,7 @@ export function PostingHeatmap({ data }: PostingHeatmapProps) {
                         className={`flex-1 rounded-sm ${colorClass} transition-colors cursor-default min-h-[18px] ${
                           isTopPerforming ? 'ring-2 ring-orange-500 ring-offset-1 ring-offset-background' : ''
                         }`}
-                        onMouseEnter={() => setHoveredCell({ day: dayKey, hour: hourKey, count })}
+                        onMouseEnter={() => setHoveredCell({ day: dayKey, hour: hourKey, count, impressions: impressionsGrid[dayKey][hourKey] })}
                         onMouseLeave={() => setHoveredCell(null)}
                         role="gridcell"
                         aria-label={`${t.days[dayIndex]} ${t.hours[hourIndex]}: ${count} ${count !== 1 ? t.posts : t.post}${isTopPerforming ? ` - ${t.bestPerformance}` : ''}`}
@@ -145,6 +150,7 @@ export function PostingHeatmap({ data }: PostingHeatmapProps) {
                     <TooltipContent>
                       <p className="text-sm font-medium">{t.days[dayIndex]} {t.hours[hourIndex]}</p>
                       <p className="text-xs text-muted-foreground">{count} {count !== 1 ? t.posts : t.post}</p>
+                      <p className="text-xs text-muted-foreground">{impressionsGrid[dayKey][hourKey].toLocaleString()} impressions</p>
                       {isTopPerforming && (
                         <p className="text-xs text-orange-500 font-medium mt-1">🔥 {t.bestPerformance}</p>
                       )}
