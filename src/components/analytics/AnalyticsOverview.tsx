@@ -35,7 +35,7 @@ const translations = {
     totalPosts: 'Total Posts',
     totalImpressions: 'Total Impressions',
     activeContributors: 'Active Contributors',
-    avgPostsPerContributor: 'Avg. Posts/Contributor',
+    avgPostsPerContributor: 'Posts per Contributor',
     tooltips: {
       totalPosts: 'Total number of LinkedIn posts published by connected team members during the selected period.',
       totalImpressions: 'Total number of times these posts were displayed on LinkedIn (aggregated).',
