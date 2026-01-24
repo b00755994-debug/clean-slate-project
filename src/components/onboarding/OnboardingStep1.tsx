@@ -37,6 +37,9 @@ const translations = {
       founder: "Fondateur / CEO",
       marketing: "Marketing",
       sales: "Commercial",
+      product: "Product / PM",
+      communication: "Communication / RP",
+      growth: "Growth / Acquisition",
       hr: "Ressources Humaines",
       other: "Autre",
     },
@@ -53,8 +56,12 @@ const translations = {
     channelPlaceholder: "Sélectionnez une option",
     channels: {
       linkedin: "LinkedIn",
+      twitter: "Twitter / X",
       wordOfMouth: "Bouche à oreille",
       google: "Recherche Google",
+      newsletter: "Newsletter",
+      podcast: "Podcast",
+      event: "Événement / Conférence",
       other: "Autre",
     },
     next: "Continuer",
@@ -71,6 +78,9 @@ const translations = {
       founder: "Founder / CEO",
       marketing: "Marketing",
       sales: "Sales",
+      product: "Product / PM",
+      communication: "Communication / PR",
+      growth: "Growth / Acquisition",
       hr: "Human Resources",
       other: "Other",
     },
@@ -87,8 +97,12 @@ const translations = {
     channelPlaceholder: "Select an option",
     channels: {
       linkedin: "LinkedIn",
+      twitter: "Twitter / X",
       wordOfMouth: "Word of mouth",
       google: "Google Search",
+      newsletter: "Newsletter",
+      podcast: "Podcast",
+      event: "Event / Conference",
       other: "Other",
     },
     next: "Continue",
@@ -148,6 +162,9 @@ export function OnboardingStep1({ onNext, onSkip, language }: OnboardingStep1Pro
               <SelectItem value="founder">{t.roles.founder}</SelectItem>
               <SelectItem value="marketing">{t.roles.marketing}</SelectItem>
               <SelectItem value="sales">{t.roles.sales}</SelectItem>
+              <SelectItem value="product">{t.roles.product}</SelectItem>
+              <SelectItem value="communication">{t.roles.communication}</SelectItem>
+              <SelectItem value="growth">{t.roles.growth}</SelectItem>
               <SelectItem value="hr">{t.roles.hr}</SelectItem>
               <SelectItem value="other">{t.roles.other}</SelectItem>
             </SelectContent>
@@ -190,8 +207,12 @@ export function OnboardingStep1({ onNext, onSkip, language }: OnboardingStep1Pro
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="linkedin">{t.channels.linkedin}</SelectItem>
+              <SelectItem value="twitter">{t.channels.twitter}</SelectItem>
               <SelectItem value="wordOfMouth">{t.channels.wordOfMouth}</SelectItem>
               <SelectItem value="google">{t.channels.google}</SelectItem>
+              <SelectItem value="newsletter">{t.channels.newsletter}</SelectItem>
+              <SelectItem value="podcast">{t.channels.podcast}</SelectItem>
+              <SelectItem value="event">{t.channels.event}</SelectItem>
               <SelectItem value="other">{t.channels.other}</SelectItem>
             </SelectContent>
           </Select>

@@ -153,6 +153,18 @@ All colors MUST be HSL.
   }
 }
 
+/* Lighter placeholder text for better differentiation */
+@layer base {
+  ::placeholder {
+    color: hsl(215 16% 65%) !important;
+    opacity: 1;
+  }
+  
+  [data-placeholder] {
+    color: hsl(215 16% 65%) !important;
+  }
+}
+
 @layer base {
   * {
     @apply border-border;
