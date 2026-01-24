@@ -100,7 +100,7 @@ export function PostingHeatmap({ data }: PostingHeatmapProps) {
 
   return (
     <TooltipProvider delayDuration={100}>
-      <div className="w-full h-[235px] flex flex-col">
+      <div className="w-full h-[225px] flex flex-col">
         {/* Grid */}
         <div className="flex flex-col gap-0.5 flex-1">
           {/* Header row - Days */}
