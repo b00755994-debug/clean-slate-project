@@ -193,10 +193,10 @@ export default function Dashboard() {
   const { linkedinProfiles, addProfile, isAddingProfile, deleteProfile, updateSlackUser } = useLinkedInProfiles();
   const { data: slackMembers = [], isLoading: isLoadingMembers, isFetching: isSlackMembersFetching } = useSlackMembers(slackWorkspace?.is_connected || false);
   const { stats: teamStats } = useTeamFeedStats();
-  const { channels, currentChannel, isLoading: isLoadingChannels } = useSlackChannels(slackWorkspace?.is_connected || false);
+  const { channels, currentChannel, isLoading: isLoadingChannels, isFetching: isChannelsFetching } = useSlackChannels(slackWorkspace?.is_connected || false);
   
   // Show syncing indicator only when fetching in background (not initial load)
-  const isSyncing = (isWorkspaceFetching && !isWorkspaceLoading) || (isSlackMembersFetching && !isLoadingMembers);
+  const isSyncing = (isWorkspaceFetching && !isWorkspaceLoading) || (isSlackMembersFetching && !isLoadingMembers) || (isChannelsFetching && !isLoadingChannels);
   
   const [newProfileName, setNewProfileName] = useState('');
   const [newProfileUrl, setNewProfileUrl] = useState('');
