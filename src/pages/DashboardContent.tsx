@@ -50,7 +50,7 @@ const translations = {
 interface BillableUser {
   id: string;
   profile_name: string;
-  avatar_url: string | null;
+  profile_picture: string | null;
 }
 
 type TimePeriod = 'all' | 'today' | 'week' | 'month';
@@ -76,7 +76,7 @@ export default function DashboardContent() {
     queryFn: async () => {
       const { data } = await supabase
         .from('billable_users')
-        .select('id, profile_name, avatar_url');
+        .select('id, profile_name, profile_picture');
       return (data || []) as BillableUser[];
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -162,8 +162,8 @@ export default function DashboardContent() {
                 {authors.map(author => (
                   <SelectItem key={author.id} value={author.id} className="text-sm">
                     <div className="flex items-center gap-2">
-                      {author.avatar_url ? (
-                        <img src={author.avatar_url} alt={author.profile_name} className="w-5 h-5 rounded-full object-cover" />
+                      {author.profile_picture ? (
+                        <img src={author.profile_picture} alt={author.profile_name} className="w-5 h-5 rounded-full object-cover" />
                       ) : (
                         <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center">
                           <span className="text-[10px] font-medium text-primary">
