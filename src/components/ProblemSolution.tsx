@@ -41,7 +41,7 @@ const ProblemSolution = () => {
       ],
       solutionTitle: "The Solution",
       solutionHeading: "Team engagement, orchestrated from Slack",
-      solutionDesc: "Slack becomes your employee activation hub. Slack alerts & reports, centralized Team Feed and built-in audience analysis - turn your team into active brand ambassadors.",
+      solutionDesc: "We help you activate your team, directly from Slack. Instant alerts & reports, centralized team feed and built-in analytics, to help turn your team into active brand ambassadors.",
       solutionPoints: [
         "Automatic Slack alerts for every post",
         "Centralize all posts in a unified Team Feed",
