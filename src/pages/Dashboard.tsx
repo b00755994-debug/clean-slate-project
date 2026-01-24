@@ -191,7 +191,7 @@ export default function Dashboard() {
   const { linkedinProfiles, addProfile, isAddingProfile, deleteProfile, updateSlackUser } = useLinkedInProfiles();
   const { data: slackMembers = [], isLoading: isLoadingMembers, isFetching: isSlackMembersFetching } = useSlackMembers(slackWorkspace?.is_connected || false);
   const { stats: teamStats } = useTeamFeedStats();
-  const { channels, currentChannel } = useSlackChannels(slackWorkspace?.is_connected || false);
+  const { channels, currentChannel, isLoading: isLoadingChannels } = useSlackChannels(slackWorkspace?.is_connected || false);
   
   // Show syncing indicator only when fetching in background (not initial load)
   const isSyncing = (isWorkspaceFetching && !isWorkspaceLoading) || (isSlackMembersFetching && !isLoadingMembers);
@@ -422,7 +422,9 @@ export default function Dashboard() {
                         {currentChannel ? (
                           <div className="flex items-center gap-1.5">
                             <Hash className="w-4 h-4 text-muted-foreground" />
-                            <span className="text-sm font-medium">{currentChannelName || currentChannel}</span>
+                            <span className="text-sm font-medium">
+                              {isLoadingChannels ? '...' : (currentChannelName || currentChannel)}
+                            </span>
                           </div>
                         ) : (
                           <span className="text-sm text-muted-foreground">{t.configureChannel}</span>
