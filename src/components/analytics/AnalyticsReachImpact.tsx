@@ -11,8 +11,8 @@ import {
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { KPICard } from './KPICard';
 import { PeriodSelector } from './PeriodSelector';
-import { reachKPIs, reachEngagementTrendData, impressionsDistribution } from './mockData';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useAnalyticsData } from '@/hooks/useAnalyticsData';
 
 const translations = {
   fr: {
@@ -80,8 +80,9 @@ export function AnalyticsReachImpact() {
   const [trendPeriod, setTrendPeriod] = useState<'6' | '12'>('6');
   const { language } = useLanguage();
   const t = translations[language];
+  const { reachKPIs, reachTrendData, impressionsDistribution } = useAnalyticsData();
   
-  const trendData = trendPeriod === '6' ? reachEngagementTrendData.slice(-6) : reachEngagementTrendData;
+  const trendData = trendPeriod === '6' ? reachTrendData.slice(-6) : reachTrendData;
 
   const translateMonth = (month: string) => {
     const index = monthKeyToIndex[month];
@@ -113,7 +114,7 @@ export function AnalyticsReachImpact() {
         <KPICard
           icon={Eye}
           label={t.kpis.totalImpressions}
-          value={reachKPIs.totalImpressions.value.toLocaleString()}
+          value={reachKPIs.totalImpressions.value}
           change={reachKPIs.totalImpressions.change}
           tooltip={t.tooltips.totalImpressions}
           color="violet"
@@ -121,7 +122,7 @@ export function AnalyticsReachImpact() {
         <KPICard
           icon={TrendingUp}
           label={t.kpis.avgImpressionsPerPost}
-          value={reachKPIs.avgImpressionsPerPost.value.toLocaleString()}
+          value={reachKPIs.avgImpressionsPerPost.value}
           change={reachKPIs.avgImpressionsPerPost.change}
           tooltip={t.tooltips.avgImpressionsPerPost}
           color="blue"
