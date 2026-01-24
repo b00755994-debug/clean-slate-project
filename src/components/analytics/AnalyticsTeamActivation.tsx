@@ -162,7 +162,7 @@ export function AnalyticsTeamActivation() {
             </div>
           </CardHeader>
           <CardContent>
-            <ChartContainer config={activationChartConfig} className="h-[220px] w-full">
+            <ChartContainer config={activationChartConfig} className="h-[250px] w-full">
               <BarChart data={activationData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" vertical={false} />
                 <XAxis
