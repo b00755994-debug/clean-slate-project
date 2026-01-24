@@ -6,6 +6,7 @@ interface SlackChannel {
   name: string;
   is_private: boolean;
   num_members: number;
+  is_member: boolean;
 }
 
 interface ChannelsResponse {

@@ -24,7 +24,9 @@ const translations = {
     members: 'membres',
     error: 'Erreur',
     currentChannel: 'Canal actuel',
+    botPresent: 'Bot présent',
     selectChannel: 'Sélectionnez un canal',
+    selectThisChannel: 'Sélectionner ce canal',
     reconnectNeeded: 'Veuillez reconnecter Slack pour accéder aux canaux',
   },
   en: {
@@ -37,7 +39,9 @@ const translations = {
     members: 'members',
     error: 'Error',
     currentChannel: 'Current channel',
+    botPresent: 'Bot joined',
     selectChannel: 'Select a channel',
+    selectThisChannel: 'Select this channel',
     reconnectNeeded: 'Please reconnect Slack to access channels',
   },
 };
@@ -165,6 +169,12 @@ export function SlackChannelSelector({
                         {t.currentChannel}
                       </span>
                     )}
+                    {channel.is_member && !isCurrent && (
+                      <span className="text-xs bg-blue-500/20 text-blue-600 dark:text-blue-400 px-1.5 py-0.5 rounded flex items-center gap-0.5">
+                        <Check className="w-3 h-3" />
+                        {t.botPresent}
+                      </span>
+                    )}
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0">
                     <span className="text-xs text-muted-foreground flex items-center gap-1">
@@ -188,7 +198,7 @@ export function SlackChannelSelector({
         disabled={!selectedChannelId || isJoiningChannel || isCurrentlySelected}
         className="w-full bg-[#4A154B] hover:bg-[#3a1039]"
       >
-        {isJoiningChannel ? (
+      {isJoiningChannel ? (
           <>
             <Loader2 className="w-4 h-4 mr-2 animate-spin" />
             {t.inviting}
@@ -197,6 +207,11 @@ export function SlackChannelSelector({
           <>
             <Check className="w-4 h-4 mr-2" />
             {t.botInvited} #{selectedChannel?.name}
+          </>
+        ) : selectedChannel?.is_member ? (
+          <>
+            {t.selectThisChannel}
+            {` → #${selectedChannel.name}`}
           </>
         ) : (
           <>
