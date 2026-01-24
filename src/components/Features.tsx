@@ -1,14 +1,6 @@
 import { Zap, Sparkles, BarChart3, Rss } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { ReactNode } from "react";
-
-// Highlight component for key phrases
-const Highlight = ({ children }: { children: ReactNode }) => (
-  <span className="bg-primary text-primary-foreground px-1.5 py-0.5 rounded-md font-medium">
-    {children}
-  </span>
-);
 
 const Features = () => {
   const { language } = useLanguage();
@@ -22,31 +14,25 @@ const Features = () => {
         {
           icon: Zap,
           title: "Alertes Slack Intelligentes",
-          description: (
-            <>
-              <Highlight>Notification instantanée</Highlight> dans Slack dès qu'un membre publie. Aperçu du post, lien direct, et <Highlight>call-to-action clair</Highlight> pour engager en quelques secondes.
-            </>
-          )
+          description: "Notification instantanée dans Slack dès qu'un membre publie. Aperçu du post, lien direct, et call-to-action clair pour engager en quelques secondes."
         },
         {
           icon: Rss,
           title: "Team Feed",
-          description: (
-            <>
-              Centralisez <Highlight>tous les posts LinkedIn</Highlight> de votre équipe dans un flux unique. Suivez les <Highlight>performances en temps réel</Highlight>, identifiez les meilleurs contenus et inspirez-vous en pour créer de nouveaux posts.
-            </>
-          )
+          description: "Centralisez tous les posts LinkedIn de votre équipe dans un flux unique. Suivez les performances en temps réel, identifiez les meilleurs contenus et inspirez-vous en pour créer de nouveaux posts."
         },
         {
           icon: BarChart3,
           title: "Audience & Brand Analytics",
-          description: (
-            <>
-              Obtenez une vue claire de la présence LinkedIn de votre équipe avec des <Highlight>données agrégées</Highlight>. Suivez les métriques globales et analysez la <Highlight>qualité de l'audience</Highlight> par secteur, fonction et séniorité.
-            </>
-          )
+          description: "Obtenez une vue claire de la présence LinkedIn de votre équipe avec des données agrégées et anonymisées. Suivez les métriques globales (impressions, réactions, commentaires) et analysez la qualité de l'audience par secteur, fonction, séniorité et taille d'entreprise."
         },
       ],
+      // FEATURE À REMETTRE PLUS TARD:
+      // {
+      //   icon: Sparkles,
+      //   title: "Rapports Individuels & Coaching",
+      //   description: "Chaque collaborateur accède à son propre tableau de bord : tendances de visibilité, évolution de l'engagement, recommandations personnalisées. Découvrez quand poster et quels formats privilégier."
+      // },
     },
     en: {
       title1: "Activate. Support.",
@@ -56,31 +42,25 @@ const Features = () => {
         {
           icon: Zap,
           title: "Smart Slack Activation Alerts",
-          description: (
-            <>
-              <Highlight>Instantly notify</Highlight> the right Slack channels when a team member posts on LinkedIn. Each alert includes a post preview, direct link, and <Highlight>clear actions</Highlight> to drive fast, coordinated engagement.
-            </>
-          )
+          description: "Instantly notify the right Slack channels when a team member posts on LinkedIn. Each alert includes a post preview, direct link, and clear actions to drive fast, coordinated engagement."
         },
         {
           icon: Rss,
           title: "Team Feed",
-          description: (
-            <>
-              Centralize <Highlight>all your team's LinkedIn posts</Highlight> in a single feed. Track <Highlight>performance in real-time</Highlight>, identify top-performing content, and get inspired to remix winning formats.
-            </>
-          )
+          description: "Centralize all your team's LinkedIn posts in a single feed. Track performance in real-time, identify top-performing content, and get inspired to remix winning formats."
         },
         {
           icon: BarChart3,
           title: "Audience & Brand Analytics",
-          description: (
-            <>
-              Understand how your team's LinkedIn activity translates into <Highlight>real visibility</Highlight> and engagement. Track reach trends, engagement dynamics, and post performance - all through <Highlight>anonymized analytics</Highlight>.
-            </>
-          )
+          description: "Understand how your team's LinkedIn activity translates into real visibility and engagement. Track reach trends, engagement dynamics, and the distribution of post performance - all through anonymized, collective analytics."
         },
       ]
+      // FEATURE TO ADD BACK LATER:
+      // {
+      //   icon: Sparkles,
+      //   title: "Individual Reports & Coaching",
+      //   description: "Provide private performance insights and guidance for every employee, including performance trends, sharing recommendations, and more."
+      // },
     }
   };
 
