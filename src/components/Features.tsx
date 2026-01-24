@@ -52,7 +52,7 @@ const Features = () => {
         {
           icon: BarChart3,
           title: "Audience & Brand Analytics",
-          description: "Understand how your team's LinkedIn activity translates into real visibility and engagement. Track reach trends, engagement dynamics, and the distribution of post performance - all through anonymized, collective analytics."
+          description: "Understand how your team's LinkedIn activity translates into real visibility and engagement. Get insights on your reach and audience, engagement dynamics, and post performances."
         },
       ]
       // FEATURE TO ADD BACK LATER:
