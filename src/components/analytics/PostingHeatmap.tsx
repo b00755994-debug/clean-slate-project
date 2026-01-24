@@ -79,22 +79,23 @@ export function PostingHeatmap({ data }: PostingHeatmapProps) {
     });
 
     // Fill with data and collect all cells with impressions
-    const allCells: { day: string; hour: string; count: number; impressions: number }[] = [];
+    const allCells: { day: string; hour: string; count: number; impressions: number; avgImpressions: number }[] = [];
     data.forEach(cell => {
       if (grid[cell.day] && grid[cell.day][cell.hour] !== undefined) {
         grid[cell.day][cell.hour] = cell.count;
         impressionsGrid[cell.day][cell.hour] = cell.impressions;
         if (cell.count > maxCount) maxCount = cell.count;
-        if (cell.impressions > 0) {
-          allCells.push({ day: cell.day, hour: cell.hour, count: cell.count, impressions: cell.impressions });
+        if (cell.count > 0) {
+          const avgImpressions = cell.impressions / cell.count;
+          allCells.push({ day: cell.day, hour: cell.hour, count: cell.count, impressions: cell.impressions, avgImpressions });
         }
       }
     });
 
-    // Find top 3 performing slots by IMPRESSIONS (not count)
+    // Find top 3 performing slots by AVERAGE IMPRESSIONS PER POST
     const topPerformingSlots = new Set<string>();
     allCells
-      .sort((a, b) => b.impressions - a.impressions)
+      .sort((a, b) => b.avgImpressions - a.avgImpressions)
       .slice(0, 3)
       .forEach(cell => {
         topPerformingSlots.add(`${cell.day}-${cell.hour}`);
