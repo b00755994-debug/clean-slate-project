@@ -81,13 +81,13 @@ export default function DashboardContent() {
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  const hasActiveFeedFilters = sortBy !== 'recent' || authorFilter !== 'all' || searchQuery !== '' || timePeriod !== 'month';
+  const hasActiveFeedFilters = sortBy !== 'recent' || authorFilter !== 'all' || searchQuery !== '' || timePeriod !== 'all';
 
   const clearFeedFilters = () => {
     setSortBy('recent');
     setAuthorFilter('all');
     setSearchQuery('');
-    setTimePeriod('month');
+    setTimePeriod('all');
   };
 
   const timePeriodLabels: Record<TimePeriod, string> = {
