@@ -64,7 +64,7 @@ const ProblemSolution = () => {
               {t.title2}
             </span>
           </h2>
-          <p className="text-xl max-w-2xl mx-auto font-medium" style={{ color: '#5A5A5A' }}>
+          <p className="text-lg md:text-xl max-w-2xl mx-auto leading-relaxed" style={{ color: '#5A5A5A' }}>
             {t.subtitle}
           </p>
         </div>
