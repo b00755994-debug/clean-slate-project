@@ -509,7 +509,10 @@ export default function Dashboard() {
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-muted-foreground">{t.impressions}</span>
                   <span className="font-semibold">
-                    {Math.round(teamStats.totalImpressions).toLocaleString()}
+                    {(teamStats.totalImpressions >= 1000 
+                      ? Math.round(teamStats.totalImpressions / 100) * 100 
+                      : Math.round(teamStats.totalImpressions)
+                    ).toLocaleString()}
                   </span>
                 </div>
               </div>
