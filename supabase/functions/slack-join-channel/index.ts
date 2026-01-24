@@ -84,8 +84,35 @@ serve(async (req) => {
       );
     }
 
-    // Only try to join if bot is not already a member
-    if (!isMember) {
+    // Real-time check: verify if bot is actually in the channel
+    console.log(`Checking real-time membership for channel ${channelId}`);
+    const membershipCheck = await fetch(
+      `https://slack.com/api/conversations.info?channel=${channelId}`,
+      {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${slackAuth.token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    const membershipData = await membershipCheck.json();
+    
+    if (!membershipData.ok) {
+      console.error('Failed to check channel membership:', membershipData.error);
+      return new Response(
+        JSON.stringify({ error: `Failed to check channel: ${membershipData.error}` }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const isActuallyMember = membershipData.channel?.is_member === true;
+    console.log(`Bot is_member for channel ${channelId}: ${isActuallyMember}`);
+
+    // Only try to join if bot is NOT already a member
+    if (!isActuallyMember) {
+      console.log(`Bot not in channel ${channelId}, attempting to join...`);
       const joinResponse = await fetch('https://slack.com/api/conversations.join', {
         method: 'POST',
         headers: {
@@ -98,16 +125,21 @@ serve(async (req) => {
       const joinData = await joinResponse.json();
 
       if (!joinData.ok) {
-        // Some errors are acceptable (already in channel, or missing scope if already member)
-        const acceptableErrors = ['already_in_channel', 'missing_scope'];
-        if (!acceptableErrors.includes(joinData.error)) {
+        // Only 'already_in_channel' is acceptable - missing_scope is a real error
+        if (joinData.error !== 'already_in_channel') {
           console.error('Slack join error:', joinData.error);
+          const needsReconnect = joinData.error === 'missing_scope';
           return new Response(
-            JSON.stringify({ error: `Failed to join channel: ${joinData.error}` }),
+            JSON.stringify({ 
+              error: `Failed to join channel: ${joinData.error}`,
+              needsReconnect 
+            }),
             { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
           );
         }
-        console.log(`Skipping join due to: ${joinData.error}`);
+        console.log(`Channel join returned: ${joinData.error} (acceptable)`);
+      } else {
+        console.log(`Successfully joined channel ${channelId}`);
       }
     } else {
       console.log(`Bot already member of channel ${channelId}, skipping join`);
@@ -139,13 +171,14 @@ serve(async (req) => {
     const channelInfo = await channelInfoResponse.json();
     const channelName = channelInfo.ok ? channelInfo.channel?.name : null;
 
-    console.log(`Bot joined channel ${channelId} (${channelName}) for user ${user.id}`);
+    console.log(`Channel ${channelId} (${channelName}) set as notification channel for user ${user.id}`);
 
     return new Response(
       JSON.stringify({ 
         success: true, 
         channelId,
-        channelName
+        channelName,
+        isMember: true
       }),
       { 
         status: 200, 

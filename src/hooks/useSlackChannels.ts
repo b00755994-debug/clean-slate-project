@@ -44,7 +44,7 @@ export function useSlackChannels(isConnected: boolean) {
   });
 
   const joinChannelMutation = useMutation({
-    mutationFn: async ({ channelId, isMember }: { channelId: string; isMember: boolean }) => {
+    mutationFn: async ({ channelId }: { channelId: string }) => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error('Not authenticated');
 
@@ -54,15 +54,18 @@ export function useSlackChannels(isConnected: boolean) {
           'Authorization': `Bearer ${session.access_token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ channelId, isMember }),
+        body: JSON.stringify({ channelId }),
       });
 
+      const data = await response.json();
+      
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to join channel');
+        const error = new Error(data.error || 'Failed to join channel') as Error & { needsReconnect?: boolean };
+        error.needsReconnect = data.needsReconnect === true;
+        throw error;
       }
 
-      return response.json();
+      return data;
     },
     onSuccess: (data) => {
       // Update the currentChannel and is_member in the cache

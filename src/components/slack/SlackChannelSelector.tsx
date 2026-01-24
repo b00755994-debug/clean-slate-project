@@ -75,14 +75,26 @@ export function SlackChannelSelector({
     setSelectedChannelId(channelId);
   };
 
+  const [joinError, setJoinError] = useState<string | null>(null);
+  const [needsReconnect, setNeedsReconnect] = useState(false);
+
   const handleInviteBot = () => {
     if (!selectedChannelId) return;
     
+    setJoinError(null);
+    setNeedsReconnect(false);
+    
     const channel = channels.find(c => c.id === selectedChannelId);
-    joinChannel({ channelId: selectedChannelId, isMember: channel?.is_member || false }, {
+    joinChannel({ channelId: selectedChannelId }, {
       onSuccess: (data) => {
         if (channel && onChannelSelected) {
           onChannelSelected(selectedChannelId, channel.name);
+        }
+      },
+      onError: (error: Error & { needsReconnect?: boolean }) => {
+        setJoinError(error.message);
+        if (error.needsReconnect) {
+          setNeedsReconnect(true);
         }
       },
     });
@@ -201,6 +213,18 @@ export function SlackChannelSelector({
           <span>{t.legendBotMember}</span>
         </div>
       </div>
+
+      {/* Error Message */}
+      {joinError && (
+        <div className="flex items-start gap-2 p-3 rounded-lg bg-destructive/10 border border-destructive/20">
+          <AlertCircle className="w-4 h-4 text-destructive flex-shrink-0 mt-0.5" />
+          <div className="text-sm">
+            <p className="text-destructive font-medium">
+              {needsReconnect ? t.reconnectNeeded : joinError}
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Action Button */}
       <Button
