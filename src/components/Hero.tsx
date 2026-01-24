@@ -24,7 +24,7 @@ const Hero = () => {
     en: {
       title1: "Supercharge your reach on",
       title2: "LinkedIn",
-      subtitle: "Turn your team into a LinkedIn powerhouse, directly from Slack. Instant notifications, built-in analytics, collective engagement.",
+      subtitle: "Slack alerts for every post, unified Team Feed and advanced audience analytics. All in one.",
       joinBeta: "Join the Beta",
       viewDemo: "Book a call with us",
       impressions: "LinkedIn Impressions",
