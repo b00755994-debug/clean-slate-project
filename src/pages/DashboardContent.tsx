@@ -50,6 +50,7 @@ const translations = {
 interface BillableUser {
   id: string;
   profile_name: string;
+  avatar_url: string | null;
 }
 
 type TimePeriod = 'all' | 'today' | 'week' | 'month';
@@ -75,7 +76,7 @@ export default function DashboardContent() {
     queryFn: async () => {
       const { data } = await supabase
         .from('billable_users')
-        .select('id, profile_name');
+        .select('id, profile_name, avatar_url');
       return (data || []) as BillableUser[];
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -160,7 +161,18 @@ export default function DashboardContent() {
                 <SelectItem value="all" className="text-sm">{t.allAuthors}</SelectItem>
                 {authors.map(author => (
                   <SelectItem key={author.id} value={author.id} className="text-sm">
-                    {author.profile_name}
+                    <div className="flex items-center gap-2">
+                      {author.avatar_url ? (
+                        <img src={author.avatar_url} alt={author.profile_name} className="w-5 h-5 rounded-full object-cover" />
+                      ) : (
+                        <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center">
+                          <span className="text-[10px] font-medium text-primary">
+                            {author.profile_name.charAt(0).toUpperCase()}
+                          </span>
+                        </div>
+                      )}
+                      <span>{author.profile_name}</span>
+                    </div>
                   </SelectItem>
                 ))}
               </SelectContent>
