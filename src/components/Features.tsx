@@ -67,11 +67,11 @@ const Features = () => {
   const t = translations[language];
   
   return (
-    <section className="py-12 bg-background relative overflow-hidden">
-      <div className="absolute inset-0 bg-grid-pattern opacity-5" />
+    <section className="py-20 bg-muted/30 relative overflow-hidden">
+      <div className="absolute inset-0 bg-dot-pattern opacity-5" />
 
       <div className="container mx-auto px-4 relative z-10">
-        <div className="text-center mb-8">
+        <div className="text-center mb-12">
           <h2 className="text-4xl md:text-5xl font-bold mb-4">
             {t.title1}{" "}
             <span className="bg-gradient-to-r from-primary to-destructive bg-clip-text text-transparent">
@@ -83,7 +83,7 @@ const Features = () => {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {t.features.map((feature, index) => (
             <Card
               key={index}

@@ -1,4 +1,4 @@
-import { X, CheckCircle2, TrendingDown, TrendingUp, Zap } from "lucide-react";
+import { Zap, Rss, BarChart3 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 const ProblemSolution = () => {
@@ -6,146 +6,91 @@ const ProblemSolution = () => {
 
   const translations = {
     fr: {
-      title1: "Transformez chaque employé",
-      title2: "en ambassadeur",
-      subtitle: "Passez de l'ombre à l'impact collectif",
-      problemTitle: "Le défi actuel",
-      problemHeading: "Difficile de mobiliser vos équipes",
-      problemDesc: "Vos collaborateurs ont un réseau précieux, mais mobiliser leur engagement sur LinkedIn reste un casse-tête quotidien.",
-      problemPoints: [
-        "Pas de process simple pour partager les contenus",
-        "Manque de motivation et de visibilité sur l'impact",
-        "Le potentiel de vos ambassadeurs reste inexploité"
-      ],
-      solutionTitle: "La solution",
-      solutionHeading: "L'engagement d'équipe, orchestré depuis Slack",
-      solutionDesc: "Slack devient votre hub d'employee advocacy. Alertes intelligentes, Team Feed unifié et analyse d'audience intégrée transforment votre équipe en ambassadeurs actifs.",
-      solutionPoints: [
-        "Alertes automatiques sur Slack à chaque post",
-        "Centralisez tous les posts dans un Team Feed unique",
-        "Portée décuplée, notoriété amplifiée"
-      ],
-      metric: "d'impressions en moyenne"
+      narrative: "Vos employés ont un réseau précieux. Sans process simple, leur potentiel LinkedIn reste inexploité.",
+      solutionLabel: "La solution",
+      pillars: [
+        {
+          icon: Zap,
+          title: "Alertes Slack",
+          description: "Notification instantanée quand un membre poste"
+        },
+        {
+          icon: Rss,
+          title: "Team Feed",
+          description: "Tous les posts de l'équipe en un flux"
+        },
+        {
+          icon: BarChart3,
+          title: "Analytics",
+          description: "Analytics d'audience intégrés"
+        }
+      ]
     },
     en: {
-      title1: "Turn every employee",
-      title2: "into an ambassador",
-      subtitle: "Accelerate from shadow to collective impact",
-      problemTitle: "The Current Challenge",
-      problemHeading: "Struggling to rally your teams",
-      problemDesc: "Your employees have valuable networks, but mobilizing their LinkedIn engagement remains a daily challenge.",
-      problemPoints: [
-        "No simple process to share content",
-        "Lack of motivation and visibility on impact",
-        "Your ambassadors' potential remains untapped"
-      ],
-      solutionTitle: "The Solution",
-      solutionHeading: "Team engagement, orchestrated from Slack",
-      solutionDesc: "Slack becomes your employee advocacy hub. Smart Slack alerts, unified Team Feed and built-in audience analysis turn your team into active brand ambassadors.",
-      solutionPoints: [
-        "Automatic Slack alerts for every post",
-        "Centralize all posts in a unified Team Feed",
-        "Amplify reach and exposure to your target audience"
-      ],
-      metric: "average impressions"
+      narrative: "Your employees have a valuable network. Without a simple process, their LinkedIn potential remains untapped.",
+      solutionLabel: "The solution",
+      pillars: [
+        {
+          icon: Zap,
+          title: "Slack Alerts",
+          description: "Instant alerts when a team member posts"
+        },
+        {
+          icon: Rss,
+          title: "Team Feed",
+          description: "All team posts in one unified feed"
+        },
+        {
+          icon: BarChart3,
+          title: "Analytics",
+          description: "Built-in audience insights"
+        }
+      ]
     }
   };
 
   const t = translations[language];
-  return (
-    <section id="solution" className="pt-8 pb-16 bg-background relative overflow-hidden">
-      <div className="absolute inset-0 bg-grid-pattern opacity-5" />
 
+  return (
+    <section id="solution" className="py-16 bg-background relative overflow-hidden">
+      <div className="absolute inset-0 bg-grid-pattern opacity-5" />
+      
       <div className="container mx-auto px-4 relative z-10">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">
-            {t.title1}{" "}
-            <span className="bg-gradient-to-r from-primary to-destructive bg-clip-text text-transparent">
-              {t.title2}
-            </span>
-          </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            {t.subtitle}
+        {/* Narrative intro */}
+        <div className="max-w-3xl mx-auto text-center mb-12">
+          <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed">
+            {t.narrative}
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
-          {/* Problem Card */}
-          <div className="group relative">
-            <div className="relative bg-card border border-orange-200/30 dark:border-orange-900/30 rounded-2xl p-8 hover:border-orange-300/50 dark:hover:border-orange-800/50 transition-all duration-300">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center">
-                  <TrendingDown className="h-6 w-6 text-primary-foreground" />
-                </div>
-                <span className="text-lg font-semibold text-primary">{t.problemTitle}</span>
-              </div>
-
-              <h3 className="text-2xl font-bold mb-4 text-foreground">
-                {t.problemHeading}
-              </h3>
-
-              <p className="text-muted-foreground mb-6 leading-relaxed">
-                {t.problemDesc}
-              </p>
-
-              <div className="space-y-4">
-                {t.problemPoints.map((item, index) => (
-                  <div key={index} className="flex items-start gap-3 group/item">
-                    <div className="w-6 h-6 rounded-full bg-destructive/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <X className="h-3.5 w-3.5 text-destructive" />
-                    </div>
-                    <span className="text-foreground/80 group-hover/item:text-foreground transition-colors">
-                      {item}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Solution Card */}
-          <div className="group relative md:translate-y-8">
-            <div className="relative bg-card border border-primary/20 rounded-2xl p-8 hover:border-primary/40 transition-all duration-300 hover:shadow-xl">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-destructive flex items-center justify-center">
-                  <Zap className="h-6 w-6 text-primary-foreground" />
-                </div>
-                <span className="text-lg font-semibold bg-gradient-to-r from-primary to-destructive bg-clip-text text-transparent">
-                  {t.solutionTitle}
-                </span>
-              </div>
-
-              <h3 className="text-2xl font-bold mb-4 text-foreground">
-                {t.solutionHeading}
-              </h3>
-
-              <p className="text-muted-foreground mb-6 leading-relaxed">
-                {t.solutionDesc}
-              </p>
-
-              <div className="space-y-4">
-                {t.solutionPoints.map((item, index) => (
-                  <div key={index} className="flex items-start gap-3 group/item">
-                    <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <CheckCircle2 className="h-4 w-4 text-primary-foreground" />
-                    </div>
-                    <span className="text-foreground/80 group-hover/item:text-foreground transition-colors">
-                      {item}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-6 pt-6 border-t border-border flex items-center gap-2 text-sm">
-                <TrendingUp className="h-4 w-4 text-primary" />
-                <span className="text-muted-foreground">
-                  <span className="font-semibold text-primary">+350%</span> {t.metric}
-                </span>
-              </div>
-            </div>
-          </div>
+        {/* Solution separator */}
+        <div className="flex items-center justify-center gap-4 mb-12">
+          <div className="h-px w-16 bg-gradient-to-r from-transparent to-border" />
+          <span className="text-sm font-semibold uppercase tracking-widest text-primary">
+            {t.solutionLabel}
+          </span>
+          <div className="h-px w-16 bg-gradient-to-l from-transparent to-border" />
         </div>
 
+        {/* 3 Pillars */}
+        <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+          {t.pillars.map((pillar, index) => (
+            <div
+              key={index}
+              className="text-center p-6 rounded-2xl border border-border bg-card/50 backdrop-blur-sm hover:border-primary/50 hover:shadow-lg transition-all duration-300 group"
+            >
+              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-primary mb-4 group-hover:scale-110 transition-transform">
+                <pillar.icon className="h-7 w-7 text-primary-foreground" />
+              </div>
+              <h3 className="text-lg font-bold mb-2 text-card-foreground group-hover:text-primary transition-colors">
+                {pillar.title}
+              </h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                {pillar.description}
+              </p>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );
