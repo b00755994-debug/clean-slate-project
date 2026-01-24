@@ -412,7 +412,15 @@ export default function Dashboard() {
                   <div className="space-y-4">
                     <div>
                       <span className="text-xs text-muted-foreground uppercase tracking-wide">Workspace</span>
-                      <p className="text-sm font-medium mt-0.5">{slackWorkspace.workspace_name}</p>
+                      <div className="flex items-center justify-between mt-0.5">
+                        <p className="text-sm font-medium">{slackWorkspace.workspace_name}</p>
+                        <button 
+                          onClick={handleDisconnectSlack}
+                          className="text-xs text-muted-foreground hover:text-destructive underline-offset-2 hover:underline transition-colors"
+                        >
+                          {t.disconnect}
+                        </button>
+                      </div>
                     </div>
                     
                     <div className="h-px bg-border/50" />
@@ -460,19 +468,13 @@ export default function Dashboard() {
                   </div>
                   
                   {/* Actions */}
-                  <div className="mt-auto pt-6 space-y-3">
+                  <div className="mt-auto pt-6">
                     <Button size="sm" className="w-full gap-2 bg-[#4A154B] hover:bg-[#3a1039] text-white" asChild>
                       <a href="slack://open" target="_blank" rel="noopener noreferrer">
                         <img src={slackLogo} alt="" className="w-4 h-4" />
                         {t.openSlack}
                       </a>
                     </Button>
-                    <button 
-                      onClick={handleDisconnectSlack}
-                      className="w-full text-xs text-muted-foreground/60 hover:text-destructive transition-colors"
-                    >
-                      {t.disconnect}
-                    </button>
                   </div>
                 </div>
               ) : (
