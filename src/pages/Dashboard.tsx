@@ -88,6 +88,7 @@ const translations = {
     connectSlackToAssociate: 'Connectez votre workspace Slack pour associer ce profil à un membre de votre équipe',
     // Channel configuration
     configureChannel: 'Aucun canal défini',
+    channelNotFound: 'Canal introuvable',
     channelConfigured: 'Canal configuré',
     notificationsTo: 'Notifications vers',
     changeChannel: 'Modifier',
@@ -162,6 +163,7 @@ const translations = {
     connectSlackToAssociate: 'Connect your Slack workspace to associate this profile with a team member',
     // Channel configuration
     configureChannel: 'Configure channel',
+    channelNotFound: 'Channel not found',
     channelConfigured: 'Channel configured',
     notificationsTo: 'Notifications to',
     changeChannel: 'Change',
@@ -422,8 +424,8 @@ export default function Dashboard() {
                         {currentChannel ? (
                           <div className="flex items-center gap-1.5">
                             <Hash className="w-4 h-4 text-muted-foreground" />
-                            <span className="text-sm font-medium">
-                              {isLoadingChannels ? '...' : (currentChannelName || currentChannel)}
+                            <span className={`text-sm font-medium ${!isLoadingChannels && !currentChannelName ? 'text-amber-600 dark:text-amber-400' : ''}`}>
+                              {isLoadingChannels ? '...' : (currentChannelName || t.channelNotFound)}
                             </span>
                           </div>
                         ) : (
