@@ -631,11 +631,11 @@ export default function Dashboard() {
                 <Table className="text-sm table-fixed w-full">
                   <TableHeader>
                     <TableRow className="h-5">
-                      <TableHead className="py-0.5 text-xs w-[18%]">{t.name}</TableHead>
-                      <TableHead className="py-0.5 text-xs w-[40%]">{t.linkedinUrl}</TableHead>
-                      <TableHead className="py-0.5 text-xs w-[20%]">{t.slackUser}</TableHead>
-                      <TableHead className="text-center py-0.5 text-xs w-[10%]">{t.posts30d}</TableHead>
-                      <TableHead className="text-right py-0.5 text-xs w-[12%]">{t.actions}</TableHead>
+                      <TableHead className="py-0.5 text-xs w-[18%] uppercase tracking-wide">{t.name}</TableHead>
+                      <TableHead className="py-0.5 text-xs w-[40%] uppercase tracking-wide">{t.linkedinUrl}</TableHead>
+                      <TableHead className="py-0.5 text-xs w-[20%] uppercase tracking-wide">{t.slackUser}</TableHead>
+                      <TableHead className="text-center py-0.5 text-xs w-[10%] uppercase tracking-wide">{t.posts30d}</TableHead>
+                      <TableHead className="text-right py-0.5 text-xs w-[12%] uppercase tracking-wide">{t.actions}</TableHead>
                     </TableRow>
                   </TableHeader>
                 </Table>
