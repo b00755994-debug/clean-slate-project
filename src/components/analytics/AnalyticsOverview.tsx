@@ -135,7 +135,7 @@ export function AnalyticsOverview() {
             </div>
           </CardHeader>
           <CardContent>
-            <ChartContainer config={postsChartConfig} className="h-[235px] w-full">
+            <ChartContainer config={postsChartConfig} className="h-[225px] w-full">
               <LineChart
                 data={postsData}
                 margin={{ top: 10, right: 10, left: -10, bottom: 0 }}
@@ -185,7 +185,7 @@ export function AnalyticsOverview() {
             </div>
           </CardHeader>
           <CardContent>
-            <ChartContainer config={impressionsChartConfig} className="h-[235px] w-full">
+            <ChartContainer config={impressionsChartConfig} className="h-[225px] w-full">
               <LineChart
                 data={impressionsData}
                 margin={{ top: 10, right: 10, left: -10, bottom: 0 }}
