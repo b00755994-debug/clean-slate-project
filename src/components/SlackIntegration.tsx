@@ -759,7 +759,7 @@ const SlackIntegration = () => {
             </span>
             {t.title3}
           </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl max-w-2xl mx-auto leading-relaxed" style={{ color: '#5A5A5A' }}>
             {t.subtitle}
           </p>
         </div>
