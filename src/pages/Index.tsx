@@ -17,9 +17,9 @@ const Index = () => {
         <Header />
         <BetaBanner />
         <Hero />
-        <SlackIntegration />
         <ProblemSolution />
         <Features />
+        <SlackIntegration />
         <Testimonial />
         <CTA />
         <Footer />
