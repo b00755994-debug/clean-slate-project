@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
-import { Linkedin, Plus, X, CheckCircle2, Loader2 } from 'lucide-react';
+import { Plus, X, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -39,7 +39,6 @@ interface OnboardingStep3Props {
 const translations = {
   fr: {
     title: "Ajoutez votre équipe",
-    description: "1 profil = 1 personne dont vous suivez les posts LinkedIn",
     firstName: "Prénom",
     lastName: "Nom",
     url: "URL LinkedIn",
@@ -49,11 +48,9 @@ const translations = {
     complete: "Continuer",
     completing: "Configuration...",
     skip: "Passer",
-    profilesReady: "profil(s) prêt(s)",
   },
   en: {
     title: "Add your team",
-    description: "1 profile = 1 person whose LinkedIn posts you track",
     firstName: "First name",
     lastName: "Last name",
     url: "LinkedIn URL",
@@ -63,7 +60,6 @@ const translations = {
     complete: "Continue",
     completing: "Setting up...",
     skip: "Skip",
-    profilesReady: "profile(s) ready",
   },
 };
 
@@ -130,51 +126,44 @@ export function OnboardingStep3({
 
   const validCount = profiles.filter(isProfileComplete).length;
 
-  // Calculate grid columns based on Slack connection - fluid proportions
+  // Calculate grid columns based on Slack connection
   const gridCols = isSlackConnected && slackMembers.length > 0 
     ? "grid-cols-[1fr_1fr_2fr_1fr_auto]" 
     : "grid-cols-[1fr_1fr_2fr_auto]";
 
   return (
-    <Card className="border-2 shadow-xl max-w-2xl mx-auto">
+    <Card className="border shadow-sm max-w-2xl mx-auto">
       <CardHeader className="text-center pb-4">
-        <div className="mx-auto w-12 h-12 bg-[#0A66C2]/10 rounded-full flex items-center justify-center mb-4">
-          <Linkedin className="h-6 w-6 text-[#0A66C2]" />
-        </div>
         <CardTitle className="text-2xl">{t.title}</CardTitle>
-        <CardDescription className="text-base">{t.description}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4 pt-2 px-6">
-        {/* Profile rows - no headers, just inputs */}
+        {/* Profile rows */}
         <div className="space-y-2">
           {profiles.map((profile) => (
             <div
               key={profile.id}
               className={cn(
-                "group grid gap-3 items-center py-2 px-3 rounded-lg transition-all",
-                gridCols,
-                isProfileComplete(profile) 
-                  ? "border-l-2 border-l-green-500/60 bg-green-50/30 dark:bg-green-950/10" 
-                  : "border-l-2 border-l-transparent"
+                "group grid gap-3 items-center py-2 px-2 rounded-lg transition-all",
+                gridCols
               )}
             >
               <Input
                 ref={(el) => {
                   if (el) inputRefs.current.set(`firstName-${profile.id}`, el);
                 }}
-                className="h-10 border-muted/60"
+                className="h-10"
                 placeholder={t.firstName}
                 value={profile.firstName}
                 onChange={(e) => updateProfile(profile.id, 'firstName', e.target.value)}
               />
               <Input
-                className="h-10 border-muted/60"
+                className="h-10"
                 placeholder={t.lastName}
                 value={profile.lastName}
                 onChange={(e) => updateProfile(profile.id, 'lastName', e.target.value)}
               />
               <Input
-                className="h-10 border-muted/60"
+                className="h-10"
                 placeholder="linkedin.com/in/..."
                 value={profile.linkedinUrl}
                 onChange={(e) => updateProfile(profile.id, 'linkedinUrl', e.target.value)}
@@ -186,7 +175,7 @@ export function OnboardingStep3({
                     updateProfile(profile.id, 'slackUserId', value === 'none' ? null : value)
                   }
                 >
-                  <SelectTrigger className="h-10 border-muted/60">
+                  <SelectTrigger className="h-10">
                     <SelectValue placeholder={t.noSlackUser} />
                   </SelectTrigger>
                   <SelectContent>
@@ -224,13 +213,13 @@ export function OnboardingStep3({
           ))}
         </div>
 
-        {/* Add profile - simple text link */}
+        {/* Add profile link */}
         <button
           type="button"
           onClick={addProfile}
-          className="flex items-center gap-1.5 text-sm text-muted-foreground/70 hover:text-primary transition-colors py-1 px-3"
+          className="flex items-center gap-1.5 text-xs text-muted-foreground/60 hover:text-muted-foreground transition-colors py-1 px-2"
         >
-          <Plus className="h-4 w-4" />
+          <Plus className="h-3.5 w-3.5" />
           {t.addProfile}
         </button>
 
