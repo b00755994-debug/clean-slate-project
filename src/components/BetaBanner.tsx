@@ -29,7 +29,7 @@ const BetaBanner = () => {
           <Info className="h-4 w-4 flex-shrink-0 text-primary" />
           <p className="text-center text-foreground">
             <span className="font-semibold">{t.closedBeta}</span> {t.text1}
-            <Link to="/beta" className="ml-1 no-underline transition-colors font-bold bg-gradient-to-r from-primary to-destructive bg-clip-text text-transparent hover:opacity-80">
+            <Link to="/beta" className="ml-1 no-underline transition-colors font-bold text-primary hover:opacity-80">
               {t.signUp}
             </Link>
             {" "}{t.text2}
