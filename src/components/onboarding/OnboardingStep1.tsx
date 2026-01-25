@@ -128,7 +128,7 @@ export function OnboardingStep1({ onNext, onSkip, language }: OnboardingStep1Pro
       </CardHeader>
       <CardContent className="space-y-4 pt-2">
         <div className="space-y-1.5">
-          <Label htmlFor="company" className="text-xs uppercase tracking-wide text-muted-foreground">
+          <Label htmlFor="company" className="text-xs uppercase tracking-wide text-foreground">
             {t.companyLabel}
           </Label>
           <Input
@@ -140,7 +140,7 @@ export function OnboardingStep1({ onNext, onSkip, language }: OnboardingStep1Pro
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="role" className="text-xs uppercase tracking-wide text-muted-foreground">
+          <Label htmlFor="role" className="text-xs uppercase tracking-wide text-foreground">
             {t.roleLabel}
           </Label>
           <Select
@@ -164,7 +164,7 @@ export function OnboardingStep1({ onNext, onSkip, language }: OnboardingStep1Pro
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="team-size" className="text-xs uppercase tracking-wide text-muted-foreground">
+          <Label htmlFor="team-size" className="text-xs uppercase tracking-wide text-foreground">
             {t.teamSizeLabel}
           </Label>
           <Select
@@ -185,7 +185,7 @@ export function OnboardingStep1({ onNext, onSkip, language }: OnboardingStep1Pro
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="channel" className="text-xs uppercase tracking-wide text-muted-foreground">
+          <Label htmlFor="channel" className="text-xs uppercase tracking-wide text-foreground">
             {t.channelLabel}
           </Label>
           <Select
