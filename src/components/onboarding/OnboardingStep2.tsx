@@ -20,6 +20,7 @@ const translations = {
     connecting: "Connexion...",
     connected: "Slack connecté",
     channelTitle: "Choisissez un canal",
+    channelDescription: "C'est ici que superpump enverra les notifications. Vous pourrez le modifier ou le désactiver par la suite.",
     channelConfigured: "Canal configuré",
     next: "Continuer",
     skip: "Passer",
@@ -30,6 +31,7 @@ const translations = {
     connecting: "Connecting...",
     connected: "Slack connected",
     channelTitle: "Choose a channel",
+    channelDescription: "This is where superpump will send notifications. You can change or disable it later.",
     channelConfigured: "Channel configured",
     next: "Continue",
     skip: "Skip",
@@ -60,6 +62,11 @@ export function OnboardingStep2({ onNext, onSkip, onConnectSlack, isSlackConnect
         <CardTitle className="text-2xl">
           {isSlackConnected ? t.channelTitle : t.title}
         </CardTitle>
+        {isSlackConnected && (
+          <p className="text-sm text-muted-foreground mt-2">
+            {t.channelDescription}
+          </p>
+        )}
       </CardHeader>
 
       <CardContent className="space-y-6 pt-2">
