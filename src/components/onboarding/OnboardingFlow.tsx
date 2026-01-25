@@ -188,6 +188,22 @@ export function OnboardingFlow() {
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
       <div className={`w-full ${currentStep === 3 ? 'max-w-2xl' : 'max-w-lg'}`}>
+        {currentStep === 1 && (
+          <div className="text-center mb-6">
+            <h1 className="text-2xl font-semibold">
+              {language === 'fr' 
+                ? 'Bienvenue sur superpump !'
+                : 'Welcome to superpump!'
+              }
+            </h1>
+            <p className="text-muted-foreground mt-1">
+              {language === 'fr' 
+                ? 'Parlez-nous de vous'
+                : 'Tell us more about yourself'
+              }
+            </p>
+          </div>
+        )}
         <OnboardingStepper
           currentStep={currentStep}
           totalSteps={3}
