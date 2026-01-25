@@ -166,7 +166,7 @@ const translations = {
     channelNotFound: 'Channel not found',
     channelConfigured: 'Channel configured',
     notificationsTo: 'Notifications to',
-    changeChannel: 'Change',
+    changeChannel: 'Modify',
     chooseChannel: 'Choose channel',
     channelDialogTitle: 'Configure Slack channel',
     channelDialogDescription: 'Choose the channel where Superpump will send notifications',
