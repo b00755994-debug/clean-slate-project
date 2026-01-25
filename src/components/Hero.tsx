@@ -134,7 +134,9 @@ const Hero = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-3xl mx-auto">
             <div className="text-center">
-              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-primary/5 mb-4">
+              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-4" style={{
+                backgroundColor: 'color-mix(in srgb, hsl(210 90% 40%) 5%, hsl(340 100% 99%))'
+              }}>
                 <Linkedin className="h-7 w-7 text-primary" />
               </div>
               <div className="text-5xl font-bold mb-2 text-primary">
@@ -146,7 +148,9 @@ const Hero = () => {
             </div>
 
             <div className="text-center">
-              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-primary/5 mb-4">
+              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-4" style={{
+                backgroundColor: 'color-mix(in srgb, hsl(210 90% 40%) 5%, hsl(340 100% 99%))'
+              }}>
                 <img src={slackLogo} alt="Slack" className="h-7 w-7" />
               </div>
               <div className="text-5xl font-bold mb-2 text-primary">
@@ -158,7 +162,9 @@ const Hero = () => {
             </div>
 
             <div className="text-center">
-              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-primary/5 mb-4">
+              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-4" style={{
+                backgroundColor: 'color-mix(in srgb, hsl(210 90% 40%) 5%, hsl(340 100% 99%))'
+              }}>
                 <Users className="h-7 w-7 text-primary" />
               </div>
               <div className="text-5xl font-bold mb-2 text-primary">
