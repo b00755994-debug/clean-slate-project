@@ -123,10 +123,7 @@ export function OnboardingStep1({ onNext, onSkip, language }: OnboardingStep1Pro
 
   return (
     <Card className="border shadow-sm">
-      <CardHeader className="text-center pb-4">
-        <CardTitle className="text-2xl">{t.title}</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4 pt-2">
+      <CardContent className="space-y-4 pt-6">
         <div className="space-y-1.5">
           <Label htmlFor="company" className="text-xs uppercase tracking-wide text-foreground">
             {t.companyLabel}
