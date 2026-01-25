@@ -18,7 +18,7 @@ const ProblemSolution = () => {
         "Le potentiel de vos ambassadeurs reste inexploité"
       ],
       solutionTitle: "La solution",
-      solutionHeading: "L'engagement d'équipe, orchestré depuis Slack",
+      solutionHeading: "La voix de votre équipe. Amplifiée.",
       solutionDesc: "Slack devient votre hub d'employee advocacy. Alertes intelligentes, Team Feed unifié et analyse d'audience intégrée transforment votre équipe en ambassadeurs actifs.",
       solutionPoints: [
         "Alertes automatiques sur Slack à chaque post",
@@ -40,7 +40,7 @@ const ProblemSolution = () => {
         "Your ambassadors' potential remains untapped"
       ],
       solutionTitle: "The Solution",
-      solutionHeading: "Team engagement, orchestrated from Slack",
+      solutionHeading: "Your team's voice. Amplified.",
       solutionDesc: "We help you activate your team, directly from Slack. Instant alerts & reports, centralized team feed and built-in analytics, to help turn your team into active brand ambassadors.",
       solutionPoints: [
         "Automatic Slack alerts for every post",
