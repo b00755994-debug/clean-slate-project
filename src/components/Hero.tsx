@@ -101,7 +101,7 @@ const Hero = () => {
           <h1 className="text-4xl md:text-6xl font-bold mb-4 tracking-tight" style={{
           color: '#1B1B1B'
         }}>
-            <span className="text-primary">
+            <span style={{ color: '#1B1B1B' }}>
               {t.title1}
             </span>
             <br />
