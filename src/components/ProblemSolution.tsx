@@ -8,7 +8,7 @@ const ProblemSolution = () => {
     fr: {
       title1: "Transformez votre équipe",
       title2: "en moteur de croissance",
-      subtitle: "Passez de l'ombre à l'impact collectif",
+      subtitle: "Activez la présence LinkedIn de votre équipe",
       problemTitle: "Le défi actuel",
       problemHeading: "Difficile de mobiliser vos équipes",
       problemDesc: "Vos collaborateurs ont un réseau précieux, mais mobiliser leur engagement sur LinkedIn reste un casse-tête quotidien.",
@@ -30,7 +30,7 @@ const ProblemSolution = () => {
     en: {
       title1: "Turn your team into",
       title2: "your growth engine",
-      subtitle: "Accelerate from shadow to collective impact",
+      subtitle: "Activate your team's LinkedIn presence",
       problemTitle: "The Current Challenge",
       problemHeading: "Struggling to rally your teams",
       problemDesc: "Your employees have valuable networks, but mobilizing their LinkedIn engagement remains a daily challenge.",
