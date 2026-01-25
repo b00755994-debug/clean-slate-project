@@ -37,7 +37,7 @@ const Features = () => {
     en: {
       title1: "Activate. Support.",
       title2: "Measure.",
-      subtitle: "Slack alerts for every post, unified Team Feed and advanced audience analytics. All in one.",
+      subtitle: "Slack alerts, unified Team Feed and advanced audience analytics. All in one.",
       features: [
         {
           icon: Zap,
