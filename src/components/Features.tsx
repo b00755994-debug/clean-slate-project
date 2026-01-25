@@ -9,7 +9,7 @@ const Features = () => {
     fr: {
       title1: "Activez. Soutenez.",
       title2: "Mesurez.",
-      subtitle: "Transformez chaque collaborateur en ambassadeur LinkedIn.",
+      subtitle: "Alertes Slack pour chaque post, Team Feed unifié et analytics d'audience avancés. Tout-en-un.",
       features: [
         {
           icon: Zap,
@@ -37,7 +37,7 @@ const Features = () => {
     en: {
       title1: "Activate. Support.",
       title2: "Measure.",
-      subtitle: "Turn every employee into a LinkedIn ambassador.",
+      subtitle: "Slack alerts for every post, unified Team Feed and advanced audience analytics. All in one.",
       features: [
         {
           icon: Zap,
