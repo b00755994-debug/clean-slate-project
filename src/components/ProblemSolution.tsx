@@ -6,8 +6,8 @@ const ProblemSolution = () => {
 
   const translations = {
     fr: {
-      title1: "Transformez chaque employé",
-      title2: "en ambassadeur",
+      title1: "Transformez votre équipe",
+      title2: "en moteur de croissance",
       subtitle: "Passez de l'ombre à l'impact collectif",
       problemTitle: "Le défi actuel",
       problemHeading: "Difficile de mobiliser vos équipes",
@@ -28,8 +28,8 @@ const ProblemSolution = () => {
       metric: "d'impressions en moyenne"
     },
     en: {
-      title1: "Turn every employee",
-      title2: "into an ambassador",
+      title1: "Turn your team into",
+      title2: "your growth engine",
       subtitle: "Accelerate from shadow to collective impact",
       problemTitle: "The Current Challenge",
       problemHeading: "Struggling to rally your teams",
