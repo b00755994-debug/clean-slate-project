@@ -12,7 +12,7 @@ const Hero = () => {
   } = useLanguage();
   const translations = {
     fr: {
-      title1: "Boostez votre portée sur",
+      title1: "Développez votre influence LinkedIn",
       title2: "LinkedIn",
       subtitle: "Transformez votre équipe en force de frappe LinkedIn, directement depuis Slack. Notifications instantanées, engagement collectif, impact décuplé.",
       joinBeta: "Rejoindre la Beta",
@@ -22,7 +22,7 @@ const Hero = () => {
       setup: "Setup Slack complet"
     },
     en: {
-      title1: "Supercharge your reach on",
+      title1: "Grow your LinkedIn influence",
       title2: "LinkedIn",
       subtitle: "Slack alerts for every post, unified Team Feed and advanced audience analytics. All in one.",
       joinBeta: "Join the Beta",
