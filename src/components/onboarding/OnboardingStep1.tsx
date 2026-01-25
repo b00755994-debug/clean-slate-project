@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Building2, User, Users, Megaphone, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -28,10 +28,9 @@ export interface Step1Data {
 const translations = {
   fr: {
     title: "Parlez-nous de vous",
-    description: "Ces informations nous aident à personnaliser votre expérience",
-    companyLabel: "Nom de l'entreprise",
+    companyLabel: "Entreprise",
     companyPlaceholder: "Acme Corp",
-    roleLabel: "Votre rôle",
+    roleLabel: "Rôle",
     rolePlaceholder: "Sélectionnez votre rôle",
     roles: {
       founder: "Fondateur / CEO",
@@ -43,7 +42,7 @@ const translations = {
       hr: "Ressources Humaines",
       other: "Autre",
     },
-    teamSizeLabel: "Taille de l'équipe",
+    teamSizeLabel: "Équipe",
     teamSizePlaceholder: "Sélectionnez la taille",
     teamSizes: {
       solo: "1 (Solo)",
@@ -52,8 +51,8 @@ const translations = {
       large: "51-200",
       enterprise: "200+",
     },
-    channelLabel: "Comment avez-vous connu superpump ?",
-    channelPlaceholder: "Sélectionnez une option",
+    channelLabel: "Découverte",
+    channelPlaceholder: "Comment avez-vous connu superpump ?",
     channels: {
       linkedin: "LinkedIn",
       twitter: "Twitter / X",
@@ -69,10 +68,9 @@ const translations = {
   },
   en: {
     title: "Tell us about yourself",
-    description: "This helps us personalize your experience",
-    companyLabel: "Company name",
+    companyLabel: "Company",
     companyPlaceholder: "Acme Corp",
-    roleLabel: "Your role",
+    roleLabel: "Role",
     rolePlaceholder: "Select your role",
     roles: {
       founder: "Founder / CEO",
@@ -84,7 +82,7 @@ const translations = {
       hr: "Human Resources",
       other: "Other",
     },
-    teamSizeLabel: "Team size",
+    teamSizeLabel: "Team",
     teamSizePlaceholder: "Select size",
     teamSizes: {
       solo: "1 (Solo)",
@@ -93,8 +91,8 @@ const translations = {
       large: "51-200",
       enterprise: "200+",
     },
-    channelLabel: "How did you hear about superpump?",
-    channelPlaceholder: "Select an option",
+    channelLabel: "Discovery",
+    channelPlaceholder: "How did you hear about superpump?",
     channels: {
       linkedin: "LinkedIn",
       twitter: "Twitter / X",
@@ -124,18 +122,13 @@ export function OnboardingStep1({ onNext, onSkip, language }: OnboardingStep1Pro
   };
 
   return (
-    <Card className="border-2 shadow-xl">
-      <CardHeader className="text-center pb-2">
-        <div className="mx-auto w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
-          <Building2 className="h-6 w-6 text-primary" />
-        </div>
+    <Card className="border shadow-sm">
+      <CardHeader className="text-center pb-4">
         <CardTitle className="text-2xl">{t.title}</CardTitle>
-        <CardDescription className="text-base">{t.description}</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-5 pt-4">
-        <div className="space-y-2">
-          <Label htmlFor="company" className="flex items-center gap-2">
-            <Building2 className="h-4 w-4 text-muted-foreground" />
+      <CardContent className="space-y-4 pt-2">
+        <div className="space-y-1.5">
+          <Label htmlFor="company" className="text-xs uppercase tracking-wide text-muted-foreground">
             {t.companyLabel}
           </Label>
           <Input
@@ -146,9 +139,8 @@ export function OnboardingStep1({ onNext, onSkip, language }: OnboardingStep1Pro
           />
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="role" className="flex items-center gap-2">
-            <User className="h-4 w-4 text-muted-foreground" />
+        <div className="space-y-1.5">
+          <Label htmlFor="role" className="text-xs uppercase tracking-wide text-muted-foreground">
             {t.roleLabel}
           </Label>
           <Select
@@ -171,9 +163,8 @@ export function OnboardingStep1({ onNext, onSkip, language }: OnboardingStep1Pro
           </Select>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="team-size" className="flex items-center gap-2">
-            <Users className="h-4 w-4 text-muted-foreground" />
+        <div className="space-y-1.5">
+          <Label htmlFor="team-size" className="text-xs uppercase tracking-wide text-muted-foreground">
             {t.teamSizeLabel}
           </Label>
           <Select
@@ -193,9 +184,8 @@ export function OnboardingStep1({ onNext, onSkip, language }: OnboardingStep1Pro
           </Select>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="channel" className="flex items-center gap-2">
-            <Megaphone className="h-4 w-4 text-muted-foreground" />
+        <div className="space-y-1.5">
+          <Label htmlFor="channel" className="text-xs uppercase tracking-wide text-muted-foreground">
             {t.channelLabel}
           </Label>
           <Select
