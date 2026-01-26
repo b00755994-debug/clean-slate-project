@@ -97,6 +97,12 @@ const SlackIntegration = () => {
               users: ["Pierre M.", "Sophie R.", "Claire B.", "+2"]
             }]
           }, {
+            user: "Thomas Dubois",
+            avatar: "TD",
+            time: "il y a 1min",
+            content: "Super article Sarah ! J'ai liké et commenté 👍",
+            isReply: true
+          }, {
             user: "superpump",
             avatar: "🚀",
             time: "il y a 25min",
@@ -112,6 +118,18 @@ const SlackIntegration = () => {
               count: 9,
               users: ["Pierre M.", "Sophie R.", "+7"]
             }]
+          }, {
+            user: "Marie Lambert",
+            avatar: "ML",
+            time: "il y a 20min",
+            content: "Incroyable cette success story ! Je partage dans mon réseau 🎯",
+            isReply: true
+          }, {
+            user: "Pierre Martin",
+            avatar: "PM",
+            time: "il y a 18min",
+            content: "Done ✅",
+            isReply: true
           }, {
             user: "superpump",
             avatar: "🚀",
@@ -356,6 +374,12 @@ const SlackIntegration = () => {
               users: ["Pierre M.", "Sophie R.", "Claire B.", "+2"]
             }]
           }, {
+            user: "Thomas Dubois",
+            avatar: "TD",
+            time: "1min ago",
+            content: "Great article Sarah! Liked and commented 👍",
+            isReply: true
+          }, {
             user: "superpump",
             avatar: "🚀",
             time: "25min ago",
@@ -371,6 +395,18 @@ const SlackIntegration = () => {
               count: 9,
               users: ["Pierre M.", "Sophie R.", "+7"]
             }]
+          }, {
+            user: "Marie Lambert",
+            avatar: "ML",
+            time: "20min ago",
+            content: "Amazing success story! Sharing with my network 🎯",
+            isReply: true
+          }, {
+            user: "Pierre Martin",
+            avatar: "PM",
+            time: "18min ago",
+            content: "Done ✅",
+            isReply: true
           }, {
             user: "superpump",
             avatar: "🚀",
