@@ -1182,7 +1182,7 @@ const SlackIntegration = () => {
                           {/* Header */}
                           <div className="flex items-baseline gap-2 mb-0.5">
                             <span className="font-bold text-[15px] text-[hsl(var(--slack-text-primary))] font-lato">{msg.user}</span>
-                            {msg.user === "superpump" && <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 bg-destructive/80 text-white border-none">AI</Badge>}
+                            {msg.user === "superpump" && <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 bg-[#F0F0F0] text-[#616061] border-none hover:bg-[#F0F0F0]">APP</Badge>}
                             <span className="text-[11px] text-[hsl(var(--slack-text-secondary))]">{msg.time}</span>
                           </div>
 
