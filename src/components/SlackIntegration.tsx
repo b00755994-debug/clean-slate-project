@@ -84,14 +84,8 @@ const SlackIntegration = () => {
             user: "superpump",
             avatar: "🚀",
             time: "il y a 2min",
-            content: "🎯 *@Sarah Martin* vient de publier sur LinkedIn !\n\n💪 L'équipe, c'est le moment de briller ! Un like, un commentaire ou un partage de votre part peut multiplier l'impact de ce post par 10. Ensemble, on va plus loin ! 🚀",
-            preview: "Après 3 mois de travail acharné, notre équipe a réussi à réduire le temps d'onboarding client de 40%. Voici les 5 stratégies clés que nous avons mises en place pour y arriver...",
-            cta: "👉 Liker et commenter sur LinkedIn",
-            stats: {
-              views: "847",
-              likes: "34",
-              comments: "8"
-            },
+            content: "*@Sarah Martin* a posté sur l'onboarding client.\nAllez le soutenir !",
+            cta: "→ Liker + Commenter",
             reactions: [{
               emoji: "🔥",
               count: 8,
@@ -100,30 +94,13 @@ const SlackIntegration = () => {
               emoji: "👏",
               count: 5,
               users: ["Pierre M.", "Sophie R.", "Claire B.", "+2"]
-            }, {
-              emoji: "💯",
-              count: 3,
-              users: ["Alex T.", "Julie C.", "Marc L."]
-            }],
-            replies: 4
-          }, {
-            user: "Thomas Dubois",
-            avatar: "TD",
-            time: "il y a 3min",
-            content: "Excellent post Sarah ! J'ajoute mon commentaire tout de suite 💬",
-            isReply: true
+            }]
           }, {
             user: "superpump",
             avatar: "🚀",
             time: "il y a 25min",
-            content: "✨ *@Marc Laurent* partage une success story client !\n\n🎉 Les vraies histoires ont 3x plus d'impact ! Prenez 30 secondes pour réagir et montrer votre soutien. Vos collègues comptent sur vous ! 💙",
-            preview: "Comment notre client TechCorp a augmenté son taux de conversion de 156% en 6 mois. Une histoire inspirante de transformation digitale que je voulais partager avec vous.",
-            cta: "👉 Découvrir et partager l'histoire",
-            stats: {
-              views: "1,243",
-              likes: "67",
-              comments: "12"
-            },
+            content: "*@Marc Laurent* a posté une success story client.\nAllez le soutenir !",
+            cta: "→ Liker + Commenter",
             reactions: [{
               emoji: "🚀",
               count: 12,
@@ -132,30 +109,13 @@ const SlackIntegration = () => {
               emoji: "👍",
               count: 9,
               users: ["Pierre M.", "Sophie R.", "+7"]
-            }, {
-              emoji: "💡",
-              count: 4,
-              users: ["Alex T.", "Julie C.", "Sarah M.", "Claire B."]
-            }],
-            replies: 3
-          }, {
-            user: "Marie Lambert",
-            avatar: "ML",
-            time: "il y a 28min",
-            content: "Quelle belle success story ! Je la partage dans mon réseau 🎯",
-            isReply: true
+            }]
           }, {
             user: "superpump",
             avatar: "🚀",
             time: "il y a 1h",
-            content: "📢 *@Julie Chen* lance un débat passionnant sur l'avenir du SaaS !\n\n🔥 Les posts qui posent des questions génèrent 3x plus d'engagement. Partagez votre point de vue en commentaire - votre expertise compte ! 💬",
-            preview: "Question pour les leaders tech : Pensez-vous que l'IA va remplacer les équipes commerciales traditionnelles d'ici 5 ans ? Mon avis peut vous surprendre... 🤔",
-            cta: "👉 Rejoindre le débat maintenant",
-            stats: {
-              views: "2,156",
-              likes: "89",
-              comments: "34"
-            },
+            content: "*@Julie Chen* a posté sur l'IA et le SaaS.\nAllez le soutenir !",
+            cta: "→ Liker + Commenter",
             reactions: [{
               emoji: "🤔",
               count: 15,
@@ -164,30 +124,13 @@ const SlackIntegration = () => {
               emoji: "💯",
               count: 8,
               users: ["Pierre M.", "Sophie R.", "+6"]
-            }, {
-              emoji: "👀",
-              count: 6,
-              users: ["Alex T.", "Julie C.", "+4"]
-            }],
-            replies: 8
-          }, {
-            user: "Pierre Martin",
-            avatar: "PM",
-            time: "il y a 1h",
-            content: "Débat super intéressant Julie ! Mon commentaire est posté 👊",
-            isReply: true
+            }]
           }, {
             user: "superpump",
             avatar: "🚀",
             time: "il y a 2h",
-            content: "💡 *@Claire Bernard* partage des insights précieux sur la Product-Led Growth !\n\n⚡ Un post éducatif comme celui-ci positionne toute l'équipe comme des experts du secteur. Amplifiez le message avec vos réseaux ! 🎯",
-            preview: "Les 7 erreurs fatales que nous avons évitées en passant à une stratégie Product-Led Growth. Thread complet avec exemples concrets et métriques à suivre...",
-            cta: "👉 Lire le thread complet",
-            stats: {
-              views: "1,567",
-              likes: "78",
-              comments: "19"
-            },
+            content: "*@Claire Bernard* a posté sur la PLG.\nAllez le soutenir !",
+            cta: "→ Liker + Commenter",
             reactions: [{
               emoji: "💡",
               count: 11,
@@ -196,12 +139,7 @@ const SlackIntegration = () => {
               emoji: "🙌",
               count: 7,
               users: ["Pierre M.", "Sophie R.", "+5"]
-            }, {
-              emoji: "🔖",
-              count: 5,
-              users: ["Alex T.", "Julie C.", "+3"]
-            }],
-            replies: 5
+            }]
           }]
         },
         analytics: {
@@ -401,14 +339,8 @@ const SlackIntegration = () => {
             user: "superpump",
             avatar: "🚀",
             time: "2min ago",
-            content: "🎯 *@Sarah Martin* just posted on LinkedIn!\n\n💪 Team, it's time to shine! A like, comment or share from you can multiply the impact of this post by 10. Together, we go further! 🚀",
-            preview: "After 3 months of hard work, our team managed to reduce client onboarding time by 40%. Here are the 5 key strategies we implemented to achieve this...",
-            cta: "👉 Like and comment on LinkedIn",
-            stats: {
-              views: "847",
-              likes: "34",
-              comments: "8"
-            },
+            content: "*@Sarah Martin* posted about client onboarding.\nGo support her!",
+            cta: "→ Like + Comment",
             reactions: [{
               emoji: "🔥",
               count: 8,
@@ -417,30 +349,13 @@ const SlackIntegration = () => {
               emoji: "👏",
               count: 5,
               users: ["Pierre M.", "Sophie R.", "Claire B.", "+2"]
-            }, {
-              emoji: "💯",
-              count: 3,
-              users: ["Alex T.", "Julie C.", "Marc L."]
-            }],
-            replies: 4
-          }, {
-            user: "Thomas Dubois",
-            avatar: "TD",
-            time: "3min ago",
-            content: "Excellent post Sarah! Adding my comment right away 💬",
-            isReply: true
+            }]
           }, {
             user: "superpump",
             avatar: "🚀",
             time: "25min ago",
-            content: "✨ *@Marc Laurent* shares a client success story!\n\n🎉 Real stories have 3x more impact! Take 30 seconds to react and show your support. Your colleagues are counting on you! 💙",
-            preview: "How our client TechCorp increased their conversion rate by 156% in 6 months. An inspiring digital transformation story I wanted to share with you.",
-            cta: "👉 Discover and share the story",
-            stats: {
-              views: "1,243",
-              likes: "67",
-              comments: "12"
-            },
+            content: "*@Marc Laurent* posted a client success story.\nGo support him!",
+            cta: "→ Like + Comment",
             reactions: [{
               emoji: "🚀",
               count: 12,
@@ -449,30 +364,13 @@ const SlackIntegration = () => {
               emoji: "👍",
               count: 9,
               users: ["Pierre M.", "Sophie R.", "+7"]
-            }, {
-              emoji: "💡",
-              count: 4,
-              users: ["Alex T.", "Julie C.", "Sarah M.", "Claire B."]
-            }],
-            replies: 3
-          }, {
-            user: "Marie Lambert",
-            avatar: "ML",
-            time: "28min ago",
-            content: "What a great success story! Sharing it with my network 🎯",
-            isReply: true
+            }]
           }, {
             user: "superpump",
             avatar: "🚀",
             time: "1h ago",
-            content: "📢 *@Julie Chen* launches a fascinating debate on the future of SaaS!\n\n🔥 Posts asking questions generate 3x more engagement. Share your point of view in the comments - your expertise matters! 💬",
-            preview: "Question for tech leaders: Do you think AI will replace traditional sales teams within 5 years? My opinion might surprise you... 🤔",
-            cta: "👉 Join the debate now",
-            stats: {
-              views: "2,156",
-              likes: "89",
-              comments: "34"
-            },
+            content: "*@Julie Chen* posted about AI and SaaS.\nGo support her!",
+            cta: "→ Like + Comment",
             reactions: [{
               emoji: "🤔",
               count: 15,
@@ -481,30 +379,13 @@ const SlackIntegration = () => {
               emoji: "💯",
               count: 8,
               users: ["Pierre M.", "Sophie R.", "+6"]
-            }, {
-              emoji: "👀",
-              count: 6,
-              users: ["Alex T.", "Julie C.", "+4"]
-            }],
-            replies: 8
-          }, {
-            user: "Pierre Martin",
-            avatar: "PM",
-            time: "1h ago",
-            content: "Super interesting debate Julie! My comment is posted 👊",
-            isReply: true
+            }]
           }, {
             user: "superpump",
             avatar: "🚀",
             time: "2h ago",
-            content: "💡 *@Claire Bernard* shares valuable insights on Product-Led Growth!\n\n⚡ An educational post like this positions the whole team as industry experts. Amplify the message with your networks! 🎯",
-            preview: "The 7 fatal mistakes we avoided when switching to a Product-Led Growth strategy. Full thread with concrete examples and metrics to track...",
-            cta: "👉 Read the full thread",
-            stats: {
-              views: "1,567",
-              likes: "78",
-              comments: "19"
-            },
+            content: "*@Claire Bernard* posted about PLG.\nGo support her!",
+            cta: "→ Like + Comment",
             reactions: [{
               emoji: "💡",
               count: 11,
@@ -513,12 +394,7 @@ const SlackIntegration = () => {
               emoji: "🙌",
               count: 7,
               users: ["Pierre M.", "Sophie R.", "+5"]
-            }, {
-              emoji: "🔖",
-              count: 5,
-              users: ["Alex T.", "Julie C.", "+3"]
-            }],
-            replies: 5
+            }]
           }]
         },
         analytics: {
@@ -899,7 +775,7 @@ const SlackIntegration = () => {
                 {/* Messages Area */}
                 <div className="flex-1 overflow-y-auto p-4 space-y-1 font-lato bg-white">
                   {activeChannel === "posts" && t.channels.posts.messages.map((msg, idx) => <div key={idx} className="group hover:bg-muted/30 -mx-4 px-4 py-2 transition-colors">
-                      <div className={`flex gap-3 ${msg.isReply ? 'ml-12' : ''}`}>
+                      <div className={`flex gap-3 ${'isReply' in msg && msg.isReply ? 'ml-12' : ''}`}>
                         {/* Avatar */}
                         <div className="w-9 h-9 rounded flex items-center justify-center flex-shrink-0 text-sm font-semibold" style={{
                       backgroundColor: msg.avatar === "🚀" ? '#4A154B' : '#E01E5A',
@@ -923,8 +799,15 @@ const SlackIntegration = () => {
                             {formatSlackText(msg.content, `posts-${idx}`)}
                           </div>
 
+                          {/* CTA Button (for minimalist messages without preview) */}
+                          {msg.cta && !('preview' in msg) && (
+                            <button className="mt-2 text-[13px] font-semibold text-[#0A66C2] hover:underline flex items-center gap-1">
+                              {msg.cta}
+                            </button>
+                          )}
+
                           {/* LinkedIn Preview Card (only for bot messages with preview) */}
-                          {msg.preview && <Card className="mt-2 border border-border hover:border-primary/50 transition-colors cursor-pointer bg-background">
+                          {'preview' in msg && msg.preview && <Card className="mt-2 border border-border hover:border-primary/50 transition-colors cursor-pointer bg-background">
                               <div className="p-3">
                                 {/* LinkedIn header */}
                                 <div className="flex items-center gap-2 mb-2">
@@ -935,23 +818,23 @@ const SlackIntegration = () => {
                                 </div>
 
                                 {/* Preview text */}
-                                <p className="text-[13px] text-foreground/80 mb-3 line-clamp-2">{msg.preview}</p>
+                                <p className="text-[13px] text-foreground/80 mb-3 line-clamp-2">{String(msg.preview)}</p>
 
                                 {/* Stats */}
-                                <div className="flex items-center gap-4 text-[11px] text-muted-foreground mb-3 pb-3 border-b border-border">
+                                {'stats' in msg && msg.stats && <div className="flex items-center gap-4 text-[11px] text-muted-foreground mb-3 pb-3 border-b border-border">
                                   <span className="flex items-center gap-1.5">
                                     <Eye className="h-3.5 w-3.5" />
-                                    <span className="font-medium">{msg.stats.views}</span>
+                                    <span className="font-medium">{(msg.stats as any).views}</span>
                                   </span>
                                   <span className="flex items-center gap-1.5">
                                     <ThumbsUp className="h-3.5 w-3.5" />
-                                    <span className="font-medium">{msg.stats.likes}</span>
+                                    <span className="font-medium">{(msg.stats as any).likes}</span>
                                   </span>
                                   <span className="flex items-center gap-1.5">
                                     <MessageSquare className="h-3.5 w-3.5" />
-                                    <span className="font-medium">{msg.stats.comments}</span>
+                                    <span className="font-medium">{(msg.stats as any).comments}</span>
                                   </span>
-                                </div>
+                                </div>}
 
                                 {/* CTA Button */}
                                 <button className="text-[13px] font-semibold text-[#0A66C2] hover:underline flex items-center gap-1">
@@ -976,9 +859,9 @@ const SlackIntegration = () => {
                               </div>
 
                               {/* Reply thread indicator */}
-                              {msg.replies > 0 && <button className="flex items-center gap-1.5 text-[11px] text-[#0A66C2] hover:underline font-medium">
+                              {'replies' in msg && (msg as any).replies > 0 && <button className="flex items-center gap-1.5 text-[11px] text-[#0A66C2] hover:underline font-medium">
                                   <MessageSquare className="h-3.5 w-3.5" />
-                                  {msg.replies} {msg.replies === 1 ? 'reply' : 'replies'}
+                                  {(msg as any).replies} {(msg as any).replies === 1 ? 'reply' : 'replies'}
                                 </button>}
                             </div>}
 
