@@ -771,7 +771,7 @@ const SlackIntegration = () => {
                         <Zap className="h-2.5 w-2.5 text-white" />
                       </div>
                       <span className="text-sm truncate flex-1 relative z-10">superpump</span>
-                      <Badge variant="secondary" className="text-[8px] px-1 py-0 h-3.5 bg-[#E8F5FD] text-[#1264A3] border-none hover:bg-[#E8F5FD] relative z-10">APP</Badge>
+                      <Badge variant="secondary" className="text-[8px] px-1 py-0 h-3.5 bg-[#F0F0F0] text-[#616061] border-none hover:bg-[#F0F0F0] relative z-10">APP</Badge>
                     </button>
                   </div>
 
@@ -804,7 +804,7 @@ const SlackIntegration = () => {
                           <Zap className="h-3 w-3 text-white" />
                         </div> : <Hash className="h-5 w-5" />}
                       {channels.find(c => c.id === activeChannel)?.data.name.replace('#', '')}
-                      {activeChannel === "dm" && <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 bg-[#E8F5FD] text-[#1264A3] border-none hover:bg-[#E8F5FD]">APP</Badge>}
+                      {activeChannel === "dm" && <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 bg-[#F0F0F0] text-[#616061] border-none hover:bg-[#F0F0F0]">APP</Badge>}
                     </h3>
                     <p className="text-sm text-muted-foreground">
                       {channels.find(c => c.id === activeChannel)?.data.description}
@@ -834,7 +834,7 @@ const SlackIntegration = () => {
                           {/* Header */}
                           <div className="flex items-baseline gap-2 mb-0.5">
                             <span className="font-bold text-[15px] text-[hsl(var(--slack-text-primary))] font-lato">{msg.user}</span>
-                            {msg.user === "superpump" && <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 bg-[#E8F5FD] text-[#1264A3] border-none hover:bg-[#E8F5FD]">APP</Badge>}
+                            {msg.user === "superpump" && <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 bg-[#F0F0F0] text-[#616061] border-none hover:bg-[#F0F0F0]">APP</Badge>}
                             <span className="text-[11px] text-[hsl(var(--slack-text-secondary))]">{msg.time}</span>
                           </div>
 
@@ -941,7 +941,7 @@ const SlackIntegration = () => {
                           <div className="flex-1 min-w-0">
                            <div className="flex items-baseline gap-2 mb-0.5">
                              <span className="font-bold text-[15px] text-[hsl(var(--slack-text-primary))] font-lato">{msg.user}</span>
-                             <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 bg-[#E8F5FD] text-[#1264A3] border-none hover:bg-[#E8F5FD] font-lato">APP</Badge>
+                             <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 bg-[#F0F0F0] text-[#616061] border-none hover:bg-[#F0F0F0] font-lato">APP</Badge>
                              <span className="text-[11px] text-[hsl(var(--slack-text-secondary))]">{msg.time}</span>
                            </div>
                             <p className="text-[15px] leading-[1.46] mb-3 whitespace-pre-line font-lato text-[hsl(var(--slack-text-primary))]">{formatSlackText(msg.content, `analytics-${idx}`)}</p>
@@ -1034,7 +1034,7 @@ const SlackIntegration = () => {
                           <div className="flex-1">
                            <div className="flex items-baseline gap-2 mb-0.5">
                              <span className="font-bold text-[15px] text-[hsl(var(--slack-text-primary))] font-lato">{msg.user}</span>
-                             <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 bg-[#E8F5FD] text-[#1264A3] border-none hover:bg-[#E8F5FD] font-lato">APP</Badge>
+                             <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 bg-[#F0F0F0] text-[#616061] border-none hover:bg-[#F0F0F0] font-lato">APP</Badge>
                              <span className="text-[11px] text-[hsl(var(--slack-text-secondary))]">{msg.time}</span>
                            </div>
                            <p className="text-[15px] leading-[1.46] mb-3 whitespace-pre-line font-lato text-[hsl(var(--slack-text-primary))]">{formatSlackText(msg.content, `leaderboard-${msgIdx}`)}</p>
@@ -1130,7 +1130,7 @@ const SlackIntegration = () => {
                           <div className="flex-1">
                            <div className="flex items-baseline gap-2 mb-0.5">
                              <span className="font-bold text-[15px] text-[hsl(var(--slack-text-primary))] font-lato">{msg.user}</span>
-                             {msg.user === "superpump" && <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 bg-[#E8F5FD] text-[#1264A3] border-none hover:bg-[#E8F5FD] font-lato">APP</Badge>}
+                             {msg.user === "superpump" && <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 bg-[#F0F0F0] text-[#616061] border-none hover:bg-[#F0F0F0] font-lato">APP</Badge>}
                              <span className="text-[11px] text-[hsl(var(--slack-text-secondary))]">{msg.time}</span>
                            </div>
                            <p className="text-[15px] leading-[1.46] mb-2 whitespace-pre-line font-lato text-[hsl(var(--slack-text-primary))]">{formatSlackText(msg.content, `share-${idx}`)}</p>
