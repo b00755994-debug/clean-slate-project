@@ -100,7 +100,7 @@ const SlackIntegration = () => {
             user: "superpump",
             avatar: "🚀",
             time: "il y a 25min",
-            content: "⚡ *New post!* *@Marc Laurent* partage une success story : comment TechCorp a augmenté son taux de conversion de 156%.\nAllez le soutenir !",
+            content: "⚡ *New post!* *@Marc Laurent* partage une success story : comment TechCorp a augmenté son taux de conversion de 156%.\nMontrez-lui votre soutien 💪",
             cta: "👉 Liker et commenter",
             ctaUrl: "https://linkedin.com/post/...",
             reactions: [{
@@ -116,7 +116,7 @@ const SlackIntegration = () => {
             user: "superpump",
             avatar: "🚀",
             time: "il y a 1h",
-            content: "⚡ *New post!* *@Julie Chen* lance un débat : l'IA va-t-elle remplacer les équipes commerciales d'ici 5 ans ?\nAllez la soutenir !",
+            content: "⚡ *New post!* *@Julie Chen* lance un débat : l'IA va-t-elle remplacer les équipes commerciales d'ici 5 ans ?\nRejoignez la conversation !",
             cta: "👉 Liker et commenter",
             ctaUrl: "https://linkedin.com/post/...",
             reactions: [{
@@ -132,7 +132,7 @@ const SlackIntegration = () => {
             user: "superpump",
             avatar: "🚀",
             time: "il y a 2h",
-            content: "⚡ *New post!* *@Claire Bernard* détaille les 7 erreurs fatales à éviter en Product-Led Growth.\nAllez la soutenir !",
+            content: "⚡ *New post!* *@Claire Bernard* détaille les 7 erreurs fatales à éviter en Product-Led Growth.\nUn petit like fait toujours plaisir 🙌",
             cta: "👉 Liker et commenter",
             ctaUrl: "https://linkedin.com/post/...",
             reactions: [{
@@ -359,7 +359,7 @@ const SlackIntegration = () => {
             user: "superpump",
             avatar: "🚀",
             time: "25min ago",
-            content: "⚡ *New post!* *@Marc Laurent* shares a success story: how TechCorp increased conversion by 156%.\nGo support him!",
+            content: "⚡ *New post!* *@Marc Laurent* shares a success story: how TechCorp increased conversion by 156%.\nShow him some love 💪",
             cta: "👉 Like and comment",
             ctaUrl: "https://linkedin.com/post/...",
             reactions: [{
@@ -375,7 +375,7 @@ const SlackIntegration = () => {
             user: "superpump",
             avatar: "🚀",
             time: "1h ago",
-            content: "⚡ *New post!* *@Julie Chen* starts a debate: will AI replace sales teams within 5 years?\nGo support her!",
+            content: "⚡ *New post!* *@Julie Chen* starts a debate: will AI replace sales teams within 5 years?\nJoin the conversation!",
             cta: "👉 Like and comment",
             ctaUrl: "https://linkedin.com/post/...",
             reactions: [{
@@ -391,7 +391,7 @@ const SlackIntegration = () => {
             user: "superpump",
             avatar: "🚀",
             time: "2h ago",
-            content: "⚡ *New post!* *@Claire Bernard* details the 7 fatal mistakes to avoid in Product-Led Growth.\nGo support her!",
+            content: "⚡ *New post!* *@Claire Bernard* details the 7 fatal mistakes to avoid in Product-Led Growth.\nA quick like goes a long way 🙌",
             cta: "👉 Like and comment",
             ctaUrl: "https://linkedin.com/post/...",
             reactions: [{
@@ -813,10 +813,10 @@ const SlackIntegration = () => {
                               href={'ctaUrl' in msg ? String(msg.ctaUrl) : '#'} 
                               target="_blank" 
                               rel="noopener noreferrer"
-                              className="mt-3 inline-flex items-center gap-2 px-4 py-2 bg-[#0A66C2] text-white text-[13px] font-semibold rounded-md hover:bg-[#004182] transition-colors shadow-sm"
+                              className="mt-2 inline-flex items-center gap-1.5 px-3 py-1 bg-[#0A66C2] text-white text-[12px] font-medium rounded hover:bg-[#004182] transition-colors"
                             >
                               {msg.cta}
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                               </svg>
                             </a>
