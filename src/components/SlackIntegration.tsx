@@ -84,8 +84,9 @@ const SlackIntegration = () => {
             user: "superpump",
             avatar: "🚀",
             time: "il y a 2min",
-            content: "*@Sarah Martin* a posté sur l'onboarding client.\nAllez le soutenir !",
-            cta: "→ Liker + Commenter",
+            content: "⚡ *New post!* *@Sarah Martin* vient de publier un article sur comment réduire le temps d'onboarding client de 40%.\nAllez la soutenir !",
+            cta: "👉 Liker et commenter",
+            ctaUrl: "https://linkedin.com/post/...",
             reactions: [{
               emoji: "🔥",
               count: 8,
@@ -99,8 +100,9 @@ const SlackIntegration = () => {
             user: "superpump",
             avatar: "🚀",
             time: "il y a 25min",
-            content: "*@Marc Laurent* a posté une success story client.\nAllez le soutenir !",
-            cta: "→ Liker + Commenter",
+            content: "⚡ *New post!* *@Marc Laurent* partage une success story : comment TechCorp a augmenté son taux de conversion de 156%.\nAllez le soutenir !",
+            cta: "👉 Liker et commenter",
+            ctaUrl: "https://linkedin.com/post/...",
             reactions: [{
               emoji: "🚀",
               count: 12,
@@ -114,8 +116,9 @@ const SlackIntegration = () => {
             user: "superpump",
             avatar: "🚀",
             time: "il y a 1h",
-            content: "*@Julie Chen* a posté sur l'IA et le SaaS.\nAllez le soutenir !",
-            cta: "→ Liker + Commenter",
+            content: "⚡ *New post!* *@Julie Chen* lance un débat : l'IA va-t-elle remplacer les équipes commerciales d'ici 5 ans ?\nAllez la soutenir !",
+            cta: "👉 Liker et commenter",
+            ctaUrl: "https://linkedin.com/post/...",
             reactions: [{
               emoji: "🤔",
               count: 15,
@@ -129,8 +132,9 @@ const SlackIntegration = () => {
             user: "superpump",
             avatar: "🚀",
             time: "il y a 2h",
-            content: "*@Claire Bernard* a posté sur la PLG.\nAllez le soutenir !",
-            cta: "→ Liker + Commenter",
+            content: "⚡ *New post!* *@Claire Bernard* détaille les 7 erreurs fatales à éviter en Product-Led Growth.\nAllez la soutenir !",
+            cta: "👉 Liker et commenter",
+            ctaUrl: "https://linkedin.com/post/...",
             reactions: [{
               emoji: "💡",
               count: 11,
@@ -339,8 +343,9 @@ const SlackIntegration = () => {
             user: "superpump",
             avatar: "🚀",
             time: "2min ago",
-            content: "*@Sarah Martin* posted about client onboarding.\nGo support her!",
-            cta: "→ Like + Comment",
+            content: "⚡ *New post!* *@Sarah Martin* just published an article on reducing client onboarding time by 40%.\nGo support her!",
+            cta: "👉 Like and comment",
+            ctaUrl: "https://linkedin.com/post/...",
             reactions: [{
               emoji: "🔥",
               count: 8,
@@ -354,8 +359,9 @@ const SlackIntegration = () => {
             user: "superpump",
             avatar: "🚀",
             time: "25min ago",
-            content: "*@Marc Laurent* posted a client success story.\nGo support him!",
-            cta: "→ Like + Comment",
+            content: "⚡ *New post!* *@Marc Laurent* shares a success story: how TechCorp increased conversion by 156%.\nGo support him!",
+            cta: "👉 Like and comment",
+            ctaUrl: "https://linkedin.com/post/...",
             reactions: [{
               emoji: "🚀",
               count: 12,
@@ -369,8 +375,9 @@ const SlackIntegration = () => {
             user: "superpump",
             avatar: "🚀",
             time: "1h ago",
-            content: "*@Julie Chen* posted about AI and SaaS.\nGo support her!",
-            cta: "→ Like + Comment",
+            content: "⚡ *New post!* *@Julie Chen* starts a debate: will AI replace sales teams within 5 years?\nGo support her!",
+            cta: "👉 Like and comment",
+            ctaUrl: "https://linkedin.com/post/...",
             reactions: [{
               emoji: "🤔",
               count: 15,
@@ -384,8 +391,9 @@ const SlackIntegration = () => {
             user: "superpump",
             avatar: "🚀",
             time: "2h ago",
-            content: "*@Claire Bernard* posted about PLG.\nGo support her!",
-            cta: "→ Like + Comment",
+            content: "⚡ *New post!* *@Claire Bernard* details the 7 fatal mistakes to avoid in Product-Led Growth.\nGo support her!",
+            cta: "👉 Like and comment",
+            ctaUrl: "https://linkedin.com/post/...",
             reactions: [{
               emoji: "💡",
               count: 11,
@@ -801,9 +809,17 @@ const SlackIntegration = () => {
 
                           {/* CTA Button (for minimalist messages without preview) */}
                           {msg.cta && !('preview' in msg) && (
-                            <button className="mt-2 text-[13px] font-semibold text-[#0A66C2] hover:underline flex items-center gap-1">
+                            <a 
+                              href={'ctaUrl' in msg ? String(msg.ctaUrl) : '#'} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="mt-3 inline-flex items-center gap-2 px-4 py-2 bg-[#0A66C2] text-white text-[13px] font-semibold rounded-md hover:bg-[#004182] transition-colors shadow-sm"
+                            >
                               {msg.cta}
-                            </button>
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                              </svg>
+                            </a>
                           )}
 
                           {/* LinkedIn Preview Card (only for bot messages with preview) */}
