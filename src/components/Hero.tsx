@@ -14,7 +14,8 @@ const Hero = () => {
     fr: {
       title1: "Votre équipe.",
       title2: "Un moteur LinkedIn.",
-      subtitle: "Rally your team. Amplify your reach. Grow your pipeline.",
+      subtitleStart: "Rally your team. Amplify your reach. ",
+      subtitleHighlight: "Grow your pipeline.",
       joinBeta: "Rejoindre la Beta",
       viewDemo: "On en parle ?",
       feature1Title: "Slack Alerts",
@@ -27,7 +28,8 @@ const Hero = () => {
     en: {
       title1: "Your team.",
       title2: "One LinkedIn engine.",
-      subtitle: "Rally your team. Amplify your reach. Grow your pipeline.",
+      subtitleStart: "Rally your team. Amplify your reach. ",
+      subtitleHighlight: "Grow your pipeline.",
       joinBeta: "Join the Beta",
       viewDemo: "Book a call with us",
       feature1Title: "Slack Alerts",
@@ -116,9 +118,10 @@ const Hero = () => {
             </span>
           </h1>
 
-          <p className="text-lg md:text-xl mb-8 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-lg md:text-xl mb-8 max-w-2xl mx-auto leading-relaxed" style={{ color: '#5A5A5A' }}>
+            {t.subtitleStart}
             <span className="bg-primary text-primary-foreground px-3 py-1 rounded-md">
-              {t.subtitle}
+              {t.subtitleHighlight}
             </span>
           </p>
 
