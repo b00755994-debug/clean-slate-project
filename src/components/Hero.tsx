@@ -95,7 +95,7 @@ const Hero = () => {
           backgroundColor: 'color-mix(in srgb, hsl(210 90% 40%) 5%, hsl(340 100% 99%))'
         }}>
             <img src={slackLogo} alt="Slack" className="h-4 w-4" />
-            <span className="text-sm font-bold text-primary tracking-wide">Free integrated Slack app</span>
+            <span className="text-sm font-bold text-primary tracking-wide">5mn Slack Setup</span>
           </div>
 
           <h1 className="text-4xl md:text-6xl font-bold mb-4 tracking-tight" style={{
