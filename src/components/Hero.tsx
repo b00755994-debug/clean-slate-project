@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Users, Linkedin, ThumbsUp, Eye, MessageSquare, Heart, PartyPopper } from "lucide-react";
+import { ArrowRight, Bell, Activity, BarChart3, ThumbsUp, Eye, MessageSquare, Heart, PartyPopper } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import slackLogo from "@/assets/slack-logo.png";
@@ -17,9 +17,12 @@ const Hero = () => {
       subtitle: "Rally your team. Amplify your reach. Grow your pipeline.",
       joinBeta: "Rejoindre la Beta",
       viewDemo: "On en parle ?",
-      impressions: "Impressions LinkedIn",
-      engagement: "Engagement d'équipe",
-      setup: "Setup Slack complet"
+      feature1Title: "Slack Alerts",
+      feature1Desc: "Notification instantanée à chaque post LinkedIn",
+      feature2Title: "Team Feed",
+      feature2Desc: "Tous les posts de votre équipe en un seul endroit",
+      feature3Title: "Analytics",
+      feature3Desc: "Mesurez la portée globale de votre équipe"
     },
     en: {
       title1: "Your team.",
@@ -27,9 +30,12 @@ const Hero = () => {
       subtitle: "Rally your team. Amplify your reach. Grow your pipeline.",
       joinBeta: "Join the Beta",
       viewDemo: "Book a call with us",
-      impressions: "LinkedIn Impressions",
-      engagement: "Team Engagement",
-      setup: "Complete Slack Setup"
+      feature1Title: "Slack Alerts",
+      feature1Desc: "Instant notification for every LinkedIn post",
+      feature2Title: "Team Feed",
+      feature2Desc: "All your team's posts in one place",
+      feature3Title: "Analytics",
+      feature3Desc: "Measure your team's global reach"
     }
   };
   const t = translations[language];
@@ -137,42 +143,42 @@ const Hero = () => {
               <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-4" style={{
                 backgroundColor: 'color-mix(in srgb, hsl(210 90% 40%) 5%, hsl(340 100% 99%))'
               }}>
-                <Linkedin className="h-7 w-7 text-primary" />
+                <Bell className="h-7 w-7 text-primary" />
               </div>
-              <div className="text-5xl font-bold mb-2 text-primary">
-                +350%
+              <div className="text-xl font-bold mb-1" style={{ color: '#1B1B1B' }}>
+                {t.feature1Title}
               </div>
-              <div className="text-sm font-medium" style={{
-              color: '#5A5A5A'
-            }}>{t.impressions}</div>
+              <div className="text-sm" style={{ color: '#5A5A5A' }}>
+                {t.feature1Desc}
+              </div>
             </div>
 
             <div className="text-center">
               <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-4" style={{
                 backgroundColor: 'color-mix(in srgb, hsl(210 90% 40%) 5%, hsl(340 100% 99%))'
               }}>
-                <img src={slackLogo} alt="Slack" className="h-7 w-7" />
+                <Activity className="h-7 w-7 text-primary" />
               </div>
-              <div className="text-5xl font-bold mb-2 text-primary">
-                5min
+              <div className="text-xl font-bold mb-1" style={{ color: '#1B1B1B' }}>
+                {t.feature2Title}
               </div>
-              <div className="text-sm font-medium" style={{
-              color: '#5A5A5A'
-            }}>{t.setup}</div>
+              <div className="text-sm" style={{ color: '#5A5A5A' }}>
+                {t.feature2Desc}
+              </div>
             </div>
 
             <div className="text-center">
               <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-4" style={{
                 backgroundColor: 'color-mix(in srgb, hsl(210 90% 40%) 5%, hsl(340 100% 99%))'
               }}>
-                <Users className="h-7 w-7 text-primary" />
+                <BarChart3 className="h-7 w-7 text-primary" />
               </div>
-              <div className="text-5xl font-bold mb-2 text-primary">
-                10x
+              <div className="text-xl font-bold mb-1" style={{ color: '#1B1B1B' }}>
+                {t.feature3Title}
               </div>
-              <div className="text-sm font-medium" style={{
-              color: '#5A5A5A'
-            }}>{t.engagement}</div>
+              <div className="text-sm" style={{ color: '#5A5A5A' }}>
+                {t.feature3Desc}
+              </div>
             </div>
           </div>
         </div>
