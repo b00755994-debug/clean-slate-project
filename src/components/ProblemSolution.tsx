@@ -6,8 +6,8 @@ const ProblemSolution = () => {
 
   const translations = {
     fr: {
-      title1: "Transformez votre équipe",
-      title2: "en moteur de croissance",
+      title1: "La plateforme la plus simple pour transformer votre équipe en",
+      title2: "pipeline.",
       subtitle: "Activez la présence LinkedIn de votre équipe",
       problemTitle: "Le défi actuel",
       problemHeading: "Difficile de mobiliser vos équipes",
@@ -28,8 +28,8 @@ const ProblemSolution = () => {
       metric: "d'impressions en moyenne"
     },
     en: {
-      title1: "Turn your team into",
-      title2: "your growth engine",
+      title1: "The simplest platform to turn your team into",
+      title2: "pipeline.",
       subtitle: "Activate your team's LinkedIn presence",
       problemTitle: "The Current Challenge",
       problemHeading: "Struggling to rally your teams",
