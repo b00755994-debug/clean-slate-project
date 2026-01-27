@@ -23,7 +23,7 @@ const Hero = () => {
       feature2Title: "Team Feed",
       feature2Desc: "Tous les posts de votre équipe en un seul endroit",
       feature3Title: "Analytics",
-      feature3Desc: "Mesurez l'impact de votre équipe sur votre pipeline"
+      feature3Desc: "Suivez reach, engagement & métriques pipeline"
     },
     en: {
       title1: "Your team.",
@@ -37,7 +37,7 @@ const Hero = () => {
       feature2Title: "Team Feed",
       feature2Desc: "All your team's posts in one place",
       feature3Title: "Analytics",
-      feature3Desc: "Measure your team's impact on your pipeline"
+      feature3Desc: "Track reach, engagement & pipeline metrics"
     }
   };
   const t = translations[language];
