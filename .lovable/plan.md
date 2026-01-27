@@ -1,99 +1,128 @@
 
-## Plan : Simplifier les messages Slack dans le mockup
+## Modifications du mockup Slack - CTA et aperçu LinkedIn
 
 ### Objectif
-Transformer les notifications de posts LinkedIn en messages minimalistes et directs, suivant cette structure :
-```
-New post !! XX a posté sur XX sujet. Allez le soutenir !
-→ Liker et commenter
-```
+1. Transformer le bouton "Like & comment" en lien hypertexte simple (texte bleu souligné)
+2. Ajouter un aperçu du post LinkedIn (4-5 lignes max avec "Show more")
 
 ### Fichier concerné
 `src/components/SlackIntegration.tsx`
 
-### Changements proposés
+---
 
-#### 1. Simplifier le contenu des messages (FR)
+### Modifications prévues
 
-**Avant** (verbeux) :
-```
-🎯 *@Sarah Martin* vient de publier sur LinkedIn !
+#### 1. Transformer le CTA en lien hypertexte
 
-💪 L'équipe, c'est le moment de briller ! Un like, un commentaire 
-ou un partage de votre part peut multiplier l'impact de ce post 
-par 10. Ensemble, on va plus loin ! 🚀
-```
-
-**Après** (minimaliste) :
-```
-*@Sarah Martin* a posté sur l'onboarding client.
-Allez le soutenir !
-```
-
-#### 2. Simplifier le CTA
-
-**Avant** :
-```
-👉 Liker et commenter sur LinkedIn
-```
-
-**Après** :
-```
-→ Liker + Commenter
-```
-
-#### 3. Réduire les emojis
-
-- Garder uniquement 1 emoji par message maximum (ou aucun)
-- Supprimer les emojis dans le CTA
-- Garder les réactions Slack (🔥, 👏, 💯) car elles sont natives à Slack
-
-#### 4. Exemples de messages simplifiés
-
-| Auteur | Sujet (variable) | Message complet |
-|--------|------------------|-----------------|
-| Sarah Martin | onboarding client | *@Sarah Martin* a posté sur l'onboarding client. Allez le soutenir ! |
-| Marc Laurent | success story | *@Marc Laurent* a posté une success story. Allez le soutenir ! |
-| Julie Chen | l'IA et le SaaS | *@Julie Chen* a posté sur l'IA et le SaaS. Allez le soutenir ! |
-| Claire Bernard | Product-Led Growth | *@Claire Bernard* a posté sur la PLG. Allez le soutenir ! |
-
-#### 5. Structure finale d'un message
-
+**Avant :**
 ```tsx
-{
-  user: "superpump",
-  avatar: "🚀",
-  time: "il y a 2min",
-  content: "*@Sarah Martin* a posté sur l'onboarding client.\nAllez le soutenir !",
-  preview: "Après 3 mois de travail acharné...", // optionnel, peut être retiré
-  cta: "→ Liker + Commenter",
-  stats: { views: "847", likes: "34", comments: "8" },
-  reactions: [...] // garder les réactions Slack
-}
+<a 
+  href={...} 
+  className="mt-2 inline-flex items-center gap-1.5 px-3 py-1 bg-[#0A66C2] text-white text-[12px] font-medium rounded hover:bg-[#004182] transition-colors"
+>
+  👉 Liker et commenter
+  <svg>...</svg>
+</a>
 ```
 
-#### 6. Option : Retirer le preview
+**Après :**
+```tsx
+<a 
+  href={...}
+  className="text-[#1264A3] hover:underline underline text-[13px]"
+>
+  → Liker et commenter
+</a>
+```
 
-Pour être encore plus minimaliste, on peut aussi supprimer le champ `preview` (l'aperçu du post LinkedIn) et ne garder que :
-- Le message court
-- Le CTA
-- Les stats (optionnel)
+Style : texte bleu Slack (#1264A3), souligné, sans fond ni bordure.
 
 ---
 
-### Résumé des modifications
+#### 2. Ajouter un aperçu du post LinkedIn
 
-| Élément | Avant | Après |
-|---------|-------|-------|
-| Longueur du message | ~4 lignes + emojis | 2 lignes max |
-| Emojis dans le texte | 4-5 par message | 0-1 |
-| CTA | "👉 Liker et commenter sur LinkedIn" | "→ Liker + Commenter" |
-| Preview du post | Présent | Optionnel (à discuter) |
-| Réponses d'équipe | Présentes | À garder ou retirer ? |
+Ajouter un champ `linkedinPreview` aux messages de type "New post" avec un contenu réaliste limité à 4-5 lignes, suivi d'un lien "Voir plus".
 
-### Questions pour affiner
+**Structure du preview :**
+```tsx
+{/* Aperçu LinkedIn */}
+<div className="mt-2 pl-3 border-l-2 border-[#E0E0E0] text-[13px] text-[#616061]">
+  <p className="whitespace-pre-line">
+    ✨ Une année de plus aux côtés du Delta Festival !
 
-Souhaites-tu également :
-1. **Retirer les previews** (aperçu du contenu du post LinkedIn) ?
-2. **Retirer les réponses d'équipe** (ex: "Excellent post Sarah !") ?
-3. **Retirer les stats** (vues, likes, commentaires) ?
+    Du 27 au 31 août, Marseille vibrera au rythme de la musique...
+  </p>
+  <a href="#" className="text-[#1264A3] hover:underline text-[13px]">
+    Voir plus
+  </a>
+</div>
+```
+
+**Exemple de contenu pour Sarah Martin :**
+```
+Après 3 mois de travail acharné avec notre équipe, nous avons réussi à réduire le temps d'onboarding client de 40%.
+
+Voici les 3 leviers principaux qui ont fait la différence :
+➡️ Automatisation des workflows...
+```
+
+---
+
+#### 3. Données à modifier
+
+Ajouter un champ `linkedinPreview` pour chaque message "New post" dans les deux langues (FR et EN) :
+
+| Message | Contenu du preview |
+|---------|-------------------|
+| Sarah Martin (onboarding) | "Après 3 mois de travail acharné avec notre équipe, nous avons réussi à réduire le temps d'onboarding client de 40%.\n\nVoici les 3 leviers principaux qui ont fait la différence :\n➡️ Automatisation des workflows de..." |
+| Marc Laurent (success story) | "Retour d'expérience incroyable : TechCorp est passé de 50 à 500 clients en 18 mois.\n\n🎯 Le secret ? Une stratégie LinkedIn coordonnée avec toute l'équipe commerciale.\n\nLes 3 piliers de leur..." |
+| Julie Chen (IA) | "L'IA va-t-elle remplacer les équipes commerciales d'ici 5 ans ? C'est la question que tout le monde se pose.\n\n🤖 Après avoir analysé 50+ entreprises SaaS, voici mon..." |
+| Claire Bernard (PLG) | "7 erreurs fatales qui tuent votre stratégie Product-Led Growth.\n\nAprès avoir accompagné 30+ startups, j'ai identifié les patterns récurrents d'échec :\n\n❌ Erreur #1 : Ne pas..." |
+
+---
+
+#### 4. Rendu final attendu
+
+```text
+┌────────────────────────────────────────────────────┐
+│ ⚡ New post! @Sarah Martin vient de publier un     │
+│ article sur comment réduire le temps d'onboarding │
+│ client de 40%.                                     │
+│ Allez la soutenir !                               │
+│                                                    │
+│ ┃ Après 3 mois de travail acharné avec notre      │
+│ ┃ équipe, nous avons réussi à réduire le temps    │
+│ ┃ d'onboarding client de 40%.                     │
+│ ┃                                                  │
+│ ┃ Voici les 3 leviers principaux...               │
+│ ┃ Voir plus                                        │
+│                                                    │
+│ → Liker et commenter                              │
+│                                                    │
+│ 🔥 8  👏 5                                         │
+└────────────────────────────────────────────────────┘
+```
+
+---
+
+### Détails techniques
+
+1. **Nouveau champ de données** : Ajouter `linkedinPreview?: string` aux objets messages dans les traductions FR et EN
+
+2. **Style du preview** :
+   - Bordure gauche grise (`border-l-2 border-[#E0E0E0]`)
+   - Padding gauche (`pl-3`)
+   - Texte gris Slack (`text-[#616061]`)
+   - Taille 13px
+
+3. **Lien "Voir plus"** :
+   - Texte bleu Slack (`text-[#1264A3]`)
+   - Souligné au survol
+
+4. **Ordre d'affichage** :
+   - Message principal
+   - Preview LinkedIn (avec "Voir plus")
+   - Lien CTA
+   - Réactions
+
+5. **Scope** : Uniquement les messages du canal `#superpump-posts` qui ont un CTA
