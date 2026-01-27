@@ -14,7 +14,7 @@ const Hero = () => {
     fr: {
       title1: "Votre équipe.",
       title2: "Un moteur LinkedIn.",
-      subtitle: "Activate your team. Turn every post into pipeline.",
+      subtitle: "Rally your team. Amplify your reach. Grow your pipeline.",
       joinBeta: "Rejoindre la Beta",
       viewDemo: "On en parle ?",
       impressions: "Impressions LinkedIn",
@@ -24,7 +24,7 @@ const Hero = () => {
     en: {
       title1: "Your team.",
       title2: "One LinkedIn engine.",
-      subtitle: "Activate your team. Turn every post into pipeline.",
+      subtitle: "Rally your team. Amplify your reach. Grow your pipeline.",
       joinBeta: "Join the Beta",
       viewDemo: "Book a call with us",
       impressions: "LinkedIn Impressions",
