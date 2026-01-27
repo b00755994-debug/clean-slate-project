@@ -12,7 +12,7 @@ const Hero = () => {
   } = useLanguage();
   const translations = {
     fr: {
-      title1: "Développez votre influence",
+      title1: "Votre équipe.",
       title2: "LinkedIn",
       subtitle: "Creator-led growth, powered by your team.",
       joinBeta: "Rejoindre la Beta",
@@ -22,7 +22,7 @@ const Hero = () => {
       setup: "Setup Slack complet"
     },
     en: {
-      title1: "Grow your LinkedIn",
+      title1: "Your team.",
       title2: "influence",
       subtitle: "Creator-led growth, powered by your team.",
       joinBeta: "Join the Beta",
