@@ -116,10 +116,10 @@ const Hero = () => {
             </span>
           </h1>
 
-          <p className="text-lg md:text-xl mb-8 max-w-2xl mx-auto leading-relaxed" style={{
-          color: '#5A5A5A'
-        }}>
-            {t.subtitle}
+          <p className="text-lg md:text-xl mb-8 max-w-2xl mx-auto leading-relaxed">
+            <span className="bg-primary text-primary-foreground px-3 py-1 rounded-md">
+              {t.subtitle}
+            </span>
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-10">
