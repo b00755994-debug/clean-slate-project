@@ -148,10 +148,10 @@ const Hero = () => {
               }}>
                 <img src={slackLogo} alt="Slack" className="h-7 w-7" />
               </div>
-              <div className="text-xl font-bold mb-1" style={{ color: '#1B1B1B' }}>
+              <div className="text-2xl font-bold mb-1 tracking-tight" style={{ color: '#1B1B1B' }}>
                 {t.feature1Title}
               </div>
-              <div className="text-sm" style={{ color: '#5A5A5A' }}>
+              <div className="text-base" style={{ color: '#4A4A4A' }}>
                 {t.feature1Desc}
               </div>
             </div>
@@ -162,10 +162,10 @@ const Hero = () => {
               }}>
                 <BookOpen className="h-7 w-7 text-primary" />
               </div>
-              <div className="text-xl font-bold mb-1" style={{ color: '#1B1B1B' }}>
+              <div className="text-2xl font-bold mb-1 tracking-tight" style={{ color: '#1B1B1B' }}>
                 {t.feature2Title}
               </div>
-              <div className="text-sm" style={{ color: '#5A5A5A' }}>
+              <div className="text-base" style={{ color: '#4A4A4A' }}>
                 {t.feature2Desc}
               </div>
             </div>
@@ -176,10 +176,10 @@ const Hero = () => {
               }}>
                 <TrendingUp className="h-7 w-7 text-primary" />
               </div>
-              <div className="text-xl font-bold mb-1" style={{ color: '#1B1B1B' }}>
+              <div className="text-2xl font-bold mb-1 tracking-tight" style={{ color: '#1B1B1B' }}>
                 {t.feature3Title}
               </div>
-              <div className="text-sm" style={{ color: '#5A5A5A' }}>
+              <div className="text-base" style={{ color: '#4A4A4A' }}>
                 {t.feature3Desc}
               </div>
             </div>
