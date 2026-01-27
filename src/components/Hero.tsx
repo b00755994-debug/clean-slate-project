@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Bell, Activity, BarChart3, ThumbsUp, Eye, MessageSquare, Heart, PartyPopper } from "lucide-react";
+import { ArrowRight, BookOpen, TrendingUp, ThumbsUp, Eye, MessageSquare, Heart, PartyPopper } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import slackLogo from "@/assets/slack-logo.png";
@@ -21,8 +21,8 @@ const Hero = () => {
       feature1Desc: "Notification instantanée à chaque post LinkedIn",
       feature2Title: "Team Feed",
       feature2Desc: "Tous les posts de votre équipe en un seul endroit",
-      feature3Title: "Analytics",
-      feature3Desc: "Mesurez la portée globale de votre équipe"
+      feature3Title: "Pipeline Analytics",
+      feature3Desc: "Mesurez l'impact de votre équipe sur votre pipeline"
     },
     en: {
       title1: "Your team.",
@@ -34,8 +34,8 @@ const Hero = () => {
       feature1Desc: "Instant notification for every LinkedIn post",
       feature2Title: "Team Feed",
       feature2Desc: "All your team's posts in one place",
-      feature3Title: "Analytics",
-      feature3Desc: "Measure your team's global reach"
+      feature3Title: "Pipeline Analytics",
+      feature3Desc: "Measure your team's impact on your pipeline"
     }
   };
   const t = translations[language];
@@ -143,7 +143,7 @@ const Hero = () => {
               <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-4" style={{
                 backgroundColor: 'color-mix(in srgb, hsl(210 90% 40%) 5%, hsl(340 100% 99%))'
               }}>
-                <Bell className="h-7 w-7 text-primary" />
+                <img src={slackLogo} alt="Slack" className="h-7 w-7" />
               </div>
               <div className="text-xl font-bold mb-1" style={{ color: '#1B1B1B' }}>
                 {t.feature1Title}
@@ -157,7 +157,7 @@ const Hero = () => {
               <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-4" style={{
                 backgroundColor: 'color-mix(in srgb, hsl(210 90% 40%) 5%, hsl(340 100% 99%))'
               }}>
-                <Activity className="h-7 w-7 text-primary" />
+                <BookOpen className="h-7 w-7 text-primary" />
               </div>
               <div className="text-xl font-bold mb-1" style={{ color: '#1B1B1B' }}>
                 {t.feature2Title}
@@ -171,7 +171,7 @@ const Hero = () => {
               <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-4" style={{
                 backgroundColor: 'color-mix(in srgb, hsl(210 90% 40%) 5%, hsl(340 100% 99%))'
               }}>
-                <BarChart3 className="h-7 w-7 text-primary" />
+                <TrendingUp className="h-7 w-7 text-primary" />
               </div>
               <div className="text-xl font-bold mb-1" style={{ color: '#1B1B1B' }}>
                 {t.feature3Title}
