@@ -1,90 +1,66 @@
 
 
-## Option B : Micro-cards avec glassmorphism
+## Effet surligné uniquement sur "Grow your pipeline."
 
 ### Objectif
-Transformer les 3 piliers actuels en micro-cards élégantes avec bordures, padding, effet glassmorphism (backdrop-blur) et interactions hover inspirées de la section Features.
-
-### Aperçu visuel
-
-```text
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                                                                             │
-│   ┌─────────────────┐   ┌─────────────────┐   ┌─────────────────┐          │
-│   │  ╭─────────────╮│   │  ╭─────────────╮│   │  ╭─────────────╮│          │
-│   │  │  [Slack]    ││   │  │  [Book]     ││   │  │  [Trend]    ││          │
-│   │  ╰─────────────╯│   │  ╰─────────────╯│   │  ╰─────────────╯│          │
-│   │                 │   │                 │   │                 │          │
-│   │  Slack Alerts   │   │  Team Feed      │   │  Pipeline       │          │
-│   │  Description... │   │  Description... │   │  Analytics      │          │
-│   └─────────────────┘   └─────────────────┘   └─────────────────┘          │
-│         hover:              hover:              hover:                      │
-│      ↑ translate-y       ↑ translate-y       ↑ translate-y                 │
-│      + shadow            + shadow            + shadow                       │
-│      + border-primary    + border-primary    + border-primary               │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
+Appliquer l'effet surligné inversé (fond Primary Blue + texte blanc) uniquement sur "Grow your pipeline." et laisser le reste du subtitle en texte normal.
 
 ### Modifications techniques
 
 **Fichier** : `src/components/Hero.tsx`
 
-**1. Structure des micro-cards**
+**1. Séparer le subtitle en deux parties dans les translations**
 
-Chaque pilier passe de :
 ```tsx
-<div className="text-center">
+const translations = {
+  fr: {
+    // ...
+    subtitleStart: "Rally your team. Amplify your reach. ",
+    subtitleHighlight: "Grow your pipeline.",
+    // ...
+  },
+  en: {
+    // ...
+    subtitleStart: "Rally your team. Amplify your reach. ",
+    subtitleHighlight: "Grow your pipeline.",
+    // ...
+  }
+};
+```
+
+**2. Modifier le rendu du paragraphe**
+
+De :
+```tsx
+<p className="text-lg md:text-xl mb-8 max-w-2xl mx-auto leading-relaxed">
+  <span className="bg-primary text-primary-foreground px-3 py-1 rounded-md">
+    {t.subtitle}
+  </span>
+</p>
 ```
 
 À :
 ```tsx
-<div className="text-center p-6 rounded-2xl border border-border/50 
-  bg-card/50 backdrop-blur-sm 
-  hover:shadow-lg hover:-translate-y-2 hover:border-primary/50 
-  transition-all duration-300 group">
-```
-
-**2. Effet sur les icônes au hover**
-
-Ajout de `group-hover:scale-110 transition-transform duration-300` sur les containers d'icônes.
-
-**3. Effet gradient sur les titres au hover**
-
-Comme dans Features.tsx :
-```tsx
-<div className="text-xl font-bold mb-1" style={{ color: '#1B1B1B' }}>
-  <span className="group-hover:hidden">{t.feature1Title}</span>
-  <span className="hidden group-hover:inline bg-gradient-to-r from-primary to-destructive bg-clip-text text-transparent">
-    {t.feature1Title}
+<p className="text-lg md:text-xl mb-8 max-w-2xl mx-auto leading-relaxed" style={{ color: '#5A5A5A' }}>
+  {t.subtitleStart}
+  <span className="bg-primary text-primary-foreground px-3 py-1 rounded-md">
+    {t.subtitleHighlight}
   </span>
-</div>
+</p>
 ```
 
-### Ce qui change visuellement
+### Rendu visuel attendu
 
-| Avant | Après |
-|-------|-------|
-| Éléments "flottants" sans délimitation | Cards avec bordures subtiles |
-| Aucune interaction | Hover : élévation + ombre + bordure primary |
-| Titres statiques | Titres en gradient au survol |
-| Icônes statiques | Icônes qui grossissent au survol |
-| Fond transparent | Fond semi-transparent avec blur (glassmorphism) |
+```text
+Rally your team. Amplify your reach. [Grow your pipeline.]
+                                       ↑
+                                  Fond bleu + texte blanc
+```
 
-### Propriétés CSS appliquées
+### Récapitulatif des changements
 
-- `p-6` : padding confortable
-- `rounded-2xl` : coins arrondis (cohérent avec les icônes)
-- `border border-border/50` : bordure subtile
-- `bg-card/50` : fond semi-transparent
-- `backdrop-blur-sm` : effet glassmorphism
-- `hover:shadow-lg` : ombre portée au survol
-- `hover:-translate-y-2` : légère élévation
-- `hover:border-primary/50` : bordure colorée au survol
-- `transition-all duration-300` : animation fluide
-- `group` : pour propager le hover aux enfants
-
-### Résultat attendu
-
-Les 3 piliers deviennent des micro-cards interactives et modernes, cohérentes avec le design system de la section Features, tout en restant légères et adaptées à leur position dans le Hero.
+| Élément | Avant | Après |
+|---------|-------|-------|
+| "Rally your team. Amplify your reach." | Fond bleu, texte blanc | Texte gris (#5A5A5A), sans fond |
+| "Grow your pipeline." | Fond bleu, texte blanc | Fond bleu, texte blanc (inchangé) |
 
