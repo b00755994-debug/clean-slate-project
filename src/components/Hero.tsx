@@ -13,7 +13,7 @@ const Hero = () => {
   const translations = {
     fr: {
       title1: "Votre équipe.",
-      title2: "LinkedIn",
+      title2: "Un moteur LinkedIn.",
       subtitle: "Creator-led growth, powered by your team.",
       joinBeta: "Rejoindre la Beta",
       viewDemo: "On en parle ?",
@@ -23,7 +23,7 @@ const Hero = () => {
     },
     en: {
       title1: "Your team.",
-      title2: "influence",
+      title2: "One LinkedIn engine.",
       subtitle: "Creator-led growth, powered by your team.",
       joinBeta: "Join the Beta",
       viewDemo: "Book a call with us",
