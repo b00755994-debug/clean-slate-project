@@ -138,52 +138,43 @@ const Hero = () => {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-3xl mx-auto">
-            <div className="text-center p-6 rounded-2xl border border-border/50 bg-card/50 backdrop-blur-sm hover:shadow-lg hover:-translate-y-2 hover:border-primary/50 transition-all duration-300 group">
-              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-4 group-hover:scale-110 transition-transform duration-300" style={{
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-3xl mx-auto">
+            <div className="text-center">
+              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-4" style={{
                 backgroundColor: 'color-mix(in srgb, hsl(210 90% 40%) 5%, hsl(340 100% 99%))'
               }}>
                 <img src={slackLogo} alt="Slack" className="h-7 w-7" />
               </div>
               <div className="text-xl font-bold mb-1" style={{ color: '#1B1B1B' }}>
-                <span className="group-hover:hidden">{t.feature1Title}</span>
-                <span className="hidden group-hover:inline bg-gradient-to-r from-primary to-destructive bg-clip-text text-transparent">
-                  {t.feature1Title}
-                </span>
+                {t.feature1Title}
               </div>
               <div className="text-sm" style={{ color: '#5A5A5A' }}>
                 {t.feature1Desc}
               </div>
             </div>
 
-            <div className="text-center p-6 rounded-2xl border border-border/50 bg-card/50 backdrop-blur-sm hover:shadow-lg hover:-translate-y-2 hover:border-primary/50 transition-all duration-300 group">
-              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-4 group-hover:scale-110 transition-transform duration-300" style={{
+            <div className="text-center">
+              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-4" style={{
                 backgroundColor: 'color-mix(in srgb, hsl(210 90% 40%) 5%, hsl(340 100% 99%))'
               }}>
                 <BookOpen className="h-7 w-7 text-primary" />
               </div>
               <div className="text-xl font-bold mb-1" style={{ color: '#1B1B1B' }}>
-                <span className="group-hover:hidden">{t.feature2Title}</span>
-                <span className="hidden group-hover:inline bg-gradient-to-r from-primary to-destructive bg-clip-text text-transparent">
-                  {t.feature2Title}
-                </span>
+                {t.feature2Title}
               </div>
               <div className="text-sm" style={{ color: '#5A5A5A' }}>
                 {t.feature2Desc}
               </div>
             </div>
 
-            <div className="text-center p-6 rounded-2xl border border-border/50 bg-card/50 backdrop-blur-sm hover:shadow-lg hover:-translate-y-2 hover:border-primary/50 transition-all duration-300 group">
-              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-4 group-hover:scale-110 transition-transform duration-300" style={{
+            <div className="text-center">
+              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-4" style={{
                 backgroundColor: 'color-mix(in srgb, hsl(210 90% 40%) 5%, hsl(340 100% 99%))'
               }}>
                 <TrendingUp className="h-7 w-7 text-primary" />
               </div>
               <div className="text-xl font-bold mb-1" style={{ color: '#1B1B1B' }}>
-                <span className="group-hover:hidden">{t.feature3Title}</span>
-                <span className="hidden group-hover:inline bg-gradient-to-r from-primary to-destructive bg-clip-text text-transparent">
-                  {t.feature3Title}
-                </span>
+                {t.feature3Title}
               </div>
               <div className="text-sm" style={{ color: '#5A5A5A' }}>
                 {t.feature3Desc}
