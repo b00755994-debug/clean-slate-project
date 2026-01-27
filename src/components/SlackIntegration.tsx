@@ -84,9 +84,8 @@ const SlackIntegration = () => {
             user: "superpump",
             avatar: "🚀",
             time: "il y a 2min",
-            content: "⚡ *New post!* *@Sarah Martin* vient de publier un article sur comment réduire le temps d'onboarding client de 40%.\nAllez la soutenir !",
+            content: "⚡ *New post!* *@Sarah Martin* vient de publier un article sur comment réduire le temps d'onboarding client de 40%.\nAllez la soutenir ! <https://linkedin.com/post/...|→ Liker et commenter>",
             linkedinPreview: "Après 3 mois de travail acharné avec notre équipe, nous avons réussi à réduire le temps d'onboarding client de 40%.\n\nVoici les 3 leviers principaux qui ont fait la différence :\n➡️ Automatisation des workflows de...",
-            cta: "→ Liker et commenter",
             ctaUrl: "https://linkedin.com/post/...",
             reactions: [{
               emoji: "🔥",
@@ -107,10 +106,8 @@ const SlackIntegration = () => {
             user: "superpump",
             avatar: "🚀",
             time: "il y a 25min",
-            content: "⚡ *New post!* *@Marc Laurent* partage une success story : comment TechCorp a augmenté son taux de conversion de 156%.\nMontrez-lui votre soutien 💪",
+            content: "⚡ *New post!* *@Marc Laurent* partage une success story : comment TechCorp a augmenté son taux de conversion de 156%.\nMontrez-lui votre soutien 💪 <https://linkedin.com/post/...|→ Liker et commenter>",
             linkedinPreview: "Retour d'expérience incroyable : TechCorp est passé de 50 à 500 clients en 18 mois.\n\n🎯 Le secret ? Une stratégie LinkedIn coordonnée avec toute l'équipe commerciale.\n\nLes 3 piliers de leur...",
-            cta: "→ Liker et commenter",
-            ctaUrl: "https://linkedin.com/post/...",
             reactions: [{
               emoji: "🚀",
               count: 12,
@@ -136,10 +133,8 @@ const SlackIntegration = () => {
             user: "superpump",
             avatar: "🚀",
             time: "il y a 1h",
-            content: "⚡ *New post!* *@Julie Chen* lance un débat : l'IA va-t-elle remplacer les équipes commerciales d'ici 5 ans ?\nRejoignez la conversation !",
+            content: "⚡ *New post!* *@Julie Chen* lance un débat : l'IA va-t-elle remplacer les équipes commerciales d'ici 5 ans ?\nRejoignez la conversation ! <https://linkedin.com/post/...|→ Liker et commenter>",
             linkedinPreview: "L'IA va-t-elle remplacer les équipes commerciales d'ici 5 ans ? C'est la question que tout le monde se pose.\n\n🤖 Après avoir analysé 50+ entreprises SaaS, voici mon...",
-            cta: "→ Liker et commenter",
-            ctaUrl: "https://linkedin.com/post/...",
             reactions: [{
               emoji: "🤔",
               count: 15,
@@ -153,10 +148,8 @@ const SlackIntegration = () => {
             user: "superpump",
             avatar: "🚀",
             time: "il y a 2h",
-            content: "⚡ *New post!* *@Claire Bernard* détaille les 7 erreurs fatales à éviter en Product-Led Growth.\nUn petit like fait toujours plaisir 🙌",
+            content: "⚡ *New post!* *@Claire Bernard* détaille les 7 erreurs fatales à éviter en Product-Led Growth.\nUn petit like fait toujours plaisir 🙌 <https://linkedin.com/post/...|→ Liker et commenter>",
             linkedinPreview: "7 erreurs fatales qui tuent votre stratégie Product-Led Growth.\n\nAprès avoir accompagné 30+ startups, j'ai identifié les patterns récurrents d'échec :\n\n❌ Erreur #1 : Ne pas...",
-            cta: "→ Liker et commenter",
-            ctaUrl: "https://linkedin.com/post/...",
             reactions: [{
               emoji: "💡",
               count: 11,
@@ -365,10 +358,8 @@ const SlackIntegration = () => {
             user: "superpump",
             avatar: "🚀",
             time: "2min ago",
-            content: "⚡ *New post!* *@Sarah Martin* just published an article on reducing client onboarding time by 40%.\nGo support her!",
+            content: "⚡ *New post!* *@Sarah Martin* just published an article on reducing client onboarding time by 40%.\nGo support her! <https://linkedin.com/post/...|→ Like and comment>",
             linkedinPreview: "After 3 months of hard work with our team, we managed to reduce client onboarding time by 40%.\n\nHere are the 3 main levers that made the difference:\n➡️ Workflow automation...",
-            cta: "→ Like and comment",
-            ctaUrl: "https://linkedin.com/post/...",
             reactions: [{
               emoji: "🔥",
               count: 8,
@@ -388,10 +379,8 @@ const SlackIntegration = () => {
             user: "superpump",
             avatar: "🚀",
             time: "25min ago",
-            content: "⚡ *New post!* *@Marc Laurent* shares a success story: how TechCorp increased conversion by 156%.\nShow him some love 💪",
+            content: "⚡ *New post!* *@Marc Laurent* shares a success story: how TechCorp increased conversion by 156%.\nShow him some love 💪 <https://linkedin.com/post/...|→ Like and comment>",
             linkedinPreview: "Incredible feedback: TechCorp went from 50 to 500 clients in 18 months.\n\n🎯 The secret? A coordinated LinkedIn strategy with the entire sales team.\n\nThe 3 pillars of their...",
-            cta: "→ Like and comment",
-            ctaUrl: "https://linkedin.com/post/...",
             reactions: [{
               emoji: "🚀",
               count: 12,
@@ -417,10 +406,8 @@ const SlackIntegration = () => {
             user: "superpump",
             avatar: "🚀",
             time: "1h ago",
-            content: "⚡ *New post!* *@Julie Chen* starts a debate: will AI replace sales teams within 5 years?\nJoin the conversation!",
+            content: "⚡ *New post!* *@Julie Chen* starts a debate: will AI replace sales teams within 5 years?\nJoin the conversation! <https://linkedin.com/post/...|→ Like and comment>",
             linkedinPreview: "Will AI replace sales teams within 5 years? That's the question everyone is asking.\n\n🤖 After analyzing 50+ SaaS companies, here's my...",
-            cta: "→ Like and comment",
-            ctaUrl: "https://linkedin.com/post/...",
             reactions: [{
               emoji: "🤔",
               count: 15,
@@ -434,10 +421,8 @@ const SlackIntegration = () => {
             user: "superpump",
             avatar: "🚀",
             time: "2h ago",
-            content: "⚡ *New post!* *@Claire Bernard* details the 7 fatal mistakes to avoid in Product-Led Growth.\nA quick like goes a long way 🙌",
+            content: "⚡ *New post!* *@Claire Bernard* details the 7 fatal mistakes to avoid in Product-Led Growth.\nA quick like goes a long way 🙌 <https://linkedin.com/post/...|→ Like and comment>",
             linkedinPreview: "7 fatal mistakes that kill your Product-Led Growth strategy.\n\nAfter supporting 30+ startups, I've identified the recurring patterns of failure:\n\n❌ Mistake #1: Not...",
-            cta: "→ Like and comment",
-            ctaUrl: "https://linkedin.com/post/...",
             reactions: [{
               emoji: "💡",
               count: 11,
@@ -854,25 +839,13 @@ const SlackIntegration = () => {
                           {/* LinkedIn Preview (for messages with linkedinPreview) */}
                           {'linkedinPreview' in msg && msg.linkedinPreview && (
                             <div className="mt-2 pl-3 border-l-2 border-[#E0E0E0] text-[13px] text-[#616061]">
-                              <p className="whitespace-pre-line">
+                              <span className="whitespace-pre-line">
                                 {String(msg.linkedinPreview)}
-                              </p>
+                              </span>{' '}
                               <a href="#" className="text-[#1264A3] hover:underline text-[13px]">
                                 {language === 'fr' ? 'Voir plus' : 'Show more'}
                               </a>
                             </div>
-                          )}
-
-                          {/* CTA Link (for messages with CTA but no preview card) */}
-                          {msg.cta && !('preview' in msg) && (
-                            <a 
-                              href={'ctaUrl' in msg ? String(msg.ctaUrl) : '#'} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="mt-2 inline-block text-[#1264A3] underline text-[13px] hover:text-[#0B4F8A]"
-                            >
-                              {msg.cta}
-                            </a>
                           )}
 
                           {/* LinkedIn Preview Card (only for bot messages with preview) */}
