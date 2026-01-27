@@ -120,9 +120,9 @@ const Hero = () => {
           </h1>
 
           <p className="text-lg md:text-xl mb-8 max-w-2xl mx-auto leading-relaxed" style={{ color: '#5A5A5A' }}>
-            The simplest platform to turn your team into{' '}
+            {t.subtitleStart}
             <span className="bg-primary/15 text-primary px-1.5 py-0.5 rounded-sm font-semibold">
-              pipeline.
+              {t.subtitleHighlight}
             </span>
           </p>
 
