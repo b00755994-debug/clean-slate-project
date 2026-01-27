@@ -21,7 +21,7 @@ const Hero = () => {
       feature1Desc: "Notification instantanée à chaque post LinkedIn",
       feature2Title: "Team Feed",
       feature2Desc: "Tous les posts de votre équipe en un seul endroit",
-      feature3Title: "Pipeline Analytics",
+      feature3Title: "Analytics",
       feature3Desc: "Mesurez l'impact de votre équipe sur votre pipeline"
     },
     en: {
@@ -34,7 +34,7 @@ const Hero = () => {
       feature1Desc: "Instant notification for every LinkedIn post",
       feature2Title: "Team Feed",
       feature2Desc: "All your team's posts in one place",
-      feature3Title: "Pipeline Analytics",
+      feature3Title: "Analytics",
       feature3Desc: "Measure your team's impact on your pipeline"
     }
   };
