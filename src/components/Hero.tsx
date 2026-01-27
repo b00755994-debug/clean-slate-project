@@ -113,8 +113,9 @@ const Hero = () => {
               {t.title1}
             </span>
             <br />
+            <span style={{ color: '#1B1B1B' }}>your </span>
             <span className="bg-gradient-to-r from-primary to-destructive bg-clip-text text-transparent">
-              {t.title2}
+              growth engine.
             </span>
           </h1>
 
