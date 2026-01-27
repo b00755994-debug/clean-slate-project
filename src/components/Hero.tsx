@@ -12,8 +12,8 @@ const Hero = () => {
   } = useLanguage();
   const translations = {
     fr: {
-      title1: "Votre équipe.",
-      title2: "Un moteur LinkedIn.",
+      title1: "Transformez votre équipe",
+      title2: "en moteur de croissance.",
       subtitleStart: "Rally your team. Amplify your reach. ",
       subtitleHighlight: "Grow your pipeline.",
       joinBeta: "Rejoindre la Beta",
@@ -26,8 +26,8 @@ const Hero = () => {
       feature3Desc: "Suivez reach, engagement & métriques pipeline"
     },
     en: {
-      title1: "Your team.",
-      title2: "One LinkedIn engine.",
+      title1: "Turn your team into",
+      title2: "your growth engine.",
       subtitleStart: "Rally your team. Amplify your reach. ",
       subtitleHighlight: "Grow your pipeline.",
       joinBeta: "Join the Beta",
