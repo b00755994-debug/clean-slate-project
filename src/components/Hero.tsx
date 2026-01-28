@@ -126,7 +126,7 @@ const Hero = () => {
             </span>
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-10">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-4">
             <Link to="/auth?mode=signup">
               <Button variant="hero" size="lg" className="text-base h-12 px-6">
                 {t.joinBeta}
@@ -141,6 +141,7 @@ const Hero = () => {
               </Button>
             </Link>
           </div>
+          <p className="text-sm text-muted-foreground mb-10">No credit card required</p>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-3xl mx-auto">
             <div className="text-center">
