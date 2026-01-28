@@ -123,7 +123,7 @@ export function OnboardingFlow() {
     const { data: newWorkspace, error } = await supabase
       .from('workspaces')
       .insert({
-        user_id: user.id,
+        user_id: user.id, // Keep for backward compatibility during transition
         workspace_name: workspaceName,
         is_connected: false,
       })
@@ -136,13 +136,22 @@ export function OnboardingFlow() {
       return null;
     }
 
+    // Create workspace_member entry for the owner
+    const { error: memberError } = await supabase
+      .from('workspace_members')
+      .insert({
+        profile_id: user.id,
+        workspace_id: newWorkspace.id,
+        role: 'owner',
+        joined_at: new Date().toISOString(),
+      });
+
+    if (memberError) {
+      console.error('Error creating workspace membership:', memberError);
+      // Don't fail the whole flow, workspace was created
+    }
+
     setWorkspaceId(newWorkspace.id);
-    
-    // Also update the profile with workspace_id
-    await supabase
-      .from('profiles')
-      .update({ workspace_id: newWorkspace.id })
-      .eq('id', user.id);
     
     return newWorkspace.id;
   };

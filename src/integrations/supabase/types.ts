@@ -629,6 +629,41 @@ export type Database = {
           },
         ]
       }
+      workspace_members: {
+        Row: {
+          id: string
+          invited_at: string | null
+          joined_at: string | null
+          profile_id: string
+          role: Database["public"]["Enums"]["workspace_role"]
+          workspace_id: string
+        }
+        Insert: {
+          id?: string
+          invited_at?: string | null
+          joined_at?: string | null
+          profile_id: string
+          role?: Database["public"]["Enums"]["workspace_role"]
+          workspace_id: string
+        }
+        Update: {
+          id?: string
+          invited_at?: string | null
+          joined_at?: string | null
+          profile_id?: string
+          role?: Database["public"]["Enums"]["workspace_role"]
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workspace_members_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       workspaces: {
         Row: {
           connected_at: string | null
@@ -672,11 +707,19 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_workspace_role: {
+        Args: { _user_id: string; _workspace_id: string }
+        Returns: Database["public"]["Enums"]["workspace_role"]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
+        Returns: boolean
+      }
+      is_workspace_member: {
+        Args: { _user_id: string; _workspace_id: string }
         Returns: boolean
       }
     }
@@ -685,6 +728,7 @@ export type Database = {
       billable_user_status: "onboarding" | "live" | "stopped"
       billable_user_type: "employee" | "marketing"
       post_status: "new" | "stopped" | "ongoing" | "old"
+      workspace_role: "owner" | "admin" | "member"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -816,6 +860,7 @@ export const Constants = {
       billable_user_status: ["onboarding", "live", "stopped"],
       billable_user_type: ["employee", "marketing"],
       post_status: ["new", "stopped", "ongoing", "old"],
+      workspace_role: ["owner", "admin", "member"],
     },
   },
 } as const

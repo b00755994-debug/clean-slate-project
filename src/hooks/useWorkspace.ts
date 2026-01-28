@@ -2,12 +2,28 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 
+type WorkspaceRole = 'owner' | 'admin' | 'member';
+
+interface WorkspaceMembership {
+  workspace_id: string;
+  role: WorkspaceRole;
+  joined_at: string | null;
+  workspace: {
+    id: string;
+    workspace_name: string;
+    is_connected: boolean;
+    connected_at: string | null;
+    slack_workspace_auth: string | null;
+  };
+}
+
 interface Workspace {
   id: string;
   workspace_name: string;
   is_connected: boolean;
   connected_at: string | null;
   slack_workspace_auth: string | null;
+  role: WorkspaceRole;
 }
 
 export function useWorkspace() {
@@ -17,22 +33,44 @@ export function useWorkspace() {
   const { data: workspace, isLoading, isFetching, refetch } = useQuery({
     queryKey: ['workspace', user?.id],
     queryFn: async () => {
+      // Get workspace through workspace_members junction table
       const { data, error } = await supabase
-        .from('workspaces')
-        .select('*')
-        .eq('user_id', user?.id)
+        .from('workspace_members')
+        .select(`
+          workspace_id,
+          role,
+          joined_at,
+          workspace:workspaces (
+            id,
+            workspace_name,
+            is_connected,
+            connected_at,
+            slack_workspace_auth
+          )
+        `)
+        .eq('profile_id', user?.id)
         .maybeSingle();
 
       if (error) throw error;
       
-      if (!data) return null;
+      if (!data || !data.workspace) return null;
+      
+      // Handle the workspace data - it comes as an object, not an array
+      const ws = data.workspace as unknown as {
+        id: string;
+        workspace_name: string;
+        is_connected: boolean | null;
+        connected_at: string | null;
+        slack_workspace_auth: string | null;
+      };
       
       return {
-        id: data.id,
-        workspace_name: data.workspace_name,
-        is_connected: data.is_connected || false,
-        connected_at: data.connected_at,
-        slack_workspace_auth: data.slack_workspace_auth,
+        id: ws.id,
+        workspace_name: ws.workspace_name,
+        is_connected: ws.is_connected || false,
+        connected_at: ws.connected_at,
+        slack_workspace_auth: ws.slack_workspace_auth,
+        role: data.role as WorkspaceRole,
       } as Workspace;
     },
     enabled: !!user,
