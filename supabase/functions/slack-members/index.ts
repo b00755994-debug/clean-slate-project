@@ -52,20 +52,35 @@ Deno.serve(async (req) => {
 
     console.log(`Fetching Slack members for user ${user.id}`);
 
-    // Get the user's workspace
-    const { data: workspace, error: workspaceError } = await supabase
-      .from('workspaces')
-      .select('id, slack_workspace_auth, is_connected, workspace_name')
-      .eq('user_id', user.id)
+    // Get the user's workspace via workspace_members junction table
+    const { data: membership, error: membershipError } = await supabase
+      .from('workspace_members')
+      .select(`
+        workspace_id,
+        workspace:workspaces (
+          id,
+          slack_workspace_auth,
+          is_connected,
+          workspace_name
+        )
+      `)
+      .eq('profile_id', user.id)
       .maybeSingle();
 
-    if (workspaceError) {
-      console.error('Error fetching workspace:', workspaceError);
+    if (membershipError) {
+      console.error('Error fetching workspace membership:', membershipError);
       return new Response(
         JSON.stringify({ error: 'Failed to fetch workspace' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+
+    const workspace = membership?.workspace as unknown as {
+      id: string;
+      slack_workspace_auth: string | null;
+      is_connected: boolean | null;
+      workspace_name: string;
+    } | null;
 
     console.log(`Workspace found:`, workspace ? { 
       id: workspace.id, 
