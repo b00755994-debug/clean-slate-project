@@ -139,18 +139,22 @@ serve(async (req) => {
     // Initialize Supabase client with service role
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Check if user already has a workspace (should exist from onboarding Step 1)
-    const { data: existingWorkspace } = await supabase
-      .from('workspaces')
-      .select('id')
-      .eq('user_id', userId)
+    // Check if user already has a workspace via workspace_members junction table
+    const { data: membership, error: membershipError } = await supabase
+      .from('workspace_members')
+      .select('workspace_id, workspace:workspaces(id)')
+      .eq('profile_id', userId)
       .maybeSingle();
+
+    if (membershipError) {
+      console.error('Error fetching workspace membership:', membershipError);
+    }
 
     let workspaceId: string;
 
-    if (existingWorkspace) {
+    if (membership?.workspace_id) {
       // Update existing workspace (expected path - workspace created in onboarding)
-      workspaceId = existingWorkspace.id;
+      workspaceId = membership.workspace_id;
       
       const { error: updateError } = await supabase
         .from('workspaces')
@@ -169,10 +173,10 @@ serve(async (req) => {
       // Fallback: Create workspace if it doesn't exist (shouldn't happen with new flow)
       console.warn(`No workspace found for user ${userId}, creating one as fallback`);
       
+      // Create workspace without user_id (new architecture)
       const { data: newWorkspace, error: insertError } = await supabase
         .from('workspaces')
         .insert({
-          user_id: userId,
           workspace_name: teamName || 'My Workspace',
           is_connected: true,
           connected_at: new Date().toISOString(),
@@ -190,6 +194,22 @@ serve(async (req) => {
         });
       }
       workspaceId = newWorkspace.id;
+
+      // Create workspace_members entry with owner role
+      const { error: memberError } = await supabase
+        .from('workspace_members')
+        .insert({
+          workspace_id: workspaceId,
+          profile_id: userId,
+          role: 'owner',
+          joined_at: new Date().toISOString(),
+        });
+
+      if (memberError) {
+        console.error('Error creating workspace membership:', memberError);
+      }
+      
+      console.log(`Created new workspace ${workspaceId} with owner membership for user ${userId}`);
     }
 
     // Check if Slack auth already exists for this workspace OR for this Slack team

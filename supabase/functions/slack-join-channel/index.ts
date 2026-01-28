@@ -45,14 +45,35 @@ serve(async (req) => {
       );
     }
 
-    // Fetch user's workspace
-    const { data: workspace, error: workspaceError } = await supabase
-      .from('workspaces')
-      .select('id, is_connected, slack_workspace_auth')
-      .eq('user_id', user.id)
+    // Fetch user's workspace via workspace_members junction table
+    const { data: membership, error: membershipError } = await supabase
+      .from('workspace_members')
+      .select(`
+        workspace_id,
+        workspace:workspaces (
+          id,
+          is_connected,
+          slack_workspace_auth
+        )
+      `)
+      .eq('profile_id', user.id)
       .maybeSingle();
 
-    if (workspaceError || !workspace) {
+    if (membershipError) {
+      console.error('Error fetching workspace membership:', membershipError);
+      return new Response(
+        JSON.stringify({ error: 'Failed to fetch workspace' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const workspace = membership?.workspace as unknown as {
+      id: string;
+      is_connected: boolean | null;
+      slack_workspace_auth: string | null;
+    } | null;
+
+    if (!workspace) {
       return new Response(
         JSON.stringify({ error: 'Workspace not found' }),
         { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
