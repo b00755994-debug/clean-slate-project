@@ -1,96 +1,52 @@
 
-# Plan : Révision des CTAs de la Landing Page
+# Plan : Message neutre pour l'inscription
 
-## Objectif
+## Contexte
 
-Modifier les boutons d'action sur le Header et le Hero pour diriger les utilisateurs vers les bonnes destinations :
-- **"Join the Beta"** → Page d'inscription (nouveaux utilisateurs)
-- **"Log in"** → Page de connexion (utilisateurs existants)  
-- **"Book a call with us"** → Page Beta avec calendrier
+Supabase ne renvoie pas d'erreur quand un utilisateur essaie de s'inscrire avec un email déjà utilisé (pour des raisons de sécurité anti-énumération). Le code actuel affiche donc "Inscription réussie" même si l'email existe déjà, ce qui peut être trompeur.
 
 ---
 
-## Changements à effectuer
+## Solution
 
-### 1. Header (`src/components/Header.tsx`)
-
-| Bouton | Avant | Après |
-|--------|-------|-------|
-| "Se connecter" / "Sign in" | `/auth` | `/auth` (inchangé - mode connexion) |
-| "Rejoindre la Beta" / "Join the Beta" | `/beta` | `/auth?mode=signup` (mode inscription) |
-
-### 2. Hero (`src/components/Hero.tsx`)
-
-| Bouton | Avant | Après |
-|--------|-------|-------|
-| "Rejoindre la Beta" / "Join the Beta" | `/beta` | `/auth?mode=signup` (mode inscription) |
-| "On en parle ?" / "Book a call with us" | `/beta` | `/beta` (inchangé - calendrier) |
-
-### 3. Page Auth (`src/pages/Auth.tsx`)
-
-Ajouter la lecture du paramètre URL `?mode=signup` pour afficher automatiquement le formulaire d'inscription au lieu de connexion.
+Modifier le message de succès à l'inscription pour utiliser une formulation neutre qui ne révèle pas si l'email existe ou non dans la base de données.
 
 ---
 
-## Détails techniques
+## Changement à effectuer
 
-### Modification de Auth.tsx
+### Fichier : `src/pages/Auth.tsx`
 
-Ajouter un `useEffect` pour détecter le paramètre `mode` :
-
+**Ligne 111-114 - Avant :**
 ```typescript
-useEffect(() => {
-  const params = new URLSearchParams(location.search);
-  if (params.get('mode') === 'signup') {
-    setIsLogin(false);
-  }
-}, [location.search]);
+toast({
+  title: 'Inscription réussie',
+  description: 'Un email de confirmation vous a été envoyé. Vérifiez votre boîte de réception (et vos spams si besoin).',
+});
 ```
 
-### Modification de Header.tsx
-
-```tsx
-// Avant
-<Link to="/beta">
-  <Button variant="hero">{t.joinBeta}</Button>
-</Link>
-
-// Après
-<Link to="/auth?mode=signup">
-  <Button variant="hero">{t.joinBeta}</Button>
-</Link>
-```
-
-### Modification de Hero.tsx
-
-```tsx
-// Bouton principal - Avant
-<Link to="/beta">
-
-// Bouton principal - Après
-<Link to="/auth?mode=signup">
-
-// Bouton secondaire reste inchangé
-<Link to="/beta">
+**Après :**
+```typescript
+toast({
+  title: 'Vérifiez votre email',
+  description: 'Si cette adresse n\'est pas déjà enregistrée, vous recevrez un lien de confirmation. Pensez à vérifier vos spams.',
+});
 ```
 
 ---
 
-## Fichiers modifiés
+## Pourquoi ce changement ?
 
-| Fichier | Modification |
-|---------|--------------|
-| `src/pages/Auth.tsx` | Lecture du query param `?mode=signup` pour pré-sélectionner l'inscription |
-| `src/components/Header.tsx` | Redirection du bouton "Join the Beta" vers `/auth?mode=signup` |
-| `src/components/Hero.tsx` | Redirection du bouton "Join the Beta" vers `/auth?mode=signup` |
+| Aspect | Avant | Après |
+|--------|-------|-------|
+| Sécurité | Indique implicitement que l'email n'existe pas | Ne révèle rien sur l'existence du compte |
+| UX | Peut être trompeur si l'email existe déjà | Message honnête et clair |
+| Anti-énumération | Partiellement conforme | Totalement conforme |
 
 ---
 
 ## Résultat attendu
 
-| Bouton | Destination | Comportement |
-|--------|-------------|--------------|
-| Header → "Log in" | `/auth` | Affiche le formulaire de connexion |
-| Header → "Join the Beta" | `/auth?mode=signup` | Affiche le formulaire d'inscription |
-| Hero → "Join the Beta" | `/auth?mode=signup` | Affiche le formulaire d'inscription |
-| Hero → "Book a call with us" | `/beta` | Affiche le calendrier Cal.com |
+Quand un utilisateur soumet le formulaire d'inscription :
+- **Nouvel email** → Reçoit l'email de confirmation + voit le message neutre
+- **Email existant** → Ne reçoit pas d'email + voit le même message neutre (pas de fuite d'information)
