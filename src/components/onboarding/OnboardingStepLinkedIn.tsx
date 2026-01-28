@@ -3,36 +3,18 @@ import { Plus, X, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
-
-interface SlackMember {
-  id: string;
-  name: string;
-  email: string | null;
-  avatar_url: string | null;
-}
 
 interface LinkedInProfileInput {
   id: string;
   firstName: string;
   lastName: string;
   linkedinUrl: string;
-  slackUserId: string | null;
 }
 
-interface OnboardingStep3Props {
+interface OnboardingStepLinkedInProps {
   onComplete: (profiles: LinkedInProfileInput[]) => Promise<void>;
   onSkip: () => void;
-  slackMembers: SlackMember[];
-  isSlackConnected: boolean;
   language: 'fr' | 'en';
 }
 
@@ -42,8 +24,6 @@ const translations = {
     firstName: "Prénom",
     lastName: "Nom",
     url: "URL LinkedIn",
-    slack: "Slack",
-    noSlackUser: "Aucun",
     addProfile: "Ajouter un profil",
     complete: "Continuer",
     completing: "Configuration...",
@@ -54,8 +34,6 @@ const translations = {
     firstName: "First name",
     lastName: "Last name",
     url: "LinkedIn URL",
-    slack: "Slack",
-    noSlackUser: "None",
     addProfile: "Add a profile",
     complete: "Continue",
     completing: "Setting up...",
@@ -63,17 +41,15 @@ const translations = {
   },
 };
 
-export function OnboardingStep3({ 
+export function OnboardingStepLinkedIn({ 
   onComplete, 
   onSkip, 
-  slackMembers, 
-  isSlackConnected, 
   language 
-}: OnboardingStep3Props) {
+}: OnboardingStepLinkedInProps) {
   const t = translations[language];
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [profiles, setProfiles] = useState<LinkedInProfileInput[]>([
-    { id: crypto.randomUUID(), firstName: '', lastName: '', linkedinUrl: '', slackUserId: null },
+    { id: crypto.randomUUID(), firstName: '', lastName: '', linkedinUrl: '' },
   ]);
   const [focusedRowId, setFocusedRowId] = useState<string | null>(null);
   const inputRefs = useRef<Map<string, HTMLInputElement>>(new Map());
@@ -82,7 +58,7 @@ export function OnboardingStep3({
     const newId = crypto.randomUUID();
     setProfiles([
       ...profiles,
-      { id: newId, firstName: '', lastName: '', linkedinUrl: '', slackUserId: null },
+      { id: newId, firstName: '', lastName: '', linkedinUrl: '' },
     ]);
     setFocusedRowId(newId);
   };
@@ -103,7 +79,7 @@ export function OnboardingStep3({
     }
   };
 
-  const updateProfile = (id: string, field: keyof LinkedInProfileInput, value: string | null) => {
+  const updateProfile = (id: string, field: keyof LinkedInProfileInput, value: string) => {
     setProfiles(
       profiles.map((p) => (p.id === id ? { ...p, [field]: value } : p))
     );
@@ -126,11 +102,6 @@ export function OnboardingStep3({
 
   const validCount = profiles.filter(isProfileComplete).length;
 
-  // Calculate grid columns based on Slack connection
-  const gridCols = isSlackConnected && slackMembers.length > 0 
-    ? "grid-cols-[1fr_1fr_2fr_1fr_auto]" 
-    : "grid-cols-[1fr_1fr_2fr_auto]";
-
   return (
     <Card className="border shadow-sm max-w-2xl mx-auto">
       <CardHeader className="text-center pb-4">
@@ -142,10 +113,7 @@ export function OnboardingStep3({
           {profiles.map((profile) => (
             <div
               key={profile.id}
-              className={cn(
-                "group grid gap-3 items-center py-2 px-2 rounded-lg transition-all",
-                gridCols
-              )}
+              className="group grid gap-3 items-center py-2 px-2 rounded-lg transition-all grid-cols-[1fr_1fr_2fr_auto]"
             >
               <Input
                 ref={(el) => {
@@ -168,34 +136,6 @@ export function OnboardingStep3({
                 value={profile.linkedinUrl}
                 onChange={(e) => updateProfile(profile.id, 'linkedinUrl', e.target.value)}
               />
-              {isSlackConnected && slackMembers.length > 0 && (
-                <Select
-                  value={profile.slackUserId || 'none'}
-                  onValueChange={(value) =>
-                    updateProfile(profile.id, 'slackUserId', value === 'none' ? null : value)
-                  }
-                >
-                  <SelectTrigger className="h-10">
-                    <SelectValue placeholder={t.noSlackUser} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">{t.noSlackUser}</SelectItem>
-                    {slackMembers.map((member) => (
-                      <SelectItem key={member.id} value={member.id}>
-                        <div className="flex items-center gap-2">
-                          <Avatar className="h-5 w-5">
-                            <AvatarImage src={member.avatar_url || undefined} />
-                            <AvatarFallback className="text-[10px]">
-                              {member.name.slice(0, 2).toUpperCase()}
-                            </AvatarFallback>
-                          </Avatar>
-                          <span className="truncate">{member.name}</span>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
               <button
                 type="button"
                 className={cn(

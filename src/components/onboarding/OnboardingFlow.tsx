@@ -2,12 +2,11 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { OnboardingStepper } from './OnboardingStepper';
 import { OnboardingStep1, Step1Data } from './OnboardingStep1';
-import { OnboardingStep2 } from './OnboardingStep2';
-import { OnboardingStep3 } from './OnboardingStep3';
+import { OnboardingStepLinkedIn } from './OnboardingStepLinkedIn';
+import { OnboardingStepSlack } from './OnboardingStepSlack';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { useWorkspace } from '@/hooks/useWorkspace';
-import { useSlackMembers } from '@/hooks/useSlackMembers';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -40,12 +39,11 @@ interface LinkedInProfileInput {
   firstName: string;
   lastName: string;
   linkedinUrl: string;
-  slackUserId: string | null;
 }
 
 const stepLabels = {
-  fr: ['Infos', 'Slack', 'Profils'],
-  en: ['Info', 'Slack', 'Profiles'],
+  fr: ['Infos', 'Profils', 'Slack'],
+  en: ['Info', 'Profiles', 'Slack'],
 };
 
 export function OnboardingFlow() {
@@ -57,9 +55,16 @@ export function OnboardingFlow() {
   
   const [currentStep, setCurrentStep] = useState(1);
   const [step1Data, setStep1Data] = useState<Step1Data | null>(null);
+  const [workspaceId, setWorkspaceId] = useState<string | null>(workspace?.id ?? null);
 
   const isSlackConnected = workspace?.is_connected ?? false;
-  const { data: slackMembers = [] } = useSlackMembers(isSlackConnected);
+
+  // Sync workspaceId when workspace loads
+  useEffect(() => {
+    if (workspace?.id && !workspaceId) {
+      setWorkspaceId(workspace.id);
+    }
+  }, [workspace?.id, workspaceId]);
 
   // Handle Slack OAuth callback
   useEffect(() => {
@@ -99,6 +104,49 @@ export function OnboardingFlow() {
     }
   };
 
+  // Create or get workspace for the user
+  const ensureWorkspace = async (companyName?: string): Promise<string | null> => {
+    if (!user) return null;
+
+    // If we already have a workspace, use it
+    if (workspaceId) return workspaceId;
+
+    // Check if user already has a workspace (from useWorkspace hook or DB)
+    if (workspace?.id) {
+      setWorkspaceId(workspace.id);
+      return workspace.id;
+    }
+
+    // Create a new workspace
+    const workspaceName = companyName?.trim() || `${user.email}'s Workspace`;
+    
+    const { data: newWorkspace, error } = await supabase
+      .from('workspaces')
+      .insert({
+        user_id: user.id,
+        workspace_name: workspaceName,
+        is_connected: false,
+      })
+      .select('id')
+      .single();
+
+    if (error) {
+      console.error('Error creating workspace:', error);
+      toast.error(language === 'fr' ? 'Erreur lors de la création du workspace' : 'Error creating workspace');
+      return null;
+    }
+
+    setWorkspaceId(newWorkspace.id);
+    
+    // Also update the profile with workspace_id
+    await supabase
+      .from('profiles')
+      .update({ workspace_id: newWorkspace.id })
+      .eq('id', user.id);
+    
+    return newWorkspace.id;
+  };
+
   const completeOnboarding = async () => {
     if (!user) return;
 
@@ -125,22 +173,41 @@ export function OnboardingFlow() {
     }
 
     toast.success(language === 'fr' ? 'Configuration terminée !' : 'Setup complete!');
-    // AuthContext ne refetch pas automatiquement le profil après cette UPDATE;
-    // du coup ProtectedRoute peut re-rediriger vers /onboarding avec un profil encore "stale".
-    // Un reload garantit la relecture du profil (onboarding_completed=true) avant d'afficher /dashboard.
     window.location.replace('/dashboard');
   };
 
-  const handleStep1Next = (data: Step1Data) => {
+  // Step 1: User info → Create workspace
+  const handleStep1Next = async (data: Step1Data) => {
     setStep1Data(data);
+    
+    // Create workspace with company name
+    const wsId = await ensureWorkspace(data.companyName);
+    if (!wsId) {
+      toast.error(language === 'fr' ? 'Erreur lors de la création du workspace' : 'Error creating workspace');
+      return;
+    }
+    
     setCurrentStep(2);
   };
 
-  const handleStep2Next = () => {
-    setCurrentStep(3);
+  const handleSkipStep1 = async () => {
+    // Create workspace with default name even when skipping
+    const wsId = await ensureWorkspace();
+    if (!wsId) {
+      toast.error(language === 'fr' ? 'Erreur lors de la création du workspace' : 'Error creating workspace');
+      return;
+    }
+    
+    setCurrentStep(2);
   };
 
-  const handleStep3Complete = async (profiles: LinkedInProfileInput[]) => {
+  // Step 2: LinkedIn profiles → Insert billable_users with workspace_id
+  const handleStep2Complete = async (profiles: LinkedInProfileInput[]) => {
+    if (!workspaceId) {
+      toast.error(language === 'fr' ? 'Workspace non trouvé' : 'Workspace not found');
+      return;
+    }
+
     // Add LinkedIn profiles with validation
     for (const profile of profiles) {
       const trimmedName = `${profile.firstName} ${profile.lastName}`.trim();
@@ -160,9 +227,10 @@ export function OnboardingFlow() {
       
       const { error } = await supabase.from('billable_users').insert({
         user_id: user?.id,
+        workspace_id: workspaceId, // Now correctly linked!
         profile_name: trimmedName,
         linkedin_url: trimmedUrl,
-        slack_user_id: profile.slackUserId,
+        slack_user_id: null, // Will be mapped later in dashboard
       });
 
       if (error) {
@@ -170,15 +238,16 @@ export function OnboardingFlow() {
       }
     }
 
-    await completeOnboarding();
-  };
-
-  const handleSkipStep1 = () => {
-    setCurrentStep(2);
+    setCurrentStep(3);
   };
 
   const handleSkipStep2 = () => {
     setCurrentStep(3);
+  };
+
+  // Step 3: Slack (optional) → Complete onboarding
+  const handleStep3Complete = async () => {
+    await completeOnboarding();
   };
 
   const handleSkipStep3 = async () => {
@@ -187,7 +256,7 @@ export function OnboardingFlow() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
-      <div className={`w-full ${currentStep === 3 ? 'max-w-2xl' : 'max-w-lg'}`}>
+      <div className={`w-full ${currentStep === 2 ? 'max-w-2xl' : 'max-w-lg'}`}>
         {currentStep === 1 && (
           <div className="text-center mb-6">
             <h1 className="text-2xl font-semibold">
@@ -219,19 +288,17 @@ export function OnboardingFlow() {
             />
           )}
           {currentStep === 2 && (
-            <OnboardingStep2
-              onNext={handleStep2Next}
+            <OnboardingStepLinkedIn
+              onComplete={handleStep2Complete}
               onSkip={handleSkipStep2}
-              onConnectSlack={handleConnectSlack}
-              isSlackConnected={isSlackConnected}
               language={language}
             />
           )}
           {currentStep === 3 && (
-            <OnboardingStep3
-              onComplete={handleStep3Complete}
+            <OnboardingStepSlack
+              onNext={handleStep3Complete}
               onSkip={handleSkipStep3}
-              slackMembers={slackMembers}
+              onConnectSlack={handleConnectSlack}
               isSlackConnected={isSlackConnected}
               language={language}
             />
