@@ -123,7 +123,6 @@ export function OnboardingFlow() {
     const { data: newWorkspace, error } = await supabase
       .from('workspaces')
       .insert({
-        user_id: user.id, // Keep for backward compatibility during transition
         workspace_name: workspaceName,
         is_connected: false,
       })

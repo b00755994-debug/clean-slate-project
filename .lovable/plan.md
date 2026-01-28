@@ -1,7 +1,7 @@
 
 # Plan: Restructuration du modèle de données multi-utilisateurs
 
-## ✅ IMPLÉMENTÉ
+## ✅ TERMINÉ
 
 ### Architecture finale
 
@@ -28,39 +28,36 @@
                           └─────────────────┘           └──────────────────┘  └──────────────┘
 ```
 
-## Ce qui a été fait
+## Migrations effectuées
 
-### 1. Nouvelle table `workspace_members`
-- Enum `workspace_role` créé: 'owner', 'admin', 'member'
-- Table de jonction créée avec contrainte unique (profile_id, workspace_id)
-- Données existantes migrées (propriétaires actuels)
+### 1. Création de `workspace_members` ✅
+- Enum `workspace_role`: 'owner', 'admin', 'member'
+- Table de jonction avec contrainte unique (profile_id, workspace_id)
+- Données migrées automatiquement (propriétaires existants → role 'owner')
 
-### 2. Fonctions helper sécurisées
+### 2. Fonctions helper sécurisées ✅
 - `is_workspace_member(user_id, workspace_id)` → boolean
 - `get_workspace_role(user_id, workspace_id)` → workspace_role
 
-### 3. Politiques RLS mises à jour
-Toutes les tables utilisent maintenant `is_workspace_member()` pour l'accès:
-- `workspaces`
-- `billable_users`
-- `posts`
-- `slack_workspace_auth`
-- `vetted_content`
-- `post_history`
-- `posts_activity`
+### 3. Politiques RLS mises à jour ✅
+Toutes les tables utilisent `is_workspace_member()`:
+- workspaces, billable_users, posts, slack_workspace_auth
+- vetted_content, post_history, posts_activity, workspace_members
 
-### 4. Code mis à jour
-- `useWorkspace.ts`: Récupère via `workspace_members` au lieu de `workspaces.user_id`
-- `OnboardingFlow.tsx`: Crée une entrée `workspace_members` avec rôle 'owner' lors de la création
+### 4. Nettoyage des colonnes obsolètes ✅
+Colonnes supprimées:
+- `profiles.workspace_id`
+- `billable_users.user_id`
+- `workspaces.user_id`
 
-## Fonctionnalités futures activées
+### 5. Code mis à jour ✅
+- `useWorkspace.ts`: Récupère via `workspace_members`
+- `OnboardingFlow.tsx`: Crée `workspace_members` avec rôle 'owner'
+- `VettedLibrary.tsx`: Utilise `workspace_members`
+- `Admin.tsx`: Utilise `workspace_members`
+
+## Fonctionnalités activées
 
 1. **Invitations d'équipe**: Un owner peut inviter d'autres utilisateurs
 2. **Rôles différenciés**: owner, admin, member avec permissions différentes
 3. **Multi-workspace**: Un utilisateur peut appartenir à plusieurs workspaces
-
-## TODO (optionnel)
-- [ ] Supprimer `workspaces.user_id` après période de transition
-- [ ] Supprimer `profiles.workspace_id` après période de transition
-- [ ] Supprimer `billable_users.user_id` après période de transition
-- [ ] Interface d'invitation de membres

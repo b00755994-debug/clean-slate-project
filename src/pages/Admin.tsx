@@ -77,18 +77,19 @@ export default function Admin() {
     // For each profile, get their slack and linkedin data
     const usersWithData = await Promise.all(
       profiles.map(async (profile) => {
-        // Check slack connection
-        const { data: workspace } = await supabase
-          .from('workspaces')
-          .select('is_connected')
-          .eq('user_id', profile.id)
+        // Check slack connection via workspace_members
+        const { data: membership } = await supabase
+          .from('workspace_members')
+          .select('workspace_id, workspace:workspaces(is_connected)')
+          .eq('profile_id', profile.id)
           .maybeSingle();
 
-        // Count linkedin profiles
-        const { count } = await supabase
+        // Count linkedin profiles via workspace
+        const workspaceId = membership?.workspace_id;
+        const { count } = workspaceId ? await supabase
           .from('billable_users')
           .select('*', { count: 'exact', head: true })
-          .eq('user_id', profile.id);
+          .eq('workspace_id', workspaceId) : { count: 0 };
 
         return {
           id: profile.id,
@@ -96,7 +97,7 @@ export default function Admin() {
           full_name: profile.full_name,
           plan: profile.plan || 'pro',
           created_at: profile.created_at,
-          slack_connected: workspace?.is_connected || false,
+          slack_connected: (membership?.workspace as { is_connected?: boolean } | null)?.is_connected || false,
           linkedin_profiles_count: count || 0,
         };
       })
