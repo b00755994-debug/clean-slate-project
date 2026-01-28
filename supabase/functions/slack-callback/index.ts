@@ -27,6 +27,7 @@ serve(async (req) => {
     // Whitelist of allowed redirect domains
     const ALLOWED_REDIRECT_DOMAINS = [
       'superpump.lovable.app',
+      'superpump.tech',
       'localhost',
       'lovableproject.com'
     ];
@@ -188,21 +189,32 @@ serve(async (req) => {
       workspaceId = newWorkspace.id;
     }
 
-    // Check if Slack auth already exists for this workspace
-    const { data: existingAuth } = await supabase
+    // Check if Slack auth already exists for this workspace OR for this Slack team
+    const { data: existingAuthByWorkspace } = await supabase
       .from('slack_workspace_auth')
       .select('id')
       .eq('superpump_workspace_id', workspaceId)
       .maybeSingle();
 
+    const { data: existingAuthBySlackId } = await supabase
+      .from('slack_workspace_auth')
+      .select('id, superpump_workspace_id')
+      .eq('slack_id', teamId)
+      .maybeSingle();
+
     let slackAuthId: string;
 
+    // Prioritize: if auth exists for this workspace, update it
+    // If auth exists for this Slack team (but different workspace), update it and reassign
+    const existingAuth = existingAuthByWorkspace || existingAuthBySlackId;
+
     if (existingAuth) {
-      // Update existing Slack auth
+      // Update existing Slack auth (upsert behavior)
       console.log(`Updating existing Slack auth ${existingAuth.id} for workspace ${workspaceId}`);
       const { error: updateAuthError } = await supabase
         .from('slack_workspace_auth')
         .update({
+          superpump_workspace_id: workspaceId, // Reassign to current workspace
           slack_id: teamId,
           token: accessToken,
           scopes: scopes,
@@ -212,6 +224,12 @@ serve(async (req) => {
 
       if (updateAuthError) {
         console.error('Error updating Slack auth:', updateAuthError);
+        return new Response(null, {
+          status: 302,
+          headers: {
+            'Location': `${dashboardUrl}?slack_error=auth_storage_error`,
+          },
+        });
       }
       slackAuthId = existingAuth.id;
     } else {
