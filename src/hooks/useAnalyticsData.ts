@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { useWorkspace } from './useWorkspace';
-import { subDays, startOfMonth, subMonths, format } from 'date-fns';
+import { subDays, startOfMonth, subMonths } from 'date-fns';
 
 interface OverviewKPIs {
   totalPosts: { value: number; change: number };
@@ -54,6 +54,12 @@ interface ImpressionsDistributionPoint {
   count: number;
 }
 
+// Helper to get post date (linkedin_created_at preferred, created_at as fallback)
+function getPostDate(post: { linkedin_created_at?: string | null; created_at?: string | null }): Date | null {
+  const dateStr = post.linkedin_created_at || post.created_at;
+  return dateStr ? new Date(dateStr) : null;
+}
+
 export function useAnalyticsData() {
   const { user } = useAuth();
   const { workspace } = useWorkspace();
@@ -80,10 +86,29 @@ export function useAnalyticsData() {
 
   const hasProfiles = userProfileIds.length > 0;
 
+  // Fetch all posts for analytics (no date filter at DB level - filter in JS)
+  const { data: allPosts = [], isLoading: isLoadingPosts } = useQuery({
+    queryKey: ['analytics-all-posts', workspace?.id, userProfileIds],
+    queryFn: async () => {
+      if (!hasProfiles) return [];
+      
+      const { data, error } = await supabase
+        .from('posts')
+        .select('id, impressions, reactions, comments, likes, praise, empathy, appreciation, interest, linkedin_created_at, created_at, linkedin_profiles')
+        .in('linkedin_profiles', userProfileIds);
+      
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!workspace?.id && hasProfiles,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+  });
+
   const { data: overviewKPIs, isLoading: isLoadingKPIs } = useQuery({
-    queryKey: ['analytics-overview-kpis', user?.id, userProfileIds],
+    queryKey: ['analytics-overview-kpis', user?.id, allPosts.length],
     queryFn: async (): Promise<OverviewKPIs> => {
-      if (!hasProfiles) {
+      if (!hasProfiles || allPosts.length === 0) {
         return {
           totalPosts: { value: 0, change: 0 },
           totalImpressions: { value: 0, change: 0 },
@@ -96,37 +121,29 @@ export function useAnalyticsData() {
       const thirtyDaysAgo = subDays(now, 30);
       const sixtyDaysAgo = subDays(now, 60);
 
-      // Get posts for the current 30-day period
-      const { data: currentPosts, error: currentError } = await supabase
-        .from('posts')
-        .select('id, impressions, linkedin_profiles')
-        .in('linkedin_profiles', userProfileIds)
-        .gte('linkedin_created_at', thirtyDaysAgo.toISOString().split('T')[0]);
+      // Filter posts by date in JavaScript
+      const currentPosts = allPosts.filter(p => {
+        const postDate = getPostDate(p);
+        return postDate && postDate >= thirtyDaysAgo;
+      });
 
-      if (currentError) throw currentError;
-
-      // Get posts for the previous 30-day period (for comparison)
-      const { data: previousPosts, error: previousError } = await supabase
-        .from('posts')
-        .select('id, impressions, linkedin_profiles')
-        .in('linkedin_profiles', userProfileIds)
-        .gte('linkedin_created_at', sixtyDaysAgo.toISOString().split('T')[0])
-        .lt('linkedin_created_at', thirtyDaysAgo.toISOString().split('T')[0]);
-
-      if (previousError) throw previousError;
+      const previousPosts = allPosts.filter(p => {
+        const postDate = getPostDate(p);
+        return postDate && postDate >= sixtyDaysAgo && postDate < thirtyDaysAgo;
+      });
 
       // Calculate current period metrics
-      const currentTotalPosts = currentPosts?.length || 0;
-      const currentTotalImpressions = Math.round((currentPosts?.reduce((sum, p) => sum + (Number(p.impressions) || 0), 0) || 0) / 100) * 100;
-      const currentActiveContributors = new Set(currentPosts?.map(p => p.linkedin_profiles).filter(Boolean)).size;
+      const currentTotalPosts = currentPosts.length;
+      const currentTotalImpressions = Math.round((currentPosts.reduce((sum, p) => sum + (Number(p.impressions) || 0), 0)) / 100) * 100;
+      const currentActiveContributors = new Set(currentPosts.map(p => p.linkedin_profiles).filter(Boolean)).size;
       const currentAvgPosts = currentActiveContributors > 0 
         ? Math.round((currentTotalPosts / currentActiveContributors) * 10) / 10 
         : 0;
 
       // Calculate previous period metrics
-      const previousTotalPosts = previousPosts?.length || 0;
-      const previousTotalImpressions = Math.round((previousPosts?.reduce((sum, p) => sum + (Number(p.impressions) || 0), 0) || 0) / 100) * 100;
-      const previousActiveContributors = new Set(previousPosts?.map(p => p.linkedin_profiles).filter(Boolean)).size;
+      const previousTotalPosts = previousPosts.length;
+      const previousTotalImpressions = Math.round((previousPosts.reduce((sum, p) => sum + (Number(p.impressions) || 0), 0)) / 100) * 100;
+      const previousActiveContributors = new Set(previousPosts.map(p => p.linkedin_profiles).filter(Boolean)).size;
       const previousAvgPosts = previousActiveContributors > 0 
         ? Math.round((previousTotalPosts / previousActiveContributors) * 10) / 10 
         : 0;
@@ -156,40 +173,27 @@ export function useAnalyticsData() {
         },
       };
     },
-    enabled: !!user && hasProfiles,
+    enabled: !!user && hasProfiles && allPosts.length > 0,
     staleTime: 5 * 60 * 1000,
   });
 
   const { data: trendData, isLoading: isLoadingTrend } = useQuery({
-    queryKey: ['analytics-trend-data', user?.id, userProfileIds],
+    queryKey: ['analytics-trend-data', user?.id, allPosts.length],
     queryFn: async (): Promise<TrendDataPoint[]> => {
-      if (!hasProfiles) return [];
+      if (!hasProfiles || allPosts.length === 0) return [];
 
       const monthsData: TrendDataPoint[] = [];
       const monthKeys = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
 
-      // Get all posts from the last 12 months
-      const twelveMonthsAgo = subMonths(new Date(), 12);
-      
-      const { data: posts, error } = await supabase
-        .from('posts')
-        .select('id, impressions, linkedin_created_at, linkedin_profiles')
-        .in('linkedin_profiles', userProfileIds)
-        .gte('linkedin_created_at', twelveMonthsAgo.toISOString().split('T')[0]);
-
-      if (error) throw error;
-
-      // Group by month
       for (let i = 11; i >= 0; i--) {
         const monthDate = subMonths(new Date(), i);
         const monthStart = startOfMonth(monthDate);
         const monthEnd = startOfMonth(subMonths(monthDate, -1));
         
-        const monthPosts = posts?.filter(p => {
-          if (!p.linkedin_created_at) return false;
-          const postDate = new Date(p.linkedin_created_at);
-          return postDate >= monthStart && postDate < monthEnd;
-        }) || [];
+        const monthPosts = allPosts.filter(p => {
+          const postDate = getPostDate(p);
+          return postDate && postDate >= monthStart && postDate < monthEnd;
+        });
 
         const monthKey = monthKeys[monthDate.getMonth()];
         
@@ -202,13 +206,13 @@ export function useAnalyticsData() {
 
       return monthsData;
     },
-    enabled: !!user && hasProfiles,
+    enabled: !!user && hasProfiles && allPosts.length > 0,
     staleTime: 5 * 60 * 1000,
   });
 
   // Team Activation KPIs
   const { data: teamActivationKPIs, isLoading: isLoadingActivation } = useQuery({
-    queryKey: ['analytics-team-activation-kpis', user?.id, userProfileIds],
+    queryKey: ['analytics-team-activation-kpis', user?.id, userProfileIds.length, allPosts.length],
     queryFn: async (): Promise<TeamActivationKPIs> => {
       if (!hasProfiles) {
         return {
@@ -223,57 +227,43 @@ export function useAnalyticsData() {
       const thirtyDaysAgo = subDays(now, 30);
       const sixtyDaysAgo = subDays(now, 60);
 
-      // Get total billable users for this workspace
-      const { data: allUsers, error: usersError } = await supabase
-        .from('billable_users')
-        .select('id')
-        .eq('workspace_id', workspace?.id);
+      const totalTeamMembers = userProfileIds.length;
 
-      if (usersError) throw usersError;
-      const totalTeamMembers = allUsers?.length || 0;
+      // Filter posts by date
+      const currentPosts = allPosts.filter(p => {
+        const postDate = getPostDate(p);
+        return postDate && postDate >= thirtyDaysAgo;
+      });
 
-      // Get posts for current period
-      const { data: currentPosts, error: currentError } = await supabase
-        .from('posts')
-        .select('id, linkedin_profiles, linkedin_created_at')
-        .in('linkedin_profiles', userProfileIds)
-        .gte('linkedin_created_at', thirtyDaysAgo.toISOString().split('T')[0]);
-
-      if (currentError) throw currentError;
-
-      // Get posts for previous period
-      const { data: previousPosts, error: previousError } = await supabase
-        .from('posts')
-        .select('id, linkedin_profiles, linkedin_created_at')
-        .in('linkedin_profiles', userProfileIds)
-        .gte('linkedin_created_at', sixtyDaysAgo.toISOString().split('T')[0])
-        .lt('linkedin_created_at', thirtyDaysAgo.toISOString().split('T')[0]);
-
-      if (previousError) throw previousError;
+      const previousPosts = allPosts.filter(p => {
+        const postDate = getPostDate(p);
+        return postDate && postDate >= sixtyDaysAgo && postDate < thirtyDaysAgo;
+      });
 
       // Current period metrics
-      const currentActiveContributors = new Set(currentPosts?.map(p => p.linkedin_profiles).filter(Boolean)).size;
+      const currentActiveContributors = new Set(currentPosts.map(p => p.linkedin_profiles).filter(Boolean)).size;
       const currentActivePercent = totalTeamMembers > 0 
         ? Math.round((currentActiveContributors / totalTeamMembers) * 100) 
         : 0;
       const currentPostsPerContributor = currentActiveContributors > 0 
-        ? Math.round((currentPosts?.length || 0) / currentActiveContributors * 10) / 10 
+        ? Math.round(currentPosts.length / currentActiveContributors * 10) / 10 
         : 0;
 
       // Previous period metrics
-      const previousActiveContributors = new Set(previousPosts?.map(p => p.linkedin_profiles).filter(Boolean)).size;
+      const previousActiveContributors = new Set(previousPosts.map(p => p.linkedin_profiles).filter(Boolean)).size;
       const previousActivePercent = totalTeamMembers > 0 
         ? Math.round((previousActiveContributors / totalTeamMembers) * 100) 
         : 0;
       const previousPostsPerContributor = previousActiveContributors > 0 
-        ? Math.round((previousPosts?.length || 0) / previousActiveContributors * 10) / 10 
+        ? Math.round(previousPosts.length / previousActiveContributors * 10) / 10 
         : 0;
 
       // Calculate posting regularity (% of contributors who posted at least once per week in last 4 weeks)
       const fourWeeksAgo = subDays(now, 28);
-      const weeklyPosts = currentPosts?.filter(p => 
-        p.linkedin_created_at && new Date(p.linkedin_created_at) >= fourWeeksAgo
-      ) || [];
+      const weeklyPosts = currentPosts.filter(p => {
+        const postDate = getPostDate(p);
+        return postDate && postDate >= fourWeeksAgo;
+      });
       
       // Count contributors who posted at least 4 times in 4 weeks (weekly)
       const contributorPostCounts: Record<string, number> = {};
@@ -317,33 +307,22 @@ export function useAnalyticsData() {
 
   // Activation trend data (contributors per month)
   const { data: activationTrendData, isLoading: isLoadingActivationTrend } = useQuery({
-    queryKey: ['analytics-activation-trend', user?.id, userProfileIds],
+    queryKey: ['analytics-activation-trend', user?.id, allPosts.length],
     queryFn: async (): Promise<ActivationTrendDataPoint[]> => {
-      if (!hasProfiles) return [];
+      if (!hasProfiles || allPosts.length === 0) return [];
 
       const monthsData: ActivationTrendDataPoint[] = [];
       const monthKeys = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
-
-      const twelveMonthsAgo = subMonths(new Date(), 12);
-      
-      const { data: posts, error } = await supabase
-        .from('posts')
-        .select('id, linkedin_created_at, linkedin_profiles')
-        .in('linkedin_profiles', userProfileIds)
-        .gte('linkedin_created_at', twelveMonthsAgo.toISOString().split('T')[0]);
-
-      if (error) throw error;
 
       for (let i = 11; i >= 0; i--) {
         const monthDate = subMonths(new Date(), i);
         const monthStart = startOfMonth(monthDate);
         const monthEnd = startOfMonth(subMonths(monthDate, -1));
         
-        const monthPosts = posts?.filter(p => {
-          if (!p.linkedin_created_at) return false;
-          const postDate = new Date(p.linkedin_created_at);
-          return postDate >= monthStart && postDate < monthEnd;
-        }) || [];
+        const monthPosts = allPosts.filter(p => {
+          const postDate = getPostDate(p);
+          return postDate && postDate >= monthStart && postDate < monthEnd;
+        });
 
         const activeContributors = new Set(monthPosts.map(p => p.linkedin_profiles).filter(Boolean)).size;
         const monthKey = monthKeys[monthDate.getMonth()];
@@ -356,15 +335,15 @@ export function useAnalyticsData() {
 
       return monthsData;
     },
-    enabled: !!user && hasProfiles,
+    enabled: !!user && hasProfiles && allPosts.length > 0,
     staleTime: 5 * 60 * 1000,
   });
 
   // Posting heatmap data (real data based on post timestamps)
   const { data: postingHeatmapData, isLoading: isLoadingHeatmap } = useQuery({
-    queryKey: ['analytics-posting-heatmap', user?.id, userProfileIds],
+    queryKey: ['analytics-posting-heatmap', user?.id, allPosts.length],
     queryFn: async (): Promise<HeatmapCell[]> => {
-      if (!hasProfiles) return [];
+      if (!hasProfiles || allPosts.length === 0) return [];
 
       const DAYS_KEYS = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
       const HOURS_KEYS = ['6h', '8h', '10h', '12h', '14h', '16h', '18h', '20h'];
@@ -378,25 +357,15 @@ export function useAnalyticsData() {
         });
       });
 
-      // Get all posts with their creation timestamps
-      const { data: posts, error } = await supabase
-        .from('posts')
-        .select('id, impressions, linkedin_created_at, created_at')
-        .in('linkedin_profiles', userProfileIds);
-
-      if (error) throw error;
-
       // Group posts by day and hour
-      posts?.forEach(post => {
-        // Use linkedin_created_at if available, otherwise created_at
-        const timestamp = post.linkedin_created_at || post.created_at;
-        if (!timestamp) return;
+      allPosts.forEach(post => {
+        const postDate = getPostDate(post);
+        if (!postDate) return;
 
-        const date = new Date(timestamp);
-        const dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday, etc.
-        const hour = date.getHours();
+        const dayOfWeek = postDate.getDay(); // 0 = Sunday, 1 = Monday, etc.
+        const hour = postDate.getHours();
 
-        // Map to our day keys (reorder to start with Lun)
+        // Map to our day keys
         const dayKey = DAYS_KEYS[dayOfWeek];
         
         // Map hour to closest 2-hour bucket
@@ -433,15 +402,15 @@ export function useAnalyticsData() {
 
       return result;
     },
-    enabled: !!user && hasProfiles,
+    enabled: !!user && hasProfiles && allPosts.length > 0,
     staleTime: 5 * 60 * 1000,
   });
 
   // Reach & Impact KPIs
   const { data: reachKPIs, isLoading: isLoadingReach } = useQuery({
-    queryKey: ['analytics-reach-kpis', user?.id, userProfileIds],
+    queryKey: ['analytics-reach-kpis', user?.id, allPosts.length],
     queryFn: async (): Promise<ReachKPIs> => {
-      if (!hasProfiles) {
+      if (!hasProfiles || allPosts.length === 0) {
         return {
           totalImpressions: { value: 0, change: 0 },
           avgImpressionsPerPost: { value: 0, change: 0 },
@@ -454,32 +423,24 @@ export function useAnalyticsData() {
       const thirtyDaysAgo = subDays(now, 30);
       const sixtyDaysAgo = subDays(now, 60);
 
-      // Get posts for current period with engagement metrics
-      const { data: currentPosts, error: currentError } = await supabase
-        .from('posts')
-        .select('id, impressions, reactions, comments, likes, praise, empathy, appreciation, interest')
-        .in('linkedin_profiles', userProfileIds)
-        .gte('linkedin_created_at', thirtyDaysAgo.toISOString().split('T')[0]);
+      // Filter posts by date
+      const currentPosts = allPosts.filter(p => {
+        const postDate = getPostDate(p);
+        return postDate && postDate >= thirtyDaysAgo;
+      });
 
-      if (currentError) throw currentError;
-
-      // Get posts for previous period
-      const { data: previousPosts, error: previousError } = await supabase
-        .from('posts')
-        .select('id, impressions, reactions, comments, likes, praise, empathy, appreciation, interest')
-        .in('linkedin_profiles', userProfileIds)
-        .gte('linkedin_created_at', sixtyDaysAgo.toISOString().split('T')[0])
-        .lt('linkedin_created_at', thirtyDaysAgo.toISOString().split('T')[0]);
-
-      if (previousError) throw previousError;
+      const previousPosts = allPosts.filter(p => {
+        const postDate = getPostDate(p);
+        return postDate && postDate >= sixtyDaysAgo && postDate < thirtyDaysAgo;
+      });
 
       // Calculate metrics for current period
-      const currentTotalImpressions = currentPosts?.reduce((sum, p) => sum + (Number(p.impressions) || 0), 0) || 0;
-      const currentTotalPosts = currentPosts?.length || 0;
+      const currentTotalImpressions = currentPosts.reduce((sum, p) => sum + (Number(p.impressions) || 0), 0);
+      const currentTotalPosts = currentPosts.length;
       const currentAvgImpressions = currentTotalPosts > 0 ? Math.round(currentTotalImpressions / currentTotalPosts) : 0;
       
       // Total reactions = likes + praise + empathy + appreciation + interest (or use reactions field)
-      const currentTotalReactions = currentPosts?.reduce((sum, p) => {
+      const currentTotalReactions = currentPosts.reduce((sum, p) => {
         const reactions = Number(p.reactions) || (
           (Number(p.likes) || 0) + 
           (Number(p.praise) || 0) + 
@@ -488,8 +449,8 @@ export function useAnalyticsData() {
           (Number(p.interest) || 0)
         );
         return sum + reactions;
-      }, 0) || 0;
-      const currentTotalComments = currentPosts?.reduce((sum, p) => sum + (Number(p.comments) || 0), 0) || 0;
+      }, 0);
+      const currentTotalComments = currentPosts.reduce((sum, p) => sum + (Number(p.comments) || 0), 0);
       const currentTotalInteractions = currentTotalReactions + currentTotalComments;
       const currentEngagementRate = currentTotalImpressions > 0 
         ? Math.round((currentTotalInteractions / currentTotalImpressions) * 10000) / 100 
@@ -499,11 +460,11 @@ export function useAnalyticsData() {
         : 0;
 
       // Calculate metrics for previous period
-      const previousTotalImpressions = previousPosts?.reduce((sum, p) => sum + (Number(p.impressions) || 0), 0) || 0;
-      const previousTotalPosts = previousPosts?.length || 0;
+      const previousTotalImpressions = previousPosts.reduce((sum, p) => sum + (Number(p.impressions) || 0), 0);
+      const previousTotalPosts = previousPosts.length;
       const previousAvgImpressions = previousTotalPosts > 0 ? Math.round(previousTotalImpressions / previousTotalPosts) : 0;
       
-      const previousTotalReactions = previousPosts?.reduce((sum, p) => {
+      const previousTotalReactions = previousPosts.reduce((sum, p) => {
         const reactions = Number(p.reactions) || (
           (Number(p.likes) || 0) + 
           (Number(p.praise) || 0) + 
@@ -512,8 +473,8 @@ export function useAnalyticsData() {
           (Number(p.interest) || 0)
         );
         return sum + reactions;
-      }, 0) || 0;
-      const previousTotalComments = previousPosts?.reduce((sum, p) => sum + (Number(p.comments) || 0), 0) || 0;
+      }, 0);
+      const previousTotalComments = previousPosts.reduce((sum, p) => sum + (Number(p.comments) || 0), 0);
       const previousTotalInteractions = previousTotalReactions + previousTotalComments;
       const previousEngagementRate = previousTotalImpressions > 0 
         ? Math.round((previousTotalInteractions / previousTotalImpressions) * 10000) / 100 
@@ -546,39 +507,28 @@ export function useAnalyticsData() {
         },
       };
     },
-    enabled: !!user && hasProfiles,
+    enabled: !!user && hasProfiles && allPosts.length > 0,
     staleTime: 5 * 60 * 1000,
   });
 
   // Reach trend data (impressions + engagement rate per month)
   const { data: reachTrendData, isLoading: isLoadingReachTrend } = useQuery({
-    queryKey: ['analytics-reach-trend', user?.id, userProfileIds],
+    queryKey: ['analytics-reach-trend', user?.id, allPosts.length],
     queryFn: async (): Promise<ReachTrendDataPoint[]> => {
-      if (!hasProfiles) return [];
+      if (!hasProfiles || allPosts.length === 0) return [];
 
       const monthsData: ReachTrendDataPoint[] = [];
       const monthKeys = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
-
-      const twelveMonthsAgo = subMonths(new Date(), 12);
-      
-      const { data: posts, error } = await supabase
-        .from('posts')
-        .select('id, impressions, reactions, comments, likes, praise, empathy, appreciation, interest, linkedin_created_at')
-        .in('linkedin_profiles', userProfileIds)
-        .gte('linkedin_created_at', twelveMonthsAgo.toISOString().split('T')[0]);
-
-      if (error) throw error;
 
       for (let i = 11; i >= 0; i--) {
         const monthDate = subMonths(new Date(), i);
         const monthStart = startOfMonth(monthDate);
         const monthEnd = startOfMonth(subMonths(monthDate, -1));
         
-        const monthPosts = posts?.filter(p => {
-          if (!p.linkedin_created_at) return false;
-          const postDate = new Date(p.linkedin_created_at);
-          return postDate >= monthStart && postDate < monthEnd;
-        }) || [];
+        const monthPosts = allPosts.filter(p => {
+          const postDate = getPostDate(p);
+          return postDate && postDate >= monthStart && postDate < monthEnd;
+        });
 
         const impressions = monthPosts.reduce((sum, p) => sum + (Number(p.impressions) || 0), 0);
         const totalReactions = monthPosts.reduce((sum, p) => {
@@ -608,22 +558,15 @@ export function useAnalyticsData() {
 
       return monthsData;
     },
-    enabled: !!user && hasProfiles,
+    enabled: !!user && hasProfiles && allPosts.length > 0,
     staleTime: 5 * 60 * 1000,
   });
 
   // Impressions distribution (posts bucketed by impression ranges)
   const { data: impressionsDistribution, isLoading: isLoadingDistribution } = useQuery({
-    queryKey: ['analytics-impressions-distribution', user?.id, userProfileIds],
+    queryKey: ['analytics-impressions-distribution', user?.id, allPosts.length],
     queryFn: async (): Promise<ImpressionsDistributionPoint[]> => {
-      if (!hasProfiles) return [];
-
-      const { data: posts, error } = await supabase
-        .from('posts')
-        .select('id, impressions')
-        .in('linkedin_profiles', userProfileIds);
-
-      if (error) throw error;
+      if (!hasProfiles || allPosts.length === 0) return [];
 
       // Define buckets
       const buckets = [
@@ -636,16 +579,16 @@ export function useAnalyticsData() {
       ];
 
       const distribution = buckets.map(bucket => {
-        const count = posts?.filter(p => {
+        const count = allPosts.filter(p => {
           const imp = Number(p.impressions) || 0;
           return imp >= bucket.min && imp < bucket.max;
-        }).length || 0;
+        }).length;
         return { bucket: bucket.label, count };
       });
 
       return distribution;
     },
-    enabled: !!user && hasProfiles,
+    enabled: !!user && hasProfiles && allPosts.length > 0,
     staleTime: 5 * 60 * 1000,
   });
 
@@ -673,6 +616,6 @@ export function useAnalyticsData() {
     },
     reachTrendData: reachTrendData || [],
     impressionsDistribution: impressionsDistribution || [],
-    isLoading: isLoadingProfiles || isLoadingKPIs || isLoadingTrend || isLoadingActivation || isLoadingActivationTrend || isLoadingHeatmap || isLoadingReach || isLoadingReachTrend || isLoadingDistribution,
+    isLoading: isLoadingProfiles || isLoadingPosts || isLoadingKPIs || isLoadingTrend || isLoadingActivation || isLoadingActivationTrend || isLoadingHeatmap || isLoadingReach || isLoadingReachTrend || isLoadingDistribution,
   };
 }
