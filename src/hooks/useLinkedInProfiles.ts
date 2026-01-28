@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { useWorkspace } from '@/hooks/useWorkspace';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
@@ -38,15 +39,18 @@ interface LinkedInProfile {
 
 export function useLinkedInProfiles() {
   const { user } = useAuth();
+  const { workspace } = useWorkspace();
   const queryClient = useQueryClient();
 
   const { data: linkedinProfiles = [], isLoading } = useQuery({
-    queryKey: ['linkedin-profiles', user?.id],
+    queryKey: ['linkedin-profiles', workspace?.id],
     queryFn: async () => {
+      if (!workspace?.id) return [];
+      
       const { data: profiles, error } = await supabase
         .from('billable_users')
         .select('*')
-        .eq('user_id', user?.id);
+        .eq('workspace_id', workspace.id);
 
       if (error) throw error;
       if (!profiles) return [];
@@ -72,7 +76,7 @@ export function useLinkedInProfiles() {
 
       return profilesWithPosts;
     },
-    enabled: !!user,
+    enabled: !!user && !!workspace?.id,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 30 * 60 * 1000, // 30 minutes
     placeholderData: (previousData) => previousData,
@@ -104,6 +108,7 @@ export function useLinkedInProfiles() {
 
       const { error } = await supabase.from('billable_users').insert({
         user_id: user?.id,
+        workspace_id: workspace?.id,
         profile_name: trimmedName,
         linkedin_url: trimmedUrl,
         slack_user_id: slackUserId || null,
@@ -112,7 +117,7 @@ export function useLinkedInProfiles() {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['linkedin-profiles', user?.id] });
+      queryClient.invalidateQueries({ queryKey: ['linkedin-profiles', workspace?.id] });
       toast.success('Le profil LinkedIn a été ajouté avec succès');
     },
     onError: (error: Error) => {
@@ -130,7 +135,7 @@ export function useLinkedInProfiles() {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['linkedin-profiles', user?.id] });
+      queryClient.invalidateQueries({ queryKey: ['linkedin-profiles', workspace?.id] });
       toast.success('Le profil LinkedIn a été supprimé');
     },
     onError: () => {
@@ -154,7 +159,7 @@ export function useLinkedInProfiles() {
       if (error) throw error;
     },
     onSuccess: (_, { slackUserId }) => {
-      queryClient.invalidateQueries({ queryKey: ['linkedin-profiles', user?.id] });
+      queryClient.invalidateQueries({ queryKey: ['linkedin-profiles', workspace?.id] });
       toast.success(
         slackUserId
           ? 'Le profil a été associé à un utilisateur Slack'
