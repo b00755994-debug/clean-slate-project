@@ -139,7 +139,7 @@ serve(async (req) => {
     // Initialize Supabase client with service role
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Check if user already has a workspace
+    // Check if user already has a workspace (should exist from onboarding Step 1)
     const { data: existingWorkspace } = await supabase
       .from('workspaces')
       .select('id')
@@ -149,13 +149,12 @@ serve(async (req) => {
     let workspaceId: string;
 
     if (existingWorkspace) {
-      // Update existing workspace
+      // Update existing workspace (expected path - workspace created in onboarding)
       workspaceId = existingWorkspace.id;
       
       const { error: updateError } = await supabase
         .from('workspaces')
         .update({
-          workspace_name: teamName,
           is_connected: true,
           connected_at: new Date().toISOString(),
         })
@@ -164,13 +163,17 @@ serve(async (req) => {
       if (updateError) {
         console.error('Error updating workspace:', updateError);
       }
+      
+      console.log(`Updated existing workspace ${workspaceId} with Slack connection`);
     } else {
-      // Create new workspace
+      // Fallback: Create workspace if it doesn't exist (shouldn't happen with new flow)
+      console.warn(`No workspace found for user ${userId}, creating one as fallback`);
+      
       const { data: newWorkspace, error: insertError } = await supabase
         .from('workspaces')
         .insert({
           user_id: userId,
-          workspace_name: teamName,
+          workspace_name: teamName || 'My Workspace',
           is_connected: true,
           connected_at: new Date().toISOString(),
         })

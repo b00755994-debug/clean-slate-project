@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { ArrowRight, CheckCircle2, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import slackLogo from '@/assets/slack-logo.png';
 import { SlackChannelSelector } from '@/components/slack/SlackChannelSelector';
 
-interface OnboardingStep2Props {
+interface OnboardingStepSlackProps {
   onNext: () => void;
   onSkip: () => void;
   onConnectSlack: () => Promise<void>;
@@ -22,7 +22,7 @@ const translations = {
     channelTitle: "Choisissez un canal",
     channelDescription: "C'est ici que superpump enverra les notifications. Vous pourrez le modifier ou le désactiver par la suite.",
     channelConfigured: "Canal configuré",
-    next: "Continuer",
+    next: "Terminer",
     skip: "Passer",
   },
   en: {
@@ -33,12 +33,12 @@ const translations = {
     channelTitle: "Choose a channel",
     channelDescription: "This is where superpump will send notifications. You can change or disable it later.",
     channelConfigured: "Channel configured",
-    next: "Continue",
+    next: "Finish",
     skip: "Skip",
   },
 };
 
-export function OnboardingStep2({ onNext, onSkip, onConnectSlack, isSlackConnected, language }: OnboardingStep2Props) {
+export function OnboardingStepSlack({ onNext, onSkip, onConnectSlack, isSlackConnected, language }: OnboardingStepSlackProps) {
   const t = translations[language];
   const [isConnecting, setIsConnecting] = useState(false);
   const [channelConfigured, setChannelConfigured] = useState(false);
