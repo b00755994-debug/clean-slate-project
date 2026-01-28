@@ -1,115 +1,97 @@
 
-# Plan : Afficher les analytics basées sur l'utilisateur (pas le workspace)
+# Plan : Intégrer le calcul automatique des impressions dans Supabase
 
-## Problème identifié
+## Contexte
 
-Le hook `useAnalyticsData.ts` filtre **toutes** les requêtes par `workspace_id` :
-- Ligne 79: `.eq('workspace_id', workspace.id)`
-- Ligne 153: `.eq('workspace_id', workspace.id)`
-- Ligne 206: `.eq('workspace_id', workspace.id)`
-- etc.
+- **13 posts** en base, dont **5 sans impressions**
+- La formule d'estimation est basée sur les réactions (likes) et commentaires
+- Objectif : calculer automatiquement les impressions à chaque insertion/modification de post
 
-Comme les posts ont `workspace_id = null`, les requêtes retournent **0 résultats**.
+## Formule à implémenter
 
-Pendant ce temps, `useTeamFeed` et `useLeaderboards` fonctionnent car ils s'appuient sur les RLS policies qui filtrent par `billable_users.user_id`.
-
----
-
-## Solution
-
-Modifier `useAnalyticsData` pour utiliser la même logique que les autres hooks :
-1. Récupérer les `billable_users` de l'utilisateur connecté
-2. Filtrer les posts par `linkedin_profiles IN (user's billable_user IDs)`
-3. Supprimer la dépendance au `workspace_id`
-
----
-
-## Changements à effectuer
-
-### Fichier : `src/hooks/useAnalyticsData.ts`
-
-**1. Remplacer l'import `useWorkspace` par `useAuth`**
-
-```typescript
-// Avant
-import { useWorkspace } from './useWorkspace';
-
-// Après
-import { useAuth } from './useAuth';
+```javascript
+const lnImpressions = 3.9657 + 0.9544 * Math.log(reactions + 1) + 0.1617 * Math.log(comments + 1);
+const impressions = Math.exp(lnImpressions);
 ```
 
-**2. Ajouter une requête pour récupérer les billable_users IDs**
-
-```typescript
-export function useAnalyticsData() {
-  const { user } = useAuth();
-
-  // Récupérer les IDs des profils LinkedIn de l'utilisateur
-  const { data: userProfileIds = [] } = useQuery({
-    queryKey: ['user-profile-ids', user?.id],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('billable_users')
-        .select('id')
-        .eq('user_id', user?.id);
-      
-      if (error) throw error;
-      return data?.map(p => p.id) || [];
-    },
-    enabled: !!user,
-  });
-```
-
-**3. Modifier toutes les requêtes pour filtrer par `linkedin_profiles`**
-
-Exemple pour `overviewKPIs` :
-
-```typescript
-// Avant
-.eq('workspace_id', workspace.id)
-
-// Après
-.in('linkedin_profiles', userProfileIds)
-```
-
-**4. Changer les conditions `enabled`**
-
-```typescript
-// Avant
-enabled: !!workspace?.id
-
-// Après
-enabled: !!user && userProfileIds.length > 0
+En SQL (PostgreSQL) :
+```sql
+3.9657 + 0.9544 * LN(COALESCE(reactions, 0) + 1) + 0.1617 * LN(COALESCE(comments, 0) + 1)
 ```
 
 ---
 
-## Requêtes à modifier (10 au total)
+## Solution en 2 étapes
 
-| Query | Ligne | Modification |
-|-------|-------|--------------|
-| overviewKPIs | 76, 85 | `.in('linkedin_profiles', userProfileIds)` |
-| trendData | 150 | `.in('linkedin_profiles', userProfileIds)` |
-| teamActivationKPIs | 203, 212, 221 | `.in('linkedin_profiles', userProfileIds)` |
-| activationTrendData | 305 | `.in('linkedin_profiles', userProfileIds)` |
-| postingHeatmapData | 358 | `.in('linkedin_profiles', userProfileIds)` |
-| reachKPIs | 434, 443 | `.in('linkedin_profiles', userProfileIds)` |
-| reachTrendData | 540 | `.in('linkedin_profiles', userProfileIds)` |
-| impressionsDistribution | 597 | `.in('linkedin_profiles', userProfileIds)` |
+### Étape 1 : Créer une fonction et un trigger PostgreSQL
+
+**Fonction `calculate_estimated_impressions`** :
+- Calcule les impressions estimées à partir de `reactions` et `comments`
+- S'exécute automatiquement sur INSERT et UPDATE de la table `posts`
+- Met à jour la colonne `impressions` avec la valeur calculée
+
+```sql
+CREATE OR REPLACE FUNCTION public.calculate_estimated_impressions()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path TO 'public'
+AS $$
+DECLARE
+  reactions_count NUMERIC;
+  comments_count NUMERIC;
+  ln_impressions NUMERIC;
+  estimated_impressions NUMERIC;
+BEGIN
+  -- Récupérer les valeurs (avec fallback à 0 si NULL)
+  reactions_count := COALESCE(NEW.reactions, 0);
+  comments_count := COALESCE(NEW.comments, 0);
+  
+  -- Calculer ln(impressions) avec la formule
+  ln_impressions := 3.9657 + 0.9544 * LN(reactions_count + 1) + 0.1617 * LN(comments_count + 1);
+  
+  -- Calculer impressions estimées (arrondi à 2 décimales)
+  estimated_impressions := ROUND(EXP(ln_impressions)::NUMERIC, 2);
+  
+  -- Mettre à jour la valeur
+  NEW.impressions := estimated_impressions;
+  
+  RETURN NEW;
+END;
+$$;
+```
+
+**Trigger `trigger_calculate_impressions`** :
+```sql
+CREATE TRIGGER trigger_calculate_impressions
+  BEFORE INSERT OR UPDATE OF reactions, comments
+  ON public.posts
+  FOR EACH ROW
+  EXECUTE FUNCTION public.calculate_estimated_impressions();
+```
+
+### Étape 2 : Mettre à jour les posts existants sans impressions
+
+```sql
+UPDATE posts
+SET impressions = ROUND(
+  EXP(
+    3.9657 + 
+    0.9544 * LN(COALESCE(reactions, 0) + 1) + 
+    0.1617 * LN(COALESCE(comments, 0) + 1)
+  )::NUMERIC, 2
+)
+WHERE impressions IS NULL;
+```
 
 ---
 
-## Pour billable_users (Team Activation)
+## Vérification des calculs
 
-La requête de comptage des billable_users doit aussi être modifiée :
-
-```typescript
-// Avant
-.eq('workspace_id', workspace.id)
-
-// Après
-.eq('user_id', user?.id)
-```
+| Post ID | Reactions | Comments | Formule | Résultat attendu |
+|---------|-----------|----------|---------|------------------|
+| 297635bb | 68 | 2 | 3.9657 + 0.9544×ln(69) + 0.1617×ln(3) | ~3584 |
+| 1a6df836 | 165 | 57 | 3.9657 + 0.9544×ln(166) + 0.1617×ln(58) | ~13375 |
 
 ---
 
@@ -117,25 +99,31 @@ La requête de comptage des billable_users doit aussi être modifiée :
 
 | Élément | Avant | Après |
 |---------|-------|-------|
-| Dépendance | `workspace_id` obligatoire | `user_id` (authentification) |
-| Posts sans workspace_id | Non affichés | Affichés |
-| Connexion Slack | Requise | Optionnelle |
-| Analytics Overview | Vide | Affiche les 5 posts |
-| Team Activation | Vide | Affiche 1 contributeur |
+| Posts sans impressions | 5 | 0 |
+| Calcul automatique | Manuel | Auto (trigger) |
+| Analytics Audience & Reach | Données partielles | Données complètes |
 
 ---
 
-## Fichiers modifiés
+## Section technique
 
-| Fichier | Modification |
-|---------|--------------|
-| `src/hooks/useAnalyticsData.ts` | Refactoring complet pour filtrer par `user_id` via `billable_users` |
+### Fichiers modifiés
 
----
+Aucun fichier frontend à modifier - tout se passe côté Supabase :
 
-## Avantages de cette approche
+| Action | Détail |
+|--------|--------|
+| Migration SQL | Création de la fonction + trigger |
+| Update SQL | Mise à jour des 5 posts existants |
 
-1. **Cohérence** : Même logique que `useTeamFeed` et `useLeaderboards`
-2. **Simplicité** : Pas besoin de corriger les données existantes en base
-3. **Robustesse** : Fonctionne indépendamment de la connexion Slack/workspace
-4. **Sécurité** : Respecte les RLS policies existantes sur `posts`
+### Comportement du trigger
+
+- **INSERT** : Calcule automatiquement les impressions pour tout nouveau post
+- **UPDATE** : Recalcule si `reactions` ou `comments` changent
+- **Sécurité** : Utilise `SECURITY DEFINER` pour s'exécuter avec les droits nécessaires
+
+### Notes importantes
+
+1. La colonne `impressions` existante est de type `numeric`, compatible avec notre formule
+2. Le trigger utilise `BEFORE INSERT OR UPDATE OF reactions, comments` pour ne se déclencher que lorsque ces colonnes changent
+3. `COALESCE` gère les valeurs NULL pour éviter les erreurs de calcul
