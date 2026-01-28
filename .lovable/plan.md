@@ -1,38 +1,47 @@
-# Plan: Refonte de la logique d'onboarding
 
-## ✅ IMPLÉMENTÉ
+# Plan: Correction des queries par workspace_id
 
-### Nouveau flux d'onboarding
+## Problèmes identifiés
 
-| Étape | Contenu | Données créées |
-|-------|---------|----------------|
-| Step 1 | Infos utilisateur | `profiles` (company, role, etc.) + `workspaces` (workspace_id) |
-| Step 2 | Profils LinkedIn | `billable_users` (avec `workspace_id` !) |
-| Step 3 | Slack (optionnel) | `workspaces.is_connected = true` + `slack_workspace_auth` |
+### useTeamFeed.ts
+- **billable_users** : Pas de filtre → récupère TOUS les utilisateurs de toutes les workspaces
+- **posts** : Pas de filtre → récupère TOUS les posts de toutes les workspaces  
+- **Tri** : Utilise `created_at` au lieu de `linkedin_created_at`
 
-### Fichiers modifiés/créés
+### useAnalyticsData.ts
+- **billable_users** : Filtre par `user_id` au lieu de `workspace_id`
 
-- ✅ `src/components/onboarding/OnboardingFlow.tsx` - Réorganisé avec création workspace en Step 1
-- ✅ `src/components/onboarding/OnboardingStepLinkedIn.tsx` - Nouveau composant (Step 2)
-- ✅ `src/components/onboarding/OnboardingStepSlack.tsx` - Nouveau composant (Step 3)
-- ✅ `supabase/functions/slack-callback/index.ts` - Met à jour le workspace existant (ne crée plus)
-- 🗑️ `OnboardingStep2.tsx` et `OnboardingStep3.tsx` - Supprimés (remplacés)
+## Corrections
 
-### Corrections apportées
+### Fichier 1: src/hooks/useTeamFeed.ts
 
-1. **workspace_id** est maintenant correctement passé lors de l'insertion des `billable_users`
-2. **Workspace créé en premier** (Step 1) avant les profils LinkedIn
-3. **Slack en dernier** (Step 3) - optionnel, ne bloque plus le flux
-4. **slack-callback** ne crée plus de workspace, il met à jour celui existant
+| Avant | Après |
+|-------|-------|
+| `queryKey: ['billable-users']` | `queryKey: ['billable-users', workspace?.id]` |
+| Pas de filtre | `.eq('workspace_id', workspace.id)` |
+| `queryKey: ['posts']` | `queryKey: ['posts', workspace?.id]` |
+| Pas de filtre | `.eq('workspace_id', workspace.id)` |
+| `.order('created_at', ...)` | `.order('linkedin_created_at', ...)` |
 
-## Migration des données existantes
+Ajouts :
+- Import `useWorkspace`
+- `enabled: !!workspace?.id`
+- `placeholderData: (prev) => prev` pour éviter les flashes UI
 
-Pour corriger les `billable_users` existants sans `workspace_id`:
+### Fichier 2: src/hooks/useAnalyticsData.ts
 
-```sql
-UPDATE billable_users bu
-SET workspace_id = w.id
-FROM workspaces w
-WHERE bu.user_id = w.user_id
-AND bu.workspace_id IS NULL;
-```
+| Avant | Après |
+|-------|-------|
+| `queryKey: ['user-profile-ids', user?.id]` | `queryKey: ['user-profile-ids', workspace?.id]` |
+| `.eq('user_id', user?.id)` | `.eq('workspace_id', workspace.id)` |
+| `enabled: !!user` | `enabled: !!workspace?.id` |
+
+Ajouts :
+- Import `useWorkspace`
+- `placeholderData: (prev) => prev`
+
+## Impact
+
+- Les données seront correctement scopées au workspace actif
+- Meilleure performance (moins de données récupérées)
+- Cache React Query correctement invalidé par workspace
