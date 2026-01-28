@@ -121,7 +121,7 @@ const Hero = () => {
 
           <p className="text-lg md:text-xl mb-8 max-w-2xl mx-auto leading-relaxed" style={{ color: '#5A5A5A' }}>
             {t.subtitleStart}
-            <span className="bg-primary/15 text-primary px-1.5 py-0.5 rounded-sm font-semibold">
+            <span className="bg-primary/15 text-primary px-1.5 py-0.5 rounded-sm">
               {t.subtitleHighlight}
             </span>
           </p>
