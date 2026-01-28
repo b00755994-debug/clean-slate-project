@@ -1,63 +1,132 @@
 
-# Plan: Restructuration du modèle de données multi-utilisateurs
+# Fix Slack Integration for New Multi-User Architecture
 
-## ✅ TERMINÉ
+## Problem Analysis
+The recent database cleanup removed `workspaces.user_id`, but the Slack edge functions still rely on this column to find user workspaces. This causes `database_error` when connecting or using Slack features.
 
-### Architecture finale
+**Affected Edge Functions:**
+- `slack-callback` - Line ~127: Uses `workspaces.user_id` for fallback workspace creation
+- `slack-members` - Line 59: Uses `.eq('user_id', user.id)` 
+- `slack-channels` - Line 51: Uses `.eq('user_id', user.id)`
+- `slack-join-channel` - Line 52: Uses `.eq('user_id', user.id)`
 
-```text
-┌─────────────────┐       ┌──────────────────────┐       ┌─────────────────────┐
-│    profiles     │       │  workspace_members   │       │     workspaces      │
-│  (auth users)   │◄──────│   (junction table)   │──────►│ (superpump spaces)  │
-│                 │       │                      │       │                     │
-│ - id (auth.uid) │       │ - profile_id         │       │ - id                │
-│ - email         │       │ - workspace_id       │       │ - workspace_name    │
-│ - full_name     │       │ - role (owner/member)│       │ - created_at        │
-└─────────────────┘       └──────────────────────┘       └─────────────────────┘
-                                                                   │
-                                    ┌──────────────────────────────┼──────────────────┐
-                                    │                              │                  │
-                                    ▼                              ▼                  ▼
-                          ┌─────────────────┐           ┌──────────────────┐  ┌──────────────┐
-                          │ billable_users  │           │slack_workspace_  │  │    posts     │
-                          │(LinkedIn profs) │           │     auth         │  │              │
-                          │                 │           │                  │  │              │
-                          │ - workspace_id  │           │ - superpump_     │  │- workspace_id│
-                          │ - linkedin_url  │           │   workspace_id   │  │- linkedin_   │
-                          │ - profile_name  │           │ - token          │  │  profiles    │
-                          └─────────────────┘           └──────────────────┘  └──────────────┘
+## Solution
+
+Update all edge functions to find workspaces via the `workspace_members` junction table instead of the deleted `user_id` column.
+
+### Changes Required
+
+**1. slack-callback/index.ts**
+Replace the workspace lookup logic:
+```typescript
+// OLD (broken)
+const { data: existingWorkspace } = await supabase
+  .from('workspaces')
+  .select('id')
+  .eq('user_id', userId)
+  .maybeSingle();
+
+// NEW (via junction table)
+const { data: membership } = await supabase
+  .from('workspace_members')
+  .select('workspace_id, workspace:workspaces(id)')
+  .eq('profile_id', userId)
+  .maybeSingle();
+
+const existingWorkspace = membership?.workspace_id 
+  ? { id: membership.workspace_id } 
+  : null;
 ```
 
-## Migrations effectuées
+Also update the fallback workspace creation to:
+1. Create workspace without `user_id`
+2. Create `workspace_members` entry with `owner` role
 
-### 1. Création de `workspace_members` ✅
-- Enum `workspace_role`: 'owner', 'admin', 'member'
-- Table de jonction avec contrainte unique (profile_id, workspace_id)
-- Données migrées automatiquement (propriétaires existants → role 'owner')
+**2. slack-members/index.ts**
+Replace workspace query:
+```typescript
+// OLD
+.from('workspaces')
+.eq('user_id', user.id)
 
-### 2. Fonctions helper sécurisées ✅
-- `is_workspace_member(user_id, workspace_id)` → boolean
-- `get_workspace_role(user_id, workspace_id)` → workspace_role
+// NEW
+const { data: membership } = await supabase
+  .from('workspace_members')
+  .select('workspace:workspaces(id, slack_workspace_auth, is_connected, workspace_name)')
+  .eq('profile_id', user.id)
+  .maybeSingle();
 
-### 3. Politiques RLS mises à jour ✅
-Toutes les tables utilisent `is_workspace_member()`:
-- workspaces, billable_users, posts, slack_workspace_auth
-- vetted_content, post_history, posts_activity, workspace_members
+const workspace = membership?.workspace;
+```
 
-### 4. Nettoyage des colonnes obsolètes ✅
-Colonnes supprimées:
-- `profiles.workspace_id`
-- `billable_users.user_id`
-- `workspaces.user_id`
+**3. slack-channels/index.ts**
+Same pattern - query via `workspace_members` first.
 
-### 5. Code mis à jour ✅
-- `useWorkspace.ts`: Récupère via `workspace_members`
-- `OnboardingFlow.tsx`: Crée `workspace_members` avec rôle 'owner'
-- `VettedLibrary.tsx`: Utilise `workspace_members`
-- `Admin.tsx`: Utilise `workspace_members`
+**4. slack-join-channel/index.ts**
+Same pattern - query via `workspace_members` first.
 
-## Fonctionnalités activées
+## Technical Details
 
-1. **Invitations d'équipe**: Un owner peut inviter d'autres utilisateurs
-2. **Rôles différenciés**: owner, admin, member avec permissions différentes
-3. **Multi-workspace**: Un utilisateur peut appartenir à plusieurs workspaces
+### New Query Pattern for All Functions
+```typescript
+// Step 1: Get workspace via membership
+const { data: membership, error: membershipError } = await supabase
+  .from('workspace_members')
+  .select(`
+    workspace_id,
+    workspace:workspaces (
+      id,
+      slack_workspace_auth,
+      is_connected,
+      workspace_name
+    )
+  `)
+  .eq('profile_id', user.id)
+  .maybeSingle();
+
+// Step 2: Extract workspace from nested result
+const workspace = membership?.workspace;
+```
+
+### slack-callback Fallback Creation
+When no workspace exists (edge case), create both records:
+```typescript
+// Create workspace
+const { data: newWorkspace } = await supabase
+  .from('workspaces')
+  .insert({
+    workspace_name: teamName || 'My Workspace',
+    is_connected: true,
+    connected_at: new Date().toISOString(),
+  })
+  .select('id')
+  .single();
+
+// Create owner membership
+await supabase
+  .from('workspace_members')
+  .insert({
+    workspace_id: newWorkspace.id,
+    profile_id: userId,
+    role: 'owner',
+    joined_at: new Date().toISOString(),
+  });
+```
+
+## Files to Modify
+
+| File | Change |
+|------|--------|
+| `supabase/functions/slack-callback/index.ts` | Update workspace lookup + fallback creation |
+| `supabase/functions/slack-members/index.ts` | Update workspace query pattern |
+| `supabase/functions/slack-channels/index.ts` | Update workspace query pattern |
+| `supabase/functions/slack-join-channel/index.ts` | Update workspace query pattern |
+
+## Testing
+
+After deployment:
+1. Test Slack connection from onboarding flow
+2. Test Slack connection from dashboard settings
+3. Verify channel list loads correctly
+4. Verify member list loads correctly
+5. Test channel selection and bot invitation
