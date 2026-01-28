@@ -291,6 +291,7 @@ export type Database = {
           content: string | null
           created_at: string
           empathy: number | null
+          entertainment: number | null
           id: string
           impressions: number | null
           interest: number | null
@@ -315,6 +316,7 @@ export type Database = {
           content?: string | null
           created_at?: string
           empathy?: number | null
+          entertainment?: number | null
           id?: string
           impressions?: number | null
           interest?: number | null
@@ -339,6 +341,7 @@ export type Database = {
           content?: string | null
           created_at?: string
           empathy?: number | null
+          entertainment?: number | null
           id?: string
           impressions?: number | null
           interest?: number | null
