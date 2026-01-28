@@ -28,6 +28,14 @@ export default function Auth() {
 
   const from = location.state?.from?.pathname || '/dashboard';
 
+  // Detect signup mode from URL query param
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get('mode') === 'signup') {
+      setIsLogin(false);
+    }
+  }, [location.search]);
+
   useEffect(() => {
     if (user && !isLoading) {
       navigate(from, { replace: true });

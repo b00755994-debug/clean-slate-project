@@ -74,7 +74,7 @@ const Header = () => {
             <Link to="/auth">
               <Button variant="ghost" className="hidden sm:inline-flex hover:bg-primary/10 hover:text-primary transition-all">{t.login}</Button>
             </Link>
-            <Link to="/beta">
+            <Link to="/auth?mode=signup">
               <Button variant="hero">{t.joinBeta}</Button>
             </Link>
           </div>
