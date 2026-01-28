@@ -8,7 +8,8 @@ const ProblemSolution = () => {
     fr: {
       title1: "L'outil le plus simple pour transformer le contenu en",
       title2: "pipeline.",
-      subtitle: "Faites de LinkedIn un sport d'équipe.",
+      subtitle1: "Faites de LinkedIn un ",
+      subtitleHighlight: "sport d'équipe.",
       problemTitle: "Le défi actuel",
       problemHeading: "Difficile de mobiliser vos équipes",
       problemDesc: "Vos collaborateurs ont un réseau précieux, mais mobiliser leur engagement sur LinkedIn reste un casse-tête quotidien.",
@@ -30,7 +31,8 @@ const ProblemSolution = () => {
     en: {
       title1: "The simplest tool to turn content into",
       title2: "pipeline.",
-      subtitle: "Make LinkedIn a team sport.",
+      subtitle1: "Make LinkedIn a ",
+      subtitleHighlight: "team sport.",
       problemTitle: "The Current Challenge",
       problemHeading: "Struggling to rally your teams",
       problemDesc: "Your employees have valuable networks, but mobilizing their LinkedIn engagement remains a daily challenge.",
@@ -65,7 +67,10 @@ const ProblemSolution = () => {
             </span>
           </h2>
           <p className="text-lg md:text-xl max-w-2xl mx-auto leading-relaxed" style={{ color: '#5A5A5A' }}>
-            {t.subtitle}
+            {t.subtitle1}
+            <span className="bg-primary text-primary-foreground px-1.5 py-1 rounded-sm">
+              {t.subtitleHighlight}
+            </span>
           </p>
         </div>
 
