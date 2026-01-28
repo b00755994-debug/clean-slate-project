@@ -74,7 +74,8 @@ const SlackIntegration = () => {
       title1: "Meilleure ",
       title2: "Application Slack",
       title3: "",
-      subtitle: "Alertes instantanées, Team Feed centralisé et analytics d'audience, le tout dans vos canaux Slack préférés.",
+      subtitle1: "Alertes instantanées, Team Feed centralisé et analytics d'audience,",
+      subtitleHighlight: "le tout dans vos canaux Slack préférés.",
       impressionsGenerated: "impressions générées",
       channels: {
         posts: {
@@ -348,7 +349,8 @@ const SlackIntegration = () => {
       title1: "Best-in-class ",
       title2: "Slack",
       title3: " App",
-      subtitle: "Instant alerts, centralized Team Feed and audience analytics, all in your favorite Slack channels.",
+      subtitle1: "Instant alerts, centralized Team Feed and audience analytics,",
+      subtitleHighlight: "all in your favorite Slack channels.",
       impressionsGenerated: "impressions generated",
       channels: {
         posts: {
@@ -673,7 +675,11 @@ const SlackIntegration = () => {
             {t.title3}
           </h2>
           <p className="text-lg md:text-xl max-w-2xl mx-auto leading-relaxed" style={{ color: '#5A5A5A' }}>
-            {t.subtitle}
+            {t.subtitle1}
+            <br />
+            <span className="bg-primary/15 text-primary px-2 py-0.5 rounded-md font-medium">
+              {t.subtitleHighlight}
+            </span>
           </p>
         </div>
 
