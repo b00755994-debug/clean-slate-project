@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
+import { useWorkspace } from './useWorkspace';
 import { subDays, startOfMonth, subMonths, format } from 'date-fns';
 
 interface OverviewKPIs {
@@ -55,21 +56,26 @@ interface ImpressionsDistributionPoint {
 
 export function useAnalyticsData() {
   const { user } = useAuth();
+  const { workspace } = useWorkspace();
 
-  // Get user's billable_users IDs (LinkedIn profiles)
+  // Get workspace's billable_users IDs (LinkedIn profiles)
   const { data: userProfileIds = [], isLoading: isLoadingProfiles } = useQuery({
-    queryKey: ['user-profile-ids', user?.id],
+    queryKey: ['user-profile-ids', workspace?.id],
     queryFn: async () => {
+      if (!workspace?.id) return [];
+      
       const { data, error } = await supabase
         .from('billable_users')
         .select('id')
-        .eq('user_id', user?.id);
+        .eq('workspace_id', workspace.id);
       
       if (error) throw error;
       return data?.map(p => p.id) || [];
     },
-    enabled: !!user,
+    enabled: !!workspace?.id,
     staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    placeholderData: (prev) => prev,
   });
 
   const hasProfiles = userProfileIds.length > 0;
@@ -217,11 +223,11 @@ export function useAnalyticsData() {
       const thirtyDaysAgo = subDays(now, 30);
       const sixtyDaysAgo = subDays(now, 60);
 
-      // Get total billable users for this user
+      // Get total billable users for this workspace
       const { data: allUsers, error: usersError } = await supabase
         .from('billable_users')
         .select('id')
-        .eq('user_id', user?.id);
+        .eq('workspace_id', workspace?.id);
 
       if (usersError) throw usersError;
       const totalTeamMembers = allUsers?.length || 0;
