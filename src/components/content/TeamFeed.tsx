@@ -147,11 +147,20 @@ export function useTeamFeedStats() {
   const { posts, loading } = useTeamFeed();
   
   const stats = useMemo(() => {
-    const totalPosts = posts.length;
-    const totalImpressions = posts.reduce((sum, p) => sum + (p.impressions || 0), 0);
-    const totalReactions = posts.reduce((sum, p) => sum + (p.reactions || p.likes || 0), 0);
+    // Filter posts from the last 30 days
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    
+    const recentPosts = posts.filter(p => {
+      const postDate = p.linkedin_created_at ? new Date(p.linkedin_created_at) : new Date(p.created_at);
+      return postDate >= thirtyDaysAgo;
+    });
+    
+    const totalPosts = recentPosts.length;
+    const totalImpressions = recentPosts.reduce((sum, p) => sum + (p.impressions || 0), 0);
+    const totalReactions = recentPosts.reduce((sum, p) => sum + (p.reactions || p.likes || 0), 0);
     const engagementRate = totalImpressions > 0 ? (totalReactions / totalImpressions) * 100 : 0;
-    const activeMembers = new Set(posts.map(p => p.linkedin_profiles).filter(Boolean)).size;
+    const activeMembers = new Set(recentPosts.map(p => p.linkedin_profiles).filter(Boolean)).size;
     
     return { totalPosts, totalImpressions, engagementRate, activeMembers };
   }, [posts]);
