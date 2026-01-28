@@ -109,8 +109,8 @@ export default function Auth() {
           });
         } else {
           toast({
-            title: 'Inscription réussie',
-            description: 'Un email de confirmation vous a été envoyé. Vérifiez votre boîte de réception (et vos spams si besoin).',
+            title: 'Vérifiez votre email',
+            description: "Si cette adresse n'est pas déjà enregistrée, vous recevrez un lien de confirmation. Pensez à vérifier vos spams.",
           });
         }
       }
