@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { useWorkspace } from '@/hooks/useWorkspace';
 import { toast } from 'sonner';
 
 interface Post {
@@ -28,14 +29,18 @@ interface BillableUser {
 
 export function useTeamFeed() {
   const { user } = useAuth();
+  const { workspace } = useWorkspace();
   const queryClient = useQueryClient();
 
   const { data: profiles = {}, isLoading: profilesLoading } = useQuery({
-    queryKey: ['billable-users'],
+    queryKey: ['billable-users', workspace?.id],
     queryFn: async () => {
+      if (!workspace?.id) return {};
+      
       const { data, error } = await supabase
         .from('billable_users')
-        .select('id, profile_name, avatar_url, linkedin_url, linkedin_title');
+        .select('id, profile_name, avatar_url, linkedin_url, linkedin_title')
+        .eq('workspace_id', workspace.id);
 
       if (error) throw error;
       
@@ -45,21 +50,30 @@ export function useTeamFeed() {
       });
       return profilesMap;
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    enabled: !!workspace?.id,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    placeholderData: (prev) => prev,
   });
 
   const { data: posts = [], isLoading: postsLoading } = useQuery({
-    queryKey: ['posts'],
+    queryKey: ['posts', workspace?.id],
     queryFn: async () => {
+      if (!workspace?.id) return [];
+      
       const { data, error } = await supabase
         .from('posts')
         .select('*')
-        .order('created_at', { ascending: false });
+        .eq('workspace_id', workspace.id)
+        .order('linkedin_created_at', { ascending: false });
 
       if (error) throw error;
       return data as Post[];
     },
-    staleTime: 2 * 60 * 1000, // 2 minutes
+    enabled: !!workspace?.id,
+    staleTime: 2 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    placeholderData: (prev) => prev,
   });
 
   const { data: bookmarkedPosts = new Set<string>(), isLoading: bookmarksLoading } = useQuery({
@@ -77,7 +91,7 @@ export function useTeamFeed() {
       return new Set(data?.map(b => b.post_id!) || []);
     },
     enabled: !!user,
-    staleTime: 60 * 1000, // 1 minute
+    staleTime: 60 * 1000,
   });
 
   const toggleBookmarkMutation = useMutation({
