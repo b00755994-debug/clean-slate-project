@@ -1,47 +1,60 @@
 
-# Plan: Correction des queries par workspace_id
+# Plan: Correction de l'ajout de profils LinkedIn sans workspace_id
 
-## Problèmes identifiés
+## Problème
 
-### useTeamFeed.ts
-- **billable_users** : Pas de filtre → récupère TOUS les utilisateurs de toutes les workspaces
-- **posts** : Pas de filtre → récupère TOUS les posts de toutes les workspaces  
-- **Tri** : Utilise `created_at` au lieu de `linkedin_created_at`
+Le hook `useLinkedInProfiles.ts` (utilisé dans le dashboard pour ajouter des profils) n'inclut pas le `workspace_id` lors de l'insertion dans `billable_users`.
 
-### useAnalyticsData.ts
-- **billable_users** : Filtre par `user_id` au lieu de `workspace_id`
+## Correction
 
-## Corrections
-
-### Fichier 1: src/hooks/useTeamFeed.ts
+### Fichier: src/hooks/useLinkedInProfiles.ts
 
 | Avant | Après |
 |-------|-------|
-| `queryKey: ['billable-users']` | `queryKey: ['billable-users', workspace?.id]` |
-| Pas de filtre | `.eq('workspace_id', workspace.id)` |
-| `queryKey: ['posts']` | `queryKey: ['posts', workspace?.id]` |
-| Pas de filtre | `.eq('workspace_id', workspace.id)` |
-| `.order('created_at', ...)` | `.order('linkedin_created_at', ...)` |
+| N'utilise pas `useWorkspace` | Import et utilise `useWorkspace` |
+| Insert sans `workspace_id` | Insert avec `workspace_id: workspace?.id` |
+| Query par `user_id` | Query par `workspace_id` (cohérence) |
 
-Ajouts :
-- Import `useWorkspace`
-- `enabled: !!workspace?.id`
-- `placeholderData: (prev) => prev` pour éviter les flashes UI
+**Code actuel (lignes 105-110):**
+```typescript
+const { error } = await supabase.from('billable_users').insert({
+  user_id: user?.id,
+  profile_name: trimmedName,
+  linkedin_url: trimmedUrl,
+  slack_user_id: slackUserId || null,
+});
+```
 
-### Fichier 2: src/hooks/useAnalyticsData.ts
+**Code corrigé:**
+```typescript
+const { error } = await supabase.from('billable_users').insert({
+  user_id: user?.id,
+  workspace_id: workspace?.id,  // AJOUT
+  profile_name: trimmedName,
+  linkedin_url: trimmedUrl,
+  slack_user_id: slackUserId || null,
+});
+```
 
-| Avant | Après |
-|-------|-------|
-| `queryKey: ['user-profile-ids', user?.id]` | `queryKey: ['user-profile-ids', workspace?.id]` |
-| `.eq('user_id', user?.id)` | `.eq('workspace_id', workspace.id)` |
-| `enabled: !!user` | `enabled: !!workspace?.id` |
+## Changements complets
 
-Ajouts :
-- Import `useWorkspace`
-- `placeholderData: (prev) => prev`
+1. Ajouter `import { useWorkspace } from '@/hooks/useWorkspace'`
+2. Ajouter `const { workspace } = useWorkspace()` dans le hook
+3. Inclure `workspace_id: workspace?.id` dans l'insert
+4. Mettre à jour la query pour filtrer par `workspace_id` au lieu de `user_id` (cohérence)
+5. Mettre à jour les query keys pour inclure `workspace?.id`
+
+## Migration de données
+
+Aussi corriger le profil existant avec une requête SQL :
+```sql
+UPDATE billable_users bu
+SET workspace_id = w.id
+FROM workspaces w
+WHERE bu.user_id = w.user_id AND bu.workspace_id IS NULL;
+```
 
 ## Impact
 
-- Les données seront correctement scopées au workspace actif
-- Meilleure performance (moins de données récupérées)
-- Cache React Query correctement invalidé par workspace
+- Les nouveaux profils LinkedIn seront correctement associés au workspace
+- Le feed et les analytics afficheront les données correctement
