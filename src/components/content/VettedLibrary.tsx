@@ -61,13 +61,15 @@ export function VettedLibrary({
     if (!user) return;
 
     try {
-      const { data: workspace, error: workspaceError } = await supabase
-        .from('workspaces')
-        .select('id')
-        .eq('user_id', user.id)
+      const { data: membership, error: workspaceError } = await supabase
+        .from('workspace_members')
+        .select('workspace_id')
+        .eq('profile_id', user.id)
         .maybeSingle();
 
       if (workspaceError) throw workspaceError;
+
+      const workspace = membership ? { id: membership.workspace_id } : null;
 
       if (!workspace) {
         toast.error('Aucun workspace trouvé');

@@ -32,7 +32,6 @@ export type Database = {
           scrapping_onboarding_done: boolean | null
           slack_user_id: string | null
           urn: string | null
-          user_id: string
           user_status:
             | Database["public"]["Enums"]["billable_user_status"]
             | null
@@ -55,7 +54,6 @@ export type Database = {
           scrapping_onboarding_done?: boolean | null
           slack_user_id?: string | null
           urn?: string | null
-          user_id: string
           user_status?:
             | Database["public"]["Enums"]["billable_user_status"]
             | null
@@ -78,7 +76,6 @@ export type Database = {
           scrapping_onboarding_done?: boolean | null
           slack_user_id?: string | null
           urn?: string | null
-          user_id?: string
           user_status?:
             | Database["public"]["Enums"]["billable_user_status"]
             | null
@@ -466,7 +463,6 @@ export type Database = {
           plan: string | null
           team_size: string | null
           updated_at: string | null
-          workspace_id: string | null
         }
         Insert: {
           acquisition_channel?: string | null
@@ -481,7 +477,6 @@ export type Database = {
           plan?: string | null
           team_size?: string | null
           updated_at?: string | null
-          workspace_id?: string | null
         }
         Update: {
           acquisition_channel?: string | null
@@ -496,17 +491,8 @@ export type Database = {
           plan?: string | null
           team_size?: string | null
           updated_at?: string | null
-          workspace_id?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "profiles_workspace_id_fkey"
-            columns: ["workspace_id"]
-            isOneToOne: false
-            referencedRelation: "workspaces"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       slack_workspace_auth: {
         Row: {
@@ -671,7 +657,6 @@ export type Database = {
           id: string
           is_connected: boolean | null
           slack_workspace_auth: string | null
-          user_id: string
           workspace_name: string
         }
         Insert: {
@@ -680,7 +665,6 @@ export type Database = {
           id?: string
           is_connected?: boolean | null
           slack_workspace_auth?: string | null
-          user_id: string
           workspace_name: string
         }
         Update: {
@@ -689,7 +673,6 @@ export type Database = {
           id?: string
           is_connected?: boolean | null
           slack_workspace_auth?: string | null
-          user_id?: string
           workspace_name?: string
         }
         Relationships: [
