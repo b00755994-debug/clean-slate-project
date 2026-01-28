@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useWorkspace } from './useWorkspace';
+import { useAuth } from './useAuth';
 import { subDays, startOfMonth, subMonths, format } from 'date-fns';
 
 interface OverviewKPIs {
@@ -54,12 +54,30 @@ interface ImpressionsDistributionPoint {
 }
 
 export function useAnalyticsData() {
-  const { workspace } = useWorkspace();
+  const { user } = useAuth();
+
+  // Get user's billable_users IDs (LinkedIn profiles)
+  const { data: userProfileIds = [], isLoading: isLoadingProfiles } = useQuery({
+    queryKey: ['user-profile-ids', user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('billable_users')
+        .select('id')
+        .eq('user_id', user?.id);
+      
+      if (error) throw error;
+      return data?.map(p => p.id) || [];
+    },
+    enabled: !!user,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const hasProfiles = userProfileIds.length > 0;
 
   const { data: overviewKPIs, isLoading: isLoadingKPIs } = useQuery({
-    queryKey: ['analytics-overview-kpis', workspace?.id],
+    queryKey: ['analytics-overview-kpis', user?.id, userProfileIds],
     queryFn: async (): Promise<OverviewKPIs> => {
-      if (!workspace?.id) {
+      if (!hasProfiles) {
         return {
           totalPosts: { value: 0, change: 0 },
           totalImpressions: { value: 0, change: 0 },
@@ -76,7 +94,7 @@ export function useAnalyticsData() {
       const { data: currentPosts, error: currentError } = await supabase
         .from('posts')
         .select('id, impressions, linkedin_profiles')
-        .eq('workspace_id', workspace.id)
+        .in('linkedin_profiles', userProfileIds)
         .gte('linkedin_created_at', thirtyDaysAgo.toISOString().split('T')[0]);
 
       if (currentError) throw currentError;
@@ -85,7 +103,7 @@ export function useAnalyticsData() {
       const { data: previousPosts, error: previousError } = await supabase
         .from('posts')
         .select('id, impressions, linkedin_profiles')
-        .eq('workspace_id', workspace.id)
+        .in('linkedin_profiles', userProfileIds)
         .gte('linkedin_created_at', sixtyDaysAgo.toISOString().split('T')[0])
         .lt('linkedin_created_at', thirtyDaysAgo.toISOString().split('T')[0]);
 
@@ -132,14 +150,14 @@ export function useAnalyticsData() {
         },
       };
     },
-    enabled: !!workspace?.id,
+    enabled: !!user && hasProfiles,
     staleTime: 5 * 60 * 1000,
   });
 
   const { data: trendData, isLoading: isLoadingTrend } = useQuery({
-    queryKey: ['analytics-trend-data', workspace?.id],
+    queryKey: ['analytics-trend-data', user?.id, userProfileIds],
     queryFn: async (): Promise<TrendDataPoint[]> => {
-      if (!workspace?.id) return [];
+      if (!hasProfiles) return [];
 
       const monthsData: TrendDataPoint[] = [];
       const monthKeys = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
@@ -150,7 +168,7 @@ export function useAnalyticsData() {
       const { data: posts, error } = await supabase
         .from('posts')
         .select('id, impressions, linkedin_created_at, linkedin_profiles')
-        .eq('workspace_id', workspace.id)
+        .in('linkedin_profiles', userProfileIds)
         .gte('linkedin_created_at', twelveMonthsAgo.toISOString().split('T')[0]);
 
       if (error) throw error;
@@ -178,15 +196,15 @@ export function useAnalyticsData() {
 
       return monthsData;
     },
-    enabled: !!workspace?.id,
+    enabled: !!user && hasProfiles,
     staleTime: 5 * 60 * 1000,
   });
 
   // Team Activation KPIs
   const { data: teamActivationKPIs, isLoading: isLoadingActivation } = useQuery({
-    queryKey: ['analytics-team-activation-kpis', workspace?.id],
+    queryKey: ['analytics-team-activation-kpis', user?.id, userProfileIds],
     queryFn: async (): Promise<TeamActivationKPIs> => {
-      if (!workspace?.id) {
+      if (!hasProfiles) {
         return {
           activeContributorsCount: { value: 0, change: 0 },
           activeContributorsPercent: { value: 0, change: 0 },
@@ -199,11 +217,11 @@ export function useAnalyticsData() {
       const thirtyDaysAgo = subDays(now, 30);
       const sixtyDaysAgo = subDays(now, 60);
 
-      // Get total billable users (connected team members)
+      // Get total billable users for this user
       const { data: allUsers, error: usersError } = await supabase
         .from('billable_users')
         .select('id')
-        .eq('workspace_id', workspace.id);
+        .eq('user_id', user?.id);
 
       if (usersError) throw usersError;
       const totalTeamMembers = allUsers?.length || 0;
@@ -212,7 +230,7 @@ export function useAnalyticsData() {
       const { data: currentPosts, error: currentError } = await supabase
         .from('posts')
         .select('id, linkedin_profiles, linkedin_created_at')
-        .eq('workspace_id', workspace.id)
+        .in('linkedin_profiles', userProfileIds)
         .gte('linkedin_created_at', thirtyDaysAgo.toISOString().split('T')[0]);
 
       if (currentError) throw currentError;
@@ -221,7 +239,7 @@ export function useAnalyticsData() {
       const { data: previousPosts, error: previousError } = await supabase
         .from('posts')
         .select('id, linkedin_profiles, linkedin_created_at')
-        .eq('workspace_id', workspace.id)
+        .in('linkedin_profiles', userProfileIds)
         .gte('linkedin_created_at', sixtyDaysAgo.toISOString().split('T')[0])
         .lt('linkedin_created_at', thirtyDaysAgo.toISOString().split('T')[0]);
 
@@ -287,15 +305,15 @@ export function useAnalyticsData() {
         },
       };
     },
-    enabled: !!workspace?.id,
+    enabled: !!user && hasProfiles,
     staleTime: 5 * 60 * 1000,
   });
 
   // Activation trend data (contributors per month)
   const { data: activationTrendData, isLoading: isLoadingActivationTrend } = useQuery({
-    queryKey: ['analytics-activation-trend', workspace?.id],
+    queryKey: ['analytics-activation-trend', user?.id, userProfileIds],
     queryFn: async (): Promise<ActivationTrendDataPoint[]> => {
-      if (!workspace?.id) return [];
+      if (!hasProfiles) return [];
 
       const monthsData: ActivationTrendDataPoint[] = [];
       const monthKeys = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
@@ -305,7 +323,7 @@ export function useAnalyticsData() {
       const { data: posts, error } = await supabase
         .from('posts')
         .select('id, linkedin_created_at, linkedin_profiles')
-        .eq('workspace_id', workspace.id)
+        .in('linkedin_profiles', userProfileIds)
         .gte('linkedin_created_at', twelveMonthsAgo.toISOString().split('T')[0]);
 
       if (error) throw error;
@@ -332,15 +350,15 @@ export function useAnalyticsData() {
 
       return monthsData;
     },
-    enabled: !!workspace?.id,
+    enabled: !!user && hasProfiles,
     staleTime: 5 * 60 * 1000,
   });
 
   // Posting heatmap data (real data based on post timestamps)
   const { data: postingHeatmapData, isLoading: isLoadingHeatmap } = useQuery({
-    queryKey: ['analytics-posting-heatmap', workspace?.id],
+    queryKey: ['analytics-posting-heatmap', user?.id, userProfileIds],
     queryFn: async (): Promise<HeatmapCell[]> => {
-      if (!workspace?.id) return [];
+      if (!hasProfiles) return [];
 
       const DAYS_KEYS = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
       const HOURS_KEYS = ['6h', '8h', '10h', '12h', '14h', '16h', '18h', '20h'];
@@ -358,7 +376,7 @@ export function useAnalyticsData() {
       const { data: posts, error } = await supabase
         .from('posts')
         .select('id, impressions, linkedin_created_at, created_at')
-        .eq('workspace_id', workspace.id);
+        .in('linkedin_profiles', userProfileIds);
 
       if (error) throw error;
 
@@ -409,15 +427,15 @@ export function useAnalyticsData() {
 
       return result;
     },
-    enabled: !!workspace?.id,
+    enabled: !!user && hasProfiles,
     staleTime: 5 * 60 * 1000,
   });
 
   // Reach & Impact KPIs
   const { data: reachKPIs, isLoading: isLoadingReach } = useQuery({
-    queryKey: ['analytics-reach-kpis', workspace?.id],
+    queryKey: ['analytics-reach-kpis', user?.id, userProfileIds],
     queryFn: async (): Promise<ReachKPIs> => {
-      if (!workspace?.id) {
+      if (!hasProfiles) {
         return {
           totalImpressions: { value: 0, change: 0 },
           avgImpressionsPerPost: { value: 0, change: 0 },
@@ -434,7 +452,7 @@ export function useAnalyticsData() {
       const { data: currentPosts, error: currentError } = await supabase
         .from('posts')
         .select('id, impressions, reactions, comments, likes, praise, empathy, appreciation, interest')
-        .eq('workspace_id', workspace.id)
+        .in('linkedin_profiles', userProfileIds)
         .gte('linkedin_created_at', thirtyDaysAgo.toISOString().split('T')[0]);
 
       if (currentError) throw currentError;
@@ -443,7 +461,7 @@ export function useAnalyticsData() {
       const { data: previousPosts, error: previousError } = await supabase
         .from('posts')
         .select('id, impressions, reactions, comments, likes, praise, empathy, appreciation, interest')
-        .eq('workspace_id', workspace.id)
+        .in('linkedin_profiles', userProfileIds)
         .gte('linkedin_created_at', sixtyDaysAgo.toISOString().split('T')[0])
         .lt('linkedin_created_at', thirtyDaysAgo.toISOString().split('T')[0]);
 
@@ -522,15 +540,15 @@ export function useAnalyticsData() {
         },
       };
     },
-    enabled: !!workspace?.id,
+    enabled: !!user && hasProfiles,
     staleTime: 5 * 60 * 1000,
   });
 
   // Reach trend data (impressions + engagement rate per month)
   const { data: reachTrendData, isLoading: isLoadingReachTrend } = useQuery({
-    queryKey: ['analytics-reach-trend', workspace?.id],
+    queryKey: ['analytics-reach-trend', user?.id, userProfileIds],
     queryFn: async (): Promise<ReachTrendDataPoint[]> => {
-      if (!workspace?.id) return [];
+      if (!hasProfiles) return [];
 
       const monthsData: ReachTrendDataPoint[] = [];
       const monthKeys = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
@@ -540,7 +558,7 @@ export function useAnalyticsData() {
       const { data: posts, error } = await supabase
         .from('posts')
         .select('id, impressions, reactions, comments, likes, praise, empathy, appreciation, interest, linkedin_created_at')
-        .eq('workspace_id', workspace.id)
+        .in('linkedin_profiles', userProfileIds)
         .gte('linkedin_created_at', twelveMonthsAgo.toISOString().split('T')[0]);
 
       if (error) throw error;
@@ -584,20 +602,20 @@ export function useAnalyticsData() {
 
       return monthsData;
     },
-    enabled: !!workspace?.id,
+    enabled: !!user && hasProfiles,
     staleTime: 5 * 60 * 1000,
   });
 
   // Impressions distribution (posts bucketed by impression ranges)
   const { data: impressionsDistribution, isLoading: isLoadingDistribution } = useQuery({
-    queryKey: ['analytics-impressions-distribution', workspace?.id],
+    queryKey: ['analytics-impressions-distribution', user?.id, userProfileIds],
     queryFn: async (): Promise<ImpressionsDistributionPoint[]> => {
-      if (!workspace?.id) return [];
+      if (!hasProfiles) return [];
 
       const { data: posts, error } = await supabase
         .from('posts')
         .select('id, impressions')
-        .eq('workspace_id', workspace.id);
+        .in('linkedin_profiles', userProfileIds);
 
       if (error) throw error;
 
@@ -621,7 +639,7 @@ export function useAnalyticsData() {
 
       return distribution;
     },
-    enabled: !!workspace?.id,
+    enabled: !!user && hasProfiles,
     staleTime: 5 * 60 * 1000,
   });
 
@@ -649,6 +667,6 @@ export function useAnalyticsData() {
     },
     reachTrendData: reachTrendData || [],
     impressionsDistribution: impressionsDistribution || [],
-    isLoading: isLoadingKPIs || isLoadingTrend || isLoadingActivation || isLoadingActivationTrend || isLoadingHeatmap || isLoadingReach || isLoadingReachTrend || isLoadingDistribution,
+    isLoading: isLoadingProfiles || isLoadingKPIs || isLoadingTrend || isLoadingActivation || isLoadingActivationTrend || isLoadingHeatmap || isLoadingReach || isLoadingReachTrend || isLoadingDistribution,
   };
 }
