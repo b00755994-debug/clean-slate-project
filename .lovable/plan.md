@@ -1,47 +1,47 @@
 
 
-# Plan: Augmenter la largeur du titre LinkedIn + Resserrer les colonnes de droite
+# Plan: Ajuster l'espacement des colonnes du tableau
 
 ## Objectif
 
-1. Augmenter `max-w-[180px]` a `max-w-[300px]` pour la colonne Title
-2. Resserrer les colonnes de droite (Posts, Impressions, Reactions, Engagement, Rank, Evolution)
+1. Rapprocher la colonne Title du nom/prénom (réduire l'espace à gauche du titre)
+2. Augmenter légèrement l'espacement des colonnes de droite (trouver un juste milieu)
 
 ## Modifications
 
 **Fichier**: `src/pages/DashboardLeaderboard.tsx`
 
-### 1. Colonne Title - Augmenter la largeur
+### 1. Colonne Title - Rapprocher du nom
 
-```tsx
-// Ligne 200 - Avant
-<TableCell className="hidden md:table-cell text-muted-foreground text-sm truncate max-w-[180px] py-2">
+Ajouter `pl-0` ou `pl-1` pour réduire le padding gauche de la colonne Title.
 
-// Apres
-<TableCell className="hidden md:table-cell text-muted-foreground text-sm truncate max-w-[300px] py-2">
-```
+### 2. Colonnes de droite - Juste milieu pour l'espacement
 
-### 2. Colonnes de droite - Ajouter des largeurs fixes plus compactes
+Passer de `px-2` à `px-3` pour un espacement plus confortable sans revenir au padding par défaut.
 
-| Colonne | Avant | Apres |
-|---------|-------|-------|
-| Posts | `text-right` | `w-16 text-right` |
-| Impressions | `text-right` | `w-20 text-right` |
-| Reactions | `text-right` | `w-20 text-right` |
-| Engagement | `text-right` | `w-20 text-right` |
-| Rank | `w-14` | `w-12` |
-| Evolution | `w-16` | `w-14` |
+| Colonne | Actuel | Nouveau |
+|---------|--------|---------|
+| Title | (défaut) | `pl-1` |
+| Posts | `w-16 px-2` | `w-16 px-3` |
+| Impressions | `w-20 px-2` | `w-20 px-3` |
+| Reactions | `w-20 px-2` | `w-20 px-3` |
+| Engagement | `w-20 px-2` | `w-20 px-3` |
+| Rank | `w-12 px-2` | `w-14 px-3` |
+| Evolution | `w-14 px-2` | `w-16 px-3` |
 
-### 3. Padding des cellules
-
-Reduire le padding horizontal des TableHead et TableCell de droite avec `px-2` au lieu du padding par defaut.
-
-## Resume des changements
+### 3. Résumé visuel
 
 ```text
-+----------+---------------------------+-------+--------+--------+------+------+------+
-| MEMBER   | TITLE (300px max)         | POSTS | IMPR.  | REACT. | ENG. | RANK | EVOL |
-|          |                           | (w-16)| (w-20) | (w-20) |(w-20)|(w-12)|(w-14)|
-+----------+---------------------------+-------+--------+--------+------+------+------+
++-----------+------------------------+-------+--------+--------+------+------+------+
+| MEMBER    | TITLE (moins d'espace) | POSTS | IMPR.  | REACT. | ENG. | RANK | EVOL |
+|           | <-- rapproché          |  <-- espacement légèrement augmenté -->      |
++-----------+------------------------+-------+--------+--------+------+------+------+
 ```
+
+## Lignes à modifier
+
+- **Ligne 145**: Ajouter `pl-1` au header Title
+- **Lignes 146-151**: Changer `px-2` en `px-3` pour les headers de droite
+- **Ligne 200**: Ajouter `pl-1` à la cellule Title
+- **Lignes 203-214**: Changer `px-2` en `px-3` pour les cellules de droite
 
