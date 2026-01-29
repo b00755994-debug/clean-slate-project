@@ -143,12 +143,12 @@ export default function DashboardLeaderboard() {
               <TableRow className="hover:bg-transparent">
                 <TableHead className="text-xs uppercase tracking-wide">{t.member}</TableHead>
                 <TableHead className="hidden md:table-cell text-xs uppercase tracking-wide">{t.title_col}</TableHead>
-                <TableHead className="text-right text-xs uppercase tracking-wide">{t.posts}</TableHead>
-                <TableHead className="text-right text-xs uppercase tracking-wide">{t.impressions}</TableHead>
-                <TableHead className="text-right text-xs uppercase tracking-wide">{t.reactions}</TableHead>
-                <TableHead className="text-right text-xs uppercase tracking-wide">{t.engagement}</TableHead>
-                <TableHead className="w-14 text-center text-xs uppercase tracking-wide">{t.rank}</TableHead>
-                <TableHead className="w-16 text-center text-xs uppercase tracking-wide">{t.evolution}</TableHead>
+                <TableHead className="w-16 px-2 text-right text-xs uppercase tracking-wide">{t.posts}</TableHead>
+                <TableHead className="w-20 px-2 text-right text-xs uppercase tracking-wide">{t.impressions}</TableHead>
+                <TableHead className="w-20 px-2 text-right text-xs uppercase tracking-wide">{t.reactions}</TableHead>
+                <TableHead className="w-20 px-2 text-right text-xs uppercase tracking-wide">{t.engagement}</TableHead>
+                <TableHead className="w-12 px-2 text-center text-xs uppercase tracking-wide">{t.rank}</TableHead>
+                <TableHead className="w-14 px-2 text-center text-xs uppercase tracking-wide">{t.evolution}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -197,21 +197,21 @@ export default function DashboardLeaderboard() {
                         <span className="font-medium text-sm text-foreground">{entry.profileName}</span>
                       </div>
                     </TableCell>
-                    <TableCell className="hidden md:table-cell text-muted-foreground text-sm truncate max-w-[180px] py-2">
+                    <TableCell className="hidden md:table-cell text-muted-foreground text-sm truncate max-w-[300px] py-2">
                       {entry.linkedinTitle || '—'}
                     </TableCell>
-                    <TableCell className="text-right text-sm font-medium py-2">{entry.postCount}</TableCell>
-                    <TableCell className="text-right text-sm font-medium py-2">{formatNumber(entry.impressions)}</TableCell>
-                    <TableCell className="text-right text-sm font-medium py-2">{formatNumber(entry.reactions)}</TableCell>
-                    <TableCell className="text-right text-sm font-medium py-2">
+                    <TableCell className="w-16 px-2 text-right text-sm font-medium py-2">{entry.postCount}</TableCell>
+                    <TableCell className="w-20 px-2 text-right text-sm font-medium py-2">{formatNumber(entry.impressions)}</TableCell>
+                    <TableCell className="w-20 px-2 text-right text-sm font-medium py-2">{formatNumber(entry.reactions)}</TableCell>
+                    <TableCell className="w-20 px-2 text-right text-sm font-medium py-2">
                       {entry.engagementRate.toFixed(2)}%
                     </TableCell>
-                    <TableCell className="text-center py-2">
+                    <TableCell className="w-12 px-2 text-center py-2">
                       <div className="flex justify-center">
                         <RankBadge rank={entry.rank} />
                       </div>
                     </TableCell>
-                    <TableCell className="text-center py-2">
+                    <TableCell className="w-14 px-2 text-center py-2">
                       <RankProgression change={entry.rankChange} newLabel={t.new} />
                     </TableCell>
                   </TableRow>
