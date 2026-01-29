@@ -71,7 +71,7 @@ export function useFullLeaderboard() {
   });
 
   const leaderboard = useMemo(() => {
-    if (!Array.isArray(billableUsers) || !Array.isArray(posts)) return [];
+    if (!billableUsers || !posts) return [];
 
     const periodStart = getPeriodStartDate(period);
 
