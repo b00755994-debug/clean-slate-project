@@ -107,8 +107,7 @@ const translations = {
           "Advanced team analytics",
           "Content library to follow your team",
           "Monthly leaderboard",
-          "Audience & brand insights",
-          "Priority support"
+          "Audience & brand insights"
         ]
       },
       business: {
