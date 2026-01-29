@@ -95,14 +95,12 @@ export default function DashboardLeaderboard() {
       <div className="flex flex-col gap-6 h-full">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-primary/10">
-              <Trophy className="w-5 h-5 text-primary" />
-            </div>
-            <div>
-              <h1 className="text-xl font-semibold text-foreground">{t.title}</h1>
-              <p className="text-sm text-muted-foreground">{t.subtitle}</p>
-            </div>
+          <div className="flex flex-col gap-1">
+            <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
+              <Trophy className="w-8 h-8 text-primary" />
+              {t.title}
+            </h1>
+            <p className="text-muted-foreground">{t.subtitle}</p>
           </div>
           
           <Select value={period} onValueChange={(v) => setPeriod(v as PeriodFilter)}>
