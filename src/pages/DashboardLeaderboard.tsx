@@ -143,12 +143,12 @@ export default function DashboardLeaderboard() {
               <TableRow className="hover:bg-transparent">
                 <TableHead className="text-xs uppercase tracking-wide">{t.member}</TableHead>
                 <TableHead className="hidden md:table-cell pl-1 text-xs uppercase tracking-wide">{t.title_col}</TableHead>
-                <TableHead className="w-16 px-3 text-right text-xs uppercase tracking-wide">{t.posts}</TableHead>
-                <TableHead className="w-20 px-3 text-right text-xs uppercase tracking-wide">{t.impressions}</TableHead>
-                <TableHead className="w-20 px-3 text-right text-xs uppercase tracking-wide">{t.reactions}</TableHead>
-                <TableHead className="w-20 px-3 text-right text-xs uppercase tracking-wide">{t.engagement}</TableHead>
-                <TableHead className="w-14 px-3 text-center text-xs uppercase tracking-wide">{t.rank}</TableHead>
-                <TableHead className="w-16 px-3 text-center text-xs uppercase tracking-wide">{t.evolution}</TableHead>
+                <TableHead className="w-16 px-4 text-right text-xs uppercase tracking-wide">{t.posts}</TableHead>
+                <TableHead className="w-20 px-4 text-right text-xs uppercase tracking-wide">{t.impressions}</TableHead>
+                <TableHead className="w-20 px-4 text-right text-xs uppercase tracking-wide">{t.reactions}</TableHead>
+                <TableHead className="w-20 px-4 text-right text-xs uppercase tracking-wide">{t.engagement}</TableHead>
+                <TableHead className="w-14 px-4 text-center text-xs uppercase tracking-wide">{t.rank}</TableHead>
+                <TableHead className="w-16 px-4 text-center text-xs uppercase tracking-wide">{t.evolution}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -200,18 +200,18 @@ export default function DashboardLeaderboard() {
                     <TableCell className="hidden md:table-cell pl-1 text-muted-foreground text-sm truncate max-w-[300px] py-2">
                       {entry.linkedinTitle || '—'}
                     </TableCell>
-                    <TableCell className="w-16 px-3 text-right text-sm font-medium py-2">{entry.postCount}</TableCell>
-                    <TableCell className="w-20 px-3 text-right text-sm font-medium py-2">{formatNumber(entry.impressions)}</TableCell>
-                    <TableCell className="w-20 px-3 text-right text-sm font-medium py-2">{formatNumber(entry.reactions)}</TableCell>
-                    <TableCell className="w-20 px-3 text-right text-sm font-medium py-2">
+                    <TableCell className="w-16 px-4 text-right text-sm font-medium py-2">{entry.postCount}</TableCell>
+                    <TableCell className="w-20 px-4 text-right text-sm font-medium py-2">{formatNumber(entry.impressions)}</TableCell>
+                    <TableCell className="w-20 px-4 text-right text-sm font-medium py-2">{formatNumber(entry.reactions)}</TableCell>
+                    <TableCell className="w-20 px-4 text-right text-sm font-medium py-2">
                       {entry.engagementRate.toFixed(2)}%
                     </TableCell>
-                    <TableCell className="w-14 px-3 text-center py-2">
+                    <TableCell className="w-14 px-4 text-center py-2">
                       <div className="flex justify-center">
                         <RankBadge rank={entry.rank} />
                       </div>
                     </TableCell>
-                    <TableCell className="w-16 px-3 text-center py-2">
+                    <TableCell className="w-16 px-4 text-center py-2">
                       <RankProgression change={entry.rankChange} newLabel={t.new} />
                     </TableCell>
                   </TableRow>
