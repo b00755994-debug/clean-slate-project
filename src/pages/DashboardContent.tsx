@@ -130,7 +130,7 @@ export default function DashboardContent() {
           {/* Filters + Search bar on the right */}
           <div className="flex items-center gap-2 flex-wrap">
             <Select value={sortBy} onValueChange={(v: 'recent' | 'impressions' | 'reactions') => setSortBy(v)}>
-              <SelectTrigger className="w-[130px] h-8 text-sm bg-card">
+              <SelectTrigger className="w-[130px] h-8 text-sm bg-muted">
                 <SelectValue placeholder={t.sortBy} />
               </SelectTrigger>
               <SelectContent>
@@ -141,7 +141,7 @@ export default function DashboardContent() {
             </Select>
 
             <Select value={timePeriod} onValueChange={(v: TimePeriod) => setTimePeriod(v)}>
-              <SelectTrigger className="w-[160px] h-8 text-sm bg-card">
+              <SelectTrigger className="w-[160px] h-8 text-sm bg-muted">
                 <Calendar className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
                 <SelectValue placeholder="Period" />
               </SelectTrigger>
@@ -154,7 +154,7 @@ export default function DashboardContent() {
             </Select>
 
             <Select value={authorFilter} onValueChange={setAuthorFilter}>
-              <SelectTrigger className="w-[140px] h-8 text-sm bg-card">
+              <SelectTrigger className="w-[140px] h-8 text-sm bg-muted">
                 <SelectValue placeholder={t.filterByAuthor} />
               </SelectTrigger>
               <SelectContent>
@@ -202,7 +202,7 @@ export default function DashboardContent() {
                 placeholder={t.search}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-8 h-8 text-sm bg-card"
+                className="pl-8 h-8 text-sm bg-muted"
               />
             </div>
           </div>
