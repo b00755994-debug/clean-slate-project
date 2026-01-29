@@ -1,132 +1,132 @@
 
-# Fix Slack Integration for New Multi-User Architecture
+# Plan: Leaderboard Page
 
-## Problem Analysis
-The recent database cleanup removed `workspaces.user_id`, but the Slack edge functions still rely on this column to find user workspaces. This causes `database_error` when connecting or using Slack features.
+## Overview
+Create a new "Leaderboard" page as the 4th item in the dashboard sidebar. This page will display a complete ranking of all team members (billable_users) with their LinkedIn performance metrics in a stylized table format.
 
-**Affected Edge Functions:**
-- `slack-callback` - Line ~127: Uses `workspaces.user_id` for fallback workspace creation
-- `slack-members` - Line 59: Uses `.eq('user_id', user.id)` 
-- `slack-channels` - Line 51: Uses `.eq('user_id', user.id)`
-- `slack-join-channel` - Line 52: Uses `.eq('user_id', user.id)`
+## Features
+- Full ranking table of all billable_users in the workspace
+- Rank 1-2-3 visual distinction (gold/silver/bronze medals)
+- Month filter with "All time" option
+- Metrics: Posts count, Impressions, Reactions, Engagement rate
+- Bilingual support (FR/EN)
 
-## Solution
+## Implementation
 
-Update all edge functions to find workspaces via the `workspace_members` junction table instead of the deleted `user_id` column.
+### 1. Add Leaderboard Route
+**File: `src/App.tsx`**
+- Add new protected route `/dashboard/leaderboard`
+- Import new `DashboardLeaderboard` page component
 
-### Changes Required
+### 2. Update Sidebar Navigation
+**File: `src/components/dashboard/DashboardSidebar.tsx`**
+- Add 4th menu item: Leaderboard
+- Use `Trophy` icon from lucide-react
+- Route: `/dashboard/leaderboard`
 
-**1. slack-callback/index.ts**
-Replace the workspace lookup logic:
-```typescript
-// OLD (broken)
-const { data: existingWorkspace } = await supabase
-  .from('workspaces')
-  .select('id')
-  .eq('user_id', userId)
-  .maybeSingle();
+### 3. Create Leaderboard Hook
+**File: `src/hooks/useFullLeaderboard.ts` (new)**
+- Fetch all billable_users for workspace
+- Fetch all posts for workspace
+- Calculate per-user metrics:
+  - Post count
+  - Total impressions
+  - Total reactions (likes + comments)
+  - Engagement rate: reactions / impressions * 100
+- Support month filtering (current month, last 3 months, all time)
+- Sort by global score (weighted combination or configurable)
 
-// NEW (via junction table)
-const { data: membership } = await supabase
-  .from('workspace_members')
-  .select('workspace_id, workspace:workspaces(id)')
-  .eq('profile_id', userId)
-  .maybeSingle();
+### 4. Create Leaderboard Page
+**File: `src/pages/DashboardLeaderboard.tsx` (new)**
+- Uses `DashboardLayout` wrapper
+- Header with title, subtitle, and month filter dropdown
+- Full-width table with leaderboard data
 
-const existingWorkspace = membership?.workspace_id 
-  ? { id: membership.workspace_id } 
-  : null;
+**Table Columns:**
+| Column | Description |
+|--------|-------------|
+| Rank | 1-2-3 with medal colors, then 4+ in neutral |
+| Photo | Avatar with initials fallback |
+| Name | Full name |
+| Title | LinkedIn title |
+| Posts | Post count for period |
+| Impressions | Formatted with k/M suffix |
+| Reactions | Likes + comments |
+| Engagement | Percentage with 2 decimals |
+
+### 5. Month Filter Component
+**Integrated in page header**
+- Options: "Toutes les dates" / "Ce mois" / "3 derniers mois" / "6 derniers mois"
+- Uses existing Select component styling
+
+## Visual Design
+
+### Table Styling
+- Minimalist design matching existing UI
+- Subtle row hover effect
+- Rank column with medal coloring:
+  - 1st: `bg-amber-500/20 text-amber-600`
+  - 2nd: `bg-gray-400/20 text-gray-500`
+  - 3rd: `bg-orange-400/20 text-orange-500`
+  - 4+: `bg-muted text-muted-foreground`
+
+### Layout
+```text
++--------------------------------------------------+
+| [Trophy] Leaderboard           [Month Filter v]  |
+| Team member ranking by LinkedIn performance      |
++--------------------------------------------------+
+| Rank | Photo | Name      | Title  | Posts | ... |
++--------------------------------------------------+
+| [1]  | [Av]  | Gaultier  | Tech.. |   5   | ... |
+| [2]  | [Av]  | Aurelien  | Busi.. |   2   | ... |
+| [3]  | [Av]  | Raphaël   | Ops..  |   1   | ... |
+| [4]  | [Av]  | Marie     | Mark.. |   1   | ... |
++--------------------------------------------------+
 ```
 
-Also update the fallback workspace creation to:
-1. Create workspace without `user_id`
-2. Create `workspace_members` entry with `owner` role
+## Files to Create/Modify
 
-**2. slack-members/index.ts**
-Replace workspace query:
-```typescript
-// OLD
-.from('workspaces')
-.eq('user_id', user.id)
-
-// NEW
-const { data: membership } = await supabase
-  .from('workspace_members')
-  .select('workspace:workspaces(id, slack_workspace_auth, is_connected, workspace_name)')
-  .eq('profile_id', user.id)
-  .maybeSingle();
-
-const workspace = membership?.workspace;
-```
-
-**3. slack-channels/index.ts**
-Same pattern - query via `workspace_members` first.
-
-**4. slack-join-channel/index.ts**
-Same pattern - query via `workspace_members` first.
+| File | Action |
+|------|--------|
+| `src/pages/DashboardLeaderboard.tsx` | Create |
+| `src/hooks/useFullLeaderboard.ts` | Create |
+| `src/components/dashboard/DashboardSidebar.tsx` | Modify |
+| `src/App.tsx` | Modify |
 
 ## Technical Details
 
-### New Query Pattern for All Functions
+### Hook Logic (`useFullLeaderboard.ts`)
 ```typescript
-// Step 1: Get workspace via membership
-const { data: membership, error: membershipError } = await supabase
-  .from('workspace_members')
-  .select(`
-    workspace_id,
-    workspace:workspaces (
-      id,
-      slack_workspace_auth,
-      is_connected,
-      workspace_name
-    )
-  `)
-  .eq('profile_id', user.id)
-  .maybeSingle();
+interface LeaderboardEntry {
+  id: string;
+  rank: number;
+  profileName: string;
+  linkedinTitle: string | null;
+  avatarUrl: string | null;
+  postCount: number;
+  impressions: number;
+  reactions: number;
+  engagementRate: number; // reactions / impressions * 100
+}
 
-// Step 2: Extract workspace from nested result
-const workspace = membership?.workspace;
+// Filter posts by period using linkedin_created_at or created_at
+// Aggregate metrics per billable_user
+// Sort by impressions (primary) or configurable metric
 ```
 
-### slack-callback Fallback Creation
-When no workspace exists (edge case), create both records:
-```typescript
-// Create workspace
-const { data: newWorkspace } = await supabase
-  .from('workspaces')
-  .insert({
-    workspace_name: teamName || 'My Workspace',
-    is_connected: true,
-    connected_at: new Date().toISOString(),
-  })
-  .select('id')
-  .single();
-
-// Create owner membership
-await supabase
-  .from('workspace_members')
-  .insert({
-    workspace_id: newWorkspace.id,
-    profile_id: userId,
-    role: 'owner',
-    joined_at: new Date().toISOString(),
-  });
+### Engagement Rate Formula
 ```
+Engagement Rate = (reactions / impressions) * 100
+```
+Where reactions = likes + comments from the posts table.
 
-## Files to Modify
+### Month Filter Options
+- `all`: All time (no date filter)
+- `month`: Current calendar month
+- `3months`: Last 3 months
+- `6months`: Last 6 months
 
-| File | Change |
-|------|--------|
-| `supabase/functions/slack-callback/index.ts` | Update workspace lookup + fallback creation |
-| `supabase/functions/slack-members/index.ts` | Update workspace query pattern |
-| `supabase/functions/slack-channels/index.ts` | Update workspace query pattern |
-| `supabase/functions/slack-join-channel/index.ts` | Update workspace query pattern |
-
-## Testing
-
-After deployment:
-1. Test Slack connection from onboarding flow
-2. Test Slack connection from dashboard settings
-3. Verify channel list loads correctly
-4. Verify member list loads correctly
-5. Test channel selection and bot invitation
+### Number Formatting
+- Reuse existing `formatNumber` helper for k/M suffixes
+- Engagement rate: 2 decimal places with % suffix
