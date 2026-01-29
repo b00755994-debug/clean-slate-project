@@ -1,118 +1,73 @@
 
 
-# Plan: Restructurer la Sidebar avec Navigation Complete
+# Plan: Palette de Gris Modernisée
 
-## Vue d'ensemble
-Transformer la sidebar icon-only en une sidebar complete avec:
-- Logo Superpump en haut
-- 4 pages de navigation avec icones + titres
-- Menu utilisateur en bas
+## Analyse du problème
 
-## Nouvelle Structure de la Sidebar
+### Gris actuels (trop mous)
+| Usage | Variable | Valeur HSL | Hex approximatif |
+|-------|----------|------------|------------------|
+| Texte secondaire | `--muted-foreground` | `215 16% 47%` | #6B7280 (clair, bleuté) |
+| Fond muted | `--muted` | `220 14% 96%` | #F3F4F6 (quasi blanc) |
+| Fond sidebar | `--sidebar-background` | `340 100% 99%` | Rosé très clair |
+| Bordures | `--border` | `220 13% 91%` | #E5E7EB |
+
+## Nouvelle palette proposée
+
+### Comparaison
+
+| Usage | Avant | Apres | Description |
+|-------|-------|-------|-------------|
+| **Texte secondaire** | `215 16% 47%` | `220 9% 36%` (**#525866**) | Plus fonce, meilleure lisibilite |
+| **Fond filtres/sidebar** | `220 14% 96%` | `220 10% 95%` (**#F1F2F4**) | Gris neutre subtil |
+| **Bordures** | `220 13% 91%` | `220 10% 88%` (**#DCDFE4**) | Legerement plus visible |
+| **Sidebar background** | `340 100% 99%` (rose) | `220 10% 95%` (**#F1F2F4**) | Meme gris que muted |
+
+### Apercu des changements
 
 ```text
-+----------------------+
-| [Zap] superpump      |  <- Logo + nom (en haut)
-|----------------------|
-| [icon] Dashboard     |  <- /dashboard
-| [icon] Team Feed     |  <- /dashboard/content (existant)
-| [icon] Analytics     |  <- /dashboard/analytics
-| [icon] Leaderboard   |  <- /dashboard/leaderboard
-|                      |
-|                      |
-|----------------------|
-| [Menu] Menu          |  <- Menu utilisateur (en bas)
-+----------------------+
+Texte secondaire:
+  Avant: #6B7280 (gris clair bluete, mou)
+  Apres: #525866 (gris fonce neutre, net)
+
+Fonds sidebar/filtres:
+  Avant: quasi blanc / rose pale
+  Apres: #F1F2F4 (gris neutre leger, pro)
 ```
 
-## Pages de Navigation (toutes existantes)
+## Modification technique
 
-| Page | Route | Icone |
-|------|-------|-------|
-| Dashboard | `/dashboard` | LayoutDashboard |
-| Team Feed | `/dashboard/content` | Rss |
-| Analytics | `/dashboard/analytics` | BarChart3 |
-| Leaderboard | `/dashboard/leaderboard` | Trophy |
+### Fichier: `src/index.css`
 
-## Modifications
+Variables a mettre a jour dans `:root` :
 
-### 1. Refonte de DashboardSidebar
-**Fichier: `src/components/dashboard/DashboardSidebar.tsx`**
+```css
+/* Texte secondaire - plus fonce et net */
+--muted-foreground: 220 9% 36%;     /* Etait: 215 16% 47% */
 
-- Elargir la sidebar: `w-16` devient `w-52` (208px)
-- Ajouter 3 sections:
-  - **SidebarHeader**: Logo Superpump (Zap icon + "superpump")
-  - **SidebarContent**: 4 pages avec icones reduites (-30%) + titres
-  - **SidebarFooter**: Dropdown "Menu" avec profil, langues, logout
+/* Fonds - gris neutre subtil */
+--muted: 220 10% 95%;               /* Etait: 220 14% 96% */
 
-**Dimensions:**
-- Icones navigation: `w-5 h-5` devient `w-3.5 h-3.5` (-30%)
-- Logo Zap: `w-4 h-4` dans container `w-8 h-8`
+/* Sidebar - meme gris que muted (etait rose) */
+--sidebar-background: 220 10% 95%;  /* Etait: 340 100% 99% */
+--sidebar-foreground: 220 9% 36%;   /* Aligne avec muted-foreground */
 
-### 2. Mettre a jour DashboardLayout
-**Fichier: `src/components/dashboard/DashboardLayout.tsx`**
-- Supprimer `<DashboardHeader />`
-- La sidebar devient l'element de navigation principal
-
-### 3. Menu utilisateur dans la sidebar
-Deplacer le contenu du DashboardHeader vers le SidebarFooter:
-- Bouton "Menu" avec icone
-- Dropdown avec: profil utilisateur, selection langue (EN/FR), admin (si admin), logout
-
-## Structure de Code - Nouvelle Sidebar
-
-```tsx
-const menuItems = [
-  { title: 'Dashboard', url: '/dashboard', icon: LayoutDashboard },
-  { title: 'Team Feed', url: '/dashboard/content', icon: Rss },
-  { title: 'Analytics', url: '/dashboard/analytics', icon: BarChart3 },
-  { title: 'Leaderboard', url: '/dashboard/leaderboard', icon: Trophy },
-];
-
-<Sidebar className="w-52 border-r border-border/30 bg-background">
-  {/* Logo en haut */}
-  <SidebarHeader className="px-4 py-4 border-b border-border/30">
-    <div className="flex items-center gap-3">
-      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-destructive">
-        <Zap className="w-4 h-4 text-white" />
-      </div>
-      <span className="text-lg font-bold">superpump</span>
-    </div>
-  </SidebarHeader>
-
-  {/* Navigation */}
-  <SidebarContent className="py-4">
-    <SidebarMenu>
-      {menuItems.map((item) => (
-        <SidebarMenuItem>
-          <NavLink to={item.url}>
-            <item.icon className="w-3.5 h-3.5" />
-            <span>{item.title}</span>
-          </NavLink>
-        </SidebarMenuItem>
-      ))}
-    </SidebarMenu>
-  </SidebarContent>
-
-  {/* Menu utilisateur en bas */}
-  <SidebarFooter className="mt-auto border-t p-4">
-    <DropdownMenu>
-      <DropdownMenuTrigger>
-        <Menu /> Menu
-      </DropdownMenuTrigger>
-      {/* Profil, langues, admin, logout */}
-    </DropdownMenu>
-  </SidebarFooter>
-</Sidebar>
+/* Bordures legerement plus marquees */
+--border: 220 10% 88%;              /* Etait: 220 13% 91% */
+--input: 220 10% 88%;
+--sidebar-border: 220 10% 88%;
 ```
 
-## Fichiers a modifier
+## Fichier a modifier
 
-| Fichier | Action |
-|---------|--------|
-| `src/components/dashboard/DashboardSidebar.tsx` | Refonte complete avec header, nav, footer |
-| `src/components/dashboard/DashboardLayout.tsx` | Supprimer DashboardHeader, ajuster layout |
+| Fichier | Changement |
+|---------|------------|
+| `src/index.css` | Mettre a jour les variables de gris (light mode) |
 
-## Note
-Aucune nouvelle page a creer - toutes les routes existent deja.
+## Resultat attendu
+
+- **Texte** : Plus lisible, meilleur contraste, aspect plus pro
+- **Fonds** : Gris neutre coherent pour sidebar et filtres
+- **Bordures** : Plus nettes, plus visibles
+- **Coherence** : Palette unifiee sans teintes parasites (rose, bleu)
 
