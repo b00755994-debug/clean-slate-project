@@ -19,6 +19,7 @@ import Onboarding from "./pages/Onboarding";
 import Dashboard from "./pages/Dashboard";
 import DashboardAnalytics from "./pages/DashboardAnalytics";
 import DashboardContent from "./pages/DashboardContent";
+import DashboardLeaderboard from "./pages/DashboardLeaderboard";
 import Admin from "./pages/Admin";
 
 const queryClient = new QueryClient({
@@ -77,6 +78,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <DashboardContent />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/leaderboard"
+              element={
+                <ProtectedRoute>
+                  <DashboardLeaderboard />
                 </ProtectedRoute>
               }
             />
