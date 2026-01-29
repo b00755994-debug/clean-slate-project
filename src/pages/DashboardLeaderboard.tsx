@@ -1,6 +1,6 @@
-import { Trophy } from 'lucide-react';
+import { Trophy, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
-import { useFullLeaderboard, PeriodFilter } from '@/hooks/useFullLeaderboard';
+import { useFullLeaderboard } from '@/hooks/useFullLeaderboard';
 import { useLanguage } from '@/contexts/LanguageContext';
 import {
   Select,
@@ -31,11 +31,9 @@ const translations = {
     impressions: 'Impressions',
     reactions: 'Reactions',
     engagement: 'Engagement',
-    all: 'All time',
-    month: 'This month',
-    '3months': 'Last 3 months',
-    '6months': 'Last 6 months',
+    evolution: 'Change',
     noData: 'No team members found',
+    new: 'new',
   },
   fr: {
     title: 'Classement',
@@ -47,11 +45,9 @@ const translations = {
     impressions: 'Impressions',
     reactions: 'Réactions',
     engagement: 'Engagement',
-    all: 'Toutes les dates',
-    month: 'Ce mois',
-    '3months': '3 derniers mois',
-    '6months': '6 derniers mois',
+    evolution: 'Evol.',
     noData: 'Aucun membre trouvé',
+    new: 'nouveau',
   },
 };
 
@@ -85,10 +81,33 @@ function RankBadge({ rank }: { rank: number }) {
   return <div className={`${baseClasses} bg-muted text-muted-foreground`}>{rank}</div>;
 }
 
+function RankProgression({ change, newLabel }: { change: number | null; newLabel: string }) {
+  if (change === null) {
+    return <span className="text-muted-foreground text-xs">{newLabel}</span>;
+  }
+  if (change === 0) {
+    return <Minus className="w-4 h-4 text-muted-foreground mx-auto" />;
+  }
+  if (change > 0) {
+    return (
+      <span className="text-green-600 font-medium text-sm flex items-center justify-center gap-0.5">
+        <TrendingUp className="w-3 h-3" />
+        +{change}
+      </span>
+    );
+  }
+  return (
+    <span className="text-red-500 font-medium text-sm flex items-center justify-center gap-0.5">
+      <TrendingDown className="w-3 h-3" />
+      {change}
+    </span>
+  );
+}
+
 export default function DashboardLeaderboard() {
   const { language } = useLanguage();
   const t = translations[language];
-  const { leaderboard, loading, period, setPeriod } = useFullLeaderboard();
+  const { leaderboard, loading, selectedMonth, setSelectedMonth, availableMonths } = useFullLeaderboard();
 
   return (
     <DashboardLayout>
@@ -103,15 +122,16 @@ export default function DashboardLeaderboard() {
             <p className="text-muted-foreground">{t.subtitle}</p>
           </div>
           
-          <Select value={period} onValueChange={(v) => setPeriod(v as PeriodFilter)}>
-            <SelectTrigger className="w-[180px] bg-white">
+          <Select value={selectedMonth} onValueChange={setSelectedMonth}>
+            <SelectTrigger className="w-[180px] bg-white capitalize">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">{t.all}</SelectItem>
-              <SelectItem value="month">{t.month}</SelectItem>
-              <SelectItem value="3months">{t['3months']}</SelectItem>
-              <SelectItem value="6months">{t['6months']}</SelectItem>
+              {availableMonths.map(month => (
+                <SelectItem key={month.value} value={month.value} className="capitalize">
+                  {month.label}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
@@ -128,6 +148,7 @@ export default function DashboardLeaderboard() {
                 <TableHead className="text-right text-xs uppercase tracking-wide">{t.reactions}</TableHead>
                 <TableHead className="text-right text-xs uppercase tracking-wide">{t.engagement}</TableHead>
                 <TableHead className="w-14 text-center text-xs uppercase tracking-wide">{t.rank}</TableHead>
+                <TableHead className="w-16 text-center text-xs uppercase tracking-wide">{t.evolution}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -151,11 +172,14 @@ export default function DashboardLeaderboard() {
                     <TableCell className="py-2 text-center">
                       <Skeleton className="w-6 h-6 rounded-full mx-auto" />
                     </TableCell>
+                    <TableCell className="py-2 text-center">
+                      <Skeleton className="w-8 h-4 mx-auto" />
+                    </TableCell>
                   </TableRow>
                 ))
               ) : leaderboard.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8 text-muted-foreground text-sm">
+                  <TableCell colSpan={8} className="text-center py-8 text-muted-foreground text-sm">
                     {t.noData}
                   </TableCell>
                 </TableRow>
@@ -186,6 +210,9 @@ export default function DashboardLeaderboard() {
                       <div className="flex justify-center">
                         <RankBadge rank={entry.rank} />
                       </div>
+                    </TableCell>
+                    <TableCell className="text-center py-2">
+                      <RankProgression change={entry.rankChange} newLabel={t.new} />
                     </TableCell>
                   </TableRow>
                 ))
