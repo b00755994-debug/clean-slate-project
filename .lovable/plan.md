@@ -1,53 +1,56 @@
 
-# Plan: Ajuster le Leaderboard
 
-## Problemes identifies
+# Harmoniser le Header du Leaderboard
 
-1. **Photos manquantes** : Le hook utilise `avatar_url` qui est toujours `null`. Les vraies photos sont dans `profile_picture`
-2. **Tableau trop grand** : Les lignes et polices sont trop grandes pour afficher un top 10 confortablement
-3. **Rank mal place** : La colonne Rank est a gauche, doit etre a droite apres les metrics
-4. **Select non blanc** : Le fond du dropdown "All time" utilise `bg-background` au lieu de blanc
+## Probleme
+Le header de la page Leaderboard utilise un style different des autres pages du dashboard:
+- Titre trop petit (`text-xl` au lieu de `text-3xl`)
+- Icone trop petite (`w-5 h-5` au lieu de `w-8 h-8`)
+- Icone dans un container separe avec `p-2` qui cause le rognage
 
-## Modifications
+## Solution
+Aligner le style du header sur celui d'Analytics et Team Feed.
 
-### 1. Recuperer les bonnes photos
-**Fichier: `src/hooks/useFullLeaderboard.ts`**
-- Ajouter `profile_picture` dans la requete Supabase
-- Utiliser `profile_picture` en priorite, avec fallback sur `avatar_url`
+## Modification
 
-```typescript
-// Query mise a jour
-.select('id, profile_name, linkedin_title, avatar_url, profile_picture')
+**Fichier: `src/pages/DashboardLeaderboard.tsx`**
 
-// Dans le mapping
-avatarUrl: user.profile_picture || user.avatar_url,
+Remplacer le header actuel (lignes 97-106):
+```tsx
+{/* Ancien */}
+<div className="flex items-center gap-3">
+  <div className="p-2 rounded-lg bg-primary/10">
+    <Trophy className="w-5 h-5 text-primary" />
+  </div>
+  <div>
+    <h1 className="text-xl font-semibold text-foreground">{t.title}</h1>
+    <p className="text-sm text-muted-foreground">{t.subtitle}</p>
+  </div>
+</div>
 ```
 
-### 2. Reduire la hauteur de liste et police
-**Fichier: `src/pages/DashboardLeaderboard.tsx`**
-- Avatar: `w-10 h-10` devient `w-7 h-7`
-- RankBadge: `w-8 h-8` devient `w-6 h-6` avec `text-xs`
-- TableCell padding: reduire via classes personnalisees `py-2` au lieu de `p-4`
-- Font: ajouter `text-sm` aux cellules de donnees
+Par:
+```tsx
+{/* Nouveau - meme style qu'Analytics */}
+<div className="flex flex-col gap-1">
+  <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
+    <Trophy className="w-8 h-8 text-primary" />
+    {t.title}
+  </h1>
+  <p className="text-muted-foreground">{t.subtitle}</p>
+</div>
+```
 
-### 3. Deplacer Rank a droite
-**Fichier: `src/pages/DashboardLeaderboard.tsx`**
-- Reorganiser l'ordre des colonnes dans TableHeader et TableBody:
-  - Photo + Nom (combine)
-  - Titre LinkedIn
-  - Posts
-  - Impressions
-  - Reactions
-  - Engagement
-  - **Rank** (derniere colonne)
+## Changements cles
+| Element | Avant | Apres |
+|---------|-------|-------|
+| Titre | `text-xl font-semibold` | `text-3xl font-bold` |
+| Icone | `w-5 h-5` dans container | `w-8 h-8` inline |
+| Structure | Container separe pour icone | Icone dans le h1 |
 
-### 4. Fond blanc pour le Select
-**Fichier: `src/pages/DashboardLeaderboard.tsx`**
-- Ajouter `bg-white` au SelectTrigger
-
-## Fichiers a modifier
+## Fichier a modifier
 
 | Fichier | Changement |
 |---------|------------|
-| `src/hooks/useFullLeaderboard.ts` | Ajouter `profile_picture` dans la query |
-| `src/pages/DashboardLeaderboard.tsx` | Reorganiser colonnes, reduire tailles, bg-white sur Select |
+| `src/pages/DashboardLeaderboard.tsx` | Restructurer le header pour correspondre aux autres pages |
+
