@@ -106,6 +106,7 @@ const translations = {
           "Everything in Individual",
           "Advanced team analytics",
           "Content library to follow your team",
+          "Monthly leaderboard",
           "Audience & brand insights",
           "Priority support"
         ]
