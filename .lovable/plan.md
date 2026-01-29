@@ -1,73 +1,61 @@
 
 
-# Plan: Palette de Gris Modernisée
+# Plan: Corriger le Conflit de Cache React Query
 
-## Analyse du problème
+## Problème identifié
 
-### Gris actuels (trop mous)
-| Usage | Variable | Valeur HSL | Hex approximatif |
-|-------|----------|------------|------------------|
-| Texte secondaire | `--muted-foreground` | `215 16% 47%` | #6B7280 (clair, bleuté) |
-| Fond muted | `--muted` | `220 14% 96%` | #F3F4F6 (quasi blanc) |
-| Fond sidebar | `--sidebar-background` | `340 100% 99%` | Rosé très clair |
-| Bordures | `--border` | `220 13% 91%` | #E5E7EB |
+**Conflit de `queryKey`** entre deux hooks :
 
-## Nouvelle palette proposée
+| Hook | queryKey | Format retourné |
+|------|----------|-----------------|
+| `useTeamFeed` | `['billable-users', workspace?.id]` | Objet `{}` (Map) |
+| `useFullLeaderboard` | `['billable-users', workspace?.id]` | Tableau `[]` |
 
-### Comparaison
+React Query utilise la `queryKey` pour identifier les données en cache. Quand les deux hooks utilisent la même clé mais retournent des formats différents, le hook qui s'exécute en second reçoit les données du cache (format incorrect).
 
-| Usage | Avant | Apres | Description |
-|-------|-------|-------|-------------|
-| **Texte secondaire** | `215 16% 47%` | `220 9% 36%` (**#525866**) | Plus fonce, meilleure lisibilite |
-| **Fond filtres/sidebar** | `220 14% 96%` | `220 10% 95%` (**#F1F2F4**) | Gris neutre subtil |
-| **Bordures** | `220 13% 91%` | `220 10% 88%` (**#DCDFE4**) | Legerement plus visible |
-| **Sidebar background** | `340 100% 99%` (rose) | `220 10% 95%` (**#F1F2F4**) | Meme gris que muted |
+**Exemple** : Si on navigue d'abord vers Team Feed puis vers Leaderboard :
+1. `useTeamFeed` charge les données → cache `['billable-users', workspace.id]` = `{ id1: {...}, id2: {...} }`
+2. `useFullLeaderboard` lit le cache → reçoit l'objet au lieu d'un tableau
+3. `billableUsers.map()` échoue car un objet n'a pas de méthode `.map()`
 
-### Apercu des changements
+## Solution
 
-```text
-Texte secondaire:
-  Avant: #6B7280 (gris clair bluete, mou)
-  Apres: #525866 (gris fonce neutre, net)
+Renommer la `queryKey` dans `useFullLeaderboard` pour éviter le conflit :
 
-Fonds sidebar/filtres:
-  Avant: quasi blanc / rose pale
-  Apres: #F1F2F4 (gris neutre leger, pro)
+```typescript
+// Avant
+queryKey: ['billable-users', workspace?.id]
+
+// Après
+queryKey: ['billable-users-list', workspace?.id]
 ```
 
-## Modification technique
+## Modification
 
-### Fichier: `src/index.css`
+### Fichier: `src/hooks/useFullLeaderboard.ts`
 
-Variables a mettre a jour dans `:root` :
+Ligne 46, changer la queryKey :
 
-```css
-/* Texte secondaire - plus fonce et net */
---muted-foreground: 220 9% 36%;     /* Etait: 215 16% 47% */
-
-/* Fonds - gris neutre subtil */
---muted: 220 10% 95%;               /* Etait: 220 14% 96% */
-
-/* Sidebar - meme gris que muted (etait rose) */
---sidebar-background: 220 10% 95%;  /* Etait: 340 100% 99% */
---sidebar-foreground: 220 9% 36%;   /* Aligne avec muted-foreground */
-
-/* Bordures legerement plus marquees */
---border: 220 10% 88%;              /* Etait: 220 13% 91% */
---input: 220 10% 88%;
---sidebar-border: 220 10% 88%;
+```typescript
+const { data: billableUsers, isLoading: loadingUsers } = useQuery({
+  queryKey: ['billable-users-list', workspace?.id],  // Clé unique
+  queryFn: async () => {
+    if (!workspace?.id) return [];
+    const { data, error } = await supabase
+      .from('billable_users')
+      .select('id, profile_name, linkedin_title, avatar_url, profile_picture')
+      .eq('workspace_id', workspace.id);
+    if (error) throw error;
+    return data || [];
+  },
+  enabled: !!workspace?.id,
+});
 ```
 
-## Fichier a modifier
+## Résultat attendu
 
-| Fichier | Changement |
-|---------|------------|
-| `src/index.css` | Mettre a jour les variables de gris (light mode) |
-
-## Resultat attendu
-
-- **Texte** : Plus lisible, meilleur contraste, aspect plus pro
-- **Fonds** : Gris neutre coherent pour sidebar et filtres
-- **Bordures** : Plus nettes, plus visibles
-- **Coherence** : Palette unifiee sans teintes parasites (rose, bleu)
+- Chaque hook a son propre cache indépendant
+- `useTeamFeed` garde son cache objet (Map)
+- `useFullLeaderboard` a son cache tableau (Array)
+- Le leaderboard affiche correctement les membres de l'équipe
 
