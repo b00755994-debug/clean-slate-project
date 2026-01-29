@@ -43,7 +43,7 @@ export function useFullLeaderboard() {
   const [period, setPeriod] = useState<PeriodFilter>('all');
 
   const { data: billableUsers, isLoading: loadingUsers } = useQuery({
-    queryKey: ['billable-users', workspace?.id],
+    queryKey: ['billable-users-list', workspace?.id],
     queryFn: async () => {
       if (!workspace?.id) return [];
       const { data, error } = await supabase
