@@ -121,13 +121,13 @@ export default function DashboardLeaderboard() {
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
-                <TableHead>{t.member}</TableHead>
-                <TableHead className="hidden md:table-cell">{t.title_col}</TableHead>
-                <TableHead className="text-right">{t.posts}</TableHead>
-                <TableHead className="text-right">{t.impressions}</TableHead>
-                <TableHead className="text-right">{t.reactions}</TableHead>
-                <TableHead className="text-right">{t.engagement}</TableHead>
-                <TableHead className="w-14 text-center">{t.rank}</TableHead>
+                <TableHead className="text-xs uppercase tracking-wide">{t.member}</TableHead>
+                <TableHead className="hidden md:table-cell text-xs uppercase tracking-wide">{t.title_col}</TableHead>
+                <TableHead className="text-right text-xs uppercase tracking-wide">{t.posts}</TableHead>
+                <TableHead className="text-right text-xs uppercase tracking-wide">{t.impressions}</TableHead>
+                <TableHead className="text-right text-xs uppercase tracking-wide">{t.reactions}</TableHead>
+                <TableHead className="text-right text-xs uppercase tracking-wide">{t.engagement}</TableHead>
+                <TableHead className="w-14 text-center text-xs uppercase tracking-wide">{t.rank}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
