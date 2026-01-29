@@ -1,61 +1,55 @@
 
+# Plan: Style Majuscules Minimalistes pour les Colonnes du Leaderboard
 
-# Plan: Corriger le Conflit de Cache React Query
+## Objectif
 
-## Problème identifié
+Appliquer le style typographique "minimalist uppercase" aux en-tetes de colonnes du tableau, conformement au design system du dashboard.
 
-**Conflit de `queryKey`** entre deux hooks :
+## Style a appliquer
 
-| Hook | queryKey | Format retourné |
-|------|----------|-----------------|
-| `useTeamFeed` | `['billable-users', workspace?.id]` | Objet `{}` (Map) |
-| `useFullLeaderboard` | `['billable-users', workspace?.id]` | Tableau `[]` |
+Le pattern utilise dans le projet (visible dans les tabs, labels de section) :
 
-React Query utilise la `queryKey` pour identifier les données en cache. Quand les deux hooks utilisent la même clé mais retournent des formats différents, le hook qui s'exécute en second reçoit les données du cache (format incorrect).
-
-**Exemple** : Si on navigue d'abord vers Team Feed puis vers Leaderboard :
-1. `useTeamFeed` charge les données → cache `['billable-users', workspace.id]` = `{ id1: {...}, id2: {...} }`
-2. `useFullLeaderboard` lit le cache → reçoit l'objet au lieu d'un tableau
-3. `billableUsers.map()` échoue car un objet n'a pas de méthode `.map()`
-
-## Solution
-
-Renommer la `queryKey` dans `useFullLeaderboard` pour éviter le conflit :
-
-```typescript
-// Avant
-queryKey: ['billable-users', workspace?.id]
-
-// Après
-queryKey: ['billable-users-list', workspace?.id]
+```
+text-xs text-muted-foreground uppercase tracking-wide
 ```
 
 ## Modification
 
-### Fichier: `src/hooks/useFullLeaderboard.ts`
+### Fichier: `src/pages/DashboardLeaderboard.tsx`
 
-Ligne 46, changer la queryKey :
+Ajouter les classes de style a chaque `TableHead` (lignes 124-130) :
 
-```typescript
-const { data: billableUsers, isLoading: loadingUsers } = useQuery({
-  queryKey: ['billable-users-list', workspace?.id],  // Clé unique
-  queryFn: async () => {
-    if (!workspace?.id) return [];
-    const { data, error } = await supabase
-      .from('billable_users')
-      .select('id, profile_name, linkedin_title, avatar_url, profile_picture')
-      .eq('workspace_id', workspace.id);
-    if (error) throw error;
-    return data || [];
-  },
-  enabled: !!workspace?.id,
-});
+| Avant | Apres |
+|-------|-------|
+| `<TableHead>` | `<TableHead className="text-xs uppercase tracking-wide">` |
+| `<TableHead className="hidden md:table-cell">` | `<TableHead className="hidden md:table-cell text-xs uppercase tracking-wide">` |
+| `<TableHead className="text-right">` | `<TableHead className="text-right text-xs uppercase tracking-wide">` |
+| `<TableHead className="w-14 text-center">` | `<TableHead className="w-14 text-center text-xs uppercase tracking-wide">` |
+
+### Code modifie
+
+```jsx
+<TableHeader>
+  <TableRow className="hover:bg-transparent">
+    <TableHead className="text-xs uppercase tracking-wide">{t.member}</TableHead>
+    <TableHead className="hidden md:table-cell text-xs uppercase tracking-wide">{t.title_col}</TableHead>
+    <TableHead className="text-right text-xs uppercase tracking-wide">{t.posts}</TableHead>
+    <TableHead className="text-right text-xs uppercase tracking-wide">{t.impressions}</TableHead>
+    <TableHead className="text-right text-xs uppercase tracking-wide">{t.reactions}</TableHead>
+    <TableHead className="text-right text-xs uppercase tracking-wide">{t.engagement}</TableHead>
+    <TableHead className="w-14 text-center text-xs uppercase tracking-wide">{t.rank}</TableHead>
+  </TableRow>
+</TableHeader>
 ```
 
-## Résultat attendu
+## Fichier a modifier
 
-- Chaque hook a son propre cache indépendant
-- `useTeamFeed` garde son cache objet (Map)
-- `useFullLeaderboard` a son cache tableau (Array)
-- Le leaderboard affiche correctement les membres de l'équipe
+| Fichier | Changement |
+|---------|------------|
+| `src/pages/DashboardLeaderboard.tsx` | Ajouter `text-xs uppercase tracking-wide` aux 7 TableHead |
 
+## Resultat attendu
+
+- En-tetes de colonnes en majuscules petites et espacees
+- Coherence avec le reste du dashboard (tabs, labels)
+- Aspect plus pro et structure
