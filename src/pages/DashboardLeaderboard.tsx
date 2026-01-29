@@ -71,7 +71,7 @@ function getInitials(name: string): string {
 }
 
 function RankBadge({ rank }: { rank: number }) {
-  const baseClasses = 'w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold';
+  const baseClasses = 'w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold';
   
   if (rank === 1) {
     return <div className={`${baseClasses} bg-amber-500/20 text-amber-600`}>1</div>;
@@ -106,7 +106,7 @@ export default function DashboardLeaderboard() {
           </div>
           
           <Select value={period} onValueChange={(v) => setPeriod(v as PeriodFilter)}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-[180px] bg-white">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -123,13 +123,13 @@ export default function DashboardLeaderboard() {
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
-                <TableHead className="w-16 text-center">{t.rank}</TableHead>
                 <TableHead>{t.member}</TableHead>
                 <TableHead className="hidden md:table-cell">{t.title_col}</TableHead>
                 <TableHead className="text-right">{t.posts}</TableHead>
                 <TableHead className="text-right">{t.impressions}</TableHead>
                 <TableHead className="text-right">{t.reactions}</TableHead>
                 <TableHead className="text-right">{t.engagement}</TableHead>
+                <TableHead className="w-14 text-center">{t.rank}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -137,57 +137,57 @@ export default function DashboardLeaderboard() {
                 // Loading skeletons
                 Array.from({ length: 5 }).map((_, i) => (
                   <TableRow key={i}>
-                    <TableCell className="text-center">
-                      <Skeleton className="w-8 h-8 rounded-full mx-auto" />
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <Skeleton className="w-10 h-10 rounded-full" />
-                        <Skeleton className="h-4 w-24" />
+                    <TableCell className="py-2">
+                      <div className="flex items-center gap-2">
+                        <Skeleton className="w-7 h-7 rounded-full" />
+                        <Skeleton className="h-3 w-20" />
                       </div>
                     </TableCell>
-                    <TableCell className="hidden md:table-cell">
-                      <Skeleton className="h-4 w-32" />
+                    <TableCell className="hidden md:table-cell py-2">
+                      <Skeleton className="h-3 w-28" />
                     </TableCell>
-                    <TableCell><Skeleton className="h-4 w-8 ml-auto" /></TableCell>
-                    <TableCell><Skeleton className="h-4 w-12 ml-auto" /></TableCell>
-                    <TableCell><Skeleton className="h-4 w-10 ml-auto" /></TableCell>
-                    <TableCell><Skeleton className="h-4 w-12 ml-auto" /></TableCell>
+                    <TableCell className="py-2"><Skeleton className="h-3 w-6 ml-auto" /></TableCell>
+                    <TableCell className="py-2"><Skeleton className="h-3 w-10 ml-auto" /></TableCell>
+                    <TableCell className="py-2"><Skeleton className="h-3 w-8 ml-auto" /></TableCell>
+                    <TableCell className="py-2"><Skeleton className="h-3 w-10 ml-auto" /></TableCell>
+                    <TableCell className="py-2 text-center">
+                      <Skeleton className="w-6 h-6 rounded-full mx-auto" />
+                    </TableCell>
                   </TableRow>
                 ))
               ) : leaderboard.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-12 text-muted-foreground">
+                  <TableCell colSpan={7} className="text-center py-8 text-muted-foreground text-sm">
                     {t.noData}
                   </TableCell>
                 </TableRow>
               ) : (
                 leaderboard.map((entry) => (
                   <TableRow key={entry.id} className="group">
-                    <TableCell className="text-center">
-                      <div className="flex justify-center">
-                        <RankBadge rank={entry.rank} />
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <Avatar className="w-10 h-10">
+                    <TableCell className="py-2">
+                      <div className="flex items-center gap-2">
+                        <Avatar className="w-7 h-7">
                           <AvatarImage src={entry.avatarUrl || undefined} alt={entry.profileName} />
-                          <AvatarFallback className="bg-primary/10 text-primary text-sm">
+                          <AvatarFallback className="bg-primary/10 text-primary text-xs">
                             {getInitials(entry.profileName)}
                           </AvatarFallback>
                         </Avatar>
-                        <span className="font-medium text-foreground">{entry.profileName}</span>
+                        <span className="font-medium text-sm text-foreground">{entry.profileName}</span>
                       </div>
                     </TableCell>
-                    <TableCell className="hidden md:table-cell text-muted-foreground truncate max-w-[200px]">
+                    <TableCell className="hidden md:table-cell text-muted-foreground text-sm truncate max-w-[180px] py-2">
                       {entry.linkedinTitle || '—'}
                     </TableCell>
-                    <TableCell className="text-right font-medium">{entry.postCount}</TableCell>
-                    <TableCell className="text-right font-medium">{formatNumber(entry.impressions)}</TableCell>
-                    <TableCell className="text-right font-medium">{formatNumber(entry.reactions)}</TableCell>
-                    <TableCell className="text-right font-medium">
+                    <TableCell className="text-right text-sm font-medium py-2">{entry.postCount}</TableCell>
+                    <TableCell className="text-right text-sm font-medium py-2">{formatNumber(entry.impressions)}</TableCell>
+                    <TableCell className="text-right text-sm font-medium py-2">{formatNumber(entry.reactions)}</TableCell>
+                    <TableCell className="text-right text-sm font-medium py-2">
                       {entry.engagementRate.toFixed(2)}%
+                    </TableCell>
+                    <TableCell className="text-center py-2">
+                      <div className="flex justify-center">
+                        <RankBadge rank={entry.rank} />
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))

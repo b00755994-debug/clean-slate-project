@@ -48,7 +48,7 @@ export function useFullLeaderboard() {
       if (!workspace?.id) return [];
       const { data, error } = await supabase
         .from('billable_users')
-        .select('id, profile_name, linkedin_title, avatar_url')
+        .select('id, profile_name, linkedin_title, avatar_url, profile_picture')
         .eq('workspace_id', workspace.id);
       if (error) throw error;
       return data || [];
@@ -109,7 +109,7 @@ export function useFullLeaderboard() {
         id: user.id,
         profileName: user.profile_name,
         linkedinTitle: user.linkedin_title,
-        avatarUrl: user.avatar_url,
+        avatarUrl: user.profile_picture || user.avatar_url,
         postCount: metrics.postCount,
         impressions: metrics.impressions,
         reactions: metrics.reactions,
