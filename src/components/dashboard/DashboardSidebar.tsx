@@ -69,7 +69,7 @@ export function DashboardSidebar() {
 
   return (
     <Sidebar 
-      className="w-52 min-w-52 max-w-52 border-r border-border/30 bg-background"
+      className="w-52 min-w-52 max-w-52 border-r border-border/30 bg-muted"
       collapsible="none"
     >
       {/* Logo Header */}
