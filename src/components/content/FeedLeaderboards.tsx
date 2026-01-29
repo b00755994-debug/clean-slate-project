@@ -31,8 +31,8 @@ export function FeedLeaderboards() {
       
       {/* Leaderboards side by side */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-        <TopPostsLeaderboard posts={topPosts} loading={loading} />
         <ActiveContributorsLeaderboard contributors={activeContributors} loading={loading} />
+        <TopPostsLeaderboard posts={topPosts} loading={loading} />
       </div>
     </div>
   );
