@@ -9,7 +9,8 @@ const Features = () => {
     fr: {
       title1: "Tout ce qu'il faut pour transformer",
       title2: "le contenu en pipeline.",
-      subtitle: "Alertes Slack pour chaque post, Team Feed, leaderboards et analytics d'audience avancés. Tout-en-un.",
+      subtitle: "Alertes Slack pour chaque post, Team Feed, leaderboards et analytics d'audience.",
+      subtitleHighlight: "Tout-en-un.",
       features: [
         {
           icon: Zap,
@@ -42,7 +43,8 @@ const Features = () => {
     en: {
       title1: "Everything you need to turn",
       title2: "content into pipeline.",
-      subtitle: "Slack alerts, Team Feed, leaderboards and advanced audience analytics. All in one.",
+      subtitle: "Slack alerts, Team Feed, leaderboards and audience analytics.",
+      subtitleHighlight: "All in one.",
       features: [
         {
           icon: Zap,
@@ -89,7 +91,10 @@ const Features = () => {
             </span>
           </h2>
           <p className="text-lg md:text-xl max-w-3xl mx-auto leading-relaxed" style={{ color: '#5A5A5A' }}>
-            {t.subtitle}
+            {t.subtitle}{" "}
+            <span className="bg-primary/15 text-primary rounded-sm font-medium px-1">
+              {t.subtitleHighlight}
+            </span>
           </p>
         </div>
 
