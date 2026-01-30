@@ -24,6 +24,7 @@ const ProblemSolution = () => {
       solutionPoints: [
         "Alertes automatiques sur Slack à chaque post",
         "Centralisez tous les posts dans un Team Feed unique",
+        "Leaderboard mensuel pour motiver vos ambassadeurs",
         "Portée décuplée, notoriété amplifiée"
       ],
       metric: "d'impressions en moyenne"
@@ -47,6 +48,7 @@ const ProblemSolution = () => {
       solutionPoints: [
         "Automatic Slack alerts for every post",
         "Centralize all posts in a unified Team Feed",
+        "Monthly leaderboard to motivate your ambassadors",
         "Advanced team & audience analytics"
       ],
       metric: "average impressions"
