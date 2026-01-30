@@ -32,7 +32,7 @@ const ProblemSolution = () => {
     en: {
       title1: "Turn LinkedIn into",
       title2: "a team sport.",
-      subtitle1: "Your team has a network. ",
+      subtitle1: "Your employees have a network. ",
       subtitleHighlight: "Activate it.",
       problemTitle: "The Current Challenge",
       problemHeading: "Struggling to rally your teams",

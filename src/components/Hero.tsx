@@ -18,7 +18,6 @@ const Hero = () => {
       subtitleHighlight: "Grow your pipeline.",
       joinBeta: "Rejoindre la Beta",
       viewDemo: "On en parle ?",
-      noCreditCard: "Aucune carte de crédit requise",
       feature1Title: "Slack Alerts",
       feature1Desc: "Notification instantanée à chaque post LinkedIn",
       feature2Title: "Team Feed",
@@ -35,7 +34,6 @@ const Hero = () => {
       subtitleHighlight: "Grow your pipeline.",
       joinBeta: "Join the Beta",
       viewDemo: "Book a call with us",
-      noCreditCard: "No credit card required",
       feature1Title: "Slack Alerts",
       feature1Desc: "Instant notification for every LinkedIn post",
       feature2Title: "Team Feed",
@@ -132,7 +130,7 @@ const Hero = () => {
             </span>
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-3">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-10">
             <Link to="/auth?mode=signup">
               <Button variant="hero" size="lg" className="text-base h-12 px-6">
                 {t.joinBeta}
@@ -147,7 +145,6 @@ const Hero = () => {
               </Button>
             </Link>
           </div>
-          <p className="text-xs text-muted-foreground mb-10">{t.noCreditCard}</p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-4xl mx-auto">
             <div className="text-center">
