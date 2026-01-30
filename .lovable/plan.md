@@ -1,43 +1,26 @@
 
 
-# Plan: Ajouter le pilier Leaderboard à la carte Solution
-
-## Contexte
-
-La carte "Solution" dans `ProblemSolution.tsx` liste actuellement 3 points :
-1. Automatic Slack alerts for every post
-2. Centralize all posts in a unified Team Feed
-3. Advanced team & audience analytics
-
-Il manque le 4ème pilier **Leaderboard** pour être cohérent avec le reste de la landing page.
-
----
+# Plan: Mettre à jour le titre de la section Features
 
 ## Modification
 
-### Fichier: `src/components/ProblemSolution.tsx`
+### Fichier: `src/components/Features.tsx`
 
-Ajouter un 4ème point dans `solutionPoints` (lignes 42-46 pour EN, lignes 27-31 pour FR) :
+Remplacer le titre actuel par le nouveau titre orienté business :
 
 **Français :**
 ```tsx
-solutionPoints: [
-  "Alertes automatiques sur Slack à chaque post",
-  "Centralisez tous les posts dans un Team Feed unique",
-  "Leaderboard mensuel pour motiver vos ambassadeurs",
-  "Portée décuplée, notoriété amplifiée"
-]
+title1: "Tout ce qu'il faut pour transformer",
+title2: "le contenu en pipeline."
 ```
 
 **Anglais :**
 ```tsx
-solutionPoints: [
-  "Automatic Slack alerts for every post",
-  "Centralize all posts in a unified Team Feed",
-  "Monthly leaderboard to motivate your ambassadors",
-  "Advanced team & audience analytics"
-]
+title1: "Everything you need to turn",
+title2: "content into pipeline."
 ```
+
+Le format à deux lignes est conservé avec "content into pipeline" / "le contenu en pipeline" en dégradé primary-to-destructive pour maintenir la cohérence visuelle.
 
 ---
 
@@ -45,5 +28,5 @@ solutionPoints: [
 
 | Fichier | Modification |
 |---------|--------------|
-| `src/components/ProblemSolution.tsx` | +1 point "Leaderboard" dans solutionPoints (FR + EN) |
+| `src/components/Features.tsx` | Nouveau titre FR + EN |
 
