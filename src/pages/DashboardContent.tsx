@@ -216,14 +216,14 @@ export default function DashboardContent() {
         {/* Content - Three Column Layout */}
         <div className="flex-1 flex gap-0 pt-4 overflow-hidden">
           {/* Left Column - Top Posts */}
-          <div className="hidden xl:block w-[280px] flex-shrink-0 overflow-y-auto pr-2">
+          <div className="hidden xl:block w-[300px] flex-shrink-0 overflow-y-auto pr-2">
             <div className="sticky top-0">
               <TopPostsLeaderboard posts={topPosts} loading={leaderboardsLoading} />
             </div>
           </div>
           
           {/* Left Separator */}
-          <div className="hidden xl:block w-px bg-border mx-4 flex-shrink-0" />
+          <div className="hidden xl:block w-px bg-border mx-2 flex-shrink-0" />
           
           {/* Center Column - Feed */}
           <div className="flex-1 xl:max-w-[552px] mx-auto overflow-y-auto px-2">
@@ -237,10 +237,10 @@ export default function DashboardContent() {
           </div>
           
           {/* Right Separator */}
-          <div className="hidden xl:block w-px bg-border mx-4 flex-shrink-0" />
+          <div className="hidden xl:block w-px bg-border mx-2 flex-shrink-0" />
           
           {/* Right Column - Active Contributors */}
-          <div className="hidden xl:block w-[280px] flex-shrink-0 overflow-y-auto pl-2">
+          <div className="hidden xl:block w-[300px] flex-shrink-0 overflow-y-auto pl-2">
             <div className="sticky top-0">
               <ActiveContributorsLeaderboard contributors={activeContributors} loading={leaderboardsLoading} />
             </div>
