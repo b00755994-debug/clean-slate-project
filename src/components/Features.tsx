@@ -83,7 +83,7 @@ const Features = () => {
       <div className="absolute inset-0 bg-grid-pattern opacity-5" />
 
       <div className="container mx-auto px-4 relative z-10">
-        <div className="text-center mb-8">
+        <div className="text-center mb-12">
           <h2 className="text-4xl md:text-5xl font-bold mb-4">
             {t.title1}{" "}
             <span className="bg-gradient-to-r from-primary to-destructive bg-clip-text text-transparent">
