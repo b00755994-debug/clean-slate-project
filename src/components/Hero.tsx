@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, BookOpen, TrendingUp, ThumbsUp, Eye, MessageSquare, Heart, PartyPopper } from "lucide-react";
+import { ArrowRight, BookOpen, TrendingUp, ThumbsUp, Eye, MessageSquare, Heart, PartyPopper, Trophy } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import slackLogo from "@/assets/slack-logo.png";
@@ -23,7 +23,9 @@ const Hero = () => {
       feature2Title: "Team Feed",
       feature2Desc: "Tous les posts de votre équipe en un seul endroit",
       feature3Title: "Analytics",
-      feature3Desc: "Suivez reach, engagement & métriques pipeline"
+      feature3Desc: "Suivez reach, engagement & métriques pipeline",
+      feature4Title: "Leaderboard",
+      feature4Desc: "Classez et récompensez vos meilleurs ambassadeurs"
     },
     en: {
       title1: "Turn your team into",
@@ -37,7 +39,9 @@ const Hero = () => {
       feature2Title: "Team Feed",
       feature2Desc: "All your team's posts in one place",
       feature3Title: "Analytics",
-      feature3Desc: "Track reach, engagement & pipeline metrics"
+      feature3Desc: "Track reach, engagement & pipeline metrics",
+      feature4Title: "Leaderboard",
+      feature4Desc: "Rank and reward your top ambassadors"
     }
   };
   const t = translations[language];
@@ -142,7 +146,7 @@ const Hero = () => {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-3xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-4xl mx-auto">
             <div className="text-center">
               <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-4" style={{
                 backgroundColor: 'color-mix(in srgb, hsl(210 90% 40%) 5%, hsl(340 100% 99%))'
@@ -182,6 +186,20 @@ const Hero = () => {
               </div>
               <div className="text-base" style={{ color: '#4A4A4A' }}>
                 {t.feature3Desc}
+              </div>
+            </div>
+
+            <div className="text-center">
+              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-4" style={{
+                backgroundColor: 'color-mix(in srgb, hsl(210 90% 40%) 5%, hsl(340 100% 99%))'
+              }}>
+                <Trophy className="h-7 w-7 text-primary" />
+              </div>
+              <div className="text-2xl font-bold mb-1 tracking-tight" style={{ color: '#1B1B1B' }}>
+                {t.feature4Title}
+              </div>
+              <div className="text-base" style={{ color: '#4A4A4A' }}>
+                {t.feature4Desc}
               </div>
             </div>
           </div>

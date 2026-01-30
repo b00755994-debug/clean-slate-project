@@ -1,4 +1,4 @@
-import { Zap, Sparkles, BarChart3, Rss } from "lucide-react";
+import { Zap, BarChart3, Rss, Trophy } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -9,7 +9,7 @@ const Features = () => {
     fr: {
       title1: "Activez. Soutenez.",
       title2: "Mesurez.",
-      subtitle: "Alertes Slack pour chaque post, Team Feed unifié et analytics d'audience avancés. Tout-en-un.",
+      subtitle: "Alertes Slack pour chaque post, Team Feed, leaderboards et analytics d'audience avancés. Tout-en-un.",
       features: [
         {
           icon: Zap,
@@ -26,6 +26,11 @@ const Features = () => {
           title: "Audience & Brand Analytics",
           description: "Obtenez une vue claire de la présence LinkedIn de votre équipe avec des données agrégées et anonymisées. Suivez les métriques globales (impressions, réactions, commentaires) et analysez la qualité de l'audience par secteur, fonction, séniorité et taille d'entreprise."
         },
+        {
+          icon: Trophy,
+          title: "Leaderboard Mensuel",
+          description: "Classez et récompensez vos ambassadeurs les plus actifs. Visualisez les top contributeurs et stimulez une émulation positive au sein de votre équipe."
+        },
       ],
       // FEATURE À REMETTRE PLUS TARD:
       // {
@@ -37,7 +42,7 @@ const Features = () => {
     en: {
       title1: "Activate. Support.",
       title2: "Measure.",
-      subtitle: "Slack alerts, unified Team Feed and advanced audience analytics. All in one.",
+      subtitle: "Slack alerts, Team Feed, leaderboards and advanced audience analytics. All in one.",
       features: [
         {
           icon: Zap,
@@ -53,6 +58,11 @@ const Features = () => {
           icon: BarChart3,
           title: "Audience & Brand Analytics",
           description: "Understand how your team's LinkedIn activity translates into real visibility and engagement. Get insights on your reach and audience, engagement dynamics, and post performances."
+        },
+        {
+          icon: Trophy,
+          title: "Monthly Leaderboard",
+          description: "Rank and reward your most active ambassadors. Visualize top contributors and foster healthy competition within your team."
         },
       ]
       // FEATURE TO ADD BACK LATER:
@@ -83,7 +93,7 @@ const Features = () => {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
           {t.features.map((feature, index) => (
             <Card
               key={index}

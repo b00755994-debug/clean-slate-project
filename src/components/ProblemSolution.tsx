@@ -6,10 +6,10 @@ const ProblemSolution = () => {
 
   const translations = {
     fr: {
-      title1: "L'outil le plus simple pour transformer le contenu en",
-      title2: "pipeline.",
-      subtitle1: "Faites de LinkedIn un ",
-      subtitleHighlight: "sport d'équipe.",
+      title1: "Faites de LinkedIn",
+      title2: "un sport d'équipe.",
+      subtitle1: "Vos équipes ont un réseau. ",
+      subtitleHighlight: "Activez-le.",
       problemTitle: "Le défi actuel",
       problemHeading: "Difficile de mobiliser vos équipes",
       problemDesc: "Vos collaborateurs ont un réseau précieux, mais mobiliser leur engagement sur LinkedIn reste un casse-tête quotidien.",
@@ -19,7 +19,7 @@ const ProblemSolution = () => {
         "Le potentiel de vos ambassadeurs reste inexploité"
       ],
       solutionTitle: "La solution",
-      solutionHeading: "La voix de votre équipe. Amplifiée.",
+      solutionHeading: "Votre équipe devient votre meilleur canal d'acquisition.",
       solutionDesc: "Slack devient votre hub d'employee advocacy. Alertes intelligentes, Team Feed unifié et analyse d'audience intégrée transforment votre équipe en ambassadeurs actifs.",
       solutionPoints: [
         "Alertes automatiques sur Slack à chaque post",
@@ -29,10 +29,10 @@ const ProblemSolution = () => {
       metric: "d'impressions en moyenne"
     },
     en: {
-      title1: "The simplest tool to turn content into",
-      title2: "pipeline.",
-      subtitle1: "Make LinkedIn a ",
-      subtitleHighlight: "team sport.",
+      title1: "Turn LinkedIn into",
+      title2: "a team sport.",
+      subtitle1: "Your employees have a network. ",
+      subtitleHighlight: "Activate it.",
       problemTitle: "The Current Challenge",
       problemHeading: "Struggling to rally your teams",
       problemDesc: "Your employees have valuable networks, but mobilizing their LinkedIn engagement remains a daily challenge.",
@@ -42,7 +42,7 @@ const ProblemSolution = () => {
         "Your ambassadors' potential remains untapped"
       ],
       solutionTitle: "The Solution",
-      solutionHeading: "Your team's voice. Amplified.",
+      solutionHeading: "Your team becomes your best acquisition channel.",
       solutionDesc: "We help you activate your team, directly from Slack. Instant alerts & reports, centralized team feed and built-in analytics, to help turn your team into active brand ambassadors.",
       solutionPoints: [
         "Automatic Slack alerts for every post",

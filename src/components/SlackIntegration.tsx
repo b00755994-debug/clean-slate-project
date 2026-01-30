@@ -71,8 +71,8 @@ const SlackIntegration = () => {
   const translations = {
     fr: {
       badge: "Intégré avec Slack",
-      title1: "Meilleure ",
-      title2: "Application Slack",
+      title1: "Activez votre équipe, ",
+      title2: "sans quitter Slack",
       title3: "",
       subtitle1: "Alertes instantanées, Team Feed centralisé et analytics d'audience,",
       subtitleHighlight: "le tout dans vos canaux Slack préférés.",
@@ -346,9 +346,9 @@ const SlackIntegration = () => {
     },
     en: {
       badge: "Integrated with Slack",
-      title1: "Best-in-class ",
-      title2: "Slack",
-      title3: " App",
+      title1: "Activate your team, ",
+      title2: "right from Slack",
+      title3: "",
       subtitle1: "Instant alerts, centralized Team Feed and audience analytics,",
       subtitleHighlight: "all in your favorite Slack channels.",
       impressionsGenerated: "impressions generated",

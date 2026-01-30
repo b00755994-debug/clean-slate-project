@@ -6,8 +6,8 @@ const Testimonial = () => {
 
   const translations = {
     fr: {
-      title1: "Ils font confiance à",
-      title2: "superpump",
+      title1: "Ce qu'en disent",
+      title2: "nos utilisateurs",
       testimonials: [
         {
           quote: "superpump a transformé notre manière de collaborer autour des posts LinkedIn. Grâce aux alertes Slack et au Team Feed, l'engagement de l'équipe a nettement progressé.",
@@ -30,8 +30,8 @@ const Testimonial = () => {
       ]
     },
     en: {
-      title1: "They trust",
-      title2: "superpump",
+      title1: "What our",
+      title2: "users say",
       testimonials: [
         {
           quote: "superpump has transformed the way we collaborate around LinkedIn posts. Thanks to Slack alerts and the Team Feed, team engagement has significantly improved.",
