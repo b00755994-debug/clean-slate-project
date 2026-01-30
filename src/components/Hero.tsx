@@ -193,7 +193,7 @@ const Hero = () => {
               <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-4" style={{
                 backgroundColor: 'color-mix(in srgb, hsl(210 90% 40%) 5%, hsl(340 100% 99%))'
               }}>
-                <Trophy className="h-7 w-7 text-amber-500" />
+                <Trophy className="h-7 w-7 text-primary" />
               </div>
               <div className="text-2xl font-bold mb-1 tracking-tight" style={{ color: '#1B1B1B' }}>
                 {t.feature4Title}
