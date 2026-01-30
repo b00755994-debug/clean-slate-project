@@ -155,13 +155,12 @@ export function TopPostsLeaderboard({ posts, loading }: TopPostsLeaderboardProps
               {post.url && (
                 <Button
                   variant="ghost"
-                  size="sm"
-                  className="h-6 px-2 text-xs text-primary hover:text-primary"
+                  size="icon"
+                  className="h-6 w-6 text-primary hover:text-primary"
                   asChild
                 >
-                  <a href={post.url} target="_blank" rel="noopener noreferrer">
-                    <ExternalLink className="h-3 w-3 mr-1" />
-                    LinkedIn
+                  <a href={post.url} target="_blank" rel="noopener noreferrer" title="LinkedIn">
+                    <ExternalLink className="h-3.5 w-3.5" />
                   </a>
                 </Button>
               )}
