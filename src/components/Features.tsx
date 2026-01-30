@@ -7,8 +7,8 @@ const Features = () => {
 
   const translations = {
     fr: {
-      title1: "Activez. Soutenez.",
-      title2: "Mesurez.",
+      title1: "Tout ce qu'il faut pour transformer",
+      title2: "le contenu en pipeline.",
       subtitle: "Alertes Slack pour chaque post, Team Feed, leaderboards et analytics d'audience avancés. Tout-en-un.",
       features: [
         {
@@ -40,8 +40,8 @@ const Features = () => {
       // },
     },
     en: {
-      title1: "Activate. Support.",
-      title2: "Measure.",
+      title1: "Everything you need to turn",
+      title2: "content into pipeline.",
       subtitle: "Slack alerts, Team Feed, leaderboards and advanced audience analytics. All in one.",
       features: [
         {
