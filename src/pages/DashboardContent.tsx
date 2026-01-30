@@ -226,7 +226,7 @@ export default function DashboardContent() {
           <div className="hidden xl:block w-px bg-border mx-2 flex-shrink-0" />
           
           {/* Center Column - Feed */}
-          <div className="flex-1 xl:max-w-[552px] mx-auto overflow-y-auto px-2">
+          <div className="flex-1 xl:max-w-[552px] mx-auto overflow-y-auto pl-2 pr-[9px]">
             <TeamFeed 
               showBookmarksOnly={showBookmarksOnly}
               sortBy={sortBy}
