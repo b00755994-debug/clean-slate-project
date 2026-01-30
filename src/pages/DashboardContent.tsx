@@ -3,7 +3,9 @@ import { useQuery } from '@tanstack/react-query';
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
 import { TeamFeed, useTeamFeedStats } from '@/components/content/TeamFeed';
 import { TeamFeedStats } from '@/components/content/TeamFeedStats';
-import { FeedLeaderboards } from '@/components/content/FeedLeaderboards';
+import { TopPostsLeaderboard } from '@/components/content/TopPostsLeaderboard';
+import { ActiveContributorsLeaderboard } from '@/components/content/ActiveContributorsLeaderboard';
+import { useLeaderboards } from '@/hooks/useLeaderboards';
 import { Newspaper, Bookmark, X, Search, Calendar } from 'lucide-react';
 import { Toggle } from '@/components/ui/toggle';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -69,6 +71,9 @@ export default function DashboardContent() {
 
   // Get stats
   const { stats, loading: statsLoading } = useTeamFeedStats();
+
+  // Get leaderboards data
+  const { topPosts, activeContributors, loading: leaderboardsLoading } = useLeaderboards();
 
   // Use React Query for authors with caching
   const { data: authors = [] } = useQuery({
@@ -208,10 +213,20 @@ export default function DashboardContent() {
           </div>
         </div>
 
-        {/* Content - Two Column Layout */}
+        {/* Content - Three Column Layout */}
         <div className="flex-1 flex gap-0 pt-4 overflow-hidden">
-          {/* Feed Column - Fixed LinkedIn-like width with its own scroll */}
-          <div className="w-full lg:w-[552px] flex-shrink-0 overflow-y-auto pr-4 mr-2">
+          {/* Left Column - Top Posts */}
+          <div className="hidden xl:block w-[280px] flex-shrink-0 overflow-y-auto pr-2">
+            <div className="sticky top-0">
+              <TopPostsLeaderboard posts={topPosts} loading={leaderboardsLoading} />
+            </div>
+          </div>
+          
+          {/* Left Separator */}
+          <div className="hidden xl:block w-px bg-border mx-4 flex-shrink-0" />
+          
+          {/* Center Column - Feed */}
+          <div className="flex-1 xl:max-w-[552px] mx-auto overflow-y-auto px-2">
             <TeamFeed 
               showBookmarksOnly={showBookmarksOnly}
               sortBy={sortBy}
@@ -221,13 +236,13 @@ export default function DashboardContent() {
             />
           </div>
           
-          {/* Visual Separator */}
-          <div className="hidden lg:block w-px bg-border mx-6 flex-shrink-0" />
+          {/* Right Separator */}
+          <div className="hidden xl:block w-px bg-border mx-4 flex-shrink-0" />
           
-          {/* Leaderboards Column */}
-          <div className="hidden lg:block flex-1 min-w-0 overflow-y-auto">
+          {/* Right Column - Active Contributors */}
+          <div className="hidden xl:block w-[280px] flex-shrink-0 overflow-y-auto pl-2">
             <div className="sticky top-0">
-              <FeedLeaderboards />
+              <ActiveContributorsLeaderboard contributors={activeContributors} loading={leaderboardsLoading} />
             </div>
           </div>
         </div>
