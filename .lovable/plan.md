@@ -1,71 +1,84 @@
 
-# Plan : Corriger l'insertion des profils LinkedIn
+# Plan : Suppression en cascade des données billable_users
 
-## Probleme identifie
+## Situation actuelle
 
-L'erreur `PGRST204` indique que le code tente d'inserer un champ `user_id` qui n'existe plus dans la table `billable_users`.
+Quand tu supprimes un profil LinkedIn (`billable_users`), voici ce qui se passe :
 
-**Schema actuel de billable_users** (pas de user_id) :
-- id, workspace_id, linkedin_url, profile_name, slack_user_id, avatar_url, profile_picture, urn, linkedin_title, connections, followers, user_status, etc.
+| Table | Comportement actuel | Problème |
+|-------|---------------------|----------|
+| `posts` | SET NULL → garde les posts orphelins | Posts sans auteur affichés dans le feed |
+| `kpis` | RESTRICT → bloque la suppression | Erreur si des KPIs existent |
+| `posts_activity` | CASCADE → OK | Fonctionne déjà |
 
-## Modifications a effectuer
+**Résultat** : 6 posts orphelins actuellement dans la base, et les stats/feed montrent des données de profils supprimés.
 
-### 1. Fichier `src/hooks/useLinkedInProfiles.ts`
+## Solution
 
-**Ligne 109-115** - Supprimer `user_id` de l'insert :
+Modifier les contraintes de clé étrangère pour utiliser `ON DELETE CASCADE` :
 
-```typescript
-// AVANT
-const { error } = await supabase.from('billable_users').insert({
-  user_id: user?.id,           // <- A SUPPRIMER
-  workspace_id: workspace?.id,
-  profile_name: trimmedName,
-  linkedin_url: trimmedUrl,
-  slack_user_id: slackUserId || null,
-});
+### Migration SQL
 
-// APRES
-const { error } = await supabase.from('billable_users').insert({
-  workspace_id: workspace?.id,
-  profile_name: trimmedName,
-  linkedin_url: trimmedUrl,
-  slack_user_id: slackUserId || null,
-});
+```sql
+-- 1. Table posts : passer de SET NULL à CASCADE
+ALTER TABLE public.posts 
+DROP CONSTRAINT IF EXISTS posts_linkedin_profiles_fkey;
+
+ALTER TABLE public.posts 
+ADD CONSTRAINT posts_linkedin_profiles_fkey 
+FOREIGN KEY (linkedin_profiles) 
+REFERENCES public.billable_users(id) 
+ON DELETE CASCADE;
+
+-- 2. Table kpis : passer de RESTRICT à CASCADE
+ALTER TABLE public.kpis 
+DROP CONSTRAINT IF EXISTS kpis_billable_user_id_fkey;
+
+ALTER TABLE public.kpis 
+ADD CONSTRAINT kpis_billable_user_id_fkey 
+FOREIGN KEY (billable_user_id) 
+REFERENCES public.billable_users(id) 
+ON DELETE CASCADE;
+
+-- 3. Table post_history : ajouter CASCADE via posts
+-- (déjà OK car post_history → posts est RESTRICT, 
+--  et posts → billable_users sera CASCADE)
 ```
 
-### 2. Fichier `src/components/onboarding/OnboardingFlow.tsx`
+### Nettoyage des données orphelines
 
-**Ligne 236-242** - Supprimer `user_id` de l'insert :
+```sql
+-- Supprimer les posts orphelins existants
+DELETE FROM posts WHERE linkedin_profiles IS NULL;
 
-```typescript
-// AVANT
-const { error } = await supabase.from('billable_users').insert({
-  user_id: user?.id,           // <- A SUPPRIMER
-  workspace_id: workspaceId,
-  profile_name: trimmedName,
-  linkedin_url: trimmedUrl,
-  slack_user_id: null,
-});
-
-// APRES
-const { error } = await supabase.from('billable_users').insert({
-  workspace_id: workspaceId,
-  profile_name: trimmedName,
-  linkedin_url: trimmedUrl,
-  slack_user_id: null,
-});
+-- Supprimer les KPIs orphelins (si applicable)
+DELETE FROM kpis WHERE billable_user_id IS NULL;
 ```
-
-## Explication
-
-Dans l'architecture multi-workspace actuelle :
-- Les profils LinkedIn (`billable_users`) sont lies au **workspace**, pas a l'utilisateur
-- L'acces est controle via les politiques RLS qui verifient `is_workspace_member(auth.uid(), workspace_id)`
-- La colonne `user_id` a ete supprimee car elle n'est plus necessaire
 
 ## Impact
 
-Ces modifications permettront :
-- D'ajouter des profils LinkedIn depuis le dashboard
-- D'ajouter des profils LinkedIn pendant l'onboarding
-- De conserver la securite via les politiques RLS existantes
+| Action | Avant | Après |
+|--------|-------|-------|
+| Supprimer un profil | Bloqué ou posts orphelins | Suppression complète |
+| Posts du profil | Gardés sans auteur | Supprimés |
+| KPIs du profil | Bloquent la suppression | Supprimés |
+| Stats/Feed | Données corrompues | Données cohérentes |
+
+## Schema de suppression en cascade
+
+```text
+billable_users (supprimé)
+    │
+    ├── posts (CASCADE → supprimés)
+    │       └── post_history (CASCADE → supprimé)
+    │       └── posts_activity (CASCADE → supprimé)
+    │       └── bookmarks (CASCADE → supprimés)
+    │
+    ├── kpis (CASCADE → supprimés)
+    │
+    └── posts_activity (CASCADE → déjà OK)
+```
+
+## Aucune modification de code requise
+
+Les hooks `useTeamFeed`, `useLeaderboards` et `useLinkedInProfiles` n'ont pas besoin d'être modifiés - ils fonctionneront correctement une fois les contraintes corrigées.
