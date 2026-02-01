@@ -1,44 +1,71 @@
 
-# Plan : Permettre la suppression des profils LinkedIn avec des posts associés
+# Plan : Corriger l'insertion des profils LinkedIn
 
-## Problème identifié
+## Probleme identifie
 
-La suppression échoue avec l'erreur **409 Conflict** car :
-- La table `posts` a une contrainte de clé étrangère `posts_linkedin_profiles_fkey` 
-- Cette contrainte est configurée en mode **RESTRICT** (bloquer la suppression)
-- Le profil "Raphaël Charpenet" a 1 post associé → impossible de le supprimer
+L'erreur `PGRST204` indique que le code tente d'inserer un champ `user_id` qui n'existe plus dans la table `billable_users`.
 
-## Solution recommandée
+**Schema actuel de billable_users** (pas de user_id) :
+- id, workspace_id, linkedin_url, profile_name, slack_user_id, avatar_url, profile_picture, urn, linkedin_title, connections, followers, user_status, etc.
 
-Modifier la contrainte de clé étrangère pour utiliser `ON DELETE SET NULL` au lieu de `RESTRICT`.
+## Modifications a effectuer
 
-**Avantages** :
-- Les posts restent dans la base de données (historique conservé)
-- Le champ `linkedin_profiles` devient `NULL` pour les posts orphelins
-- Permet la suppression du profil sans perdre les données des posts
+### 1. Fichier `src/hooks/useLinkedInProfiles.ts`
 
-## Migration SQL
+**Ligne 109-115** - Supprimer `user_id` de l'insert :
 
-```sql
--- Supprimer l'ancienne contrainte
-ALTER TABLE public.posts 
-DROP CONSTRAINT IF EXISTS posts_linkedin_profiles_fkey;
+```typescript
+// AVANT
+const { error } = await supabase.from('billable_users').insert({
+  user_id: user?.id,           // <- A SUPPRIMER
+  workspace_id: workspace?.id,
+  profile_name: trimmedName,
+  linkedin_url: trimmedUrl,
+  slack_user_id: slackUserId || null,
+});
 
--- Recréer avec ON DELETE SET NULL
-ALTER TABLE public.posts 
-ADD CONSTRAINT posts_linkedin_profiles_fkey 
-FOREIGN KEY (linkedin_profiles) 
-REFERENCES public.billable_users(id) 
-ON DELETE SET NULL;
+// APRES
+const { error } = await supabase.from('billable_users').insert({
+  workspace_id: workspace?.id,
+  profile_name: trimmedName,
+  linkedin_url: trimmedUrl,
+  slack_user_id: slackUserId || null,
+});
 ```
+
+### 2. Fichier `src/components/onboarding/OnboardingFlow.tsx`
+
+**Ligne 236-242** - Supprimer `user_id` de l'insert :
+
+```typescript
+// AVANT
+const { error } = await supabase.from('billable_users').insert({
+  user_id: user?.id,           // <- A SUPPRIMER
+  workspace_id: workspaceId,
+  profile_name: trimmedName,
+  linkedin_url: trimmedUrl,
+  slack_user_id: null,
+});
+
+// APRES
+const { error } = await supabase.from('billable_users').insert({
+  workspace_id: workspaceId,
+  profile_name: trimmedName,
+  linkedin_url: trimmedUrl,
+  slack_user_id: null,
+});
+```
+
+## Explication
+
+Dans l'architecture multi-workspace actuelle :
+- Les profils LinkedIn (`billable_users`) sont lies au **workspace**, pas a l'utilisateur
+- L'acces est controle via les politiques RLS qui verifient `is_workspace_member(auth.uid(), workspace_id)`
+- La colonne `user_id` a ete supprimee car elle n'est plus necessaire
 
 ## Impact
 
-| Avant | Après |
-|-------|-------|
-| Suppression bloquée si posts existent | Suppression autorisée |
-| Posts orphelins impossibles | Posts gardés avec `linkedin_profiles = NULL` |
-
-## Alternative (non recommandée)
-
-Utiliser `ON DELETE CASCADE` supprimerait automatiquement tous les posts associés, ce qui n'est probablement pas souhaitable pour conserver l'historique.
+Ces modifications permettront :
+- D'ajouter des profils LinkedIn depuis le dashboard
+- D'ajouter des profils LinkedIn pendant l'onboarding
+- De conserver la securite via les politiques RLS existantes
