@@ -27,7 +27,7 @@ export function useLeaderboards() {
     
     // Filter posts from last 30 days
     const last30DaysPosts = posts.filter(post => {
-      const postDate = new Date(post.created_at);
+      const postDate = new Date(post.linkedin_created_at || post.created_at);
       return differenceInDays(now, postDate) <= 30;
     });
 
