@@ -1,31 +1,44 @@
 
-# Plan: Corriger la date de filtrage dans useLeaderboards
+# Plan : Permettre la suppression des profils LinkedIn avec des posts associés
 
-## Probleme identifie
+## Problème identifié
 
-Un seul fichier utilise incorrectement `created_at` au lieu de `linkedin_created_at` :
+La suppression échoue avec l'erreur **409 Conflict** car :
+- La table `posts` a une contrainte de clé étrangère `posts_linkedin_profiles_fkey` 
+- Cette contrainte est configurée en mode **RESTRICT** (bloquer la suppression)
+- Le profil "Raphaël Charpenet" a 1 post associé → impossible de le supprimer
 
-| Fichier | Ligne | Statut |
-|---------|-------|--------|
-| `src/hooks/useLeaderboards.ts` | 30 | A corriger |
-| `src/hooks/useAnalyticsData.ts` | - | OK (utilise `getPostDate()`) |
-| `src/hooks/useFullLeaderboard.ts` | - | OK (utilise `getPostDate()`) |
-| `src/components/content/TeamFeed.tsx` | 68, 76 | OK |
-| `src/components/content/PostCard.tsx` | 159 | OK |
+## Solution recommandée
 
-## Modification
+Modifier la contrainte de clé étrangère pour utiliser `ON DELETE SET NULL` au lieu de `RESTRICT`.
 
-**Fichier**: `src/hooks/useLeaderboards.ts`
+**Avantages** :
+- Les posts restent dans la base de données (historique conservé)
+- Le champ `linkedin_profiles` devient `NULL` pour les posts orphelins
+- Permet la suppression du profil sans perdre les données des posts
 
-**Ligne 30** - Changer:
-```typescript
-// AVANT
-const postDate = new Date(post.created_at);
+## Migration SQL
 
-// APRES  
-const postDate = new Date(post.linkedin_created_at || post.created_at);
+```sql
+-- Supprimer l'ancienne contrainte
+ALTER TABLE public.posts 
+DROP CONSTRAINT IF EXISTS posts_linkedin_profiles_fkey;
+
+-- Recréer avec ON DELETE SET NULL
+ALTER TABLE public.posts 
+ADD CONSTRAINT posts_linkedin_profiles_fkey 
+FOREIGN KEY (linkedin_profiles) 
+REFERENCES public.billable_users(id) 
+ON DELETE SET NULL;
 ```
 
 ## Impact
 
-Cette correction permettra au leaderboard du dashboard (Top Posts et Contributeurs actifs) de filtrer correctement les posts des 30 derniers jours en utilisant la vraie date de publication LinkedIn plutot que la date d'import dans la base de donnees.
+| Avant | Après |
+|-------|-------|
+| Suppression bloquée si posts existent | Suppression autorisée |
+| Posts orphelins impossibles | Posts gardés avec `linkedin_profiles = NULL` |
+
+## Alternative (non recommandée)
+
+Utiliser `ON DELETE CASCADE` supprimerait automatiquement tous les posts associés, ce qui n'est probablement pas souhaitable pour conserver l'historique.
