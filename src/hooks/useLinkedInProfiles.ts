@@ -107,7 +107,6 @@ export function useLinkedInProfiles() {
       }
 
       const { error } = await supabase.from('billable_users').insert({
-        user_id: user?.id,
         workspace_id: workspace?.id,
         profile_name: trimmedName,
         linkedin_url: trimmedUrl,

@@ -234,11 +234,10 @@ export function OnboardingFlow() {
       }
       
       const { error } = await supabase.from('billable_users').insert({
-        user_id: user?.id,
-        workspace_id: workspaceId, // Now correctly linked!
+        workspace_id: workspaceId,
         profile_name: trimmedName,
         linkedin_url: trimmedUrl,
-        slack_user_id: null, // Will be mapped later in dashboard
+        slack_user_id: null,
       });
 
       if (error) {
