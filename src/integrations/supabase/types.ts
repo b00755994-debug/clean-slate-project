@@ -306,7 +306,6 @@ export type Database = {
           shares: number | null
           status: Database["public"]["Enums"]["post_status"] | null
           url: string | null
-          user_id: number | null
           workspace_id: string | null
         }
         Insert: {
@@ -331,7 +330,6 @@ export type Database = {
           shares?: number | null
           status?: Database["public"]["Enums"]["post_status"] | null
           url?: string | null
-          user_id?: number | null
           workspace_id?: string | null
         }
         Update: {
@@ -356,7 +354,6 @@ export type Database = {
           shares?: number | null
           status?: Database["public"]["Enums"]["post_status"] | null
           url?: string | null
-          user_id?: number | null
           workspace_id?: string | null
         }
         Relationships: [
