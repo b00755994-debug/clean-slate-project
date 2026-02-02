@@ -1,84 +1,121 @@
 
-# Plan : Suppression en cascade des données billable_users
+# Plan : Utiliser uniquement `linkedin_created_at` pour les posts
 
-## Situation actuelle
+## Contexte
 
-Quand tu supprimes un profil LinkedIn (`billable_users`), voici ce qui se passe :
+Actuellement, le code utilise un pattern fallback `linkedin_created_at || created_at` partout où une date de post est nécessaire. `created_at` correspond à la date de scrapping (insertion en base), pas à la vraie date de publication LinkedIn.
 
-| Table | Comportement actuel | Problème |
-|-------|---------------------|----------|
-| `posts` | SET NULL → garde les posts orphelins | Posts sans auteur affichés dans le feed |
-| `kpis` | RESTRICT → bloque la suppression | Erreur si des KPIs existent |
-| `posts_activity` | CASCADE → OK | Fonctionne déjà |
+## Fichiers à modifier
 
-**Résultat** : 6 posts orphelins actuellement dans la base, et les stats/feed montrent des données de profils supprimés.
+### 1. `src/hooks/useTeamFeed.ts`
 
-## Solution
+**Supprimer `created_at` de l'interface Post** - Ne garder que `linkedin_created_at`
 
-Modifier les contraintes de clé étrangère pour utiliser `ON DELETE CASCADE` :
+```typescript
+// Ligne 17 : Supprimer
+created_at: string;
 
-### Migration SQL
-
-```sql
--- 1. Table posts : passer de SET NULL à CASCADE
-ALTER TABLE public.posts 
-DROP CONSTRAINT IF EXISTS posts_linkedin_profiles_fkey;
-
-ALTER TABLE public.posts 
-ADD CONSTRAINT posts_linkedin_profiles_fkey 
-FOREIGN KEY (linkedin_profiles) 
-REFERENCES public.billable_users(id) 
-ON DELETE CASCADE;
-
--- 2. Table kpis : passer de RESTRICT à CASCADE
-ALTER TABLE public.kpis 
-DROP CONSTRAINT IF EXISTS kpis_billable_user_id_fkey;
-
-ALTER TABLE public.kpis 
-ADD CONSTRAINT kpis_billable_user_id_fkey 
-FOREIGN KEY (billable_user_id) 
-REFERENCES public.billable_users(id) 
-ON DELETE CASCADE;
-
--- 3. Table post_history : ajouter CASCADE via posts
--- (déjà OK car post_history → posts est RESTRICT, 
---  et posts → billable_users sera CASCADE)
+// Garder uniquement
+linkedin_created_at: string | null;
 ```
 
-### Nettoyage des données orphelines
+### 2. `src/components/content/TeamFeed.tsx`
 
-```sql
--- Supprimer les posts orphelins existants
-DELETE FROM posts WHERE linkedin_profiles IS NULL;
+**Lignes 68, 76** - Remplacer les fallbacks par `linkedin_created_at` uniquement
 
--- Supprimer les KPIs orphelins (si applicable)
-DELETE FROM kpis WHERE billable_user_id IS NULL;
+```typescript
+// Ligne 68 : Filtrage par période
+.filter(post => {
+  if (!post.linkedin_created_at) return false; // Exclure les posts sans date LinkedIn
+  return filterByTimePeriod(new Date(post.linkedin_created_at));
+})
+
+// Ligne 76 : Tri par date
+.sort((a, b) => {
+  // ...
+  return new Date(b.linkedin_created_at || 0).getTime() - new Date(a.linkedin_created_at || 0).getTime();
+})
 ```
 
-## Impact
+**Lignes 154-156** - Stats hook - Même correction
 
-| Action | Avant | Après |
-|--------|-------|-------|
-| Supprimer un profil | Bloqué ou posts orphelins | Suppression complète |
-| Posts du profil | Gardés sans auteur | Supprimés |
-| KPIs du profil | Bloquent la suppression | Supprimés |
-| Stats/Feed | Données corrompues | Données cohérentes |
-
-## Schema de suppression en cascade
-
-```text
-billable_users (supprimé)
-    │
-    ├── posts (CASCADE → supprimés)
-    │       └── post_history (CASCADE → supprimé)
-    │       └── posts_activity (CASCADE → supprimé)
-    │       └── bookmarks (CASCADE → supprimés)
-    │
-    ├── kpis (CASCADE → supprimés)
-    │
-    └── posts_activity (CASCADE → déjà OK)
+```typescript
+const postDate = p.linkedin_created_at ? new Date(p.linkedin_created_at) : null;
+if (!postDate) return false;
+return postDate >= thirtyDaysAgo;
 ```
 
-## Aucune modification de code requise
+### 3. `src/hooks/useLeaderboards.ts`
 
-Les hooks `useTeamFeed`, `useLeaderboards` et `useLinkedInProfiles` n'ont pas besoin d'être modifiés - ils fonctionneront correctement une fois les contraintes corrigées.
+**Ligne 30** - Utiliser uniquement `linkedin_created_at`
+
+```typescript
+const last30DaysPosts = posts.filter(post => {
+  if (!post.linkedin_created_at) return false;
+  const postDate = new Date(post.linkedin_created_at);
+  return differenceInDays(now, postDate) <= 30;
+});
+```
+
+### 4. `src/hooks/useFullLeaderboard.ts`
+
+**Lignes 27-29** - Modifier la fonction `getPostDate`
+
+```typescript
+function getPostDate(post: { linkedin_created_at?: string | null }): Date | null {
+  return post.linkedin_created_at ? new Date(post.linkedin_created_at) : null;
+}
+```
+
+**Ligne 33** - Retirer `created_at` du type dans `calculateRankings`
+
+**Ligne 114** - Supprimer `created_at` de la requête Supabase
+
+### 5. `src/hooks/useAnalyticsData.ts`
+
+**Lignes 57-60** - Modifier la fonction `getPostDate`
+
+```typescript
+function getPostDate(post: { linkedin_created_at?: string | null }): Date | null {
+  return post.linkedin_created_at ? new Date(post.linkedin_created_at) : null;
+}
+```
+
+**Ligne 97** - Retirer `created_at` de la requête Supabase
+
+### 6. `src/components/content/PostCard.tsx`
+
+**Lignes 30-31** - Garder l'interface mais modifier l'affichage
+
+```typescript
+// Interface (garder pour compatibilité)
+created_at: string;
+linkedin_created_at?: string | null;
+
+// Ligne 159 : Affichage - utiliser uniquement linkedin_created_at
+<span>
+  {post.linkedin_created_at 
+    ? formatDistanceToNow(new Date(post.linkedin_created_at), { addSuffix: false, locale: fr })
+    : '—'
+  }
+</span>
+```
+
+## Résumé des changements
+
+| Fichier | Changement |
+|---------|------------|
+| `useTeamFeed.ts` | Retirer `created_at` de l'interface |
+| `TeamFeed.tsx` | 3 corrections : filtrage, tri, stats |
+| `useLeaderboards.ts` | 1 correction : filtrage 30 jours |
+| `useFullLeaderboard.ts` | 3 corrections : fonction, type, requête |
+| `useAnalyticsData.ts` | 2 corrections : fonction, requête |
+| `PostCard.tsx` | 1 correction : affichage date |
+
+## Comportement après modification
+
+- Les posts sans `linkedin_created_at` seront :
+  - Exclus des filtres par période (sauf "Toutes les dates")
+  - Affichés avec un tiret "—" au lieu d'une date
+  - Triés en dernier si tri par date récente
+- Les statistiques et leaderboards seront basés uniquement sur la vraie date de publication LinkedIn
