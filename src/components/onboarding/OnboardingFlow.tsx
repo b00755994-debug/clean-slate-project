@@ -106,19 +106,29 @@ export function OnboardingFlow() {
 
   // Create or get workspace for the user
   const ensureWorkspace = async (companyName?: string): Promise<string | null> => {
-    if (!user) return null;
+    if (!user) {
+      console.error('[Onboarding] No user found');
+      return null;
+    }
+
+    console.log('[Onboarding] User authenticated:', user.id, user.email);
 
     // If we already have a workspace, use it
-    if (workspaceId) return workspaceId;
+    if (workspaceId) {
+      console.log('[Onboarding] Using existing workspaceId:', workspaceId);
+      return workspaceId;
+    }
 
     // Check if user already has a workspace (from useWorkspace hook or DB)
     if (workspace?.id) {
+      console.log('[Onboarding] Using workspace from hook:', workspace.id);
       setWorkspaceId(workspace.id);
       return workspace.id;
     }
 
     // Create a new workspace
     const workspaceName = companyName?.trim() || `${user.email}'s Workspace`;
+    console.log('[Onboarding] Creating new workspace:', workspaceName);
     
     const { data: newWorkspace, error } = await supabase
       .from('workspaces')
@@ -130,10 +140,15 @@ export function OnboardingFlow() {
       .single();
 
     if (error) {
-      console.error('Error creating workspace:', error);
+      console.error('[Onboarding] Error creating workspace:', error);
+      console.error('[Onboarding] Error code:', error.code);
+      console.error('[Onboarding] Error message:', error.message);
+      console.error('[Onboarding] Error details:', error.details);
       toast.error(language === 'fr' ? 'Erreur lors de la création du workspace' : 'Error creating workspace');
       return null;
     }
+
+    console.log('[Onboarding] Workspace created successfully:', newWorkspace.id);
 
     // Create workspace_member entry for the owner
     const { error: memberError } = await supabase
@@ -146,8 +161,11 @@ export function OnboardingFlow() {
       });
 
     if (memberError) {
-      console.error('Error creating workspace membership:', memberError);
-      // Don't fail the whole flow, workspace was created
+      console.error('[Onboarding] Error creating membership:', memberError);
+      console.error('[Onboarding] Membership error code:', memberError.code);
+      console.error('[Onboarding] Membership error message:', memberError.message);
+    } else {
+      console.log('[Onboarding] Membership created successfully');
     }
 
     setWorkspaceId(newWorkspace.id);
