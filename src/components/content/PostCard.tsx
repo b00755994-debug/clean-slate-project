@@ -28,6 +28,7 @@ interface PostCardProps {
     shares: number | null;
     reactions: number | null;
     linkedin_created_at?: string | null;
+    post_image?: string | null;
     // Detailed reactions
     praise?: number | null;
     empathy?: number | null;
@@ -211,6 +212,18 @@ export function PostCard({ post, author, isBookmarked = false, onToggleBookmark,
             )}
           </p>
         </div>
+
+        {/* Post Image */}
+        {post.post_image && (
+          <div className="px-4 pb-3">
+            <img 
+              src={post.post_image}
+              alt="Contenu du post"
+              className="w-full max-h-[400px] object-cover rounded-lg"
+              loading="lazy"
+            />
+          </div>
+        )}
 
         {/* Stats Line */}
         {(totalReactions > 0 || totalComments > 0 || (post.impressions || 0) > 0) && (

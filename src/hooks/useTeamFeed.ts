@@ -16,6 +16,7 @@ interface Post {
   reactions: number | null;
   linkedin_created_at: string | null;
   linkedin_profiles: string | null;
+  post_image: string | null;
 }
 
 interface BillableUser {
