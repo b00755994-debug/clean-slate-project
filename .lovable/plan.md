@@ -1,60 +1,143 @@
 
-# Plan : Corriger la politique RLS pour la création initiale de workspace_members
+# Plan : Diagnostiquer et corriger l'erreur persistante de création de workspace
 
-## Problème racine
+## Diagnostic effectue
 
-Lors de l'onboarding, le code fait :
-1. Créer un workspace → OK
-2. Créer une entrée workspace_member (owner) → ECHEC RLS
+### Verification des politiques RLS
+Les politiques RLS ont ete correctement mises a jour :
+- `workspaces` : politique INSERT maintenant PERMISSIVE (confirmee par requete directe)
+- `workspace_members` : politique pour auto-ajout initial ajoutee
 
-La politique actuelle exige d'être "owner" pour insérer un membre, mais lors de la création initiale, personne n'est encore owner.
+### Analyse des logs d'erreur
+Les dernieres erreurs dans les logs Postgres datent de **07:50:05 UTC**, soit **apres** la migration de 07:48:52. Cependant, ces erreurs peuvent correspondre a des tentatives faites AVANT que le navigateur ne rafraichisse.
 
-## Solution
+### Utilisateur de test
+- `r.charpenet@free.fr` : compte cree a 07:40, confirme a 07:40:52
+- Cet utilisateur n'a **aucun workspace_member** associe
+- L'onboarding n'est pas complete (`onboarding_completed: false`)
 
-Ajouter une politique RLS qui permet à un utilisateur de **s'auto-ajouter comme owner** d'un workspace nouvellement créé (qui n'a pas encore de membres).
+## Probleme identifie
 
-## Migration SQL à exécuter
+Le probleme pourrait etre cause par l'un des scenarios suivants :
 
-```sql
--- Politique permettant à un utilisateur de se créer comme premier membre (owner) d'un workspace vide
-CREATE POLICY "Users can create initial workspace membership"
-ON workspace_members
-FOR INSERT
-TO authenticated
-WITH CHECK (
-  -- L'utilisateur s'ajoute lui-même
-  profile_id = auth.uid()
-  -- En tant que owner
-  AND role = 'owner'
-  -- Sur un workspace qui n'a pas encore de membres
-  AND NOT EXISTS (
-    SELECT 1 FROM workspace_members wm 
-    WHERE wm.workspace_id = workspace_members.workspace_id
-  )
-);
+1. **Cache du navigateur** : L'application cote client utilise une version cached du code
+2. **Test sur l'app publiee** : L'utilisateur teste peut-etre sur `superpump-v2.lovable.app` qui n'a pas les dernieres mises a jour
+3. **Session perimee** : Le token JWT peut ne pas etre correctement transmis
+
+## Solution proposee
+
+### Etape 1 : Verification immediate (sans code)
+L'utilisateur doit :
+1. Fermer completement le navigateur
+2. Vider le cache ou utiliser une fenetre de navigation privee
+3. Aller sur la preview Lovable (pas l'app publiee)
+4. Se connecter avec un nouveau compte ou le compte de test
+5. Essayer l'onboarding
+
+### Etape 2 : Si le probleme persiste
+
+Ajouter des logs detailles dans le code pour identifier exactement ou l'erreur se produit.
+
+#### Modification de OnboardingFlow.tsx
+
+Remplacer la fonction `ensureWorkspace` pour ajouter des logs de debug :
+
+```typescript
+const ensureWorkspace = async (companyName?: string): Promise<string | null> => {
+  if (!user) {
+    console.error('[Onboarding] No user found');
+    return null;
+  }
+
+  console.log('[Onboarding] User authenticated:', user.id, user.email);
+
+  // If we already have a workspace, use it
+  if (workspaceId) {
+    console.log('[Onboarding] Using existing workspaceId:', workspaceId);
+    return workspaceId;
+  }
+
+  // Check if user already has a workspace
+  if (workspace?.id) {
+    console.log('[Onboarding] Using workspace from hook:', workspace.id);
+    setWorkspaceId(workspace.id);
+    return workspace.id;
+  }
+
+  // Create a new workspace
+  const workspaceName = companyName?.trim() || `${user.email}'s Workspace`;
+  console.log('[Onboarding] Creating new workspace:', workspaceName);
+  
+  const { data: newWorkspace, error } = await supabase
+    .from('workspaces')
+    .insert({
+      workspace_name: workspaceName,
+      is_connected: false,
+    })
+    .select('id')
+    .single();
+
+  if (error) {
+    console.error('[Onboarding] Error creating workspace:', error);
+    console.error('[Onboarding] Error code:', error.code);
+    console.error('[Onboarding] Error message:', error.message);
+    console.error('[Onboarding] Error details:', error.details);
+    toast.error(language === 'fr' ? 'Erreur lors de la creation du workspace' : 'Error creating workspace');
+    return null;
+  }
+
+  console.log('[Onboarding] Workspace created successfully:', newWorkspace.id);
+
+  // Create workspace_member entry
+  const { error: memberError } = await supabase
+    .from('workspace_members')
+    .insert({
+      profile_id: user.id,
+      workspace_id: newWorkspace.id,
+      role: 'owner',
+      joined_at: new Date().toISOString(),
+    });
+
+  if (memberError) {
+    console.error('[Onboarding] Error creating membership:', memberError);
+  } else {
+    console.log('[Onboarding] Membership created successfully');
+  }
+
+  setWorkspaceId(newWorkspace.id);
+  return newWorkspace.id;
+};
 ```
 
-## Explication de la politique
+## Verification technique
 
-| Condition | Raison |
-|-----------|--------|
-| `profile_id = auth.uid()` | L'utilisateur ne peut s'ajouter que lui-même |
-| `role = 'owner'` | Le premier membre doit être owner |
-| `NOT EXISTS (...)` | Le workspace ne doit pas avoir de membres existants |
+### Politiques actuelles (verifiees)
 
-## Fichiers impactés
+| Table | Policy | Type | Statut |
+|-------|--------|------|--------|
+| workspaces | Authenticated users can create workspaces | INSERT | PERMISSIVE |
+| workspace_members | Users can create initial workspace membership | INSERT | PERMISSIVE |
 
-Aucune modification de code requise - le code actuel (`OnboardingFlow.tsx`) est correct. C'est uniquement la politique RLS qui manque.
+### Tests recommandes
 
-## Alternative considérée
+1. **Test avec nouveau compte** :
+   - Creer un compte avec email valide
+   - Confirmer l'email
+   - Acceder a /onboarding
+   - Remplir l'etape 1 et cliquer "Continuer"
 
-On aurait pu utiliser une fonction SQL `SECURITY DEFINER` pour créer le workspace ET le membre en une seule transaction, mais la solution proposée est plus simple et maintient la logique côté client.
+2. **Verifier les logs console** :
+   - Ouvrir les DevTools (F12)
+   - Onglet Console
+   - Chercher les messages `[Onboarding]`
 
-## Test de validation
+## Fichiers a modifier
 
-Après la migration :
-1. Créer un nouveau compte utilisateur
-2. Aller sur /onboarding
-3. Remplir l'étape 1 (company, role, etc.)
-4. Cliquer sur "Continuer"
-5. Vérifier que l'étape 2 s'affiche sans erreur
+1. `src/components/onboarding/OnboardingFlow.tsx` : Ajouter les logs de debug
+
+## Prochaines etapes
+
+1. Implementer les logs de debug
+2. Demander a l'utilisateur de re-tester en navigation privee
+3. Analyser les logs console pour identifier la cause exacte
+4. Si necessaire, verifier que le token JWT est correctement passe a Supabase
