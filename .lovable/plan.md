@@ -1,121 +1,111 @@
 
-# Plan : Utiliser uniquement `linkedin_created_at` pour les posts
+# Plan : Afficher les images des posts LinkedIn dans le Team Feed
 
-## Contexte
+## Situation actuelle
 
-Actuellement, le code utilise un pattern fallback `linkedin_created_at || created_at` partout où une date de post est nécessaire. `created_at` correspond à la date de scrapping (insertion en base), pas à la vraie date de publication LinkedIn.
+La colonne `post_image` existe dans la table `posts` et contient les URLs des images/médias des posts LinkedIn. Ces données sont déjà récupérées par le hook `useTeamFeed` (via `select('*')`), mais elles ne sont pas typées ni affichées dans les cartes du feed.
 
-## Fichiers à modifier
+## Modifications à effectuer
 
 ### 1. `src/hooks/useTeamFeed.ts`
 
-**Supprimer `created_at` de l'interface Post** - Ne garder que `linkedin_created_at`
+**Ajouter `post_image` à l'interface Post** (ligne 18)
 
 ```typescript
-// Ligne 17 : Supprimer
-created_at: string;
-
-// Garder uniquement
-linkedin_created_at: string | null;
-```
-
-### 2. `src/components/content/TeamFeed.tsx`
-
-**Lignes 68, 76** - Remplacer les fallbacks par `linkedin_created_at` uniquement
-
-```typescript
-// Ligne 68 : Filtrage par période
-.filter(post => {
-  if (!post.linkedin_created_at) return false; // Exclure les posts sans date LinkedIn
-  return filterByTimePeriod(new Date(post.linkedin_created_at));
-})
-
-// Ligne 76 : Tri par date
-.sort((a, b) => {
-  // ...
-  return new Date(b.linkedin_created_at || 0).getTime() - new Date(a.linkedin_created_at || 0).getTime();
-})
-```
-
-**Lignes 154-156** - Stats hook - Même correction
-
-```typescript
-const postDate = p.linkedin_created_at ? new Date(p.linkedin_created_at) : null;
-if (!postDate) return false;
-return postDate >= thirtyDaysAgo;
-```
-
-### 3. `src/hooks/useLeaderboards.ts`
-
-**Ligne 30** - Utiliser uniquement `linkedin_created_at`
-
-```typescript
-const last30DaysPosts = posts.filter(post => {
-  if (!post.linkedin_created_at) return false;
-  const postDate = new Date(post.linkedin_created_at);
-  return differenceInDays(now, postDate) <= 30;
-});
-```
-
-### 4. `src/hooks/useFullLeaderboard.ts`
-
-**Lignes 27-29** - Modifier la fonction `getPostDate`
-
-```typescript
-function getPostDate(post: { linkedin_created_at?: string | null }): Date | null {
-  return post.linkedin_created_at ? new Date(post.linkedin_created_at) : null;
+interface Post {
+  id: string;
+  content: string | null;
+  url: string | null;
+  avatar_url: string | null;
+  impressions: number | null;
+  likes: number | null;
+  comments: number | null;
+  shares: number | null;
+  reactions: number | null;
+  linkedin_created_at: string | null;
+  linkedin_profiles: string | null;
+  post_image: string | null;  // Ajouter cette ligne
 }
 ```
 
-**Ligne 33** - Retirer `created_at` du type dans `calculateRankings`
+### 2. `src/components/content/PostCard.tsx`
 
-**Ligne 114** - Supprimer `created_at` de la requête Supabase
-
-### 5. `src/hooks/useAnalyticsData.ts`
-
-**Lignes 57-60** - Modifier la fonction `getPostDate`
+**Ajouter `post_image` à l'interface PostCardProps** (après ligne 35)
 
 ```typescript
-function getPostDate(post: { linkedin_created_at?: string | null }): Date | null {
-  return post.linkedin_created_at ? new Date(post.linkedin_created_at) : null;
+post: {
+  // ... existing fields
+  post_image?: string | null;  // Ajouter
 }
 ```
 
-**Ligne 97** - Retirer `created_at` de la requête Supabase
-
-### 6. `src/components/content/PostCard.tsx`
-
-**Lignes 30-31** - Garder l'interface mais modifier l'affichage
+**Ajouter l'affichage de l'image** entre le contenu textuel et les stats (après ligne 213)
 
 ```typescript
-// Interface (garder pour compatibilité)
-created_at: string;
-linkedin_created_at?: string | null;
+{/* Content */}
+<div className="px-4 py-3">
+  <p className="text-[14px] text-foreground whitespace-pre-wrap leading-[1.45] font-normal">
+    {displayContent}
+    {shouldTruncate && !isExpanded && (
+      <>
+        ...{' '}
+        <button onClick={() => setIsExpanded(true)} className="...">
+          voir plus
+        </button>
+      </>
+    )}
+  </p>
+</div>
 
-// Ligne 159 : Affichage - utiliser uniquement linkedin_created_at
-<span>
-  {post.linkedin_created_at 
-    ? formatDistanceToNow(new Date(post.linkedin_created_at), { addSuffix: false, locale: fr })
-    : '—'
-  }
-</span>
+{/* Post Image - NOUVEAU */}
+{post.post_image && (
+  <div className="px-4 pb-3">
+    <img 
+      src={post.post_image}
+      alt="Contenu du post"
+      className="w-full max-h-[400px] object-cover rounded-lg"
+      loading="lazy"
+    />
+  </div>
+)}
+
+{/* Stats Line */}
+{(totalReactions > 0 || ...
 ```
 
-## Résumé des changements
+## Résultat visuel
 
-| Fichier | Changement |
-|---------|------------|
-| `useTeamFeed.ts` | Retirer `created_at` de l'interface |
-| `TeamFeed.tsx` | 3 corrections : filtrage, tri, stats |
-| `useLeaderboards.ts` | 1 correction : filtrage 30 jours |
-| `useFullLeaderboard.ts` | 3 corrections : fonction, type, requête |
-| `useAnalyticsData.ts` | 2 corrections : fonction, requête |
-| `PostCard.tsx` | 1 correction : affichage date |
+```text
+┌─────────────────────────────────┐
+│ [Avatar] Nom de l'auteur        │
+│          Titre • 2h • 🌐        │
+├─────────────────────────────────┤
+│ Contenu textuel du post...      │
+│                                 │
+├─────────────────────────────────┤
+│ ┌─────────────────────────────┐ │
+│ │                             │ │
+│ │     IMAGE DU POST           │ │  ← Nouveau
+│ │   (max 400px de hauteur)    │ │
+│ │                             │ │
+│ └─────────────────────────────┘ │
+├─────────────────────────────────┤
+│ 👍❤️🎉 123  |  👁 1.2k  42 comm. │
+├─────────────────────────────────┤
+│ 🔗 Voir sur LinkedIn            │
+└─────────────────────────────────┘
+```
 
-## Comportement après modification
+## Fichiers modifiés
 
-- Les posts sans `linkedin_created_at` seront :
-  - Exclus des filtres par période (sauf "Toutes les dates")
-  - Affichés avec un tiret "—" au lieu d'une date
-  - Triés en dernier si tri par date récente
-- Les statistiques et leaderboards seront basés uniquement sur la vraie date de publication LinkedIn
+| Fichier | Modification |
+|---------|--------------|
+| `src/hooks/useTeamFeed.ts` | Ajouter `post_image` à l'interface Post |
+| `src/components/content/PostCard.tsx` | Ajouter `post_image` à l'interface + affichage de l'image |
+
+## Points techniques
+
+- **Lazy loading** : L'attribut `loading="lazy"` optimise le chargement des images hors écran
+- **Hauteur max** : `max-h-[400px]` évite que les images trop grandes déforment le feed
+- **Object-cover** : Maintient les proportions de l'image tout en remplissant l'espace
+- **Coins arrondis** : `rounded-lg` pour une cohérence visuelle avec le reste de la carte
