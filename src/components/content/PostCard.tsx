@@ -219,7 +219,7 @@ export function PostCard({ post, author, isBookmarked = false, onToggleBookmark,
             <img 
               src={post.post_image}
               alt="Contenu du post"
-              className="w-full max-h-[400px] object-cover rounded-lg"
+              className="w-full h-auto rounded-lg"
               loading="lazy"
             />
           </div>
