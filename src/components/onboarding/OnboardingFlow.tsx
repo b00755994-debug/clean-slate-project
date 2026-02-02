@@ -126,51 +126,28 @@ export function OnboardingFlow() {
       return workspace.id;
     }
 
-    // Create a new workspace
+    // Create a new workspace using RPC function (bypasses PostgREST RLS cache issues)
     const workspaceName = companyName?.trim() || `${user.email}'s Workspace`;
-    console.log('[Onboarding] Creating new workspace:', workspaceName);
+    console.log('[Onboarding] Creating new workspace via RPC:', workspaceName);
     
-    const { data: newWorkspace, error } = await supabase
-      .from('workspaces')
-      .insert({
-        workspace_name: workspaceName,
-        is_connected: false,
-      })
-      .select('id')
-      .single();
+    const { data: newWorkspaceId, error } = await supabase
+      .rpc('create_workspace_for_user', {
+        p_workspace_name: workspaceName,
+        p_user_id: user.id
+      });
 
     if (error) {
       console.error('[Onboarding] Error creating workspace:', error);
       console.error('[Onboarding] Error code:', error.code);
       console.error('[Onboarding] Error message:', error.message);
-      console.error('[Onboarding] Error details:', error.details);
       toast.error(language === 'fr' ? 'Erreur lors de la création du workspace' : 'Error creating workspace');
       return null;
     }
 
-    console.log('[Onboarding] Workspace created successfully:', newWorkspace.id);
-
-    // Create workspace_member entry for the owner
-    const { error: memberError } = await supabase
-      .from('workspace_members')
-      .insert({
-        profile_id: user.id,
-        workspace_id: newWorkspace.id,
-        role: 'owner',
-        joined_at: new Date().toISOString(),
-      });
-
-    if (memberError) {
-      console.error('[Onboarding] Error creating membership:', memberError);
-      console.error('[Onboarding] Membership error code:', memberError.code);
-      console.error('[Onboarding] Membership error message:', memberError.message);
-    } else {
-      console.log('[Onboarding] Membership created successfully');
-    }
-
-    setWorkspaceId(newWorkspace.id);
+    console.log('[Onboarding] Workspace and membership created successfully:', newWorkspaceId);
+    setWorkspaceId(newWorkspaceId);
     
-    return newWorkspace.id;
+    return newWorkspaceId;
   };
 
   const completeOnboarding = async () => {
