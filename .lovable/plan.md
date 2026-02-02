@@ -1,111 +1,60 @@
 
-# Plan : Afficher les images des posts LinkedIn dans le Team Feed
+# Plan : Corriger la politique RLS pour la création initiale de workspace_members
 
-## Situation actuelle
+## Problème racine
 
-La colonne `post_image` existe dans la table `posts` et contient les URLs des images/médias des posts LinkedIn. Ces données sont déjà récupérées par le hook `useTeamFeed` (via `select('*')`), mais elles ne sont pas typées ni affichées dans les cartes du feed.
+Lors de l'onboarding, le code fait :
+1. Créer un workspace → OK
+2. Créer une entrée workspace_member (owner) → ECHEC RLS
 
-## Modifications à effectuer
+La politique actuelle exige d'être "owner" pour insérer un membre, mais lors de la création initiale, personne n'est encore owner.
 
-### 1. `src/hooks/useTeamFeed.ts`
+## Solution
 
-**Ajouter `post_image` à l'interface Post** (ligne 18)
+Ajouter une politique RLS qui permet à un utilisateur de **s'auto-ajouter comme owner** d'un workspace nouvellement créé (qui n'a pas encore de membres).
 
-```typescript
-interface Post {
-  id: string;
-  content: string | null;
-  url: string | null;
-  avatar_url: string | null;
-  impressions: number | null;
-  likes: number | null;
-  comments: number | null;
-  shares: number | null;
-  reactions: number | null;
-  linkedin_created_at: string | null;
-  linkedin_profiles: string | null;
-  post_image: string | null;  // Ajouter cette ligne
-}
+## Migration SQL à exécuter
+
+```sql
+-- Politique permettant à un utilisateur de se créer comme premier membre (owner) d'un workspace vide
+CREATE POLICY "Users can create initial workspace membership"
+ON workspace_members
+FOR INSERT
+TO authenticated
+WITH CHECK (
+  -- L'utilisateur s'ajoute lui-même
+  profile_id = auth.uid()
+  -- En tant que owner
+  AND role = 'owner'
+  -- Sur un workspace qui n'a pas encore de membres
+  AND NOT EXISTS (
+    SELECT 1 FROM workspace_members wm 
+    WHERE wm.workspace_id = workspace_members.workspace_id
+  )
+);
 ```
 
-### 2. `src/components/content/PostCard.tsx`
+## Explication de la politique
 
-**Ajouter `post_image` à l'interface PostCardProps** (après ligne 35)
+| Condition | Raison |
+|-----------|--------|
+| `profile_id = auth.uid()` | L'utilisateur ne peut s'ajouter que lui-même |
+| `role = 'owner'` | Le premier membre doit être owner |
+| `NOT EXISTS (...)` | Le workspace ne doit pas avoir de membres existants |
 
-```typescript
-post: {
-  // ... existing fields
-  post_image?: string | null;  // Ajouter
-}
-```
+## Fichiers impactés
 
-**Ajouter l'affichage de l'image** entre le contenu textuel et les stats (après ligne 213)
+Aucune modification de code requise - le code actuel (`OnboardingFlow.tsx`) est correct. C'est uniquement la politique RLS qui manque.
 
-```typescript
-{/* Content */}
-<div className="px-4 py-3">
-  <p className="text-[14px] text-foreground whitespace-pre-wrap leading-[1.45] font-normal">
-    {displayContent}
-    {shouldTruncate && !isExpanded && (
-      <>
-        ...{' '}
-        <button onClick={() => setIsExpanded(true)} className="...">
-          voir plus
-        </button>
-      </>
-    )}
-  </p>
-</div>
+## Alternative considérée
 
-{/* Post Image - NOUVEAU */}
-{post.post_image && (
-  <div className="px-4 pb-3">
-    <img 
-      src={post.post_image}
-      alt="Contenu du post"
-      className="w-full max-h-[400px] object-cover rounded-lg"
-      loading="lazy"
-    />
-  </div>
-)}
+On aurait pu utiliser une fonction SQL `SECURITY DEFINER` pour créer le workspace ET le membre en une seule transaction, mais la solution proposée est plus simple et maintient la logique côté client.
 
-{/* Stats Line */}
-{(totalReactions > 0 || ...
-```
+## Test de validation
 
-## Résultat visuel
-
-```text
-┌─────────────────────────────────┐
-│ [Avatar] Nom de l'auteur        │
-│          Titre • 2h • 🌐        │
-├─────────────────────────────────┤
-│ Contenu textuel du post...      │
-│                                 │
-├─────────────────────────────────┤
-│ ┌─────────────────────────────┐ │
-│ │                             │ │
-│ │     IMAGE DU POST           │ │  ← Nouveau
-│ │   (max 400px de hauteur)    │ │
-│ │                             │ │
-│ └─────────────────────────────┘ │
-├─────────────────────────────────┤
-│ 👍❤️🎉 123  |  👁 1.2k  42 comm. │
-├─────────────────────────────────┤
-│ 🔗 Voir sur LinkedIn            │
-└─────────────────────────────────┘
-```
-
-## Fichiers modifiés
-
-| Fichier | Modification |
-|---------|--------------|
-| `src/hooks/useTeamFeed.ts` | Ajouter `post_image` à l'interface Post |
-| `src/components/content/PostCard.tsx` | Ajouter `post_image` à l'interface + affichage de l'image |
-
-## Points techniques
-
-- **Lazy loading** : L'attribut `loading="lazy"` optimise le chargement des images hors écran
-- **Hauteur max** : `max-h-[400px]` évite que les images trop grandes déforment le feed
-- **Object-cover** : Maintient les proportions de l'image tout en remplissant l'espace
-- **Coins arrondis** : `rounded-lg` pour une cohérence visuelle avec le reste de la carte
+Après la migration :
+1. Créer un nouveau compte utilisateur
+2. Aller sur /onboarding
+3. Remplir l'étape 1 (company, role, etc.)
+4. Cliquer sur "Continuer"
+5. Vérifier que l'étape 2 s'affiche sans erreur
