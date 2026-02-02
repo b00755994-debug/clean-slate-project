@@ -24,13 +24,12 @@ export interface LeaderboardEntry {
   rankChange: number | null;
 }
 
-function getPostDate(post: { linkedin_created_at?: string | null; created_at?: string | null }): Date | null {
-  const dateStr = post.linkedin_created_at || post.created_at;
-  return dateStr ? new Date(dateStr) : null;
+function getPostDate(post: { linkedin_created_at?: string | null }): Date | null {
+  return post.linkedin_created_at ? new Date(post.linkedin_created_at) : null;
 }
 
 function calculateRankings(
-  posts: Array<{ linkedin_profiles: string | null; linkedin_created_at?: string | null; created_at?: string | null; impressions: number | null; likes: number | null; comments: number | null }>,
+  posts: Array<{ linkedin_profiles: string | null; linkedin_created_at?: string | null; impressions: number | null; likes: number | null; comments: number | null }>,
   billableUsers: Array<{ id: string }>,
   monthStart: Date,
   monthEnd: Date
@@ -111,7 +110,7 @@ export function useFullLeaderboard() {
       if (!workspace?.id) return [];
       const { data, error } = await supabase
         .from('posts')
-        .select('id, linkedin_profiles, linkedin_created_at, created_at, impressions, likes, comments, reactions')
+        .select('id, linkedin_profiles, linkedin_created_at, impressions, likes, comments, reactions')
         .eq('workspace_id', workspace.id);
       if (error) throw error;
       return data || [];

@@ -25,9 +25,10 @@ export function useLeaderboards() {
   const { topPosts, activeContributors } = useMemo(() => {
     const now = new Date();
     
-    // Filter posts from last 30 days
+    // Filter posts from last 30 days (only posts with linkedin_created_at)
     const last30DaysPosts = posts.filter(post => {
-      const postDate = new Date(post.linkedin_created_at || post.created_at);
+      if (!post.linkedin_created_at) return false;
+      const postDate = new Date(post.linkedin_created_at);
       return differenceInDays(now, postDate) <= 30;
     });
 

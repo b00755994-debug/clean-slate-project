@@ -65,7 +65,10 @@ export function TeamFeed({
       .filter(post => authorFilter === 'all' || post.linkedin_profiles === authorFilter)
       .filter(post => !showBookmarksOnly || bookmarkedPosts.has(post.id))
       .filter(post => !searchQuery || post.content?.toLowerCase().includes(searchQuery.toLowerCase()))
-      .filter(post => filterByTimePeriod(new Date(post.linkedin_created_at || post.created_at)))
+      .filter(post => {
+        if (!post.linkedin_created_at) return timePeriod === 'all';
+        return filterByTimePeriod(new Date(post.linkedin_created_at));
+      })
       .sort((a, b) => {
         switch (sortBy) {
           case 'impressions':
@@ -73,7 +76,10 @@ export function TeamFeed({
           case 'reactions':
             return (b.reactions || b.likes || 0) - (a.reactions || a.likes || 0);
           default:
-            return new Date(b.linkedin_created_at || b.created_at).getTime() - new Date(a.linkedin_created_at || a.created_at).getTime();
+            // Posts without linkedin_created_at are sorted last
+            const dateA = a.linkedin_created_at ? new Date(a.linkedin_created_at).getTime() : 0;
+            const dateB = b.linkedin_created_at ? new Date(b.linkedin_created_at).getTime() : 0;
+            return dateB - dateA;
         }
       });
   }, [posts, authorFilter, showBookmarksOnly, bookmarkedPosts, searchQuery, timePeriod, sortBy]);
@@ -147,12 +153,13 @@ export function useTeamFeedStats() {
   const { posts, loading } = useTeamFeed();
   
   const stats = useMemo(() => {
-    // Filter posts from the last 30 days
+    // Filter posts from the last 30 days (only posts with linkedin_created_at)
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
     
     const recentPosts = posts.filter(p => {
-      const postDate = p.linkedin_created_at ? new Date(p.linkedin_created_at) : new Date(p.created_at);
+      if (!p.linkedin_created_at) return false;
+      const postDate = new Date(p.linkedin_created_at);
       return postDate >= thirtyDaysAgo;
     });
     
