@@ -14,7 +14,6 @@ interface Post {
   comments: number | null;
   shares: number | null;
   reactions: number | null;
-  created_at: string;
   linkedin_created_at: string | null;
   linkedin_profiles: string | null;
 }

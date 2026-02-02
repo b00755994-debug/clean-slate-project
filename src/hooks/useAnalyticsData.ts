@@ -54,10 +54,9 @@ interface ImpressionsDistributionPoint {
   count: number;
 }
 
-// Helper to get post date (linkedin_created_at preferred, created_at as fallback)
-function getPostDate(post: { linkedin_created_at?: string | null; created_at?: string | null }): Date | null {
-  const dateStr = post.linkedin_created_at || post.created_at;
-  return dateStr ? new Date(dateStr) : null;
+// Helper to get post date (linkedin_created_at only)
+function getPostDate(post: { linkedin_created_at?: string | null }): Date | null {
+  return post.linkedin_created_at ? new Date(post.linkedin_created_at) : null;
 }
 
 export function useAnalyticsData() {
@@ -94,7 +93,7 @@ export function useAnalyticsData() {
       
       const { data, error } = await supabase
         .from('posts')
-        .select('id, impressions, reactions, comments, likes, praise, empathy, appreciation, interest, linkedin_created_at, created_at, linkedin_profiles')
+        .select('id, impressions, reactions, comments, likes, praise, empathy, appreciation, interest, linkedin_created_at, linkedin_profiles')
         .in('linkedin_profiles', userProfileIds);
       
       if (error) throw error;
