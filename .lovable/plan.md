@@ -1,41 +1,115 @@
 
+# Plan : Correction des problèmes d'ajout de profils LinkedIn
 
-# Plan : Suppression complete de l'utilisateur r.charpenet@free.fr
+## Diagnostic
 
-## Donnees a supprimer
+### Probleme 1 : Profil non visible apres onboarding
+L'utilisateur a deux workspaces (crees lors de tentatives successives). Le hook `useWorkspace` utilise `.maybeSingle()` qui retourne un seul workspace arbitraire. Le profil LinkedIn a ete ajoute dans un workspace different de celui affiche sur le dashboard.
 
-L'utilisateur a les enregistrements suivants restants :
+### Probleme 2 : Erreur RLS lors de l'ajout via dashboard
+C'est le meme probleme de cache PostgREST que pour les workspaces. La solution est identique : creer une fonction `SECURITY DEFINER` pour bypasser le cache.
 
-1. **user_roles** : 1 entree (id: `0a35e60e-9bde-44b6-9923-e2b3c02ea5c4`)
-2. **profiles** : 1 entree (id: `e0aba8b5-2b55-4320-bcec-af0aa62136fa`)
+## Solution
 
-Les autres tables (workspace_members, bookmarks, workspaces) sont deja vides pour cet utilisateur.
-
-## Ordre de suppression
-
-L'ordre est important a cause des contraintes de cle etrangere :
-
-1. Supprimer d'abord `user_roles` (reference `profiles.id`)
-2. Supprimer ensuite `profiles`
-
-Note : L'utilisateur dans `auth.users` ne peut pas etre supprime via SQL - cela doit etre fait manuellement dans le Dashboard Supabase > Authentication > Users.
-
-## Migration SQL
+### Etape 1 : Migration SQL - Creer une fonction pour ajouter des billable_users
 
 ```sql
--- Supprimer le role de l'utilisateur
-DELETE FROM public.user_roles 
-WHERE user_id = 'e0aba8b5-2b55-4320-bcec-af0aa62136fa';
+CREATE OR REPLACE FUNCTION public.add_billable_user(
+  p_workspace_id UUID,
+  p_profile_name TEXT,
+  p_linkedin_url TEXT,
+  p_slack_user_id TEXT DEFAULT NULL
+)
+RETURNS UUID
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_billable_user_id UUID;
+BEGIN
+  -- Verifier que l'utilisateur est membre du workspace
+  IF NOT is_workspace_member(auth.uid(), p_workspace_id) THEN
+    RAISE EXCEPTION 'User is not a member of this workspace';
+  END IF;
+  
+  -- Inserer le billable_user
+  INSERT INTO public.billable_users (
+    workspace_id, 
+    profile_name, 
+    linkedin_url, 
+    slack_user_id
+  )
+  VALUES (
+    p_workspace_id, 
+    p_profile_name, 
+    p_linkedin_url, 
+    p_slack_user_id
+  )
+  RETURNING id INTO v_billable_user_id;
+  
+  RETURN v_billable_user_id;
+END;
+$$;
 
--- Supprimer le profil
-DELETE FROM public.profiles 
-WHERE id = 'e0aba8b5-2b55-4320-bcec-af0aa62136fa';
+GRANT EXECUTE ON FUNCTION public.add_billable_user TO authenticated;
 ```
 
-## Action manuelle requise
+### Etape 2 : Modifier useLinkedInProfiles.ts
 
-Apres la migration, tu devras supprimer l'utilisateur du systeme d'authentification Supabase :
-1. Aller sur le Dashboard Supabase > Authentication > Users
-2. Trouver `r.charpenet@free.fr`
-3. Cliquer sur les 3 points > Delete user
+Remplacer l'insert direct par un appel RPC :
 
+```typescript
+// Avant
+const { error } = await supabase.from('billable_users').insert({
+  workspace_id: workspace?.id,
+  profile_name: trimmedName,
+  linkedin_url: trimmedUrl,
+  slack_user_id: slackUserId || null,
+});
+
+// Apres
+const { error } = await supabase.rpc('add_billable_user', {
+  p_workspace_id: workspace?.id,
+  p_profile_name: trimmedName,
+  p_linkedin_url: trimmedUrl,
+  p_slack_user_id: slackUserId || null,
+});
+```
+
+### Etape 3 : Modifier OnboardingFlow.tsx
+
+Utiliser la meme fonction RPC pour l'insertion des profils pendant l'onboarding :
+
+```typescript
+const { error } = await supabase.rpc('add_billable_user', {
+  p_workspace_id: workspaceId,
+  p_profile_name: trimmedName,
+  p_linkedin_url: trimmedUrl,
+  p_slack_user_id: null,
+});
+```
+
+### Etape 4 : Nettoyer les donnees de test
+
+Supprimer les workspaces de test de l'utilisateur pour eviter les conflits :
+
+```sql
+-- Supprimer le workspace vide "Test" 
+DELETE FROM workspace_members WHERE workspace_id = 'f4265f11-7c60-4cb8-8c12-77861384e1f3';
+DELETE FROM workspaces WHERE id = 'f4265f11-7c60-4cb8-8c12-77861384e1f3';
+```
+
+## Avantages
+
+1. **Contourne le cache PostgREST** : Les appels RPC ne sont pas affectes par le cache RLS
+2. **Securite maintenue** : La fonction verifie que l'utilisateur est bien membre du workspace via `is_workspace_member()`
+3. **Code unifie** : La meme fonction est utilisee pour l'onboarding et le dashboard
+4. **Atomique et coherent** : Une seule source de verite pour l'ajout de profils
+
+## Fichiers a modifier
+
+1. **Migration SQL** : Nouvelle fonction `add_billable_user`
+2. **src/hooks/useLinkedInProfiles.ts** : Utiliser `supabase.rpc()` au lieu de `supabase.from().insert()`
+3. **src/components/onboarding/OnboardingFlow.tsx** : Utiliser `supabase.rpc()` pour l'ajout de profils
+4. **Migration SQL** : Nettoyage des donnees de test
