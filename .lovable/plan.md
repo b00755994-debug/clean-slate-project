@@ -1,115 +1,76 @@
 
-# Plan : Correction des problèmes d'ajout de profils LinkedIn
+
+# Plan : Corriger les workspace_id manquants sur les posts
 
 ## Diagnostic
 
-### Probleme 1 : Profil non visible apres onboarding
-L'utilisateur a deux workspaces (crees lors de tentatives successives). Le hook `useWorkspace` utilise `.maybeSingle()` qui retourne un seul workspace arbitraire. Le profil LinkedIn a ete ajoute dans un workspace different de celui affiche sur le dashboard.
+**Situation actuelle :**
+- **61 posts** au total dans la base
+- **47 posts** ont deja un `workspace_id`
+- **14 posts** n'ont pas de `workspace_id` (NULL)
 
-### Probleme 2 : Erreur RLS lors de l'ajout via dashboard
-C'est le meme probleme de cache PostgREST que pour les workspaces. La solution est identique : creer une fonction `SECURITY DEFINER` pour bypasser le cache.
+**Posts concernes :**
+- 13 posts de **Lancelot Brun**
+- 1 post de **Raphael Charpenet**
+- Tous lies au workspace `2c5d31dd-7724-497d-b1a5-b422f21a0098`
+
+**Cause :** Les posts ont ete importes/crees sans remplir la colonne `workspace_id`, alors que les hooks frontend filtrent par `.eq('workspace_id', workspace.id)`.
 
 ## Solution
 
-### Etape 1 : Migration SQL - Creer une fonction pour ajouter des billable_users
+### Etape 1 : Corriger les posts existants
+
+Migration SQL pour mettre a jour les 14 posts avec le `workspace_id` de leur `billable_user` :
 
 ```sql
-CREATE OR REPLACE FUNCTION public.add_billable_user(
-  p_workspace_id UUID,
-  p_profile_name TEXT,
-  p_linkedin_url TEXT,
-  p_slack_user_id TEXT DEFAULT NULL
-)
-RETURNS UUID
+UPDATE posts p
+SET workspace_id = bu.workspace_id
+FROM billable_users bu
+WHERE p.linkedin_profiles = bu.id
+  AND p.workspace_id IS NULL;
+```
+
+### Etape 2 : Prevenir le probleme pour les futurs posts
+
+Creer un trigger qui remplit automatiquement `workspace_id` lors de l'insertion d'un post :
+
+```sql
+CREATE OR REPLACE FUNCTION public.set_post_workspace_id()
+RETURNS TRIGGER
 LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
 AS $$
-DECLARE
-  v_billable_user_id UUID;
 BEGIN
-  -- Verifier que l'utilisateur est membre du workspace
-  IF NOT is_workspace_member(auth.uid(), p_workspace_id) THEN
-    RAISE EXCEPTION 'User is not a member of this workspace';
+  -- Si workspace_id n'est pas fourni, le recuperer depuis billable_users
+  IF NEW.workspace_id IS NULL AND NEW.linkedin_profiles IS NOT NULL THEN
+    SELECT workspace_id INTO NEW.workspace_id
+    FROM billable_users
+    WHERE id = NEW.linkedin_profiles;
   END IF;
   
-  -- Inserer le billable_user
-  INSERT INTO public.billable_users (
-    workspace_id, 
-    profile_name, 
-    linkedin_url, 
-    slack_user_id
-  )
-  VALUES (
-    p_workspace_id, 
-    p_profile_name, 
-    p_linkedin_url, 
-    p_slack_user_id
-  )
-  RETURNING id INTO v_billable_user_id;
-  
-  RETURN v_billable_user_id;
+  RETURN NEW;
 END;
 $$;
 
-GRANT EXECUTE ON FUNCTION public.add_billable_user TO authenticated;
+CREATE TRIGGER trigger_set_post_workspace_id
+  BEFORE INSERT ON posts
+  FOR EACH ROW
+  EXECUTE FUNCTION set_post_workspace_id();
 ```
 
-### Etape 2 : Modifier useLinkedInProfiles.ts
+## Resume des changements
 
-Remplacer l'insert direct par un appel RPC :
+| Type | Description |
+|------|-------------|
+| Migration SQL | Mise a jour des 14 posts existants |
+| Fonction | `set_post_workspace_id()` pour auto-remplir workspace_id |
+| Trigger | `trigger_set_post_workspace_id` sur INSERT |
 
-```typescript
-// Avant
-const { error } = await supabase.from('billable_users').insert({
-  workspace_id: workspace?.id,
-  profile_name: trimmedName,
-  linkedin_url: trimmedUrl,
-  slack_user_id: slackUserId || null,
-});
+## Resultat attendu
 
-// Apres
-const { error } = await supabase.rpc('add_billable_user', {
-  p_workspace_id: workspace?.id,
-  p_profile_name: trimmedName,
-  p_linkedin_url: trimmedUrl,
-  p_slack_user_id: slackUserId || null,
-});
-```
+Apres cette migration :
+1. Les 14 posts manquants apparaitront dans le feed, analytics et leaderboard
+2. Les futurs posts auront automatiquement le bon `workspace_id`
+3. Aucune modification du code frontend necessaire
 
-### Etape 3 : Modifier OnboardingFlow.tsx
-
-Utiliser la meme fonction RPC pour l'insertion des profils pendant l'onboarding :
-
-```typescript
-const { error } = await supabase.rpc('add_billable_user', {
-  p_workspace_id: workspaceId,
-  p_profile_name: trimmedName,
-  p_linkedin_url: trimmedUrl,
-  p_slack_user_id: null,
-});
-```
-
-### Etape 4 : Nettoyer les donnees de test
-
-Supprimer les workspaces de test de l'utilisateur pour eviter les conflits :
-
-```sql
--- Supprimer le workspace vide "Test" 
-DELETE FROM workspace_members WHERE workspace_id = 'f4265f11-7c60-4cb8-8c12-77861384e1f3';
-DELETE FROM workspaces WHERE id = 'f4265f11-7c60-4cb8-8c12-77861384e1f3';
-```
-
-## Avantages
-
-1. **Contourne le cache PostgREST** : Les appels RPC ne sont pas affectes par le cache RLS
-2. **Securite maintenue** : La fonction verifie que l'utilisateur est bien membre du workspace via `is_workspace_member()`
-3. **Code unifie** : La meme fonction est utilisee pour l'onboarding et le dashboard
-4. **Atomique et coherent** : Une seule source de verite pour l'ajout de profils
-
-## Fichiers a modifier
-
-1. **Migration SQL** : Nouvelle fonction `add_billable_user`
-2. **src/hooks/useLinkedInProfiles.ts** : Utiliser `supabase.rpc()` au lieu de `supabase.from().insert()`
-3. **src/components/onboarding/OnboardingFlow.tsx** : Utiliser `supabase.rpc()` pour l'ajout de profils
-4. **Migration SQL** : Nettoyage des donnees de test
