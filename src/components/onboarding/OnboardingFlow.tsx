@@ -228,11 +228,11 @@ export function OnboardingFlow() {
         continue;
       }
       
-      const { error } = await supabase.from('billable_users').insert({
-        workspace_id: workspaceId,
-        profile_name: trimmedName,
-        linkedin_url: trimmedUrl,
-        slack_user_id: null,
+      const { error } = await supabase.rpc('add_billable_user', {
+        p_workspace_id: workspaceId,
+        p_profile_name: trimmedName,
+        p_linkedin_url: trimmedUrl,
+        p_slack_user_id: null,
       });
 
       if (error) {

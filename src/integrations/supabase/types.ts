@@ -690,6 +690,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      add_billable_user: {
+        Args: {
+          p_linkedin_url: string
+          p_profile_name: string
+          p_slack_user_id?: string
+          p_workspace_id: string
+        }
+        Returns: string
+      }
       create_workspace_for_user: {
         Args: { p_user_id: string; p_workspace_name: string }
         Returns: string
