@@ -1,76 +1,159 @@
 
 
-# Plan : Corriger les workspace_id manquants sur les posts
+# Plan : Détection temps réel des nouveaux posts
 
-## Diagnostic
+## Résumé
 
-**Situation actuelle :**
-- **61 posts** au total dans la base
-- **47 posts** ont deja un `workspace_id`
-- **14 posts** n'ont pas de `workspace_id` (NULL)
+Implémenter une souscription Supabase Realtime pour détecter automatiquement les nouveaux posts ajoutés par le scrapper backend, et afficher une notification non-intrusive dans le feed.
 
-**Posts concernes :**
-- 13 posts de **Lancelot Brun**
-- 1 post de **Raphael Charpenet**
-- Tous lies au workspace `2c5d31dd-7724-497d-b1a5-b422f21a0098`
+## Fichiers à créer
 
-**Cause :** Les posts ont ete importes/crees sans remplir la colonne `workspace_id`, alors que les hooks frontend filtrent par `.eq('workspace_id', workspace.id)`.
+### 1. `src/components/content/NewPostsBanner.tsx` (nouveau)
 
-## Solution
+Composant de notification discret qui apparaît en haut du feed :
 
-### Etape 1 : Corriger les posts existants
+```typescript
+import { RefreshCw } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
-Migration SQL pour mettre a jour les 14 posts avec le `workspace_id` de leur `billable_user` :
+const translations = {
+  fr: {
+    newPost: 'nouveau post',
+    newPosts: 'nouveaux posts',
+    show: 'Afficher',
+  },
+  en: {
+    newPost: 'new post',
+    newPosts: 'new posts',
+    show: 'Show',
+  }
+};
 
-```sql
-UPDATE posts p
-SET workspace_id = bu.workspace_id
-FROM billable_users bu
-WHERE p.linkedin_profiles = bu.id
-  AND p.workspace_id IS NULL;
+interface NewPostsBannerProps {
+  count: number;
+  onRefresh: () => void;
+}
+
+export function NewPostsBanner({ count, onRefresh }: NewPostsBannerProps) {
+  const { language } = useLanguage();
+  const t = translations[language];
+
+  if (count === 0) return null;
+
+  const postLabel = count > 1 ? t.newPosts : t.newPost;
+
+  return (
+    <button
+      onClick={onRefresh}
+      className="w-full py-2.5 px-4 bg-primary/10 hover:bg-primary/20 
+                 text-primary text-sm font-medium rounded-lg 
+                 flex items-center justify-center gap-2 
+                 transition-all duration-200 mb-3
+                 border border-primary/20 hover:border-primary/30
+                 shadow-sm hover:shadow-md"
+    >
+      <RefreshCw className="h-4 w-4" />
+      <span>{count} {postLabel}</span>
+      <span className="text-primary/70">—</span>
+      <span>{t.show}</span>
+    </button>
+  );
+}
 ```
 
-### Etape 2 : Prevenir le probleme pour les futurs posts
+## Fichiers à modifier
 
-Creer un trigger qui remplit automatiquement `workspace_id` lors de l'insertion d'un post :
+### 2. `src/hooks/useTeamFeed.ts`
 
-```sql
-CREATE OR REPLACE FUNCTION public.set_post_workspace_id()
-RETURNS TRIGGER
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = public
-AS $$
-BEGIN
-  -- Si workspace_id n'est pas fourni, le recuperer depuis billable_users
-  IF NEW.workspace_id IS NULL AND NEW.linkedin_profiles IS NOT NULL THEN
-    SELECT workspace_id INTO NEW.workspace_id
-    FROM billable_users
-    WHERE id = NEW.linkedin_profiles;
-  END IF;
-  
-  RETURN NEW;
-END;
-$$;
+Ajouter la souscription Realtime et exposer les nouvelles fonctions :
 
-CREATE TRIGGER trigger_set_post_workspace_id
-  BEFORE INSERT ON posts
-  FOR EACH ROW
-  EXECUTE FUNCTION set_post_workspace_id();
+**Ajouts :**
+- Import de `useEffect`, `useState`, `useCallback`
+- State `newPostsCount` pour compter les nouveaux posts
+- `useEffect` pour créer le channel Realtime avec filtre `workspace_id`
+- Fonction `refreshPosts` pour réinitialiser le compteur et invalider le cache
+- Export des nouvelles valeurs : `newPostsCount`, `refreshPosts`
+
+```typescript
+const [newPostsCount, setNewPostsCount] = useState(0);
+
+useEffect(() => {
+  if (!workspace?.id) return;
+
+  const channel = supabase
+    .channel(`posts-workspace-${workspace.id}`)
+    .on(
+      'postgres_changes',
+      {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'posts',
+        filter: `workspace_id=eq.${workspace.id}`
+      },
+      (payload) => {
+        setNewPostsCount(prev => prev + 1);
+      }
+    )
+    .subscribe();
+
+  return () => {
+    supabase.removeChannel(channel);
+  };
+}, [workspace?.id]);
+
+const refreshPosts = useCallback(() => {
+  setNewPostsCount(0);
+  queryClient.invalidateQueries({ queryKey: ['posts', workspace?.id] });
+}, [queryClient, workspace?.id]);
 ```
 
-## Resume des changements
+### 3. `src/components/content/TeamFeed.tsx`
 
-| Type | Description |
-|------|-------------|
-| Migration SQL | Mise a jour des 14 posts existants |
-| Fonction | `set_post_workspace_id()` pour auto-remplir workspace_id |
-| Trigger | `trigger_set_post_workspace_id` sur INSERT |
+Intégrer le banner de notification :
 
-## Resultat attendu
+**Modifications :**
+- Import du composant `NewPostsBanner`
+- Récupérer `newPostsCount` et `refreshPosts` depuis le hook
+- Afficher `<NewPostsBanner />` en haut du feed
 
-Apres cette migration :
-1. Les 14 posts manquants apparaitront dans le feed, analytics et leaderboard
-2. Les futurs posts auront automatiquement le bon `workspace_id`
-3. Aucune modification du code frontend necessaire
+## Fonctionnement
+
+```text
+Backend Scrapper
+      |
+      | INSERT nouveau post
+      v
++------------------+
+| Table posts      |
+| (Supabase)       |
++--------+---------+
+         |
+         | Realtime event (filtré par workspace_id)
+         v
++--------+---------+
+| useTeamFeed      |
+| newPostsCount++  |
++--------+---------+
+         |
+         v
++--------+---------+
+| NewPostsBanner   |
+| "X nouveaux      |
+|  posts - Afficher"|
++------------------+
+         |
+         | Click utilisateur
+         v
++------------------+
+| refreshPosts()   |
+| invalidateQueries|
++------------------+
+```
+
+## Avantages
+
+- **Non-intrusif** : L'utilisateur garde le contrôle
+- **Performant** : Pas de re-fetch automatique, juste un compteur léger
+- **UX claire** : Indication visuelle du nombre de nouveaux posts
+- **Workspace-scoped** : Seuls les posts du workspace actif sont détectés
 
