@@ -106,11 +106,11 @@ export function useLinkedInProfiles() {
         throw e;
       }
 
-      const { error } = await supabase.from('billable_users').insert({
-        workspace_id: workspace?.id,
-        profile_name: trimmedName,
-        linkedin_url: trimmedUrl,
-        slack_user_id: slackUserId || null,
+      const { error } = await supabase.rpc('add_billable_user', {
+        p_workspace_id: workspace?.id,
+        p_profile_name: trimmedName,
+        p_linkedin_url: trimmedUrl,
+        p_slack_user_id: slackUserId || null,
       });
 
       if (error) throw error;
