@@ -1,5 +1,4 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useWorkspace } from '@/hooks/useWorkspace';
@@ -32,37 +31,6 @@ export function useTeamFeed() {
   const { user } = useAuth();
   const { workspace } = useWorkspace();
   const queryClient = useQueryClient();
-  const [newPostsCount, setNewPostsCount] = useState(0);
-
-  // Supabase Realtime subscription for new posts
-  useEffect(() => {
-    if (!workspace?.id) return;
-
-    const channel = supabase
-      .channel(`posts-workspace-${workspace.id}`)
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'posts',
-          filter: `workspace_id=eq.${workspace.id}`
-        },
-        () => {
-          setNewPostsCount(prev => prev + 1);
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [workspace?.id]);
-
-  const refreshPosts = useCallback(() => {
-    setNewPostsCount(0);
-    queryClient.invalidateQueries({ queryKey: ['posts', workspace?.id] });
-  }, [queryClient, workspace?.id]);
 
   const { data: profiles = {}, isLoading: profilesLoading } = useQuery({
     queryKey: ['billable-users', workspace?.id],
@@ -171,7 +139,5 @@ export function useTeamFeed() {
     bookmarkedPosts,
     loading: profilesLoading || postsLoading || bookmarksLoading,
     toggleBookmark: toggleBookmarkMutation.mutate,
-    newPostsCount,
-    refreshPosts,
   };
 }

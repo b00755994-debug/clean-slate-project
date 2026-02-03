@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 import { useTeamFeed } from '@/hooks/useTeamFeed';
 import { PostCard } from './PostCard';
-import { NewPostsBanner } from './NewPostsBanner';
 import { Skeleton } from '@/components/ui/skeleton';
 import { differenceInDays, isToday } from 'date-fns';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -43,7 +42,7 @@ export function TeamFeed({
 }: TeamFeedProps) {
   const { language } = useLanguage();
   const t = translations[language];
-  const { posts, profiles, bookmarkedPosts, loading, toggleBookmark, newPostsCount, refreshPosts } = useTeamFeed();
+  const { posts, profiles, bookmarkedPosts, loading, toggleBookmark } = useTeamFeed();
 
   // Filter posts by time period
   const filterByTimePeriod = (postDate: Date) => {
@@ -127,7 +126,6 @@ export function TeamFeed({
 
   return (
     <div className="w-full max-w-[700px]">
-      <NewPostsBanner count={newPostsCount} onRefresh={refreshPosts} />
       {filteredAndSortedPosts.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground bg-card rounded-lg border border-border/40">
           <p>{t.noPostsFound}</p>
