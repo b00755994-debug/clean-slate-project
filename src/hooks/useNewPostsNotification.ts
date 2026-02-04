@@ -13,18 +13,17 @@ export function useNewPostsNotification() {
     const channel = supabase
       .channel(`posts-notification-${workspace.id}`)
       .on('postgres_changes', {
-        event: 'INSERT',
+        event: '*',
         schema: 'public',
         table: 'posts',
         filter: `workspace_id=eq.${workspace.id}`
       }, () => {
-        // Afficher un seul toast (dismiss l'ancien si existe)
         if (toastIdRef.current) {
           toast.dismiss(toastIdRef.current);
         }
         
-        toastIdRef.current = toast.info('Nouveaux posts disponibles', {
-          description: 'Actualisez la page pour les voir',
+        toastIdRef.current = toast.info('Données mises à jour', {
+          description: 'Actualisez la page pour voir les changements',
           action: {
             label: 'Actualiser',
             onClick: () => window.location.reload()
