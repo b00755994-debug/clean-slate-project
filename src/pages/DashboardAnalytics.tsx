@@ -49,11 +49,6 @@ export default function DashboardAnalytics() {
             </h1>
             <p className="text-muted-foreground">{t.subtitle}</p>
           </div>
-          <div className="flex items-center">
-            <span className="text-xs text-muted-foreground bg-muted px-3 py-1.5 rounded-full">
-              {t.periodBadge}
-            </span>
-          </div>
         </div>
 
         {/* Tabs */}

@@ -21,6 +21,7 @@ const translations = {
       postsPerContributor: 'Posts / contributeur',
       postingRegularity: 'Régularité de publication',
     },
+    periodLabel: '30 derniers jours',
     tooltips: {
       activeContributorsCount: 'Nombre de membres connectés ayant publié au moins un post sur la période sélectionnée.',
       activeContributorsPercent: 'Part des membres connectés ayant publié au moins un post sur la période.',
@@ -45,6 +46,7 @@ const translations = {
       postsPerContributor: 'Posts / Contributor',
       postingRegularity: 'Posting Regularity',
     },
+    periodLabel: 'Last 30 days',
     tooltips: {
       activeContributorsCount: 'Number of connected members who published at least one post during the selected period.',
       activeContributorsPercent: 'Percentage of connected members who published at least one post during the period.',
@@ -100,6 +102,7 @@ export function AnalyticsTeamActivation() {
           change={teamActivationKPIs.activeContributorsCount.change}
           tooltip={t.tooltips.activeContributorsCount}
           color="blue"
+          periodLabel={t.periodLabel}
         />
         <KPICard
           icon={Percent}
@@ -109,6 +112,7 @@ export function AnalyticsTeamActivation() {
           tooltip={t.tooltips.activeContributorsPercent}
           color="blue"
           suffix="%"
+          periodLabel={t.periodLabel}
         />
         <KPICard
           icon={FileText}
@@ -117,6 +121,7 @@ export function AnalyticsTeamActivation() {
           change={teamActivationKPIs.postsPerContributor.change}
           tooltip={t.tooltips.postsPerContributor}
           color="violet"
+          periodLabel={t.periodLabel}
         />
         <KPICard
           icon={CalendarCheck}
@@ -126,6 +131,7 @@ export function AnalyticsTeamActivation() {
           tooltip={t.tooltips.postingRegularity}
           color="emerald"
           suffix="%"
+          periodLabel={t.periodLabel}
         />
       </div>
 

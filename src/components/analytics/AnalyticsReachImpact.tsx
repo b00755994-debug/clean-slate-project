@@ -22,6 +22,7 @@ const translations = {
       engagementRate: "Taux d'engagement",
       commentRate: 'Taux de commentaires',
     },
+    periodLabel: '30 derniers jours',
     tooltips: {
       totalImpressions: "Nombre total de fois où les posts ont été affichés sur LinkedIn pendant la période sélectionnée (agrégé).",
       avgImpressionsPerPost: "Nombre moyen d'impressions générées par post.",
@@ -49,6 +50,7 @@ const translations = {
       engagementRate: 'Engagement Rate',
       commentRate: 'Comment Rate',
     },
+    periodLabel: 'Last 30 days',
     tooltips: {
       totalImpressions: "Total number of times posts were displayed on LinkedIn during the selected period (aggregated).",
       avgImpressionsPerPost: "Average number of impressions generated per post.",
@@ -118,6 +120,7 @@ export function AnalyticsReachImpact() {
           change={reachKPIs.totalImpressions.change}
           tooltip={t.tooltips.totalImpressions}
           color="violet"
+          periodLabel={t.periodLabel}
         />
         <KPICard
           icon={TrendingUp}
@@ -126,6 +129,7 @@ export function AnalyticsReachImpact() {
           change={reachKPIs.avgImpressionsPerPost.change}
           tooltip={t.tooltips.avgImpressionsPerPost}
           color="blue"
+          periodLabel={t.periodLabel}
         />
         <KPICard
           icon={MousePointerClick}
@@ -135,6 +139,7 @@ export function AnalyticsReachImpact() {
           tooltip={t.tooltips.engagementRate}
           color="emerald"
           suffix="%"
+          periodLabel={t.periodLabel}
         />
         <KPICard
           icon={MessageCircle}
@@ -144,6 +149,7 @@ export function AnalyticsReachImpact() {
           tooltip={t.tooltips.commentRate}
           color="amber"
           suffix="%"
+          periodLabel={t.periodLabel}
         />
       </div>
 
