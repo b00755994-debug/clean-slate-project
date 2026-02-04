@@ -1,114 +1,110 @@
 
-# Plan : Persistance de l'état d'onboarding et du popup
 
-## Problème 1 : Onboarding revient au step 1
+# Plan : Deplacer le badge "30 derniers jours" dans les KPI Cards
 
-### Cause
-L'état `currentStep` est uniquement en mémoire React (useState). Quand l'utilisateur change d'onglet :
-- Le navigateur peut "geler" la page
-- Les hooks React Query peuvent re-fetch et provoquer un re-render
-- Le composant peut être re-monté, réinitialisant `currentStep` à 1
+## Objectif
 
-### Solution
-Persister `currentStep` et `workspaceId` dans `sessionStorage` pour survivre aux changements d'onglets.
+Retirer le badge "Last 30 days" / "30 derniers jours" du header de la page Analytics et l'afficher directement dans chaque carte KPI pour bien indiquer que les metriques concernent les 30 derniers jours roulants.
 
-### Fichier à modifier : `src/components/onboarding/OnboardingFlow.tsx`
+## Fichiers a modifier
 
-**Changements :**
+### 1. `src/pages/DashboardAnalytics.tsx`
 
-1. Initialiser `currentStep` depuis sessionStorage :
+**Supprimer le badge du header** (lignes 52-56) :
+
 ```typescript
-const [currentStep, setCurrentStep] = useState(() => {
-  const saved = sessionStorage.getItem('onboarding_step');
-  return saved ? parseInt(saved, 10) : 1;
-});
+// AVANT
+<div className="flex items-center">
+  <span className="text-xs text-muted-foreground bg-muted px-3 py-1.5 rounded-full">
+    {t.periodBadge}
+  </span>
+</div>
+
+// APRES
+// Supprimer entierement ce bloc
 ```
 
-2. Synchroniser avec sessionStorage à chaque changement :
-```typescript
-useEffect(() => {
-  sessionStorage.setItem('onboarding_step', currentStep.toString());
-}, [currentStep]);
-```
+On garde les traductions `periodBadge` car elles seront utilisees dans le KPICard.
 
-3. Persister aussi `workspaceId` :
-```typescript
-const [workspaceId, setWorkspaceId] = useState<string | null>(() => {
-  return workspace?.id ?? sessionStorage.getItem('onboarding_workspace_id');
-});
+---
 
-useEffect(() => {
-  if (workspaceId) {
-    sessionStorage.setItem('onboarding_workspace_id', workspaceId);
-  }
-}, [workspaceId]);
-```
+### 2. `src/components/analytics/KPICard.tsx`
 
-4. Nettoyer sessionStorage à la fin de l'onboarding :
+**Ajouter une prop optionnelle `periodLabel`** et l'afficher en petit sous le label :
+
 ```typescript
-const completeOnboarding = async () => {
-  // ... code existant ...
-  sessionStorage.removeItem('onboarding_step');
-  sessionStorage.removeItem('onboarding_workspace_id');
-  window.location.replace('/dashboard');
-};
+interface KPICardProps {
+  icon: LucideIcon;
+  label: string;
+  value: string | number;
+  change?: number;
+  tooltip: string;
+  color?: 'blue' | 'violet' | 'emerald' | 'amber' | 'rose';
+  suffix?: string;
+  periodLabel?: string;  // NOUVEAU
+}
+
+// Dans le composant, ajouter apres le label :
+<div className="flex items-center gap-1 mt-1">
+  <span className="text-sm text-muted-foreground">{label}</span>
+  <TooltipProvider>
+    ...
+  </TooltipProvider>
+</div>
+{periodLabel && (
+  <span className="text-[10px] text-muted-foreground/70 mt-0.5">
+    {periodLabel}
+  </span>
+)}
 ```
 
 ---
 
-## Problème 2 : Le popup se ferme au changement d'onglet
+### 3. `src/components/analytics/AnalyticsOverview.tsx`
 
-### Cause
-Le Dialog de Radix UI utilise un `FocusScope` qui peut déclencher la fermeture quand le focus quitte complètement la page (changement d'onglet).
-
-### Solution
-Ajouter `onPointerDownOutside` et `onInteractOutside` avec `preventDefault()` sur le DialogContent pour empêcher la fermeture automatique lors des interactions externes.
-
-### Fichier à modifier : `src/pages/Dashboard.tsx`
-
-**Changement sur le DialogContent (ligne ~536) :**
+**Passer `periodLabel` a chaque KPICard** :
 
 ```typescript
-<DialogContent 
-  onPointerDownOutside={(e) => e.preventDefault()}
-  onInteractOutside={(e) => e.preventDefault()}
->
+// Ajouter dans les traductions
+periodLabel: '30 derniers jours',  // FR
+periodLabel: 'Last 30 days',       // EN
+
+// Puis sur chaque KPICard :
+<KPICard
+  icon={FileText}
+  label={t.totalPosts}
+  value={overviewKPIs.totalPosts.value}
+  change={overviewKPIs.totalPosts.change}
+  tooltip={t.tooltips.totalPosts}
+  color="blue"
+  periodLabel={t.periodLabel}  // AJOUTER
+/>
 ```
-
-Ces props empêchent le Dialog de se fermer quand :
-- L'utilisateur clique en dehors (utile pour copy-paste depuis un autre onglet)
-- Le focus quitte la page (changement d'onglet)
-
-L'utilisateur peut toujours fermer le popup en :
-- Cliquant sur le bouton X
-- Cliquant sur "Annuler"
-- Appuyant sur Escape
 
 ---
 
-## Récapitulatif des fichiers
+### 4. `src/components/analytics/AnalyticsTeamActivation.tsx`
 
-| Fichier | Action |
-|---------|--------|
-| `src/components/onboarding/OnboardingFlow.tsx` | Persister currentStep et workspaceId dans sessionStorage |
-| `src/pages/Dashboard.tsx` | Empêcher fermeture automatique du Dialog |
+**Meme modification** - ajouter `periodLabel` aux 4 KPICards.
 
-## Comportement après modification
+---
 
-| Scénario | Avant | Après |
-|----------|-------|-------|
-| Onboarding step 2, change d'onglet, revient | Revient au step 1 | Reste au step 2 |
-| Onboarding step 3, refresh page | Revient au step 1 | Reste au step 3 (dans la même session) |
-| Popup ouvert, change d'onglet pour copier URL | Popup se ferme | Popup reste ouvert |
-| Popup ouvert, clic sur Escape | Popup se ferme | Popup se ferme (comportement normal) |
+### 5. `src/components/analytics/AnalyticsReachImpact.tsx`
 
-## Section technique
+**Meme modification** - ajouter `periodLabel` aux 4 KPICards.
 
-### sessionStorage vs localStorage
-- `sessionStorage` : données supprimées à la fermeture de l'onglet (idéal pour l'onboarding temporaire)
-- `localStorage` : données persistantes (non souhaité ici car on veut recommencer si l'utilisateur ferme et rouvre)
+---
 
-### Props Radix Dialog
-- `onPointerDownOutside` : déclenché lors d'un clic en dehors du dialog
-- `onInteractOutside` : déclenché lors de toute interaction en dehors (focus, click, etc.)
-- `e.preventDefault()` : empêche le comportement par défaut (fermeture)
+## Resultat visuel
+
+| Avant | Apres |
+|-------|-------|
+| Badge "Last 30 days" en haut a droite de la page | Badge absent du header |
+| KPI Cards sans indication de periode | Chaque KPI Card affiche "Last 30 days" en petit sous le label |
+
+## Avantages
+
+- L'utilisateur voit immediatement que chaque metrique concerne les 30 derniers jours
+- Plus clair sur mobile ou le badge en haut pouvait passer inapercu
+- Coherent avec le design des cards
+
