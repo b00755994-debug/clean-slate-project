@@ -1,81 +1,114 @@
 
+# Plan : Persistance de l'état d'onboarding et du popup
 
-# Plan : Notification globale pour INSERT et DELETE
+## Problème 1 : Onboarding revient au step 1
 
-## Objectif
+### Cause
+L'état `currentStep` est uniquement en mémoire React (useState). Quand l'utilisateur change d'onglet :
+- Le navigateur peut "geler" la page
+- Les hooks React Query peuvent re-fetch et provoquer un re-render
+- Le composant peut être re-monté, réinitialisant `currentStep` à 1
 
-Modifier le hook de notification pour detecter aussi les suppressions de posts (notamment apres suppression d'un billable user en cascade), et adapter le message pour etre plus generique.
+### Solution
+Persister `currentStep` et `workspaceId` dans `sessionStorage` pour survivre aux changements d'onglets.
 
-## Modification a effectuer
-
-### Fichier : `src/hooks/useNewPostsNotification.ts`
+### Fichier à modifier : `src/components/onboarding/OnboardingFlow.tsx`
 
 **Changements :**
 
-1. Remplacer `event: 'INSERT'` par `event: '*'` pour ecouter tous les evenements (INSERT, UPDATE, DELETE)
-2. Modifier le message du toast :
-   - Titre : `"Donnees mises a jour"` (au lieu de "Nouveaux posts disponibles")
-   - Description : `"Actualisez la page pour voir les changements"` (au lieu de "Actualisez la page pour les voir")
-
-**Code modifie :**
-
+1. Initialiser `currentStep` depuis sessionStorage :
 ```typescript
-import { useEffect, useRef } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useWorkspace } from '@/hooks/useWorkspace';
-import { toast } from 'sonner';
-
-export function useNewPostsNotification() {
-  const { workspace } = useWorkspace();
-  const toastIdRef = useRef<string | number | null>(null);
-
-  useEffect(() => {
-    if (!workspace?.id) return;
-
-    const channel = supabase
-      .channel(`posts-notification-${workspace.id}`)
-      .on('postgres_changes', {
-        event: '*',  // Ecoute INSERT, UPDATE et DELETE
-        schema: 'public',
-        table: 'posts',
-        filter: `workspace_id=eq.${workspace.id}`
-      }, () => {
-        if (toastIdRef.current) {
-          toast.dismiss(toastIdRef.current);
-        }
-        
-        toastIdRef.current = toast.info('Donnees mises a jour', {
-          description: 'Actualisez la page pour voir les changements',
-          action: {
-            label: 'Actualiser',
-            onClick: () => window.location.reload()
-          },
-          duration: Infinity,
-        });
-      })
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-      if (toastIdRef.current) {
-        toast.dismiss(toastIdRef.current);
-      }
-    };
-  }, [workspace?.id]);
-}
+const [currentStep, setCurrentStep] = useState(() => {
+  const saved = sessionStorage.getItem('onboarding_step');
+  return saved ? parseInt(saved, 10) : 1;
+});
 ```
 
-## Comportement apres modification
+2. Synchroniser avec sessionStorage à chaque changement :
+```typescript
+useEffect(() => {
+  sessionStorage.setItem('onboarding_step', currentStep.toString());
+}, [currentStep]);
+```
 
-| Evenement | Avant | Apres |
-|-----------|-------|-------|
-| Nouveau post ajoute | Toast "Nouveaux posts disponibles" | Toast "Donnees mises a jour" |
-| Post supprime (cascade billable_user) | Rien | Toast "Donnees mises a jour" |
-| Post modifie (impressions, etc.) | Rien | Toast "Donnees mises a jour" |
+3. Persister aussi `workspaceId` :
+```typescript
+const [workspaceId, setWorkspaceId] = useState<string | null>(() => {
+  return workspace?.id ?? sessionStorage.getItem('onboarding_workspace_id');
+});
 
-## Fichiers modifies
+useEffect(() => {
+  if (workspaceId) {
+    sessionStorage.setItem('onboarding_workspace_id', workspaceId);
+  }
+}, [workspaceId]);
+```
+
+4. Nettoyer sessionStorage à la fin de l'onboarding :
+```typescript
+const completeOnboarding = async () => {
+  // ... code existant ...
+  sessionStorage.removeItem('onboarding_step');
+  sessionStorage.removeItem('onboarding_workspace_id');
+  window.location.replace('/dashboard');
+};
+```
+
+---
+
+## Problème 2 : Le popup se ferme au changement d'onglet
+
+### Cause
+Le Dialog de Radix UI utilise un `FocusScope` qui peut déclencher la fermeture quand le focus quitte complètement la page (changement d'onglet).
+
+### Solution
+Ajouter `onPointerDownOutside` et `onInteractOutside` avec `preventDefault()` sur le DialogContent pour empêcher la fermeture automatique lors des interactions externes.
+
+### Fichier à modifier : `src/pages/Dashboard.tsx`
+
+**Changement sur le DialogContent (ligne ~536) :**
+
+```typescript
+<DialogContent 
+  onPointerDownOutside={(e) => e.preventDefault()}
+  onInteractOutside={(e) => e.preventDefault()}
+>
+```
+
+Ces props empêchent le Dialog de se fermer quand :
+- L'utilisateur clique en dehors (utile pour copy-paste depuis un autre onglet)
+- Le focus quitte la page (changement d'onglet)
+
+L'utilisateur peut toujours fermer le popup en :
+- Cliquant sur le bouton X
+- Cliquant sur "Annuler"
+- Appuyant sur Escape
+
+---
+
+## Récapitulatif des fichiers
 
 | Fichier | Action |
 |---------|--------|
-| `src/hooks/useNewPostsNotification.ts` | Modifier event et messages |
+| `src/components/onboarding/OnboardingFlow.tsx` | Persister currentStep et workspaceId dans sessionStorage |
+| `src/pages/Dashboard.tsx` | Empêcher fermeture automatique du Dialog |
 
+## Comportement après modification
+
+| Scénario | Avant | Après |
+|----------|-------|-------|
+| Onboarding step 2, change d'onglet, revient | Revient au step 1 | Reste au step 2 |
+| Onboarding step 3, refresh page | Revient au step 1 | Reste au step 3 (dans la même session) |
+| Popup ouvert, change d'onglet pour copier URL | Popup se ferme | Popup reste ouvert |
+| Popup ouvert, clic sur Escape | Popup se ferme | Popup se ferme (comportement normal) |
+
+## Section technique
+
+### sessionStorage vs localStorage
+- `sessionStorage` : données supprimées à la fermeture de l'onglet (idéal pour l'onboarding temporaire)
+- `localStorage` : données persistantes (non souhaité ici car on veut recommencer si l'utilisateur ferme et rouvre)
+
+### Props Radix Dialog
+- `onPointerDownOutside` : déclenché lors d'un clic en dehors du dialog
+- `onInteractOutside` : déclenché lors de toute interaction en dehors (focus, click, etc.)
+- `e.preventDefault()` : empêche le comportement par défaut (fermeture)
