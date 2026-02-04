@@ -1,18 +1,23 @@
 
 
-# Plan : Toast simple de notification globale
+# Plan : Notification globale pour INSERT et DELETE
 
 ## Objectif
 
-Afficher un toast discret partout sur le site quand de nouveaux posts sont detectes, demandant simplement a l'utilisateur d'actualiser la page.
+Modifier le hook de notification pour detecter aussi les suppressions de posts (notamment apres suppression d'un billable user en cascade), et adapter le message pour etre plus generique.
 
-## Solution
+## Modification a effectuer
 
-Un toast simple avec un bouton "Actualiser" qui fait un `window.location.reload()`.
+### Fichier : `src/hooks/useNewPostsNotification.ts`
 
-## Fichiers a creer
+**Changements :**
 
-### 1. `src/hooks/useNewPostsNotification.ts` (nouveau)
+1. Remplacer `event: 'INSERT'` par `event: '*'` pour ecouter tous les evenements (INSERT, UPDATE, DELETE)
+2. Modifier le message du toast :
+   - Titre : `"Donnees mises a jour"` (au lieu de "Nouveaux posts disponibles")
+   - Description : `"Actualisez la page pour voir les changements"` (au lieu de "Actualisez la page pour les voir")
+
+**Code modifie :**
 
 ```typescript
 import { useEffect, useRef } from 'react';
@@ -30,23 +35,22 @@ export function useNewPostsNotification() {
     const channel = supabase
       .channel(`posts-notification-${workspace.id}`)
       .on('postgres_changes', {
-        event: 'INSERT',
+        event: '*',  // Ecoute INSERT, UPDATE et DELETE
         schema: 'public',
         table: 'posts',
         filter: `workspace_id=eq.${workspace.id}`
       }, () => {
-        // Afficher un seul toast (dismiss l'ancien si existe)
         if (toastIdRef.current) {
           toast.dismiss(toastIdRef.current);
         }
         
-        toastIdRef.current = toast.info('Nouveaux posts disponibles', {
-          description: 'Actualisez la page pour les voir',
+        toastIdRef.current = toast.info('Donnees mises a jour', {
+          description: 'Actualisez la page pour voir les changements',
           action: {
             label: 'Actualiser',
             onClick: () => window.location.reload()
           },
-          duration: Infinity, // Reste jusqu'a action utilisateur
+          duration: Infinity,
         });
       })
       .subscribe();
@@ -61,52 +65,17 @@ export function useNewPostsNotification() {
 }
 ```
 
-## Fichiers a modifier
+## Comportement apres modification
 
-### 2. `src/components/dashboard/DashboardLayout.tsx`
+| Evenement | Avant | Apres |
+|-----------|-------|-------|
+| Nouveau post ajoute | Toast "Nouveaux posts disponibles" | Toast "Donnees mises a jour" |
+| Post supprime (cascade billable_user) | Rien | Toast "Donnees mises a jour" |
+| Post modifie (impressions, etc.) | Rien | Toast "Donnees mises a jour" |
 
-Ajouter le hook au niveau du layout :
+## Fichiers modifies
 
-```typescript
-import { useNewPostsNotification } from '@/hooks/useNewPostsNotification';
-
-export function DashboardLayout({ children }: DashboardLayoutProps) {
-  useNewPostsNotification(); // Active les notifications globales
-  
-  // ... reste du composant inchange
-}
-```
-
-### 3. `src/hooks/useTeamFeed.ts`
-
-Retirer la souscription Realtime (eviter les doublons) :
-- Supprimer le state `newPostsCount`
-- Supprimer le `useEffect` avec la souscription Realtime
-- Supprimer la fonction `refreshPosts`
-- Retirer ces exports du return
-
-### 4. `src/components/content/TeamFeed.tsx`
-
-Retirer l'import et l'utilisation de `NewPostsBanner` :
-- Supprimer l'import de `NewPostsBanner`
-- Retirer `newPostsCount` et `refreshPosts` du destructuring
-- Supprimer le composant `<NewPostsBanner />`
-
-### 5. `src/components/content/NewPostsBanner.tsx`
-
-Supprimer ce fichier (plus necessaire).
-
-## Resultat
-
-| Avant | Apres |
-|-------|-------|
-| Bandeau visible uniquement sur `/dashboard/content` | Toast visible partout |
-| Compteur incrementant | Un seul toast a la fois |
-| Bouton "Afficher" | Bouton "Actualiser" (reload page) |
-
-## Comportement du toast
-
-- Apparait en bas a droite (comportement par defaut de sonner)
-- Reste affiche jusqu'a ce que l'utilisateur clique sur "Actualiser" ou le ferme
-- Si plusieurs posts arrivent, un seul toast est affiche (l'ancien est remplace)
+| Fichier | Action |
+|---------|--------|
+| `src/hooks/useNewPostsNotification.ts` | Modifier event et messages |
 
