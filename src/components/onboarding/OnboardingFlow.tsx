@@ -53,18 +53,35 @@ export function OnboardingFlow() {
   const { user, profile } = useAuthContext();
   const { workspace, refetch: refetchWorkspace } = useWorkspace();
   
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(() => {
+    const saved = sessionStorage.getItem('onboarding_step');
+    return saved ? parseInt(saved, 10) : 1;
+  });
   const [step1Data, setStep1Data] = useState<Step1Data | null>(null);
-  const [workspaceId, setWorkspaceId] = useState<string | null>(workspace?.id ?? null);
+  const [workspaceId, setWorkspaceId] = useState<string | null>(() => {
+    return workspace?.id ?? sessionStorage.getItem('onboarding_workspace_id');
+  });
 
   const isSlackConnected = workspace?.is_connected ?? false;
 
-  // Sync workspaceId when workspace loads
+  // Sync workspaceId when workspace loads and persist to sessionStorage
   useEffect(() => {
     if (workspace?.id && !workspaceId) {
       setWorkspaceId(workspace.id);
     }
   }, [workspace?.id, workspaceId]);
+
+  // Persist currentStep to sessionStorage
+  useEffect(() => {
+    sessionStorage.setItem('onboarding_step', currentStep.toString());
+  }, [currentStep]);
+
+  // Persist workspaceId to sessionStorage
+  useEffect(() => {
+    if (workspaceId) {
+      sessionStorage.setItem('onboarding_workspace_id', workspaceId);
+    }
+  }, [workspaceId]);
 
   // Handle Slack OAuth callback
   useEffect(() => {
@@ -174,6 +191,10 @@ export function OnboardingFlow() {
       toast.error(language === 'fr' ? 'Erreur lors de la finalisation' : 'Error completing setup');
       return;
     }
+
+    // Clear sessionStorage on completion
+    sessionStorage.removeItem('onboarding_step');
+    sessionStorage.removeItem('onboarding_workspace_id');
 
     toast.success(language === 'fr' ? 'Configuration terminée !' : 'Setup complete!');
     window.location.replace('/dashboard');
