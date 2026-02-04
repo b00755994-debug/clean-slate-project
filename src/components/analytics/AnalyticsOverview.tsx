@@ -19,6 +19,7 @@ const translations = {
     totalImpressions: 'Total Impressions',
     activeContributors: 'Contributeurs actifs',
     avgPostsPerContributor: 'Moy. posts/contributeur',
+    periodLabel: '30 derniers jours',
     tooltips: {
       totalPosts: 'Nombre total de posts LinkedIn publiés par les membres connectés pendant la période sélectionnée.',
       totalImpressions: 'Nombre total de fois où ces posts ont été affichés sur LinkedIn (agrégé).',
@@ -36,6 +37,7 @@ const translations = {
     totalImpressions: 'Total Impressions',
     activeContributors: 'Active Contributors',
     avgPostsPerContributor: 'Posts per Contributor',
+    periodLabel: 'Last 30 days',
     tooltips: {
       totalPosts: 'Total number of LinkedIn posts published by connected team members during the selected period.',
       totalImpressions: 'Total number of times these posts were displayed on LinkedIn (aggregated).',
@@ -96,6 +98,7 @@ export function AnalyticsOverview() {
           change={overviewKPIs.totalPosts.change}
           tooltip={t.tooltips.totalPosts}
           color="blue"
+          periodLabel={t.periodLabel}
         />
         <KPICard
           icon={Eye}
@@ -104,6 +107,7 @@ export function AnalyticsOverview() {
           change={overviewKPIs.totalImpressions.change}
           tooltip={t.tooltips.totalImpressions}
           color="violet"
+          periodLabel={t.periodLabel}
         />
         <KPICard
           icon={Users}
@@ -112,6 +116,7 @@ export function AnalyticsOverview() {
           change={overviewKPIs.activeContributors.change}
           tooltip={t.tooltips.activeContributors}
           color="emerald"
+          periodLabel={t.periodLabel}
         />
         <KPICard
           icon={TrendingUp}
@@ -120,6 +125,7 @@ export function AnalyticsOverview() {
           change={overviewKPIs.avgPostsPerContributor.change}
           tooltip={t.tooltips.avgPostsPerContributor}
           color="amber"
+          periodLabel={t.periodLabel}
         />
       </div>
 

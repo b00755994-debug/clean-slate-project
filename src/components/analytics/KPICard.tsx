@@ -16,6 +16,7 @@ interface KPICardProps {
   tooltip: string;
   color?: 'blue' | 'violet' | 'emerald' | 'amber' | 'rose';
   suffix?: string;
+  periodLabel?: string;
 }
 
 const colorVariants = {
@@ -34,6 +35,7 @@ export function KPICard({
   tooltip,
   color = 'blue',
   suffix = '',
+  periodLabel,
 }: KPICardProps) {
   const isPositive = change !== undefined && change >= 0;
   
@@ -90,6 +92,11 @@ export function KPICard({
               </Tooltip>
             </TooltipProvider>
           </div>
+          {periodLabel && (
+            <span className="text-[10px] text-muted-foreground/70 mt-0.5">
+              {periodLabel}
+            </span>
+          )}
         </div>
       </CardContent>
     </Card>
