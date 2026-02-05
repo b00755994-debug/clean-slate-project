@@ -1,65 +1,117 @@
 
 
-# Plan : Empecher le popup "Add User" de se fermer lors du changement d'onglet
+# Plan : Persister l'état du popup "Add User" lors du changement d'onglet
 
-## Diagnostic
+## Diagnostic du problème
 
-J'ai verifie le code et constate que :
+Le problème n'est pas lié aux événements Radix UI (`onFocusOutside`, etc.). Dans l'environnement de preview Lovable (qui est un iframe), quand vous changez d'onglet du navigateur :
 
-1. Le fix actuel sur le DialogContent (ligne 536) inclut deja :
-   - `onPointerDownOutside={(e) => e.preventDefault()}`
-   - `onInteractOutside={(e) => e.preventDefault()}`
+1. Le navigateur peut "geler" l'iframe
+2. Au retour, React peut re-rendre le composant
+3. L'état `isDialogOpen` (initialisé à `false`) est réinitialisé
+4. Le popup disparaît
 
-2. **Le probleme** : Ces deux handlers ne couvrent pas le cas specifique du changement d'onglet du navigateur. Quand vous changez d'onglet, le focus quitte completement le document, ce qui declenche l'evenement `onFocusOutside` de Radix UI.
+Les handlers `preventDefault()` ne peuvent pas empêcher ce comportement car ce n'est pas une fermeture intentionnelle du Dialog - c'est une réinitialisation de l'état React.
 
 ## Solution
 
-Ajouter le handler `onFocusOutside` au DialogContent pour bloquer egalement cet evenement.
+Persister `isDialogOpen` et les données du formulaire dans `sessionStorage`, comme nous l'avons fait pour l'onboarding.
 
-## Fichier a modifier
+## Fichier à modifier : `src/pages/Dashboard.tsx`
 
-### `src/pages/Dashboard.tsx`
+### Changements
 
-**Ligne 536 - Ajouter `onFocusOutside`** :
+**1. Persister l'état d'ouverture du popup :**
 
 ```typescript
-// AVANT
-<DialogContent 
-  onPointerDownOutside={(e) => e.preventDefault()} 
-  onInteractOutside={(e) => e.preventDefault()}
->
+// AVANT (ligne 204)
+const [isDialogOpen, setIsDialogOpen] = useState(false);
 
 // APRES
-<DialogContent 
-  onPointerDownOutside={(e) => e.preventDefault()} 
-  onInteractOutside={(e) => e.preventDefault()}
-  onFocusOutside={(e) => e.preventDefault()}
->
+const [isDialogOpen, setIsDialogOpen] = useState(() => {
+  return sessionStorage.getItem('add_user_dialog_open') === 'true';
+});
+
+// Ajouter un useEffect pour synchroniser
+useEffect(() => {
+  sessionStorage.setItem('add_user_dialog_open', isDialogOpen.toString());
+}, [isDialogOpen]);
 ```
 
-## Explication technique
+**2. Persister les données du formulaire :**
 
-| Evenement | Quand il se declenche | Couvert avant ? |
-|-----------|----------------------|-----------------|
-| `onPointerDownOutside` | Clic en dehors du dialog | Oui |
-| `onInteractOutside` | Toute interaction en dehors | Oui |
-| `onFocusOutside` | Focus quitte le dialog (changement d'onglet) | Non |
+```typescript
+// AVANT (lignes 201-203)
+const [newProfileName, setNewProfileName] = useState('');
+const [newProfileUrl, setNewProfileUrl] = useState('');
+const [selectedSlackUserId, setSelectedSlackUserId] = useState<string>('');
 
-L'ajout de `onFocusOutside` avec `preventDefault()` empechera le dialog de se fermer quand :
-- L'utilisateur change d'onglet dans le navigateur
-- L'utilisateur clique dans la barre d'adresse
-- Le focus quitte la page pour n'importe quelle raison
+// APRES
+const [newProfileName, setNewProfileName] = useState(() => {
+  return sessionStorage.getItem('add_user_name') || '';
+});
+const [newProfileUrl, setNewProfileUrl] = useState(() => {
+  return sessionStorage.getItem('add_user_url') || '';
+});
+const [selectedSlackUserId, setSelectedSlackUserId] = useState<string>(() => {
+  return sessionStorage.getItem('add_user_slack_id') || '';
+});
 
-## Comportement apres modification
+// Ajouter des useEffects pour synchroniser
+useEffect(() => {
+  sessionStorage.setItem('add_user_name', newProfileName);
+}, [newProfileName]);
 
-| Action | Avant | Apres |
+useEffect(() => {
+  sessionStorage.setItem('add_user_url', newProfileUrl);
+}, [newProfileUrl]);
+
+useEffect(() => {
+  sessionStorage.setItem('add_user_slack_id', selectedSlackUserId);
+}, [selectedSlackUserId]);
+```
+
+**3. Nettoyer le sessionStorage après ajout réussi ou annulation :**
+
+```typescript
+// Dans la fonction handleAddProfile, après le succès :
+const clearAddUserForm = () => {
+  sessionStorage.removeItem('add_user_dialog_open');
+  sessionStorage.removeItem('add_user_name');
+  sessionStorage.removeItem('add_user_url');
+  sessionStorage.removeItem('add_user_slack_id');
+};
+
+// Appeler clearAddUserForm() après :
+// - Ajout réussi d'un profil
+// - Clic sur "Annuler"
+```
+
+## Comportement après modification
+
+| Action | Avant | Après |
 |--------|-------|-------|
-| Ouvrir le popup, changer d'onglet, revenir | Popup ferme | Popup reste ouvert |
-| Ouvrir le popup, clic en dehors | Popup reste ouvert | Popup reste ouvert |
-| Ouvrir le popup, appuyer sur Escape | Popup se ferme | Popup se ferme |
-| Ouvrir le popup, cliquer sur X ou Annuler | Popup se ferme | Popup se ferme |
+| Ouvrir popup, taper "Jean", changer d'onglet, revenir | Popup fermé, données perdues | Popup ouvert, "Jean" toujours visible |
+| Ouvrir popup, coller URL LinkedIn depuis autre onglet | Popup fermé au changement | Popup ouvert, URL préservée |
+| Fermer manuellement le popup | Popup fermé | Popup fermé + données effacées |
+| Ajouter un profil avec succès | Données effacées | Données effacées |
 
-## Note additionnelle
+## Section technique
 
-J'ai egalement remarque que le dialog de configuration du canal Slack (ligne 441) n'a pas ces protections. Si vous souhaitez le meme comportement pour ce popup, je peux appliquer la meme modification.
+### Pourquoi les handlers `preventDefault()` ne suffisent pas
+
+Les handlers Radix UI (`onFocusOutside`, `onInteractOutside`, `onPointerDownOutside`) interceptent les **événements utilisateur** qui tenteraient de fermer le dialog. Mais dans l'environnement iframe de Lovable :
+
+- Le changement d'onglet peut provoquer un **re-render** du composant React
+- C'est le cycle de vie React qui réinitialise l'état, pas un événement de fermeture
+- La seule solution est de persister l'état en dehors de React (sessionStorage)
+
+### Clés sessionStorage utilisées
+
+| Clé | Valeur |
+|-----|--------|
+| `add_user_dialog_open` | "true" ou "false" |
+| `add_user_name` | Nom du profil |
+| `add_user_url` | URL LinkedIn |
+| `add_user_slack_id` | ID du membre Slack sélectionné |
 
