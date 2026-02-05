@@ -49,7 +49,7 @@ export function TeamFeedStats({
   ];
 
   return (
-    <div className={layout === 'grid' ? 'grid grid-cols-2 gap-2' : 'flex items-start gap-3'}>
+    <div className={layout === 'grid' ? 'grid grid-cols-2 gap-2' : 'flex items-start gap-3 justify-end'}>
       <span className="text-[10px] text-muted-foreground pt-1">{t.last30Days}</span>
       {stats.map((stat) => (
         <Card 
