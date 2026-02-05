@@ -198,14 +198,47 @@ export default function Dashboard() {
   // Show syncing indicator only when fetching in background (not initial load)
   const isSyncing = (isWorkspaceFetching && !isWorkspaceLoading) || (isSlackMembersFetching && !isLoadingMembers) || (isChannelsFetching && !isLoadingChannels);
   
-  const [newProfileName, setNewProfileName] = useState('');
-  const [newProfileUrl, setNewProfileUrl] = useState('');
-  const [selectedSlackUserId, setSelectedSlackUserId] = useState<string>('');
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [newProfileName, setNewProfileName] = useState(() => {
+    return sessionStorage.getItem('add_user_name') || '';
+  });
+  const [newProfileUrl, setNewProfileUrl] = useState(() => {
+    return sessionStorage.getItem('add_user_url') || '';
+  });
+  const [selectedSlackUserId, setSelectedSlackUserId] = useState<string>(() => {
+    return sessionStorage.getItem('add_user_slack_id') || '';
+  });
+  const [isDialogOpen, setIsDialogOpen] = useState(() => {
+    return sessionStorage.getItem('add_user_dialog_open') === 'true';
+  });
   const [editingProfileId, setEditingProfileId] = useState<string | null>(null);
   const [editSlackUserId, setEditSlackUserId] = useState<string>('');
   const [isChannelDialogOpen, setIsChannelDialogOpen] = useState(false);
   
+  // Clear sessionStorage for add user form
+  const clearAddUserForm = () => {
+    sessionStorage.removeItem('add_user_dialog_open');
+    sessionStorage.removeItem('add_user_name');
+    sessionStorage.removeItem('add_user_url');
+    sessionStorage.removeItem('add_user_slack_id');
+  };
+
+  // Persist add user dialog state to sessionStorage
+  useEffect(() => {
+    sessionStorage.setItem('add_user_dialog_open', isDialogOpen.toString());
+  }, [isDialogOpen]);
+
+  useEffect(() => {
+    sessionStorage.setItem('add_user_name', newProfileName);
+  }, [newProfileName]);
+
+  useEffect(() => {
+    sessionStorage.setItem('add_user_url', newProfileUrl);
+  }, [newProfileUrl]);
+
+  useEffect(() => {
+    sessionStorage.setItem('add_user_slack_id', selectedSlackUserId);
+  }, [selectedSlackUserId]);
+
   // Get current channel name
   const currentChannelName = channels.find(c => c.id === currentChannel)?.name;
 
@@ -228,6 +261,7 @@ export default function Dashboard() {
       setNewProfileUrl('');
       setSelectedSlackUserId('');
       setIsDialogOpen(false);
+      clearAddUserForm();
     } catch (error) {
       // Error is handled in the hook
     }
@@ -608,7 +642,10 @@ export default function Dashboard() {
                     </div>
                   </div>
                   <DialogFooter>
-                    <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+                    <Button variant="outline" onClick={() => {
+                      setIsDialogOpen(false);
+                      clearAddUserForm();
+                    }}>
                       {t.cancel}
                     </Button>
                     <Button onClick={handleAddProfile} disabled={isAddingProfile}>
