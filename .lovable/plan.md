@@ -1,110 +1,65 @@
 
 
-# Plan : Deplacer le badge "30 derniers jours" dans les KPI Cards
+# Plan : Empecher le popup "Add User" de se fermer lors du changement d'onglet
 
-## Objectif
+## Diagnostic
 
-Retirer le badge "Last 30 days" / "30 derniers jours" du header de la page Analytics et l'afficher directement dans chaque carte KPI pour bien indiquer que les metriques concernent les 30 derniers jours roulants.
+J'ai verifie le code et constate que :
 
-## Fichiers a modifier
+1. Le fix actuel sur le DialogContent (ligne 536) inclut deja :
+   - `onPointerDownOutside={(e) => e.preventDefault()}`
+   - `onInteractOutside={(e) => e.preventDefault()}`
 
-### 1. `src/pages/DashboardAnalytics.tsx`
+2. **Le probleme** : Ces deux handlers ne couvrent pas le cas specifique du changement d'onglet du navigateur. Quand vous changez d'onglet, le focus quitte completement le document, ce qui declenche l'evenement `onFocusOutside` de Radix UI.
 
-**Supprimer le badge du header** (lignes 52-56) :
+## Solution
+
+Ajouter le handler `onFocusOutside` au DialogContent pour bloquer egalement cet evenement.
+
+## Fichier a modifier
+
+### `src/pages/Dashboard.tsx`
+
+**Ligne 536 - Ajouter `onFocusOutside`** :
 
 ```typescript
 // AVANT
-<div className="flex items-center">
-  <span className="text-xs text-muted-foreground bg-muted px-3 py-1.5 rounded-full">
-    {t.periodBadge}
-  </span>
-</div>
+<DialogContent 
+  onPointerDownOutside={(e) => e.preventDefault()} 
+  onInteractOutside={(e) => e.preventDefault()}
+>
 
 // APRES
-// Supprimer entierement ce bloc
+<DialogContent 
+  onPointerDownOutside={(e) => e.preventDefault()} 
+  onInteractOutside={(e) => e.preventDefault()}
+  onFocusOutside={(e) => e.preventDefault()}
+>
 ```
 
-On garde les traductions `periodBadge` car elles seront utilisees dans le KPICard.
+## Explication technique
 
----
+| Evenement | Quand il se declenche | Couvert avant ? |
+|-----------|----------------------|-----------------|
+| `onPointerDownOutside` | Clic en dehors du dialog | Oui |
+| `onInteractOutside` | Toute interaction en dehors | Oui |
+| `onFocusOutside` | Focus quitte le dialog (changement d'onglet) | Non |
 
-### 2. `src/components/analytics/KPICard.tsx`
+L'ajout de `onFocusOutside` avec `preventDefault()` empechera le dialog de se fermer quand :
+- L'utilisateur change d'onglet dans le navigateur
+- L'utilisateur clique dans la barre d'adresse
+- Le focus quitte la page pour n'importe quelle raison
 
-**Ajouter une prop optionnelle `periodLabel`** et l'afficher en petit sous le label :
+## Comportement apres modification
 
-```typescript
-interface KPICardProps {
-  icon: LucideIcon;
-  label: string;
-  value: string | number;
-  change?: number;
-  tooltip: string;
-  color?: 'blue' | 'violet' | 'emerald' | 'amber' | 'rose';
-  suffix?: string;
-  periodLabel?: string;  // NOUVEAU
-}
+| Action | Avant | Apres |
+|--------|-------|-------|
+| Ouvrir le popup, changer d'onglet, revenir | Popup ferme | Popup reste ouvert |
+| Ouvrir le popup, clic en dehors | Popup reste ouvert | Popup reste ouvert |
+| Ouvrir le popup, appuyer sur Escape | Popup se ferme | Popup se ferme |
+| Ouvrir le popup, cliquer sur X ou Annuler | Popup se ferme | Popup se ferme |
 
-// Dans le composant, ajouter apres le label :
-<div className="flex items-center gap-1 mt-1">
-  <span className="text-sm text-muted-foreground">{label}</span>
-  <TooltipProvider>
-    ...
-  </TooltipProvider>
-</div>
-{periodLabel && (
-  <span className="text-[10px] text-muted-foreground/70 mt-0.5">
-    {periodLabel}
-  </span>
-)}
-```
+## Note additionnelle
 
----
-
-### 3. `src/components/analytics/AnalyticsOverview.tsx`
-
-**Passer `periodLabel` a chaque KPICard** :
-
-```typescript
-// Ajouter dans les traductions
-periodLabel: '30 derniers jours',  // FR
-periodLabel: 'Last 30 days',       // EN
-
-// Puis sur chaque KPICard :
-<KPICard
-  icon={FileText}
-  label={t.totalPosts}
-  value={overviewKPIs.totalPosts.value}
-  change={overviewKPIs.totalPosts.change}
-  tooltip={t.tooltips.totalPosts}
-  color="blue"
-  periodLabel={t.periodLabel}  // AJOUTER
-/>
-```
-
----
-
-### 4. `src/components/analytics/AnalyticsTeamActivation.tsx`
-
-**Meme modification** - ajouter `periodLabel` aux 4 KPICards.
-
----
-
-### 5. `src/components/analytics/AnalyticsReachImpact.tsx`
-
-**Meme modification** - ajouter `periodLabel` aux 4 KPICards.
-
----
-
-## Resultat visuel
-
-| Avant | Apres |
-|-------|-------|
-| Badge "Last 30 days" en haut a droite de la page | Badge absent du header |
-| KPI Cards sans indication de periode | Chaque KPI Card affiche "Last 30 days" en petit sous le label |
-
-## Avantages
-
-- L'utilisateur voit immediatement que chaque metrique concerne les 30 derniers jours
-- Plus clair sur mobile ou le badge en haut pouvait passer inapercu
-- Coherent avec le design des cards
+J'ai egalement remarque que le dialog de configuration du canal Slack (ligne 441) n'a pas ces protections. Si vous souhaitez le meme comportement pour ce popup, je peux appliquer la meme modification.
 
