@@ -49,9 +49,8 @@ export function TeamFeedStats({
   ];
 
   return (
-    <div className={layout === 'grid' ? 'grid grid-cols-2 gap-2' : 'flex flex-col items-end gap-1'}>
-      <span className="text-[10px] text-muted-foreground">{t.last30Days}</span>
-      <div className="flex gap-3">
+    <div className={layout === 'grid' ? 'grid grid-cols-2 gap-2' : 'flex items-start gap-3'}>
+      <span className="text-[10px] text-muted-foreground pt-1">{t.last30Days}</span>
       {stats.map((stat) => (
         <Card 
           key={stat.label} 
@@ -70,7 +69,6 @@ export function TeamFeedStats({
           </div>
         </Card>
       ))}
-      </div>
     </div>
   );
 }
