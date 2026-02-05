@@ -533,7 +533,7 @@ export default function Dashboard() {
                     {t.addUser}
                   </Button>
                 </DialogTrigger>
-                <DialogContent onPointerDownOutside={(e) => e.preventDefault()} onInteractOutside={(e) => e.preventDefault()}>
+                <DialogContent onPointerDownOutside={(e) => e.preventDefault()} onInteractOutside={(e) => e.preventDefault()} onFocusOutside={(e) => e.preventDefault()}>
                   <DialogHeader>
                     <DialogTitle>{t.addLinkedinProfile}</DialogTitle>
                     <DialogDescription>{t.addProfileDescription}</DialogDescription>
