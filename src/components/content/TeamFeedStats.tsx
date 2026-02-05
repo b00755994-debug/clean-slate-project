@@ -5,11 +5,13 @@ import { useLanguage } from '@/contexts/LanguageContext';
 const translations = {
   fr: {
     posts: 'Posts',
-    members: 'Membres',
+    contributors: 'Contributeurs',
+    last30Days: '30 derniers jours',
   },
   en: {
     posts: 'Posts',
-    members: 'Members',
+    contributors: 'Contributors',
+    last30Days: 'Last 30 days',
   }
 };
 
@@ -40,14 +42,16 @@ export function TeamFeedStats({
     {
       icon: Users,
       value: activeMembers,
-      label: t.members,
+      label: t.contributors,
       color: 'text-amber-500',
       bgColor: 'bg-amber-500/10',
     },
   ];
 
   return (
-    <div className={layout === 'grid' ? 'grid grid-cols-2 gap-2' : 'flex gap-3 justify-end'}>
+    <div className={layout === 'grid' ? 'grid grid-cols-2 gap-2' : 'flex flex-col items-end gap-1'}>
+      <span className="text-[10px] text-muted-foreground">{t.last30Days}</span>
+      <div className="flex gap-3">
       {stats.map((stat) => (
         <Card 
           key={stat.label} 
@@ -66,6 +70,7 @@ export function TeamFeedStats({
           </div>
         </Card>
       ))}
+      </div>
     </div>
   );
 }
