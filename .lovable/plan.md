@@ -1,65 +1,37 @@
 
-# Plan : Nouvelle structure tarifaire par paliers de 10 utilisateurs
 
-## Nouvelle logique de prix
+# Afficher le prix mensuel de reference + badge savings
 
-| Plan | Base mensuelle | Inclus | Par tranche de 10 suppl. |
-|------|---------------|--------|--------------------------|
-| Pro | 39€/mois | 10 utilisateurs | +25€ |
-| Business | 69€/mois | 10 utilisateurs | +50€ |
+## Principe
 
-La remise annuelle de -20% reste inchangee.
+Toujours afficher le prix mensuel plein (39€, 69€, etc.) comme prix principal, quel que soit le toggle mensuel/annuel. Quand l'utilisateur selectionne "annuel", un badge vert apparait a cote du prix pour indiquer les economies realisees.
 
-**Exemples :**
-- Pro, 10 users : 39€/mois
-- Pro, 20 users : 39€ + 25€ = 64€/mois
-- Pro, 50 users : 39€ + 4x25€ = 139€/mois
-- Business, 30 users : 69€ + 2x50€ = 169€/mois
+## Changements dans `src/pages/Pricing.tsx`
 
-## Modifications dans `src/pages/Pricing.tsx`
+### 1. Prix principal : toujours le mensuel
 
-### 1. Constantes de prix
+Le prix affiche en grand (text-4xl) sera toujours le prix mensuel sans remise :
+- Pro 10 users : **39€/mois**
+- Pro 20 users : **64€/mois**
+- Business 10 users : **69€/mois**
 
-Remplacer les constantes actuelles (`PRO_PRICE_PER_USER`, `BUSINESS_PRICE_PER_USER`) par :
+Ce prix ne change pas quand on bascule entre mensuel et annuel.
 
-```typescript
-const PRO_BASE_PRICE = 39;
-const PRO_BASE_USERS = 10;
-const PRO_EXTRA_PER_10 = 25;
+### 2. Badge savings en mode annuel
 
-const BUSINESS_BASE_PRICE = 69;
-const BUSINESS_BASE_USERS = 10;
-const BUSINESS_EXTRA_PER_10 = 50;
+Quand le toggle est sur "Annuel", un badge vert s'affiche a cote ou en dessous du prix :
+- Texte : "Save X€/year" (ou X = economies annuelles, ex: 93,60€ pour Pro 10 users)
+- Style : badge vert (`bg-success/15 text-success`) similaire au badge "-20%" du toggle
 
-const MIN_USERS = 10;
-const MAX_USERS = 200;
-```
+### 3. Sous-titre annuel
 
-### 2. Fonction de calcul de prix
+La ligne sous le prix indiquera le total annuel facture :
+- "Billed 374,40€/year" (au lieu d'afficher l'equivalent mensuel reduit)
 
-Remplacer `calculatePrice` par une logique par paliers :
+### 4. Detail technique
 
-```typescript
-const calculateTieredPrice = (basePrice, baseUsers, extraPer10, users, annual) => {
-  const extraBlocks = Math.max(0, (users - baseUsers) / 10);
-  const monthly = basePrice + extraBlocks * extraPer10;
-  return annual ? monthly * 12 * (1 - ANNUAL_DISCOUNT) : monthly;
-};
-```
+- `calculateTieredPrice` reste inchange
+- Le prix affiche en grand = toujours `calculateTieredPrice(..., users, false)` (mensuel)
+- Le badge savings = `mensuel * 12 - annuel`
+- La ligne secondaire en mode annuel = total annuel facture
 
-### 3. Slider et input : pas de 10
-
-- `step={10}` sur le Slider
-- `min={10}`, valeurs par defaut a `[10]`
-- Input arrondi au multiple de 10 le plus proche
-- Graduations du slider : 10, 50, 100, 150, 200+
-
-### 4. Affichage du prix
-
-- Prix principal : montant mensuel total (ou equivalent mensuel si annuel)
-- Sous-titre : "10 users included, then +25€ per 10 users" (Pro) / "+50€ per 10 users" (Business)
-- Ligne annuelle avec economies conservee
-
-### 5. Calcul des economies annuelles
-
-Adapte a la nouvelle formule (compare mensuel x12 vs annuel).
