@@ -303,21 +303,23 @@ const Pricing = () => {
                 <div className="min-h-[100px]">
                   <div className="flex items-baseline gap-1 flex-wrap">
                     <span className="text-4xl font-bold text-foreground">
-                      {formatPrice(isAnnual ? calculateMonthlyEquivalent(proPrice) : proPrice)}€
+                      {formatPrice(proMonthly)}€
                     </span>
                     <span className="text-muted-foreground">
                       {t.perMonth}
                     </span>
+                    {isAnnual && proSavings > 0 && (
+                      <span className="text-xs bg-success/15 text-success px-2 py-0.5 rounded-full font-semibold">
+                        Save {formatPrice(proSavings)}€/year
+                      </span>
+                    )}
                   </div>
                   <p className="text-sm text-muted-foreground mt-1">
                     10 users included, then +{PRO_EXTRA_PER_10}€ per 10 users
                   </p>
                   {isAnnual && (
                     <p className="text-sm text-muted-foreground mt-1">
-                      {formatPrice(proPrice)}€ {t.perYear}
-                      {proSavings > 0 && (
-                        <span className="text-success ml-2">({t.save} {formatPrice(proSavings)}€)</span>
-                      )}
+                      Billed {formatPrice(proPrice)}€{t.perYear}
                     </p>
                   )}
                 </div>
@@ -404,21 +406,23 @@ const Pricing = () => {
                 <div className="min-h-[100px]">
                   <div className="flex items-baseline gap-1 flex-wrap">
                     <span className="text-4xl font-bold text-foreground">
-                      {formatPrice(isAnnual ? calculateMonthlyEquivalent(businessPrice) : businessPrice)}€
+                      {formatPrice(businessMonthly)}€
                     </span>
                     <span className="text-muted-foreground">
                       {t.perMonth}
                     </span>
+                    {isAnnual && businessSavings > 0 && (
+                      <span className="text-xs bg-success/15 text-success px-2 py-0.5 rounded-full font-semibold">
+                        Save {formatPrice(businessSavings)}€/year
+                      </span>
+                    )}
                   </div>
                   <p className="text-sm text-muted-foreground mt-1">
                     10 users included, then +{BUSINESS_EXTRA_PER_10}€ per 10 users
                   </p>
                   {isAnnual && (
                     <p className="text-sm text-muted-foreground mt-1">
-                      {formatPrice(businessPrice)}€ {t.perYear}
-                      {businessSavings > 0 && (
-                        <span className="text-success ml-2">({t.save} {formatPrice(businessSavings)}€)</span>
-                      )}
+                      Billed {formatPrice(businessPrice)}€{t.perYear}
                     </p>
                   )}
                 </div>
