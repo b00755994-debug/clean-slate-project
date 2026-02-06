@@ -1,117 +1,65 @@
 
+# Plan : Nouvelle structure tarifaire par paliers de 10 utilisateurs
 
-# Plan : Persister l'état du popup "Add User" lors du changement d'onglet
+## Nouvelle logique de prix
 
-## Diagnostic du problème
+| Plan | Base mensuelle | Inclus | Par tranche de 10 suppl. |
+|------|---------------|--------|--------------------------|
+| Pro | 39€/mois | 10 utilisateurs | +25€ |
+| Business | 69€/mois | 10 utilisateurs | +50€ |
 
-Le problème n'est pas lié aux événements Radix UI (`onFocusOutside`, etc.). Dans l'environnement de preview Lovable (qui est un iframe), quand vous changez d'onglet du navigateur :
+La remise annuelle de -20% reste inchangee.
 
-1. Le navigateur peut "geler" l'iframe
-2. Au retour, React peut re-rendre le composant
-3. L'état `isDialogOpen` (initialisé à `false`) est réinitialisé
-4. Le popup disparaît
+**Exemples :**
+- Pro, 10 users : 39€/mois
+- Pro, 20 users : 39€ + 25€ = 64€/mois
+- Pro, 50 users : 39€ + 4x25€ = 139€/mois
+- Business, 30 users : 69€ + 2x50€ = 169€/mois
 
-Les handlers `preventDefault()` ne peuvent pas empêcher ce comportement car ce n'est pas une fermeture intentionnelle du Dialog - c'est une réinitialisation de l'état React.
+## Modifications dans `src/pages/Pricing.tsx`
 
-## Solution
+### 1. Constantes de prix
 
-Persister `isDialogOpen` et les données du formulaire dans `sessionStorage`, comme nous l'avons fait pour l'onboarding.
-
-## Fichier à modifier : `src/pages/Dashboard.tsx`
-
-### Changements
-
-**1. Persister l'état d'ouverture du popup :**
+Remplacer les constantes actuelles (`PRO_PRICE_PER_USER`, `BUSINESS_PRICE_PER_USER`) par :
 
 ```typescript
-// AVANT (ligne 204)
-const [isDialogOpen, setIsDialogOpen] = useState(false);
+const PRO_BASE_PRICE = 39;
+const PRO_BASE_USERS = 10;
+const PRO_EXTRA_PER_10 = 25;
 
-// APRES
-const [isDialogOpen, setIsDialogOpen] = useState(() => {
-  return sessionStorage.getItem('add_user_dialog_open') === 'true';
-});
+const BUSINESS_BASE_PRICE = 69;
+const BUSINESS_BASE_USERS = 10;
+const BUSINESS_EXTRA_PER_10 = 50;
 
-// Ajouter un useEffect pour synchroniser
-useEffect(() => {
-  sessionStorage.setItem('add_user_dialog_open', isDialogOpen.toString());
-}, [isDialogOpen]);
+const MIN_USERS = 10;
+const MAX_USERS = 200;
 ```
 
-**2. Persister les données du formulaire :**
+### 2. Fonction de calcul de prix
+
+Remplacer `calculatePrice` par une logique par paliers :
 
 ```typescript
-// AVANT (lignes 201-203)
-const [newProfileName, setNewProfileName] = useState('');
-const [newProfileUrl, setNewProfileUrl] = useState('');
-const [selectedSlackUserId, setSelectedSlackUserId] = useState<string>('');
-
-// APRES
-const [newProfileName, setNewProfileName] = useState(() => {
-  return sessionStorage.getItem('add_user_name') || '';
-});
-const [newProfileUrl, setNewProfileUrl] = useState(() => {
-  return sessionStorage.getItem('add_user_url') || '';
-});
-const [selectedSlackUserId, setSelectedSlackUserId] = useState<string>(() => {
-  return sessionStorage.getItem('add_user_slack_id') || '';
-});
-
-// Ajouter des useEffects pour synchroniser
-useEffect(() => {
-  sessionStorage.setItem('add_user_name', newProfileName);
-}, [newProfileName]);
-
-useEffect(() => {
-  sessionStorage.setItem('add_user_url', newProfileUrl);
-}, [newProfileUrl]);
-
-useEffect(() => {
-  sessionStorage.setItem('add_user_slack_id', selectedSlackUserId);
-}, [selectedSlackUserId]);
-```
-
-**3. Nettoyer le sessionStorage après ajout réussi ou annulation :**
-
-```typescript
-// Dans la fonction handleAddProfile, après le succès :
-const clearAddUserForm = () => {
-  sessionStorage.removeItem('add_user_dialog_open');
-  sessionStorage.removeItem('add_user_name');
-  sessionStorage.removeItem('add_user_url');
-  sessionStorage.removeItem('add_user_slack_id');
+const calculateTieredPrice = (basePrice, baseUsers, extraPer10, users, annual) => {
+  const extraBlocks = Math.max(0, (users - baseUsers) / 10);
+  const monthly = basePrice + extraBlocks * extraPer10;
+  return annual ? monthly * 12 * (1 - ANNUAL_DISCOUNT) : monthly;
 };
-
-// Appeler clearAddUserForm() après :
-// - Ajout réussi d'un profil
-// - Clic sur "Annuler"
 ```
 
-## Comportement après modification
+### 3. Slider et input : pas de 10
 
-| Action | Avant | Après |
-|--------|-------|-------|
-| Ouvrir popup, taper "Jean", changer d'onglet, revenir | Popup fermé, données perdues | Popup ouvert, "Jean" toujours visible |
-| Ouvrir popup, coller URL LinkedIn depuis autre onglet | Popup fermé au changement | Popup ouvert, URL préservée |
-| Fermer manuellement le popup | Popup fermé | Popup fermé + données effacées |
-| Ajouter un profil avec succès | Données effacées | Données effacées |
+- `step={10}` sur le Slider
+- `min={10}`, valeurs par defaut a `[10]`
+- Input arrondi au multiple de 10 le plus proche
+- Graduations du slider : 10, 50, 100, 150, 200+
 
-## Section technique
+### 4. Affichage du prix
 
-### Pourquoi les handlers `preventDefault()` ne suffisent pas
+- Prix principal : montant mensuel total (ou equivalent mensuel si annuel)
+- Sous-titre : "10 users included, then +25€ per 10 users" (Pro) / "+50€ per 10 users" (Business)
+- Ligne annuelle avec economies conservee
 
-Les handlers Radix UI (`onFocusOutside`, `onInteractOutside`, `onPointerDownOutside`) interceptent les **événements utilisateur** qui tenteraient de fermer le dialog. Mais dans l'environnement iframe de Lovable :
+### 5. Calcul des economies annuelles
 
-- Le changement d'onglet peut provoquer un **re-render** du composant React
-- C'est le cycle de vie React qui réinitialise l'état, pas un événement de fermeture
-- La seule solution est de persister l'état en dehors de React (sessionStorage)
-
-### Clés sessionStorage utilisées
-
-| Clé | Valeur |
-|-----|--------|
-| `add_user_dialog_open` | "true" ou "false" |
-| `add_user_name` | Nom du profil |
-| `add_user_url` | URL LinkedIn |
-| `add_user_slack_id` | ID du membre Slack sélectionné |
-
+Adapte a la nouvelle formule (compare mensuel x12 vs annuel).
