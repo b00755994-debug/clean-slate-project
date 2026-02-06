@@ -132,43 +132,54 @@ const Pricing = () => {
   const [proUsers, setProUsers] = useState([10]);
   const [businessUsers, setBusinessUsers] = useState([10]);
 
-  // Pricing constants - simple per-user pricing
-  const PRO_PRICE_PER_USER = 3.00;
-  const BUSINESS_PRICE_PER_USER = 5.00;
-  const MIN_USERS = 1;
-  const PRO_MAX = 200;
-  const BUSINESS_MAX = 200;
+  // Pricing constants - tiered pricing
+  const PRO_BASE_PRICE = 39;
+  const PRO_BASE_USERS = 10;
+  const PRO_EXTRA_PER_10 = 25;
+
+  const BUSINESS_BASE_PRICE = 69;
+  const BUSINESS_BASE_USERS = 10;
+  const BUSINESS_EXTRA_PER_10 = 50;
+
+  const MIN_USERS = 10;
+  const MAX_USERS = 200;
   const ANNUAL_DISCOUNT = 0.20;
 
-  // Calculate price based on users and period
-  const calculatePrice = (pricePerUser: number, users: number, annual: boolean) => {
-    const monthlyPrice = users * pricePerUser;
-    return annual ? monthlyPrice * 12 * (1 - ANNUAL_DISCOUNT) : monthlyPrice;
+  // Calculate tiered price
+  const calculateTieredPrice = (basePrice: number, baseUsers: number, extraPer10: number, users: number, annual: boolean) => {
+    const extraBlocks = Math.max(0, (users - baseUsers) / 10);
+    const monthly = basePrice + extraBlocks * extraPer10;
+    return annual ? monthly * 12 * (1 - ANNUAL_DISCOUNT) : monthly;
   };
 
   const calculateMonthlyEquivalent = (annualPrice: number) => {
     return annualPrice / 12;
   };
 
-  const proPrice = calculatePrice(PRO_PRICE_PER_USER, proUsers[0], isAnnual);
-  const businessPrice = calculatePrice(BUSINESS_PRICE_PER_USER, businessUsers[0], isAnnual);
+  const proPrice = calculateTieredPrice(PRO_BASE_PRICE, PRO_BASE_USERS, PRO_EXTRA_PER_10, proUsers[0], isAnnual);
+  const businessPrice = calculateTieredPrice(BUSINESS_BASE_PRICE, BUSINESS_BASE_USERS, BUSINESS_EXTRA_PER_10, businessUsers[0], isAnnual);
 
-  const proSavings = isAnnual ? calculatePrice(PRO_PRICE_PER_USER, proUsers[0], false) * 12 - proPrice : 0;
-  const businessSavings = isAnnual ? calculatePrice(BUSINESS_PRICE_PER_USER, businessUsers[0], false) * 12 - businessPrice : 0;
+  const proMonthly = calculateTieredPrice(PRO_BASE_PRICE, PRO_BASE_USERS, PRO_EXTRA_PER_10, proUsers[0], false);
+  const businessMonthly = calculateTieredPrice(BUSINESS_BASE_PRICE, BUSINESS_BASE_USERS, BUSINESS_EXTRA_PER_10, businessUsers[0], false);
+
+  const proSavings = isAnnual ? proMonthly * 12 - proPrice : 0;
+  const businessSavings = isAnnual ? businessMonthly * 12 - businessPrice : 0;
 
   const formatPrice = (price: number) => {
     return price.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).replace('.', ',');
   };
 
+  const roundToStep = (n: number) => Math.round(n / 10) * 10;
+
   const handleProInputChange = (value: string) => {
     const num = parseInt(value) || MIN_USERS;
-    const clamped = Math.min(Math.max(num, MIN_USERS), PRO_MAX);
+    const clamped = Math.min(Math.max(roundToStep(num), MIN_USERS), MAX_USERS);
     setProUsers([clamped]);
   };
 
   const handleBusinessInputChange = (value: string) => {
     const num = parseInt(value) || MIN_USERS;
-    const clamped = Math.min(Math.max(num, MIN_USERS), BUSINESS_MAX);
+    const clamped = Math.min(Math.max(roundToStep(num), MIN_USERS), MAX_USERS);
     setBusinessUsers([clamped]);
   };
 
@@ -299,9 +310,7 @@ const Pricing = () => {
                     </span>
                   </div>
                   <p className="text-sm text-muted-foreground mt-1">
-                    {isAnnual
-                      ? formatPrice(PRO_PRICE_PER_USER * (1 - ANNUAL_DISCOUNT))
-                      : PRO_PRICE_PER_USER.toFixed(2).replace('.', ',')}€ {t.perUser}
+                    10 users included, then +{PRO_EXTRA_PER_10}€ per 10 users
                   </p>
                   {isAnnual && (
                     <p className="text-sm text-muted-foreground mt-1">
@@ -347,7 +356,8 @@ const Pricing = () => {
                       value={proUsers[0]}
                       onChange={(e) => handleProInputChange(e.target.value)}
                       min={MIN_USERS}
-                      max={PRO_MAX}
+                      max={MAX_USERS}
+                      step={10}
                       className="w-20 h-8 text-center text-sm bg-background border-primary/30 focus:border-primary"
                     />
                   </div>
@@ -359,8 +369,8 @@ const Pricing = () => {
                     value={proUsers}
                     onValueChange={setProUsers}
                     min={MIN_USERS}
-                    max={PRO_MAX}
-                    step={1}
+                    max={MAX_USERS}
+                    step={10}
                     className="w-full"
                   />
                   <div className="flex justify-between text-xs text-muted-foreground">
@@ -368,7 +378,7 @@ const Pricing = () => {
                     <span className="text-muted-foreground/60">50</span>
                     <span className="text-muted-foreground/60">100</span>
                     <span className="text-muted-foreground/60">150</span>
-                    <span>{PRO_MAX}+</span>
+                    <span>{MAX_USERS}+</span>
                   </div>
                 </div>
 
@@ -401,9 +411,7 @@ const Pricing = () => {
                     </span>
                   </div>
                   <p className="text-sm text-muted-foreground mt-1">
-                    {isAnnual
-                      ? formatPrice(BUSINESS_PRICE_PER_USER * (1 - ANNUAL_DISCOUNT))
-                      : BUSINESS_PRICE_PER_USER.toFixed(2).replace('.', ',')}€ {t.perUser}
+                    10 users included, then +{BUSINESS_EXTRA_PER_10}€ per 10 users
                   </p>
                   {isAnnual && (
                     <p className="text-sm text-muted-foreground mt-1">
@@ -449,7 +457,8 @@ const Pricing = () => {
                       value={businessUsers[0]}
                       onChange={(e) => handleBusinessInputChange(e.target.value)}
                       min={MIN_USERS}
-                      max={BUSINESS_MAX}
+                      max={MAX_USERS}
+                      step={10}
                       className="w-20 h-8 text-center text-sm bg-background border-primary/30 focus:border-primary"
                     />
                   </div>
@@ -461,8 +470,8 @@ const Pricing = () => {
                     value={businessUsers}
                     onValueChange={setBusinessUsers}
                     min={MIN_USERS}
-                    max={BUSINESS_MAX}
-                    step={1}
+                    max={MAX_USERS}
+                    step={10}
                     className="w-full"
                   />
                   <div className="flex justify-between text-xs text-muted-foreground">
@@ -470,7 +479,7 @@ const Pricing = () => {
                     <span className="text-muted-foreground/60">50</span>
                     <span className="text-muted-foreground/60">100</span>
                     <span className="text-muted-foreground/60">150</span>
-                    <span>{BUSINESS_MAX}+</span>
+                    <span>{MAX_USERS}+</span>
                   </div>
                 </div>
 
