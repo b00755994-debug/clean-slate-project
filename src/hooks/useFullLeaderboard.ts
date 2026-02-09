@@ -17,6 +17,7 @@ export interface LeaderboardEntry {
   profileName: string;
   linkedinTitle: string | null;
   avatarUrl: string | null;
+  followers: number | null;
   postCount: number;
   impressions: number;
   reactions: number;
@@ -96,7 +97,7 @@ export function useFullLeaderboard() {
       if (!workspace?.id) return [];
       const { data, error } = await supabase
         .from('billable_users')
-        .select('id, profile_name, linkedin_title, avatar_url, profile_picture')
+        .select('id, profile_name, linkedin_title, avatar_url, profile_picture, followers')
         .eq('workspace_id', workspace.id);
       if (error) throw error;
       return data || [];
@@ -164,6 +165,7 @@ export function useFullLeaderboard() {
         profileName: user.profile_name,
         linkedinTitle: user.linkedin_title,
         avatarUrl: user.profile_picture || user.avatar_url,
+        followers: user.followers,
         postCount: metrics.postCount,
         impressions: metrics.impressions,
         reactions: metrics.reactions,

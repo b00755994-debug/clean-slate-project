@@ -27,6 +27,7 @@ const translations = {
     rank: 'Rank',
     member: 'Member',
     title_col: 'Title',
+    followers: 'Followers',
     posts: 'Posts',
     impressions: 'Impressions',
     reactions: 'Reactions',
@@ -41,6 +42,7 @@ const translations = {
     rank: 'Rang',
     member: 'Membre',
     title_col: 'Titre',
+    followers: 'Abonnés',
     posts: 'Posts',
     impressions: 'Impressions',
     reactions: 'Réactions',
@@ -143,6 +145,7 @@ export default function DashboardLeaderboard() {
               <TableRow className="hover:bg-transparent">
                 <TableHead className="text-xs uppercase tracking-wide">{t.member}</TableHead>
                 <TableHead className="hidden md:table-cell pl-1 text-xs uppercase tracking-wide">{t.title_col}</TableHead>
+                <TableHead className="w-20 px-4 text-right text-xs uppercase tracking-wide">{t.followers}</TableHead>
                 <TableHead className="w-16 px-4 text-right text-xs uppercase tracking-wide">{t.posts}</TableHead>
                 <TableHead className="w-20 px-4 text-right text-xs uppercase tracking-wide">{t.impressions}</TableHead>
                 <TableHead className="w-20 px-4 text-right text-xs uppercase tracking-wide">{t.reactions}</TableHead>
@@ -165,6 +168,7 @@ export default function DashboardLeaderboard() {
                     <TableCell className="hidden md:table-cell py-2">
                       <Skeleton className="h-3 w-28" />
                     </TableCell>
+                    <TableCell className="py-2"><Skeleton className="h-3 w-10 ml-auto" /></TableCell>
                     <TableCell className="py-2"><Skeleton className="h-3 w-6 ml-auto" /></TableCell>
                     <TableCell className="py-2"><Skeleton className="h-3 w-10 ml-auto" /></TableCell>
                     <TableCell className="py-2"><Skeleton className="h-3 w-8 ml-auto" /></TableCell>
@@ -179,7 +183,7 @@ export default function DashboardLeaderboard() {
                 ))
               ) : leaderboard.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center py-8 text-muted-foreground text-sm">
+                  <TableCell colSpan={9} className="text-center py-8 text-muted-foreground text-sm">
                     {t.noData}
                   </TableCell>
                 </TableRow>
@@ -200,6 +204,7 @@ export default function DashboardLeaderboard() {
                     <TableCell className="hidden md:table-cell pl-1 text-muted-foreground text-sm truncate max-w-[300px] py-2">
                       {entry.linkedinTitle || '—'}
                     </TableCell>
+                    <TableCell className="w-20 px-4 text-right text-sm font-medium py-2">{entry.followers ? formatNumber(entry.followers) : '—'}</TableCell>
                     <TableCell className="w-16 px-4 text-right text-sm font-medium py-2">{entry.postCount}</TableCell>
                     <TableCell className="w-20 px-4 text-right text-sm font-medium py-2">{formatNumber(entry.impressions)}</TableCell>
                     <TableCell className="w-20 px-4 text-right text-sm font-medium py-2">{formatNumber(entry.reactions)}</TableCell>

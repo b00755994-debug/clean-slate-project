@@ -69,6 +69,7 @@ const translations = {
     addTeamMembers: 'Ajoutez des membres de votre équipe pour commencer.',
     name: 'Nom',
     slackUser: 'Utilisateur Slack',
+    followers: 'Abonnés',
     posts30d: 'Posts (30j)',
     actions: 'Actions',
     select: 'Sélectionner',
@@ -144,6 +145,7 @@ const translations = {
     addTeamMembers: 'Add team members to get started.',
     name: 'Name',
     slackUser: 'Slack User',
+    followers: 'Followers',
     posts30d: 'Posts (30d)',
     actions: 'Actions',
     select: 'Select',
@@ -668,9 +670,10 @@ export default function Dashboard() {
                 <Table className="text-sm table-fixed w-full">
                   <TableHeader>
                     <TableRow className="h-5">
-                      <TableHead className="py-0.5 text-xs w-[18%] uppercase tracking-wide">{t.name}</TableHead>
-                      <TableHead className="py-0.5 text-xs w-[40%] uppercase tracking-wide">{t.linkedinUrl}</TableHead>
-                      <TableHead className="py-0.5 text-xs w-[20%] uppercase tracking-wide">{t.slackUser}</TableHead>
+                      <TableHead className="py-0.5 text-xs w-[16%] uppercase tracking-wide">{t.name}</TableHead>
+                      <TableHead className="py-0.5 text-xs w-[32%] uppercase tracking-wide">{t.linkedinUrl}</TableHead>
+                      <TableHead className="py-0.5 text-xs w-[12%] text-right uppercase tracking-wide">{t.followers}</TableHead>
+                      <TableHead className="py-0.5 text-xs w-[18%] uppercase tracking-wide">{t.slackUser}</TableHead>
                       <TableHead className="text-center py-0.5 text-xs w-[10%] uppercase tracking-wide">{t.posts30d}</TableHead>
                       <TableHead className="text-right py-0.5 text-xs w-[12%] uppercase tracking-wide">{t.actions}</TableHead>
                     </TableRow>
@@ -681,16 +684,19 @@ export default function Dashboard() {
                     <TableBody>
                       {linkedinProfiles.map(linkedinProfile => (
                         <TableRow key={linkedinProfile.id} className="h-5">
-                          <TableCell className="font-medium py-0.5 w-[18%]">
+                          <TableCell className="font-medium py-0.5 w-[16%]">
                             {linkedinProfile.profile_name}
                           </TableCell>
-                          <TableCell className="py-0.5 w-[40%]">
+                          <TableCell className="py-0.5 w-[32%]">
                             <a href={linkedinProfile.linkedin_url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
                               {linkedinProfile.linkedin_url.replace('https://linkedin.com/in/', '')}
                               <ExternalLink className="w-3 h-3" />
                             </a>
                           </TableCell>
-                          <TableCell className="py-0.5 w-[20%]">
+                          <TableCell className="py-0.5 w-[12%] text-right text-sm">
+                            {linkedinProfile.followers ? new Intl.NumberFormat(language === 'fr' ? 'fr-FR' : 'en-US', { notation: 'compact' }).format(linkedinProfile.followers) : '—'}
+                          </TableCell>
+                          <TableCell className="py-0.5 w-[18%]">
                             {slackWorkspace?.is_connected ? (
                               <Select value={linkedinProfile.slack_user_id || 'none'} onValueChange={value => {
                                 handleUpdateSlackUser(linkedinProfile.id, value === 'none' ? null : value);
@@ -772,6 +778,7 @@ export default function Dashboard() {
                             )}
                           </TableCell>
                           <TableCell className="text-center py-0.5 w-[10%]">
+
                             <Badge variant="secondary">{linkedinProfile.posts_count || 0}</Badge>
                           </TableCell>
                           <TableCell className="text-right py-0.5 w-[12%]">

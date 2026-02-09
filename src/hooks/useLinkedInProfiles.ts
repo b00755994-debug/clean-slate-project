@@ -34,6 +34,7 @@ interface LinkedInProfile {
   profile_name: string;
   avatar_url: string | null;
   slack_user_id: string | null;
+  followers: number | null;
   posts_count?: number;
 }
 
