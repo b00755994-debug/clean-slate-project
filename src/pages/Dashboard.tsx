@@ -545,7 +545,7 @@ export default function Dashboard() {
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <span className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-muted text-muted-foreground text-[10px] font-medium cursor-help">?</span>
+                          <span className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-muted text-muted-foreground text-[10px] font-medium cursor-help italic">i</span>
                         </TooltipTrigger>
                         <TooltipContent side="top" className="max-w-xs">
                           <p>{t.followers_tooltip}</p>
