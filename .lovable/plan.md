@@ -1,32 +1,28 @@
 
 
-## Refonte du modèle tarifaire - Prix par utilisateur
+## Fusionner les lignes "Billed" et "Save" en une seule ligne
 
-### Changement demande
-Revenir a un modele simple de prix par utilisateur au lieu du systeme par paliers actuels :
-- **Pro** : 4€/utilisateur/mois (3,20€ en annuel avec -20%)
-- **Business** : 6€/utilisateur/mois (4,80€ en annuel avec -20%)
-- Simulateur avec slider par increments de 10 utilisateurs (min 10, max 200)
+### Changement sur `src/pages/Pricing.tsx`
 
-### Modifications techniques (fichier `src/pages/Pricing.tsx`)
+Pour les deux cartes Pro et Business, remplacer le badge vert actuel (la `span` avec `bg-success/15 rounded-full`) par une ligne de texte simple sous le prix total mensuel :
 
-1. **Remplacer les constantes de prix** :
-   - `PRO_PRICE_PER_USER = 4` (remplace `PRO_BASE_PRICE`, `PRO_EXTRA_PER_10`)
-   - `BUSINESS_PRICE_PER_USER = 6` (remplace `BUSINESS_BASE_PRICE`, `BUSINESS_EXTRA_PER_10`)
-   - Garder `ANNUAL_DISCOUNT = 0.20`
+**Format final** (exemple Pro, annuel, 40 users) :
+```
+3,20€  /user/month
+128,00€/month for 40 users
+Billed 1 228,80€/year (save 307,20€)
+```
 
-2. **Simplifier le calcul de prix** :
-   - Prix mensuel = prix par utilisateur x nombre d'utilisateurs
-   - Prix annuel = mensuel x 12 x 0.80
-   - Supprimer `calculateTieredPrice` et remplacer par un calcul direct
+### Details techniques
 
-3. **Mettre a jour l'affichage des cartes Pro et Business** :
-   - Afficher le prix par utilisateur en principal (ex: "4,00€/user/month")
-   - En annuel, afficher "3,20€/user/month" comme prix principal
-   - Sous-titre : prix total mensuel selon le nombre d'utilisateurs selectionne (ex: "40,00€/month for 10 users")
-   - Badge savings et billed annually restent inchanges dans leur logique
+1. **Carte Pro** (ligne ~298) : Supprimer la `span` badge vert a cote du prix principal. Ajouter apres la ligne "XX€/month for X users" un nouveau `<p>` conditionnel :
+   ```tsx
+   {isAnnual && proSavings > 0 && (
+     <p className="text-sm text-muted-foreground mt-1">
+       Billed {formatPrice(proAnnualTotal)}€{t.perYear} <span className="text-success font-medium">(save {formatPrice(proSavings)}€)</span>
+     </p>
+   )}
+   ```
 
-4. **Garder le simulateur** tel quel (slider par increments de 10, min 10, max 200) - il fonctionne deja correctement
-
-5. **Mettre a jour les textes descriptifs** sous les prix : remplacer "10 users included, then +25€ per 10 users" par "4€ per user" / "6€ per user"
+2. **Carte Business** (ligne ~396) : Meme modification avec `businessAnnualTotal` et `businessSavings`.
 
