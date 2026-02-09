@@ -132,38 +132,26 @@ const Pricing = () => {
   const [proUsers, setProUsers] = useState([10]);
   const [businessUsers, setBusinessUsers] = useState([10]);
 
-  // Pricing constants - tiered pricing
-  const PRO_BASE_PRICE = 39;
-  const PRO_BASE_USERS = 10;
-  const PRO_EXTRA_PER_10 = 25;
-
-  const BUSINESS_BASE_PRICE = 69;
-  const BUSINESS_BASE_USERS = 10;
-  const BUSINESS_EXTRA_PER_10 = 50;
+  // Pricing constants - per user
+  const PRO_PRICE_PER_USER = 4;
+  const BUSINESS_PRICE_PER_USER = 6;
 
   const MIN_USERS = 10;
   const MAX_USERS = 200;
   const ANNUAL_DISCOUNT = 0.20;
 
-  // Calculate tiered price
-  const calculateTieredPrice = (basePrice: number, baseUsers: number, extraPer10: number, users: number, annual: boolean) => {
-    const extraBlocks = Math.max(0, (users - baseUsers) / 10);
-    const monthly = basePrice + extraBlocks * extraPer10;
-    return annual ? monthly * 12 * (1 - ANNUAL_DISCOUNT) : monthly;
-  };
+  // Calculate prices
+  const proPerUser = isAnnual ? PRO_PRICE_PER_USER * (1 - ANNUAL_DISCOUNT) : PRO_PRICE_PER_USER;
+  const businessPerUser = isAnnual ? BUSINESS_PRICE_PER_USER * (1 - ANNUAL_DISCOUNT) : BUSINESS_PRICE_PER_USER;
 
-  const calculateMonthlyEquivalent = (annualPrice: number) => {
-    return annualPrice / 12;
-  };
+  const proMonthlyTotal = proPerUser * proUsers[0];
+  const businessMonthlyTotal = businessPerUser * businessUsers[0];
 
-  const proPrice = calculateTieredPrice(PRO_BASE_PRICE, PRO_BASE_USERS, PRO_EXTRA_PER_10, proUsers[0], isAnnual);
-  const businessPrice = calculateTieredPrice(BUSINESS_BASE_PRICE, BUSINESS_BASE_USERS, BUSINESS_EXTRA_PER_10, businessUsers[0], isAnnual);
+  const proAnnualTotal = proPerUser * proUsers[0] * 12;
+  const businessAnnualTotal = businessPerUser * businessUsers[0] * 12;
 
-  const proMonthly = calculateTieredPrice(PRO_BASE_PRICE, PRO_BASE_USERS, PRO_EXTRA_PER_10, proUsers[0], false);
-  const businessMonthly = calculateTieredPrice(BUSINESS_BASE_PRICE, BUSINESS_BASE_USERS, BUSINESS_EXTRA_PER_10, businessUsers[0], false);
-
-  const proSavings = isAnnual ? proMonthly * 12 - proPrice : 0;
-  const businessSavings = isAnnual ? businessMonthly * 12 - businessPrice : 0;
+  const proSavings = isAnnual ? PRO_PRICE_PER_USER * proUsers[0] * 12 - proAnnualTotal : 0;
+  const businessSavings = isAnnual ? BUSINESS_PRICE_PER_USER * businessUsers[0] * 12 - businessAnnualTotal : 0;
 
   const formatPrice = (price: number) => {
     return price.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).replace('.', ',');
@@ -303,10 +291,10 @@ const Pricing = () => {
                 <div className="min-h-[100px]">
                   <div className="flex items-baseline gap-1 flex-wrap">
                     <span className="text-4xl font-bold text-foreground">
-                      {formatPrice(proMonthly)}€
+                      {formatPrice(proPerUser)}€
                     </span>
                     <span className="text-muted-foreground">
-                      {t.perMonth}
+                      /user{t.perMonth}
                     </span>
                     {isAnnual && proSavings > 0 && (
                       <span className="text-xs bg-success/15 text-success px-2 py-0.5 rounded-full font-semibold">
@@ -315,11 +303,11 @@ const Pricing = () => {
                     )}
                   </div>
                   <p className="text-sm text-muted-foreground mt-1">
-                    10 users included, then +{PRO_EXTRA_PER_10}€ per 10 users
+                    {formatPrice(proMonthlyTotal)}€/month for {proUsers[0]} users
                   </p>
                   {isAnnual && (
                     <p className="text-sm text-muted-foreground mt-1">
-                      Billed {formatPrice(proPrice)}€{t.perYear}
+                      Billed {formatPrice(proAnnualTotal)}€{t.perYear}
                     </p>
                   )}
                 </div>
@@ -406,10 +394,10 @@ const Pricing = () => {
                 <div className="min-h-[100px]">
                   <div className="flex items-baseline gap-1 flex-wrap">
                     <span className="text-4xl font-bold text-foreground">
-                      {formatPrice(businessMonthly)}€
+                      {formatPrice(businessPerUser)}€
                     </span>
                     <span className="text-muted-foreground">
-                      {t.perMonth}
+                      /user{t.perMonth}
                     </span>
                     {isAnnual && businessSavings > 0 && (
                       <span className="text-xs bg-success/15 text-success px-2 py-0.5 rounded-full font-semibold">
@@ -418,11 +406,11 @@ const Pricing = () => {
                     )}
                   </div>
                   <p className="text-sm text-muted-foreground mt-1">
-                    10 users included, then +{BUSINESS_EXTRA_PER_10}€ per 10 users
+                    {formatPrice(businessMonthlyTotal)}€/month for {businessUsers[0]} users
                   </p>
                   {isAnnual && (
                     <p className="text-sm text-muted-foreground mt-1">
-                      Billed {formatPrice(businessPrice)}€{t.perYear}
+                      Billed {formatPrice(businessAnnualTotal)}€{t.perYear}
                     </p>
                   )}
                 </div>
