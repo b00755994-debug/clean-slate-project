@@ -671,10 +671,10 @@ export default function Dashboard() {
                   <TableHeader>
                     <TableRow className="h-5">
                       <TableHead className="py-0.5 text-xs w-[16%] uppercase tracking-wide">{t.name}</TableHead>
-                      <TableHead className="py-0.5 text-xs w-[32%] uppercase tracking-wide">{t.linkedinUrl}</TableHead>
-                      <TableHead className="py-0.5 text-xs w-[18%] uppercase tracking-wide">{t.slackUser}</TableHead>
-                      <TableHead className="py-0.5 text-xs w-[12%] text-right uppercase tracking-wide">{t.followers}</TableHead>
-                      <TableHead className="text-center py-0.5 text-xs w-[10%] uppercase tracking-wide">{t.posts30d}</TableHead>
+                      <TableHead className="py-0.5 text-xs w-[28%] uppercase tracking-wide">{t.linkedinUrl}</TableHead>
+                      <TableHead className="py-0.5 text-xs w-[14%] uppercase tracking-wide">{t.slackUser}</TableHead>
+                      <TableHead className="py-0.5 text-xs w-[14%] text-right uppercase tracking-wide">{t.followers}</TableHead>
+                      <TableHead className="text-center py-0.5 text-xs w-[14%] uppercase tracking-wide">{t.posts30d}</TableHead>
                       <TableHead className="text-right py-0.5 text-xs w-[12%] uppercase tracking-wide">{t.actions}</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -687,13 +687,13 @@ export default function Dashboard() {
                           <TableCell className="font-medium py-0.5 w-[16%]">
                             {linkedinProfile.profile_name}
                           </TableCell>
-                          <TableCell className="py-0.5 w-[32%]">
+                          <TableCell className="py-0.5 w-[28%]">
                             <a href={linkedinProfile.linkedin_url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
                               {linkedinProfile.linkedin_url.replace('https://linkedin.com/in/', '')}
                               <ExternalLink className="w-3 h-3" />
                             </a>
                           </TableCell>
-                          <TableCell className="py-0.5 w-[18%]">
+                          <TableCell className="py-0.5 w-[14%]">
                             {slackWorkspace?.is_connected ? (
                               <Select value={linkedinProfile.slack_user_id || 'none'} onValueChange={value => {
                                 handleUpdateSlackUser(linkedinProfile.id, value === 'none' ? null : value);
@@ -774,10 +774,10 @@ export default function Dashboard() {
                               </TooltipProvider>
                             )}
                           </TableCell>
-                          <TableCell className="py-0.5 w-[12%] text-right text-sm">
+                          <TableCell className="py-0.5 w-[14%] text-right text-sm">
                             {linkedinProfile.followers ? new Intl.NumberFormat(language === 'fr' ? 'fr-FR' : 'en-US', { notation: 'compact' }).format(linkedinProfile.followers) : '—'}
                           </TableCell>
-                          <TableCell className="text-center py-0.5 w-[10%]">
+                          <TableCell className="text-center py-0.5 w-[14%]">
 
                             <Badge variant="secondary">{linkedinProfile.posts_count || 0}</Badge>
                           </TableCell>
