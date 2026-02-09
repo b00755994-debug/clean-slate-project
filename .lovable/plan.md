@@ -1,37 +1,33 @@
 
 
-# Afficher le prix mensuel de reference + badge savings
+# Ajouter le nombre d'abonnes (followers) dans la liste des profils et le leaderboard
 
-## Principe
+## Changements prevus
 
-Toujours afficher le prix mensuel plein (39€, 69€, etc.) comme prix principal, quel que soit le toggle mensuel/annuel. Quand l'utilisateur selectionne "annuel", un badge vert apparait a cote du prix pour indiquer les economies realisees.
+### 1. Hook `useLinkedInProfiles` (`src/hooks/useLinkedInProfiles.ts`)
 
-## Changements dans `src/pages/Pricing.tsx`
+- Ajouter `followers` au type `LinkedInProfile`
+- Le champ est deja recupere car la query utilise `select('*')`, donc pas de changement de query necessaire
 
-### 1. Prix principal : toujours le mensuel
+### 2. Liste des URL trackees (`src/pages/Dashboard.tsx`)
 
-Le prix affiche en grand (text-4xl) sera toujours le prix mensuel sans remise :
-- Pro 10 users : **39€/mois**
-- Pro 20 users : **64€/mois**
-- Business 10 users : **69€/mois**
+- Ajouter une colonne "Followers" dans le header du tableau (entre LinkedIn URL et Slack User)
+- Afficher `linkedinProfile.followers` formate (ex: 1.2k) dans chaque ligne
+- Ajuster les largeurs des colonnes pour integrer cette nouvelle colonne
 
-Ce prix ne change pas quand on bascule entre mensuel et annuel.
+### 3. Hook `useFullLeaderboard` (`src/hooks/useFullLeaderboard.ts`)
 
-### 2. Badge savings en mode annuel
+- Ajouter `followers` dans le select de la query billable_users : `'id, profile_name, linkedin_title, avatar_url, profile_picture, followers'`
+- Ajouter `followers: number | null` dans le type `LeaderboardEntry`
+- Propager la valeur dans le mapping des entries
 
-Quand le toggle est sur "Annuel", un badge vert s'affiche a cote ou en dessous du prix :
-- Texte : "Save X€/year" (ou X = economies annuelles, ex: 93,60€ pour Pro 10 users)
-- Style : badge vert (`bg-success/15 text-success`) similaire au badge "-20%" du toggle
+### 4. Page Leaderboard (`src/pages/DashboardLeaderboard.tsx`)
 
-### 3. Sous-titre annuel
+- Ajouter une colonne "Followers" entre "Title" et "Posts" dans le header
+- Afficher la valeur formatee (ex: 12.5k) dans chaque ligne
+- Ajouter les traductions FR/EN ("Abonnes" / "Followers")
 
-La ligne sous le prix indiquera le total annuel facture :
-- "Billed 374,40€/year" (au lieu d'afficher l'equivalent mensuel reduit)
+## Aucune migration SQL necessaire
 
-### 4. Detail technique
-
-- `calculateTieredPrice` reste inchange
-- Le prix affiche en grand = toujours `calculateTieredPrice(..., users, false)` (mensuel)
-- Le badge savings = `mensuel * 12 - annuel`
-- La ligne secondaire en mode annuel = total annuel facture
+La colonne `followers` existe deja dans `billable_users`.
 
