@@ -69,6 +69,8 @@ const translations = {
     addTeamMembers: 'Ajoutez des membres de votre équipe pour commencer.',
     name: 'Nom',
     slackUser: 'Utilisateur Slack',
+    followers_summary: 'Abonnés',
+    followers_tooltip: 'Somme du nombre d\'abonnés de tous les profils LinkedIn suivis',
     followers: 'Abonnés',
     posts30d: 'Posts (30j)',
     actions: 'Actions',
@@ -145,6 +147,8 @@ const translations = {
     addTeamMembers: 'Add team members to get started.',
     name: 'Name',
     slackUser: 'Slack User',
+    followers_summary: 'Followers',
+    followers_tooltip: 'Total number of followers across all followed LinkedIn profiles',
     followers: 'Followers',
     posts30d: 'Posts (30d)',
     actions: 'Actions',
@@ -536,12 +540,23 @@ export default function Dashboard() {
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">{t.impressions}</span>
+                  <span className="text-sm text-muted-foreground flex items-center gap-1">
+                    {t.followers_summary}
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-muted text-muted-foreground text-[10px] font-medium cursor-help">?</span>
+                        </TooltipTrigger>
+                        <TooltipContent side="top" className="max-w-xs">
+                          <p>{t.followers_tooltip}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </span>
                   <span className="font-semibold">
-                    {(teamStats.totalImpressions >= 1000 
-                      ? Math.round(teamStats.totalImpressions / 100) * 100 
-                      : Math.round(teamStats.totalImpressions)
-                    ).toLocaleString()}
+                    {new Intl.NumberFormat(language === 'fr' ? 'fr-FR' : 'en-US', { notation: 'compact' }).format(
+                      linkedinProfiles.reduce((acc, p) => acc + (p.followers || 0), 0)
+                    )}
                   </span>
                 </div>
               </div>
