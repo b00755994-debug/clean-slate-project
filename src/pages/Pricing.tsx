@@ -296,15 +296,15 @@ const Pricing = () => {
                     <span className="text-muted-foreground">
                       /user{t.perMonth}
                     </span>
-                    {isAnnual && proSavings > 0 && (
-                      <span className="text-xs bg-success/15 text-success px-2 py-0.5 rounded-full font-semibold">
-                        Save {formatPrice(proSavings)}€ — Billed {formatPrice(proAnnualTotal)}€{t.perYear}
-                      </span>
-                    )}
                   </div>
                   <p className="text-sm text-muted-foreground mt-1">
                     {formatPrice(proMonthlyTotal)}€/month for {proUsers[0]} users
                   </p>
+                  {isAnnual && proSavings > 0 && (
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Billed {formatPrice(proAnnualTotal)}€{t.perYear} <span className="text-success font-medium">(save {formatPrice(proSavings)}€)</span>
+                    </p>
+                  )}
                 </div>
 
                 {/* Features */}
@@ -394,15 +394,15 @@ const Pricing = () => {
                     <span className="text-muted-foreground">
                       /user{t.perMonth}
                     </span>
-                    {isAnnual && businessSavings > 0 && (
-                      <span className="text-xs bg-success/15 text-success px-2 py-0.5 rounded-full font-semibold">
-                        Save {formatPrice(businessSavings)}€ — Billed {formatPrice(businessAnnualTotal)}€{t.perYear}
-                      </span>
-                    )}
                   </div>
                   <p className="text-sm text-muted-foreground mt-1">
                     {formatPrice(businessMonthlyTotal)}€/month for {businessUsers[0]} users
                   </p>
+                  {isAnnual && businessSavings > 0 && (
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Billed {formatPrice(businessAnnualTotal)}€{t.perYear} <span className="text-success font-medium">(save {formatPrice(businessSavings)}€)</span>
+                    </p>
+                  )}
                 </div>
 
                 {/* Features */}
