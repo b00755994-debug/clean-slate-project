@@ -672,8 +672,8 @@ export default function Dashboard() {
                     <TableRow className="h-5">
                       <TableHead className="py-0.5 text-xs w-[16%] uppercase tracking-wide">{t.name}</TableHead>
                       <TableHead className="py-0.5 text-xs w-[32%] uppercase tracking-wide">{t.linkedinUrl}</TableHead>
-                      <TableHead className="py-0.5 text-xs w-[12%] text-right uppercase tracking-wide">{t.followers}</TableHead>
                       <TableHead className="py-0.5 text-xs w-[18%] uppercase tracking-wide">{t.slackUser}</TableHead>
+                      <TableHead className="py-0.5 text-xs w-[12%] text-right uppercase tracking-wide">{t.followers}</TableHead>
                       <TableHead className="text-center py-0.5 text-xs w-[10%] uppercase tracking-wide">{t.posts30d}</TableHead>
                       <TableHead className="text-right py-0.5 text-xs w-[12%] uppercase tracking-wide">{t.actions}</TableHead>
                     </TableRow>
@@ -692,9 +692,6 @@ export default function Dashboard() {
                               {linkedinProfile.linkedin_url.replace('https://linkedin.com/in/', '')}
                               <ExternalLink className="w-3 h-3" />
                             </a>
-                          </TableCell>
-                          <TableCell className="py-0.5 w-[12%] text-right text-sm">
-                            {linkedinProfile.followers ? new Intl.NumberFormat(language === 'fr' ? 'fr-FR' : 'en-US', { notation: 'compact' }).format(linkedinProfile.followers) : '—'}
                           </TableCell>
                           <TableCell className="py-0.5 w-[18%]">
                             {slackWorkspace?.is_connected ? (
@@ -776,6 +773,9 @@ export default function Dashboard() {
                                 </Tooltip>
                               </TooltipProvider>
                             )}
+                          </TableCell>
+                          <TableCell className="py-0.5 w-[12%] text-right text-sm">
+                            {linkedinProfile.followers ? new Intl.NumberFormat(language === 'fr' ? 'fr-FR' : 'en-US', { notation: 'compact' }).format(linkedinProfile.followers) : '—'}
                           </TableCell>
                           <TableCell className="text-center py-0.5 w-[10%]">
 
