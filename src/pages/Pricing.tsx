@@ -298,18 +298,13 @@ const Pricing = () => {
                     </span>
                     {isAnnual && proSavings > 0 && (
                       <span className="text-xs bg-success/15 text-success px-2 py-0.5 rounded-full font-semibold">
-                        Save {formatPrice(proSavings)}€/year
+                        Save {formatPrice(proSavings)}€ — Billed {formatPrice(proAnnualTotal)}€{t.perYear}
                       </span>
                     )}
                   </div>
                   <p className="text-sm text-muted-foreground mt-1">
                     {formatPrice(proMonthlyTotal)}€/month for {proUsers[0]} users
                   </p>
-                  {isAnnual && (
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Billed {formatPrice(proAnnualTotal)}€{t.perYear}
-                    </p>
-                  )}
                 </div>
 
                 {/* Features */}
@@ -401,18 +396,13 @@ const Pricing = () => {
                     </span>
                     {isAnnual && businessSavings > 0 && (
                       <span className="text-xs bg-success/15 text-success px-2 py-0.5 rounded-full font-semibold">
-                        Save {formatPrice(businessSavings)}€/year
+                        Save {formatPrice(businessSavings)}€ — Billed {formatPrice(businessAnnualTotal)}€{t.perYear}
                       </span>
                     )}
                   </div>
                   <p className="text-sm text-muted-foreground mt-1">
                     {formatPrice(businessMonthlyTotal)}€/month for {businessUsers[0]} users
                   </p>
-                  {isAnnual && (
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Billed {formatPrice(businessAnnualTotal)}€{t.perYear}
-                    </p>
-                  )}
                 </div>
 
                 {/* Features */}
