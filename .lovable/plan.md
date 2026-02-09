@@ -1,33 +1,32 @@
 
 
-# Ajouter le nombre d'abonnes (followers) dans la liste des profils et le leaderboard
+## Refonte du modèle tarifaire - Prix par utilisateur
 
-## Changements prevus
+### Changement demande
+Revenir a un modele simple de prix par utilisateur au lieu du systeme par paliers actuels :
+- **Pro** : 4€/utilisateur/mois (3,20€ en annuel avec -20%)
+- **Business** : 6€/utilisateur/mois (4,80€ en annuel avec -20%)
+- Simulateur avec slider par increments de 10 utilisateurs (min 10, max 200)
 
-### 1. Hook `useLinkedInProfiles` (`src/hooks/useLinkedInProfiles.ts`)
+### Modifications techniques (fichier `src/pages/Pricing.tsx`)
 
-- Ajouter `followers` au type `LinkedInProfile`
-- Le champ est deja recupere car la query utilise `select('*')`, donc pas de changement de query necessaire
+1. **Remplacer les constantes de prix** :
+   - `PRO_PRICE_PER_USER = 4` (remplace `PRO_BASE_PRICE`, `PRO_EXTRA_PER_10`)
+   - `BUSINESS_PRICE_PER_USER = 6` (remplace `BUSINESS_BASE_PRICE`, `BUSINESS_EXTRA_PER_10`)
+   - Garder `ANNUAL_DISCOUNT = 0.20`
 
-### 2. Liste des URL trackees (`src/pages/Dashboard.tsx`)
+2. **Simplifier le calcul de prix** :
+   - Prix mensuel = prix par utilisateur x nombre d'utilisateurs
+   - Prix annuel = mensuel x 12 x 0.80
+   - Supprimer `calculateTieredPrice` et remplacer par un calcul direct
 
-- Ajouter une colonne "Followers" dans le header du tableau (entre LinkedIn URL et Slack User)
-- Afficher `linkedinProfile.followers` formate (ex: 1.2k) dans chaque ligne
-- Ajuster les largeurs des colonnes pour integrer cette nouvelle colonne
+3. **Mettre a jour l'affichage des cartes Pro et Business** :
+   - Afficher le prix par utilisateur en principal (ex: "4,00€/user/month")
+   - En annuel, afficher "3,20€/user/month" comme prix principal
+   - Sous-titre : prix total mensuel selon le nombre d'utilisateurs selectionne (ex: "40,00€/month for 10 users")
+   - Badge savings et billed annually restent inchanges dans leur logique
 
-### 3. Hook `useFullLeaderboard` (`src/hooks/useFullLeaderboard.ts`)
+4. **Garder le simulateur** tel quel (slider par increments de 10, min 10, max 200) - il fonctionne deja correctement
 
-- Ajouter `followers` dans le select de la query billable_users : `'id, profile_name, linkedin_title, avatar_url, profile_picture, followers'`
-- Ajouter `followers: number | null` dans le type `LeaderboardEntry`
-- Propager la valeur dans le mapping des entries
-
-### 4. Page Leaderboard (`src/pages/DashboardLeaderboard.tsx`)
-
-- Ajouter une colonne "Followers" entre "Title" et "Posts" dans le header
-- Afficher la valeur formatee (ex: 12.5k) dans chaque ligne
-- Ajouter les traductions FR/EN ("Abonnes" / "Followers")
-
-## Aucune migration SQL necessaire
-
-La colonne `followers` existe deja dans `billable_users`.
+5. **Mettre a jour les textes descriptifs** sous les prix : remplacer "10 users included, then +25€ per 10 users" par "4€ per user" / "6€ per user"
 
