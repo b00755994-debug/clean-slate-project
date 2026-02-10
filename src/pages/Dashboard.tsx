@@ -790,7 +790,7 @@ export default function Dashboard() {
                             )}
                           </TableCell>
                           <TableCell className="py-0.5 w-[14%] text-right text-sm">
-                            {linkedinProfile.followers ? new Intl.NumberFormat(language === 'fr' ? 'fr-FR' : 'en-US', { notation: 'compact' }).format(linkedinProfile.followers) : '—'}
+                            {linkedinProfile.followers ? `${(linkedinProfile.followers / 1000).toFixed(1)}k` : '—'}
                           </TableCell>
                           <TableCell className="text-center py-0.5 w-[14%]">
 
