@@ -204,7 +204,7 @@ export default function DashboardLeaderboard() {
                     <TableCell className="hidden md:table-cell pl-1 text-muted-foreground text-sm truncate max-w-[300px] py-2">
                       {entry.linkedinTitle || '—'}
                     </TableCell>
-                    <TableCell className="w-20 px-4 text-right text-sm font-medium py-2">{entry.followers ? formatNumber(entry.followers) : '—'}</TableCell>
+                    <TableCell className="w-20 px-4 text-right text-sm font-medium py-2">{entry.followers ? `${(entry.followers / 1000).toFixed(1)}k` : '—'}</TableCell>
                     <TableCell className="w-16 px-4 text-right text-sm font-medium py-2">{entry.postCount}</TableCell>
                     <TableCell className="w-20 px-4 text-right text-sm font-medium py-2">{formatNumber(entry.impressions)}</TableCell>
                     <TableCell className="w-20 px-4 text-right text-sm font-medium py-2">{formatNumber(entry.reactions)}</TableCell>
