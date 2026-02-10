@@ -682,33 +682,33 @@ export default function Dashboard() {
               </div>
             ) : (
               <div className="overflow-x-auto">
-                <Table className="text-sm table-fixed w-full">
+                <Table className="text-xs table-fixed w-full">
                   <TableHeader>
                     <TableRow className="h-5">
-                      <TableHead className="py-0.5 text-xs w-[16%] uppercase tracking-wide">{t.name}</TableHead>
-                      <TableHead className="py-0.5 text-xs w-[28%] uppercase tracking-wide">{t.linkedinUrl}</TableHead>
-                      <TableHead className="py-0.5 text-xs w-[14%] uppercase tracking-wide">{t.slackUser}</TableHead>
-                      <TableHead className="py-0.5 text-xs w-[14%] text-right uppercase tracking-wide">{t.followers}</TableHead>
-                      <TableHead className="text-center py-0.5 text-xs w-[14%] uppercase tracking-wide">{t.posts30d}</TableHead>
-                      <TableHead className="text-right py-0.5 text-xs w-[12%] uppercase tracking-wide">{t.actions}</TableHead>
+                      <TableHead className="py-0.5 text-[11px] w-[18%] uppercase tracking-wide">{t.name}</TableHead>
+                      <TableHead className="py-0.5 text-[11px] w-[26%] uppercase tracking-wide">{t.linkedinUrl}</TableHead>
+                      <TableHead className="py-0.5 text-[11px] w-[16%] uppercase tracking-wide">{t.slackUser}</TableHead>
+                      <TableHead className="py-0.5 text-[11px] w-[14%] text-right uppercase tracking-wide">{t.followers}</TableHead>
+                      <TableHead className="text-center py-0.5 text-[11px] w-[14%] uppercase tracking-wide">{t.posts30d}</TableHead>
+                      <TableHead className="text-right py-0.5 text-[11px] w-[12%] uppercase tracking-wide">{t.actions}</TableHead>
                     </TableRow>
                   </TableHeader>
                 </Table>
                 <div className="max-h-[200px] overflow-y-auto">
-                  <Table className="text-sm table-fixed w-full">
+                  <Table className="text-xs table-fixed w-full">
                     <TableBody>
                       {linkedinProfiles.map(linkedinProfile => (
                         <TableRow key={linkedinProfile.id} className="h-5">
-                          <TableCell className="font-medium py-0.5 w-[16%]">
+                          <TableCell className="font-medium py-0.5 w-[18%] truncate">
                             {linkedinProfile.profile_name}
                           </TableCell>
-                          <TableCell className="py-0.5 w-[28%]">
-                            <a href={linkedinProfile.linkedin_url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+                          <TableCell className="py-0.5 w-[26%]">
+                            <a href={linkedinProfile.linkedin_url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1 truncate">
                               {linkedinProfile.linkedin_url.replace('https://linkedin.com/in/', '')}
-                              <ExternalLink className="w-3 h-3" />
+                              <ExternalLink className="w-3 h-3 shrink-0" />
                             </a>
                           </TableCell>
-                          <TableCell className="py-0.5 w-[14%]">
+                          <TableCell className="py-0.5 w-[16%]">
                             {slackWorkspace?.is_connected ? (
                               <Select value={linkedinProfile.slack_user_id || 'none'} onValueChange={value => {
                                 handleUpdateSlackUser(linkedinProfile.id, value === 'none' ? null : value);
