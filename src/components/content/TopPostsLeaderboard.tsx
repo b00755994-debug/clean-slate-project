@@ -1,19 +1,22 @@
-import { Trophy, ExternalLink, MessageCircle, ThumbsUp } from 'lucide-react';
+import { Trophy, ExternalLink, MessageCircle, ThumbsUp, Info } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const translations = {
   fr: {
     topPosts: 'Top Posts',
+    topPostsTooltip: 'Classement basé sur le nombre total d\'interactions (réactions + commentaires) sur les 30 derniers jours glissants',
     noPostsInLast30Days: 'Aucun post dans les 30 derniers jours',
     interactions: 'interactions',
     noContent: 'Pas de contenu',
   },
   en: {
     topPosts: 'Top Posts',
+    topPostsTooltip: 'Ranking based on total interactions (reactions + comments) over the last rolling 30 days',
     noPostsInLast30Days: 'No posts in the last 30 days',
     interactions: 'interactions',
     noContent: 'No content',
@@ -57,6 +60,23 @@ function truncateContent(content: string | null, noContentText: string, maxLengt
   return content.slice(0, maxLength).trim() + '...';
 }
 
+const LeaderboardTitle = ({ t }: { t: typeof translations['fr'] }) => (
+  <CardTitle className="text-base font-semibold flex items-center gap-2">
+    <Trophy className="h-4 w-4 text-amber-500" />
+    {t.topPosts}
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+        </TooltipTrigger>
+        <TooltipContent side="top" className="max-w-[220px] text-xs">
+          {t.topPostsTooltip}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  </CardTitle>
+);
+
 export function TopPostsLeaderboard({ posts, loading }: TopPostsLeaderboardProps) {
   const { language } = useLanguage();
   const t = translations[language];
@@ -65,10 +85,7 @@ export function TopPostsLeaderboard({ posts, loading }: TopPostsLeaderboardProps
     return (
       <Card className="border-border/40">
         <CardHeader className="pb-3">
-          <CardTitle className="text-base font-semibold flex items-center gap-2">
-            <Trophy className="h-4 w-4 text-amber-500" />
-            {t.topPosts}
-          </CardTitle>
+          <LeaderboardTitle t={t} />
         </CardHeader>
         <CardContent className="space-y-3">
           {[1, 2, 3].map(i => (
@@ -90,10 +107,7 @@ export function TopPostsLeaderboard({ posts, loading }: TopPostsLeaderboardProps
     return (
       <Card className="border-border/40">
         <CardHeader className="pb-3">
-          <CardTitle className="text-base font-semibold flex items-center gap-2">
-            <Trophy className="h-4 w-4 text-amber-500" />
-            {t.topPosts}
-          </CardTitle>
+          <LeaderboardTitle t={t} />
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground text-center py-4">
@@ -107,10 +121,7 @@ export function TopPostsLeaderboard({ posts, loading }: TopPostsLeaderboardProps
   return (
     <Card className="border-border/40 h-fit">
       <CardHeader className="pb-3">
-        <CardTitle className="text-base font-semibold flex items-center gap-2">
-          <Trophy className="h-4 w-4 text-amber-500" />
-          {t.topPosts}
-        </CardTitle>
+        <LeaderboardTitle t={t} />
       </CardHeader>
       <CardContent className="space-y-3">
         {posts.map((post, index) => (

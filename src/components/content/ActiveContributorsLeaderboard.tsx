@@ -1,18 +1,21 @@
-import { Users, FileText } from 'lucide-react';
+import { Users, FileText, Info } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const translations = {
   fr: {
     activeContributors: 'Contributeurs actifs',
+    activeContributorsTooltip: 'Classement par nombre de posts publiés sur les 30 derniers jours glissants',
     noActivityInLast30Days: 'Aucune activité dans les 30 derniers jours',
     postPublished: 'post publié',
     postsPublished: 'posts publiés',
   },
   en: {
     activeContributors: 'Active Contributors',
+    activeContributorsTooltip: 'Ranking by number of posts published over the last rolling 30 days',
     noActivityInLast30Days: 'No activity in the last 30 days',
     postPublished: 'post published',
     postsPublished: 'posts published',
@@ -41,6 +44,23 @@ function getInitials(name: string | null): string {
     .slice(0, 2);
 }
 
+const ContributorsTitle = ({ t }: { t: typeof translations['fr'] }) => (
+  <CardTitle className="text-base font-semibold flex items-center gap-2">
+    <Users className="h-4 w-4 text-primary" />
+    {t.activeContributors}
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+        </TooltipTrigger>
+        <TooltipContent side="top" className="max-w-[220px] text-xs">
+          {t.activeContributorsTooltip}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  </CardTitle>
+);
+
 export function ActiveContributorsLeaderboard({ contributors, loading }: ActiveContributorsLeaderboardProps) {
   const { language } = useLanguage();
   const t = translations[language];
@@ -49,10 +69,7 @@ export function ActiveContributorsLeaderboard({ contributors, loading }: ActiveC
     return (
       <Card className="border-border/40">
         <CardHeader className="pb-3">
-          <CardTitle className="text-base font-semibold flex items-center gap-2">
-            <Users className="h-4 w-4 text-primary" />
-            {t.activeContributors}
-          </CardTitle>
+          <ContributorsTitle t={t} />
         </CardHeader>
         <CardContent className="space-y-3">
           {[1, 2, 3].map(i => (
@@ -73,10 +90,7 @@ export function ActiveContributorsLeaderboard({ contributors, loading }: ActiveC
     return (
       <Card className="border-border/40">
         <CardHeader className="pb-3">
-          <CardTitle className="text-base font-semibold flex items-center gap-2">
-            <Users className="h-4 w-4 text-primary" />
-            {t.activeContributors}
-          </CardTitle>
+          <ContributorsTitle t={t} />
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground text-center py-4">
@@ -90,10 +104,7 @@ export function ActiveContributorsLeaderboard({ contributors, loading }: ActiveC
   return (
     <Card className="border-border/40 h-fit">
       <CardHeader className="pb-3">
-        <CardTitle className="text-base font-semibold flex items-center gap-2">
-          <Users className="h-4 w-4 text-primary" />
-          {t.activeContributors}
-        </CardTitle>
+        <ContributorsTitle t={t} />
       </CardHeader>
       <CardContent className="space-y-3">
         {contributors.map((contributor, index) => (
