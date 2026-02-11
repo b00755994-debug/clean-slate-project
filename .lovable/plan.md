@@ -1,40 +1,11 @@
 
 
-# Replace "New Posts" Badge with Auto-Refresh
+# Elargir le filtre "All authors"
 
-## Why the badge doesn't work
-The `useNewPostsBadge` hook subscribes to Supabase Realtime `postgres_changes` on the `posts` table. This requires Realtime to be explicitly enabled for that table in the Supabase dashboard. If it's not enabled (which is the most likely case), the subscription silently does nothing — no errors, no events.
+Modification simple dans `src/pages/DashboardContent.tsx` : passer la largeur du `SelectTrigger` du filtre auteur de `w-[140px]` a `w-[200px]` pour que les noms s'affichent sur une seule ligne.
 
-## Proposed change: Auto-refresh polling
+## Detail technique
 
-Instead of relying on Realtime, we add a simple polling interval to the posts query so new posts appear automatically.
-
-### Files to modify
-
-**1. `src/hooks/useTeamFeed.ts`**
-- Add `refetchInterval: 30_000` (30 seconds) to the posts query options
-- This automatically re-fetches posts every 30s in the background
-- Combined with `placeholderData`, the UI stays stable during refresh (no flicker)
-
-**2. `src/hooks/useNewPostsBadge.ts`**
-- Delete this file entirely (no longer needed)
-
-**3. `src/components/content/TeamFeed.tsx`**
-- Remove the `useNewPostsBadge` import and usage
-- Remove the `scrollContainerRef` prop (only used for the badge scroll-to-top)
-- Remove the floating "New posts" button JSX
-- Remove `ArrowUp` icon import
-
-**4. `src/pages/DashboardContent.tsx`**
-- Remove the `feedScrollRef` and its `ref` prop on the scroll container
-- Remove the `scrollContainerRef` prop passed to `TeamFeed`
-
-**5. `src/hooks/useNewPostsNotification.ts`**
-- Also uses Realtime on `posts` table and likely doesn't work for the same reason
-- Replace with a simpler approach or remove (the auto-refresh covers this use case)
-
-## Result
-- New posts appear automatically within 30 seconds, no user action needed
-- No dependency on Supabase Realtime configuration
-- Simpler codebase with fewer moving parts
+- **Fichier** : `src/pages/DashboardContent.tsx`
+- **Ligne ~155** : changer `className="w-[140px] h-8 text-sm bg-card"` en `className="w-[200px] h-8 text-sm bg-card"` sur le `SelectTrigger` du filtre auteur
 
