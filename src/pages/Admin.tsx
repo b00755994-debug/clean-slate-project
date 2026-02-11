@@ -6,30 +6,11 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
+import { Zap, LogOut, ArrowLeft, Users, Crown, Slack, Linkedin, ChevronDown, User } from 'lucide-react';
 import {
-  Zap,
-  LogOut,
-  ArrowLeft,
-  Users,
-  Crown,
-  Slack,
-  Linkedin,
-  ChevronDown,
-  User,
-} from 'lucide-react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
 interface UserData {
@@ -63,7 +44,6 @@ export default function Admin() {
   const fetchAllUsers = async () => {
     setIsLoadingUsers(true);
     
-    // Fetch all profiles (admin can see all)
     const { data: profiles, error } = await supabase
       .from('profiles')
       .select('*')
@@ -74,34 +54,48 @@ export default function Admin() {
       return;
     }
 
-    // For each profile, get their slack and linkedin data
-    const usersWithData = await Promise.all(
-      profiles.map(async (profile) => {
-        // Check slack connection via workspace_members
-        const { data: membership } = await supabase
-          .from('workspace_members')
-          .select('workspace_id, workspace:workspaces(is_connected)')
-          .eq('profile_id', profile.id)
-          .maybeSingle();
+    // Batch fetch: get all workspace memberships and billable user counts in 2 queries instead of N*2
+    const profileIds = profiles.map(p => p.id);
+    
+    const [membershipsResult, billableCountsResult] = await Promise.all([
+      supabase
+        .from('workspace_members')
+        .select('profile_id, workspace_id, workspace:workspaces(is_connected)')
+        .in('profile_id', profileIds),
+      supabase
+        .from('billable_users')
+        .select('workspace_id'),
+    ]);
 
-        // Count linkedin profiles via workspace
-        const workspaceId = membership?.workspace_id;
-        const { count } = workspaceId ? await supabase
-          .from('billable_users')
-          .select('*', { count: 'exact', head: true })
-          .eq('workspace_id', workspaceId) : { count: 0 };
+    // Build membership map: profile_id -> { workspace_id, is_connected }
+    const membershipMap = new Map<string, { workspace_id: string; is_connected: boolean }>();
+    membershipsResult.data?.forEach(m => {
+      membershipMap.set(m.profile_id, {
+        workspace_id: m.workspace_id,
+        is_connected: (m.workspace as { is_connected?: boolean } | null)?.is_connected || false,
+      });
+    });
 
-        return {
-          id: profile.id,
-          email: profile.email,
-          full_name: profile.full_name,
-          plan: profile.plan || 'pro',
-          created_at: profile.created_at,
-          slack_connected: (membership?.workspace as { is_connected?: boolean } | null)?.is_connected || false,
-          linkedin_profiles_count: count || 0,
-        };
-      })
-    );
+    // Build billable counts map: workspace_id -> count
+    const billableCountMap = new Map<string, number>();
+    billableCountsResult.data?.forEach(b => {
+      if (b.workspace_id) {
+        billableCountMap.set(b.workspace_id, (billableCountMap.get(b.workspace_id) || 0) + 1);
+      }
+    });
+
+    const usersWithData = profiles.map(profile => {
+      const membership = membershipMap.get(profile.id);
+      return {
+        id: profile.id,
+        email: profile.email,
+        full_name: profile.full_name,
+        plan: profile.plan || 'pro',
+        created_at: profile.created_at,
+        slack_connected: membership?.is_connected || false,
+        linkedin_profiles_count: membership ? (billableCountMap.get(membership.workspace_id) || 0) : 0,
+      };
+    });
 
     setUsers(usersWithData);
     setIsLoadingUsers(false);
@@ -122,7 +116,6 @@ export default function Admin() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary/10 to-background">
-      {/* Header */}
       <header className="border-b border-border/50 bg-background/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -160,24 +153,16 @@ export default function Admin() {
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="container mx-auto px-4 py-8 space-y-8">
         <div className="flex flex-col gap-2">
-          <h1 className="text-3xl font-bold text-foreground">
-            Administration
-          </h1>
-          <p className="text-muted-foreground">
-            Gérez les utilisateurs et visualisez les données de la plateforme
-          </p>
+          <h1 className="text-3xl font-bold text-foreground">Administration</h1>
+          <p className="text-muted-foreground">Gérez les utilisateurs et visualisez les données de la plateforme</p>
         </div>
 
-        {/* Stats Cards */}
         <div className="grid gap-4 md:grid-cols-3">
           <Card className="border-border/50 shadow-md">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Total Utilisateurs
-              </CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">Total Utilisateurs</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-2">
@@ -189,47 +174,36 @@ export default function Admin() {
           
           <Card className="border-border/50 shadow-md">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Slack Connectés
-              </CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">Slack Connectés</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-2">
                 <Slack className="w-5 h-5 text-primary" />
-                <span className="text-2xl font-bold">
-                  {users.filter(u => u.slack_connected).length}
-                </span>
+                <span className="text-2xl font-bold">{users.filter(u => u.slack_connected).length}</span>
               </div>
             </CardContent>
           </Card>
           
           <Card className="border-border/50 shadow-md">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Profils LinkedIn
-              </CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">Profils LinkedIn</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-2">
                 <Linkedin className="w-5 h-5 text-[#0A66C2]" />
-                <span className="text-2xl font-bold">
-                  {users.reduce((acc, u) => acc + u.linkedin_profiles_count, 0)}
-                </span>
+                <span className="text-2xl font-bold">{users.reduce((acc, u) => acc + u.linkedin_profiles_count, 0)}</span>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Users Table */}
         <Card className="border-border/50 shadow-md">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Users className="w-5 h-5" />
               Tous les utilisateurs
             </CardTitle>
-            <CardDescription>
-              Liste de tous les utilisateurs inscrits sur la plateforme
-            </CardDescription>
+            <CardDescription>Liste de tous les utilisateurs inscrits sur la plateforme</CardDescription>
           </CardHeader>
           <CardContent>
             {isLoadingUsers ? (
@@ -270,19 +244,13 @@ export default function Admin() {
                         </TableCell>
                         <TableCell className="text-center">
                           {userData.slack_connected ? (
-                            <Badge variant="outline" className="text-success border-success">
-                              Connecté
-                            </Badge>
+                            <Badge variant="outline" className="text-success border-success">Connecté</Badge>
                           ) : (
-                            <Badge variant="outline" className="text-muted-foreground">
-                              Non
-                            </Badge>
+                            <Badge variant="outline" className="text-muted-foreground">Non</Badge>
                           )}
                         </TableCell>
                         <TableCell className="text-center">
-                          <Badge variant="secondary">
-                            {userData.linkedin_profiles_count} profil(s)
-                          </Badge>
+                          <Badge variant="secondary">{userData.linkedin_profiles_count} profil(s)</Badge>
                         </TableCell>
                         <TableCell className="text-muted-foreground">
                           {new Date(userData.created_at).toLocaleDateString('fr-FR')}

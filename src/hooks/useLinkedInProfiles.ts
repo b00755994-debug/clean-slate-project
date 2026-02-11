@@ -60,22 +60,27 @@ export function useLinkedInProfiles() {
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-      const profilesWithPosts = await Promise.all(
-        profiles.map(async (p) => {
-          const { count } = await supabase
-            .from('posts')
-            .select('*', { count: 'exact', head: true })
-            .eq('linkedin_profiles', p.id)
-            .gte('created_at', thirtyDaysAgo.toISOString());
+      // Single query to get post counts for all profiles (eliminates N+1)
+      const { data: postCounts, error: postCountsError } = await supabase
+        .from('posts')
+        .select('linkedin_profiles')
+        .eq('workspace_id', workspace.id)
+        .gte('linkedin_created_at', thirtyDaysAgo.toISOString());
 
-          return {
-            ...p,
-            posts_count: count || 0,
-          } as LinkedInProfile;
-        })
-      );
+      // Count posts per profile client-side
+      const countsMap: Record<string, number> = {};
+      if (!postCountsError && postCounts) {
+        postCounts.forEach(p => {
+          if (p.linkedin_profiles) {
+            countsMap[p.linkedin_profiles] = (countsMap[p.linkedin_profiles] || 0) + 1;
+          }
+        });
+      }
 
-      return profilesWithPosts;
+      return profiles.map(p => ({
+        ...p,
+        posts_count: countsMap[p.id] || 0,
+      } as LinkedInProfile));
     },
     enabled: !!user && !!workspace?.id,
     staleTime: 5 * 60 * 1000, // 5 minutes

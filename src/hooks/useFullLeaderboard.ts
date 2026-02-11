@@ -112,7 +112,8 @@ export function useFullLeaderboard() {
       const { data, error } = await supabase
         .from('posts')
         .select('id, linkedin_profiles, linkedin_created_at, impressions, likes, comments, reactions')
-        .eq('workspace_id', workspace.id);
+        .eq('workspace_id', workspace.id)
+        .limit(10000);
       if (error) throw error;
       return data || [];
     },
