@@ -1,15 +1,15 @@
 import { ReactNode } from 'react';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { DashboardSidebar } from './DashboardSidebar';
-import { useNewPostsNotification } from '@/hooks/useNewPostsNotification';
+
 
 interface DashboardLayoutProps {
   children: ReactNode;
 }
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
-  useNewPostsNotification();
-  
+
+
   return (
     <SidebarProvider>
       <div className="h-screen flex w-full bg-background overflow-hidden">
