@@ -59,7 +59,6 @@ interface BillableUser {
 type TimePeriod = 'all' | 'today' | 'week' | 'month';
 
 export default function DashboardContent() {
-  console.log('[DashboardContent] Component mounted');
   const { language } = useLanguage();
   const t = translations[language];
   
