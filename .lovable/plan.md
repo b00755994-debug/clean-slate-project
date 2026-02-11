@@ -1,46 +1,39 @@
 
 
-# Modification de l'interface "Profils LinkedIn suivis"
+# Fix: Afficher la photo LinkedIn dans le tableau des profils
 
-## 1. Migration base de donnees
+## Probleme
 
-Rendre la colonne `profile_name` nullable dans `billable_users` et mettre a jour la fonction RPC :
+Le composant `AvatarImage` de Radix UI ne charge pas les images LinkedIn (probablement un probleme de cross-origin). En revanche, dans la page DashboardContent, les photos s'affichent correctement car elles utilisent un simple tag `<img>`.
 
-```sql
-ALTER TABLE billable_users ALTER COLUMN profile_name DROP NOT NULL;
+## Solution
+
+Remplacer le composant `AvatarImage` par un tag `<img>` natif dans le tableau des profils LinkedIn, comme c'est deja fait dans `DashboardContent.tsx`.
+
+## Fichier concerne
+
+**src/pages/Dashboard.tsx** (lignes 691-699)
+
+Remplacer le bloc Avatar actuel :
+```
+<Avatar className="h-6 w-6 shrink-0">
+  <AvatarImage src={...} alt={...} />
+  <AvatarFallback>...</AvatarFallback>
+</Avatar>
 ```
 
-Mettre a jour la fonction `add_billable_user` pour que `p_profile_name` soit optionnel (default NULL).
-
-## 2. Formulaire d'ajout (src/pages/Dashboard.tsx)
-
-- Supprimer le champ Input "Nom du profil" du Dialog
-- Supprimer le state `newProfileName` et sa persistence sessionStorage
-- Modifier `handleAddProfile` pour passer `profileName` a une chaine vide ou null
-- Adapter la validation : seul le champ URL LinkedIn est requis
-- Mettre a jour les traductions FR/EN
-
-## 3. Tableau des profils (src/pages/Dashboard.tsx)
-
-Dans la colonne "Nom", ajouter un `Avatar` (h-6 w-6) a gauche du nom :
-- Source image : champ `profile_picture` du profil
-- Fallback : initiales du `profile_name` ou icone generique si pas de nom
-- Affichage du nom : `profile_name` si disponible, sinon texte grise "En attente..." (le scraper remplira plus tard)
-
-## 4. Hook (src/hooks/useLinkedInProfiles.ts)
-
-- Rendre `profileName` optionnel dans la mutation `addProfile`
-- Passer `null` ou `''` a la RPC si non fourni
-
-## Details techniques
-
-### State a supprimer
-- `newProfileName` + son `useEffect` sessionStorage
-- `sessionStorage.removeItem('add_user_name')` dans `clearAddUserForm`
-
-### Rendu tableau
-```text
-[Photo 24x24] Jean Dupont        | linkedin.com/in/jean  | ...
-[Icone user]  En attente...       | linkedin.com/in/paul  | ...
+Par une approche conditionnelle avec `<img>` natif (meme pattern que DashboardContent.tsx ligne 175) :
 ```
+{linkedinProfile.profile_picture ? (
+  <img src={linkedinProfile.profile_picture} alt={linkedinProfile.profile_name || ''} className="w-6 h-6 rounded-full object-cover shrink-0" />
+) : (
+  <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
+    {linkedinProfile.profile_name
+      ? <span className="text-[10px] font-medium">{linkedinProfile.profile_name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}</span>
+      : <User className="w-3 h-3" />}
+  </div>
+)}
+```
+
+Aucun autre fichier a modifier.
 
