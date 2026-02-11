@@ -59,7 +59,8 @@ function formatNumber(num: number): string {
   return num.toString();
 }
 
-function getInitials(name: string): string {
+function getInitials(name: string | null): string {
+  if (!name) return '?';
   return name
     .split(' ')
     .map(n => n[0])
