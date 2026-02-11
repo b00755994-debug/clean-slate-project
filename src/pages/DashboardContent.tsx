@@ -165,7 +165,7 @@ export default function DashboardContent() {
             </Select>
 
             <Select value={authorFilter} onValueChange={setAuthorFilter}>
-              <SelectTrigger className="w-[200px] h-8 text-sm bg-card">
+              <SelectTrigger className="w-[200px] h-8 text-sm bg-card [&>span]:truncate [&>span]:whitespace-nowrap">
                 <SelectValue placeholder={t.filterByAuthor} />
               </SelectTrigger>
               <SelectContent>
