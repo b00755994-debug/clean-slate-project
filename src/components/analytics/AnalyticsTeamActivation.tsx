@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Users, FileText, Percent, CalendarCheck } from 'lucide-react';
+import { Users, FileText, Percent, CalendarCheck, Info } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import {
   ChartContainer,
@@ -36,6 +37,7 @@ const translations = {
     heatmap: {
       title: 'Moments de publication',
       description: 'Répartition des posts par jour et heure',
+      tooltip: 'Basé sur l\'ensemble des posts des 12 derniers mois. Les créneaux les plus foncés indiquent les moments où votre équipe publie le plus.',
     },
     months: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'],
   },
@@ -61,6 +63,7 @@ const translations = {
     heatmap: {
       title: 'Posting Times',
       description: 'Distribution of posts by day and hour',
+      tooltip: 'Based on all posts from the last 12 months. Darker slots indicate when your team posts the most.',
     },
     months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
   },
@@ -197,9 +200,21 @@ export function AnalyticsTeamActivation() {
               <CardTitle className="text-base font-semibold">
                 {t.heatmap.title}
               </CardTitle>
-              <CardDescription className="text-xs">
-                {t.heatmap.description}
-              </CardDescription>
+              <div className="flex items-center gap-1.5">
+                <CardDescription className="text-xs">
+                  {t.heatmap.description}
+                </CardDescription>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help shrink-0" />
+                    </TooltipTrigger>
+                    <TooltipContent side="top" className="max-w-[240px] text-xs">
+                      {t.heatmap.tooltip}
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
             </div>
           </CardHeader>
           <CardContent>
