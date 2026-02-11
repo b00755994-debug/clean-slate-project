@@ -38,6 +38,7 @@ interface PostCardProps {
   author?: {
     profile_name: string;
     avatar_url: string | null;
+    profile_picture: string | null;
     linkedin_url: string;
     linkedin_title: string | null;
   };
@@ -134,12 +135,15 @@ export function PostCard({ post, author, isBookmarked = false, onToggleBookmark,
               rel="noopener noreferrer"
               className="flex-shrink-0"
             >
-              <Avatar className="h-12 w-12 border-2 border-background shadow-sm">
-                <AvatarImage src={post.avatar_url || author?.avatar_url || undefined} alt={author?.profile_name} />
-                <AvatarFallback className="bg-primary/10 text-primary text-sm font-semibold">
-                  {author ? getInitials(author.profile_name) : '??'}
-                </AvatarFallback>
-              </Avatar>
+              <div className="h-12 w-12 rounded-full border-2 border-background shadow-sm overflow-hidden flex-shrink-0">
+                {(author?.profile_picture || post.avatar_url || author?.avatar_url) ? (
+                  <img src={author?.profile_picture || post.avatar_url || author?.avatar_url || ''} alt={author?.profile_name || ''} className="h-full w-full object-cover" />
+                ) : (
+                  <div className="h-full w-full bg-primary/10 flex items-center justify-center text-primary text-sm font-semibold">
+                    {author ? getInitials(author.profile_name) : '??'}
+                  </div>
+                )}
+              </div>
             </a>
             <div className="min-w-0">
               <a 

@@ -23,6 +23,7 @@ interface BillableUser {
   id: string;
   profile_name: string;
   avatar_url: string | null;
+  profile_picture: string | null;
   linkedin_url: string;
   linkedin_title: string | null;
 }
@@ -39,7 +40,7 @@ export function useTeamFeed() {
       
       const { data, error } = await supabase
         .from('billable_users')
-        .select('id, profile_name, avatar_url, linkedin_url, linkedin_title')
+        .select('id, profile_name, avatar_url, profile_picture, linkedin_url, linkedin_title')
         .eq('workspace_id', workspace.id);
 
       if (error) throw error;
