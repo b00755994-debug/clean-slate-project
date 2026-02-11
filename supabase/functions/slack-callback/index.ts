@@ -159,6 +159,7 @@ serve(async (req) => {
       const { error: updateError } = await supabase
         .from('workspaces')
         .update({
+          workspace_name: teamName || 'My Workspace',
           is_connected: true,
           connected_at: new Date().toISOString(),
         })
