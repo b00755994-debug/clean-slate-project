@@ -219,3 +219,11 @@ All colors MUST be HSL.
     );
   }
 }
+
+/* Force no padding/margin on Radix Select trigger internal spans */
+[data-radix-select-trigger] span,
+[data-radix-select-trigger] span * {
+  padding-left: 0 !important;
+  margin-left: 0 !important;
+  text-indent: 0 !important;
+}
