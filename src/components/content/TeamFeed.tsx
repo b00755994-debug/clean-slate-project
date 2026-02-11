@@ -1,9 +1,11 @@
-import { useMemo } from 'react';
+import { useMemo, RefObject } from 'react';
 import { useTeamFeed } from '@/hooks/useTeamFeed';
+import { useNewPostsBadge } from '@/hooks/useNewPostsBadge';
 import { PostCard } from './PostCard';
 import { Skeleton } from '@/components/ui/skeleton';
 import { differenceInDays, isToday } from 'date-fns';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { ArrowUp } from 'lucide-react';
 
 const translations = {
   fr: {
@@ -24,6 +26,7 @@ interface TeamFeedProps {
   viewMode?: ViewMode;
   searchQuery?: string;
   timePeriod?: TimePeriod;
+  scrollContainerRef?: RefObject<HTMLDivElement>;
   onStatsChange?: (stats: { 
     totalPosts: number; 
     totalImpressions: number; 
@@ -38,11 +41,13 @@ export function TeamFeed({
   authorFilter = 'all',
   viewMode = 'list',
   searchQuery = '',
-  timePeriod = 'all'
+  timePeriod = 'all',
+  scrollContainerRef
 }: TeamFeedProps) {
   const { language } = useLanguage();
   const t = translations[language];
   const { posts, profiles, bookmarkedPosts, loading, toggleBookmark } = useTeamFeed();
+  const { hasNewPosts, loadNewPosts } = useNewPostsBadge();
 
   // Filter posts by time period
   const filterByTimePeriod = (postDate: Date) => {
@@ -126,6 +131,20 @@ export function TeamFeed({
 
   return (
     <div className="w-full max-w-[700px]">
+      {hasNewPosts && (
+        <button
+          onClick={() => {
+            scrollContainerRef?.current?.scrollTo({ top: 0, behavior: 'smooth' });
+            loadNewPosts();
+          }}
+          className="sticky top-0 z-10 w-full flex items-center justify-center gap-2 
+                     bg-primary text-primary-foreground px-4 py-2 rounded-full 
+                     shadow-lg cursor-pointer hover:bg-primary/90 mb-2 transition-colors"
+        >
+          <ArrowUp className="h-4 w-4" />
+          New posts
+        </button>
+      )}
       {filteredAndSortedPosts.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground bg-card rounded-lg border border-border/40">
           <p>{t.noPostsFound}</p>
