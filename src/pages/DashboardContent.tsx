@@ -124,18 +124,7 @@ export default function DashboardContent() {
               <p className="text-muted-foreground">{t.subtitle}</p>
             </div>
 
-            {/* Stats Cards - Row aligned right, half width */}
-            {!statsLoading && (
-              <div className="lg:w-1/2">
-                <TeamFeedStats 
-                  totalPosts={stats.totalPosts}
-                  totalImpressions={stats.totalImpressions}
-                  engagementRate={stats.engagementRate}
-                  activeMembers={stats.activeMembers}
-                  layout="row"
-                />
-              </div>
-            )}
+            {/* Stats Cards - hidden for now */}
           </div>
 
           {/* Filters + Search bar on the right */}
