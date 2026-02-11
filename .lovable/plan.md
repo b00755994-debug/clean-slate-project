@@ -1,34 +1,32 @@
 
 
-# Fix : Padding sur les items selectionnes dans le Select
+# Fix : Padding du texte selectionne dans le SelectTrigger
 
 ## Probleme
 
-Radix Select applique un style interne aux items ayant `data-state="checked"` (l'item actuellement selectionne dans le dropdown). Meme apres la suppression du checkmark indicator, le composant Radix peut ajouter du padding supplementaire sur l'item selectionne, ce qui explique pourquoi "Most viewed" et "Most reactions" ont un decalage quand ils sont selectionnes, mais pas "Most recent" (qui est la valeur par defaut avant toute selection).
+Quand on selectionne "Most viewed" ou "Most reactions", le texte affiche dans le bouton du filtre (le `SelectTrigger`, pas le dropdown) a un decalage par rapport a "Most recent". C'est parce que Radix Select enveloppe la valeur selectionnee dans un `<span>` interne supplementaire qui peut heriter de styles differents du placeholder.
 
 ## Solution
 
-Dans `src/components/ui/select.tsx`, ajouter un reset explicite du padding pour l'etat checked sur le `SelectItem` :
-
-```text
-"data-[state=checked]:pl-2"
-```
-
-Cela force `pl-2` sur l'item selectionne, garantissant un alignement identique pour tous les items, qu'ils soient selectionnes ou non.
+Forcer le premier `<span>` enfant du `SelectTrigger` a ne jamais avoir de padding-left, via un selecteur CSS Tailwind sur le composant global.
 
 ## Detail technique
 
-**`src/components/ui/select.tsx`** - ligne 108
+**`src/components/ui/select.tsx`** - `SelectTrigger` (ligne 20)
+
+Ajouter `[&>span]:pl-0` au className du `SelectTrigger` pour s'assurer que le span interne de Radix n'a jamais de padding gauche :
 
 Avant :
 ```text
-"relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-2 pr-2 text-sm outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 focus:bg-primary/10 focus:text-foreground hover:bg-primary/10"
+"flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
 ```
 
 Apres :
 ```text
-"relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-2 pr-2 text-sm outline-none data-[state=checked]:pl-2 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 focus:bg-primary/10 focus:text-foreground hover:bg-primary/10"
+"flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 [&>span]:pl-0 [&_*]:pl-0"
 ```
+
+Le selecteur `[&_*]:pl-0` cible tous les descendants pour s'assurer qu'aucun element imbrique par Radix n'ajoute de padding.
 
 Un seul fichier, une seule ligne modifiee.
 
