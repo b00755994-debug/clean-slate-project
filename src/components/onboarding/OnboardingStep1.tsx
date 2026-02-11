@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -110,12 +110,17 @@ const translations = {
 
 export function OnboardingStep1({ onNext, onSkip, language }: OnboardingStep1Props) {
   const t = translations[language];
-  const [formData, setFormData] = useState<Step1Data>({
-    companyName: '',
-    jobRole: '',
-    teamSize: '',
-    acquisitionChannel: '',
+  const [formData, setFormData] = useState<Step1Data>(() => {
+    const saved = sessionStorage.getItem('onboarding_step1_data');
+    if (saved) {
+      try { return JSON.parse(saved); } catch { /* ignore */ }
+    }
+    return { companyName: '', jobRole: '', teamSize: '', acquisitionChannel: '' };
   });
+
+  useEffect(() => {
+    sessionStorage.setItem('onboarding_step1_data', JSON.stringify(formData));
+  }, [formData]);
 
   const handleSubmit = () => {
     onNext(formData);

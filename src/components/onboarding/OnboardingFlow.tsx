@@ -9,37 +9,7 @@ import { useAuthContext } from '@/contexts/AuthContext';
 import { useWorkspace } from '@/hooks/useWorkspace';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { z } from 'zod';
 
-// Validation schemas for LinkedIn profile data
-const linkedinUrlSchema = z.string()
-  .min(1, 'URL LinkedIn requise')
-  .url('URL invalide')
-  .refine(
-    (url) => {
-      try {
-        const parsed = new URL(url);
-        return parsed.protocol === 'https:' && 
-               (parsed.hostname === 'linkedin.com' || 
-                parsed.hostname === 'www.linkedin.com' ||
-                parsed.hostname.endsWith('.linkedin.com'));
-      } catch {
-        return false;
-      }
-    },
-    'Doit être une URL LinkedIn valide'
-  );
-
-const profileNameSchema = z.string()
-  .min(1, 'Le nom ne peut pas être vide')
-  .max(100, 'Le nom ne peut pas dépasser 100 caractères');
-
-interface LinkedInProfileInput {
-  id: string;
-  firstName: string;
-  lastName: string;
-  linkedinUrl: string;
-}
 
 const stepLabels = {
   fr: ['Infos', 'Profils', 'Slack'],
@@ -57,7 +27,13 @@ export function OnboardingFlow() {
     const saved = sessionStorage.getItem('onboarding_step');
     return saved ? parseInt(saved, 10) : 1;
   });
-  const [step1Data, setStep1Data] = useState<Step1Data | null>(null);
+  const [step1Data, setStep1Data] = useState<Step1Data | null>(() => {
+    const saved = sessionStorage.getItem('onboarding_step1_data_confirmed');
+    if (saved) {
+      try { return JSON.parse(saved); } catch { /* ignore */ }
+    }
+    return null;
+  });
   const [workspaceId, setWorkspaceId] = useState<string | null>(() => {
     return workspace?.id ?? sessionStorage.getItem('onboarding_workspace_id');
   });
@@ -195,6 +171,8 @@ export function OnboardingFlow() {
     // Clear sessionStorage on completion
     sessionStorage.removeItem('onboarding_step');
     sessionStorage.removeItem('onboarding_workspace_id');
+    sessionStorage.removeItem('onboarding_step1_data');
+    sessionStorage.removeItem('onboarding_step1_data_confirmed');
 
     toast.success(language === 'fr' ? 'Configuration terminée !' : 'Setup complete!');
     window.location.replace('/dashboard');
@@ -203,6 +181,7 @@ export function OnboardingFlow() {
   // Step 1: User info → Create workspace
   const handleStep1Next = async (data: Step1Data) => {
     setStep1Data(data);
+    sessionStorage.setItem('onboarding_step1_data_confirmed', JSON.stringify(data));
     
     // Create workspace with company name
     const wsId = await ensureWorkspace(data.companyName);
@@ -225,47 +204,21 @@ export function OnboardingFlow() {
     setCurrentStep(2);
   };
 
-  // Step 2: LinkedIn profiles → Insert billable_users with workspace_id
-  const handleStep2Complete = async (profiles: LinkedInProfileInput[]) => {
-    if (!workspaceId) {
-      toast.error(language === 'fr' ? 'Workspace non trouvé' : 'Workspace not found');
-      return;
-    }
-
-    // Add LinkedIn profiles with validation
-    for (const profile of profiles) {
-      const trimmedName = `${profile.firstName} ${profile.lastName}`.trim();
-      const trimmedUrl = profile.linkedinUrl.trim();
-      
-      // Validate before inserting
-      try {
-        profileNameSchema.parse(trimmedName);
-        linkedinUrlSchema.parse(trimmedUrl);
-      } catch (e) {
-        if (e instanceof z.ZodError) {
-          toast.error(e.errors[0].message);
-          continue; // Skip invalid profiles
-        }
-        continue;
-      }
-      
-      const { error } = await supabase.rpc('add_billable_user', {
-        p_workspace_id: workspaceId,
-        p_profile_name: trimmedName,
-        p_linkedin_url: trimmedUrl,
-        p_slack_user_id: null,
-      });
-
-      if (error) {
-        console.error('Error adding profile:', error);
-      }
-    }
-
+  // Step 2: LinkedIn profiles → already inserted via hook, just advance
+  const handleStep2Complete = () => {
     setCurrentStep(3);
   };
 
   const handleSkipStep2 = () => {
     setCurrentStep(3);
+  };
+
+  const handleBackToStep1 = () => {
+    setCurrentStep(1);
+  };
+
+  const handleBackToStep2 = () => {
+    setCurrentStep(2);
   };
 
   // Step 3: Slack (optional) → Complete onboarding
@@ -314,6 +267,7 @@ export function OnboardingFlow() {
             <OnboardingStepLinkedIn
               onComplete={handleStep2Complete}
               onSkip={handleSkipStep2}
+              onBack={handleBackToStep1}
               language={language}
             />
           )}
@@ -321,6 +275,7 @@ export function OnboardingFlow() {
             <OnboardingStepSlack
               onNext={handleStep3Complete}
               onSkip={handleSkipStep3}
+              onBack={handleBackToStep2}
               onConnectSlack={handleConnectSlack}
               isSlackConnected={isSlackConnected}
               language={language}
