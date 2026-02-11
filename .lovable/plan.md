@@ -1,49 +1,36 @@
 
-# Corriger workspace_name pour qu'il reste le nom Slack
 
-## Constat
+# Fix : Alignement des items dans le Select "Sort by"
 
-- `profiles.company_name` stocke deja le nom d'entreprise saisi pendant l'onboarding -- c'est correct.
-- Le probleme : `OnboardingFlow.ensureWorkspace()` ecrit aussi ce nom d'entreprise dans `workspaces.workspace_name`, qui devrait etre reserve au nom du workspace Slack.
+## Probleme
 
-## Solution (aucune migration necessaire)
+Le composant `SelectItem` dans `src/components/ui/select.tsx` applique un `pl-8` (padding-left de 2rem) a tous les items pour laisser de la place au check mark du cote gauche. L'item selectionne affiche un check, mais les autres ont un espace vide, ce qui donne l'impression d'un desalignement.
 
-### 1. `src/components/onboarding/OnboardingFlow.tsx` - `ensureWorkspace()`
+## Solution
 
-Ne plus passer le nom d'entreprise comme `workspace_name`. Utiliser un nom generique par defaut (ex: "My Workspace") en attendant la connexion Slack.
+Modifier le `SelectItem` dans `src/components/ui/select.tsx` pour utiliser un padding gauche reduit (`pl-2`) et supprimer l'indicateur de check mark. C'est un pattern UI moderne plus propre -- l'item selectionne est deja mis en evidence par le style `focus`/`hover` et par le texte affiche dans le trigger.
+
+## Detail technique
+
+**`src/components/ui/select.tsx`** - Composant `SelectItem` (lignes 104-121)
 
 Avant :
 ```text
-const workspaceName = companyName?.trim() || `${user.email}'s Workspace`;
+className="relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm ..."
 ```
 
 Apres :
 ```text
-const workspaceName = `${user.email}'s Workspace`;
+className="relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-2 pr-2 text-sm ..."
 ```
 
-Le parametre `companyName` est supprime de `ensureWorkspace()` puisqu'il n'est plus utilise. Les appels dans `handleStep1Next` et `handleSkipStep1` sont simplifies.
-
-### 2. `supabase/functions/slack-callback/index.ts`
-
-Dans le bloc d'update du workspace existant (vers la ligne 161), ajouter `workspace_name: teamName` pour que le vrai nom Slack soit enregistre des la connexion OAuth :
-
+Et supprimer le bloc du check indicator (lignes 113-117) :
 ```text
-.update({
-  workspace_name: teamName || 'My Workspace',
-  is_connected: true,
-  connected_at: new Date().toISOString(),
-})
+<span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+  <SelectPrimitive.ItemIndicator>
+    <Check className="h-4 w-4" />
+  </SelectPrimitive.ItemIndicator>
+</span>
 ```
 
-Idem dans le bloc fallback de creation de workspace (deja le cas avec `teamName || 'My Workspace'`).
-
-### 3. Dashboard (`src/pages/Dashboard.tsx`)
-
-Aucun changement necessaire -- il affiche deja `workspace_name`, qui sera maintenant le vrai nom Slack.
-
-## Resume
-
-- `profiles.company_name` = nom de l'entreprise (onboarding step 1) -- deja en place
-- `workspaces.workspace_name` = nom du workspace Slack (rempli au callback OAuth)
-- Pas de nouvelle colonne, pas de migration
+Cela affecte tous les Select du projet, ce qui est souhaitable pour une UI coherente et epuree.
