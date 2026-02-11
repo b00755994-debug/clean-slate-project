@@ -31,7 +31,8 @@ const profileNameSchema = z.string()
 interface LinkedInProfile {
   id: string;
   linkedin_url: string;
-  profile_name: string;
+  profile_name: string | null;
+  profile_picture: string | null;
   avatar_url: string | null;
   slack_user_id: string | null;
   followers: number | null;
@@ -98,12 +99,13 @@ export function useLinkedInProfiles() {
       linkedinUrl: string;
       slackUserId?: string;
     }) => {
-      // Validate inputs before database insert
       const trimmedName = profileName.trim();
       const trimmedUrl = linkedinUrl.trim();
       
       try {
-        profileNameSchema.parse(trimmedName);
+        if (trimmedName) {
+          profileNameSchema.parse(trimmedName);
+        }
         linkedinUrlSchema.parse(trimmedUrl);
       } catch (e) {
         if (e instanceof z.ZodError) {
@@ -114,7 +116,7 @@ export function useLinkedInProfiles() {
 
       const { error } = await supabase.rpc('add_billable_user', {
         p_workspace_id: workspace?.id,
-        p_profile_name: trimmedName,
+        p_profile_name: trimmedName || null,
         p_linkedin_url: trimmedUrl,
         p_slack_user_id: slackUserId || null,
       });

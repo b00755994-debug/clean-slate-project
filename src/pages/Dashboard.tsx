@@ -12,6 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Crown, Linkedin, Plus, Trash2, ExternalLink, CheckCircle2, XCircle, Settings, LogOut, User, Link, Unlink, Lock, RefreshCw, Hash, Info } from 'lucide-react';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import slackLogo from '@/assets/slack-logo.png';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useSlackMembers } from '@/hooks/useSlackMembers';
@@ -76,7 +77,7 @@ const translations = {
     actions: 'Actions',
     select: 'Sélectionner',
     error: 'Erreur',
-    fillAllFields: 'Veuillez remplir tous les champs',
+    fillAllFields: "Veuillez renseigner l'URL LinkedIn",
     mustBeLoggedIn: 'Vous devez être connecté pour lier Slack',
     sessionExpired: 'Session expirée. Veuillez vous reconnecter.',
     slackConnectionError: 'Erreur lors de la connexion Slack',
@@ -154,7 +155,7 @@ const translations = {
     actions: 'Actions',
     select: 'Select',
     error: 'Error',
-    fillAllFields: 'Please fill in all fields',
+    fillAllFields: 'Please provide a LinkedIn URL',
     mustBeLoggedIn: 'You must be logged in to connect Slack',
     sessionExpired: 'Session expired. Please log in again.',
     slackConnectionError: 'Error connecting to Slack',
@@ -204,9 +205,6 @@ export default function Dashboard() {
   // Show syncing indicator only when fetching in background (not initial load)
   const isSyncing = (isWorkspaceFetching && !isWorkspaceLoading) || (isSlackMembersFetching && !isLoadingMembers) || (isChannelsFetching && !isLoadingChannels);
   
-  const [newProfileName, setNewProfileName] = useState(() => {
-    return sessionStorage.getItem('add_user_name') || '';
-  });
   const [newProfileUrl, setNewProfileUrl] = useState(() => {
     return sessionStorage.getItem('add_user_url') || '';
   });
@@ -223,7 +221,6 @@ export default function Dashboard() {
   // Clear sessionStorage for add user form
   const clearAddUserForm = () => {
     sessionStorage.removeItem('add_user_dialog_open');
-    sessionStorage.removeItem('add_user_name');
     sessionStorage.removeItem('add_user_url');
     sessionStorage.removeItem('add_user_slack_id');
   };
@@ -232,10 +229,6 @@ export default function Dashboard() {
   useEffect(() => {
     sessionStorage.setItem('add_user_dialog_open', isDialogOpen.toString());
   }, [isDialogOpen]);
-
-  useEffect(() => {
-    sessionStorage.setItem('add_user_name', newProfileName);
-  }, [newProfileName]);
 
   useEffect(() => {
     sessionStorage.setItem('add_user_url', newProfileUrl);
@@ -249,7 +242,7 @@ export default function Dashboard() {
   const currentChannelName = channels.find(c => c.id === currentChannel)?.name;
 
   const handleAddProfile = async () => {
-    if (!newProfileName.trim() || !newProfileUrl.trim()) {
+    if (!newProfileUrl.trim()) {
       toast({
         title: t.error,
         description: t.fillAllFields,
@@ -259,11 +252,10 @@ export default function Dashboard() {
     }
     try {
       await addProfile({
-        profileName: newProfileName,
+        profileName: '',
         linkedinUrl: newProfileUrl,
         slackUserId: selectedSlackUserId || undefined
       });
-      setNewProfileName('');
       setNewProfileUrl('');
       setSelectedSlackUserId('');
       setIsDialogOpen(false);
@@ -591,10 +583,6 @@ export default function Dashboard() {
                   </DialogHeader>
                   <div className="space-y-4 py-4">
                     <div className="space-y-2">
-                      <Label htmlFor="profileName">{t.profileName}</Label>
-                      <Input id="profileName" placeholder={t.profileNamePlaceholder} value={newProfileName} onChange={e => setNewProfileName(e.target.value)} />
-                    </div>
-                    <div className="space-y-2">
                       <Label htmlFor="profileUrl">{t.linkedinUrl}</Label>
                       <Input id="profileUrl" placeholder={t.linkedinUrlPlaceholder} value={newProfileUrl} onChange={e => setNewProfileUrl(e.target.value)} />
                     </div>
@@ -699,8 +687,22 @@ export default function Dashboard() {
                     <TableBody>
                       {linkedinProfiles.map(linkedinProfile => (
                         <TableRow key={linkedinProfile.id} className="h-5">
-                          <TableCell className="font-medium py-0.5 w-[18%] truncate">
-                            {linkedinProfile.profile_name}
+                          <TableCell className="font-medium py-0.5 w-[18%]">
+                            <div className="flex items-center gap-2 truncate">
+                              <Avatar className="h-6 w-6 shrink-0">
+                                {(linkedinProfile as any).profile_picture ? (
+                                  <AvatarImage src={(linkedinProfile as any).profile_picture} alt={linkedinProfile.profile_name || ''} />
+                                ) : null}
+                                <AvatarFallback className="text-[10px]">
+                                  {linkedinProfile.profile_name
+                                    ? linkedinProfile.profile_name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
+                                    : <User className="w-3 h-3" />}
+                                </AvatarFallback>
+                              </Avatar>
+                              <span className={linkedinProfile.profile_name ? '' : 'text-muted-foreground italic'}>
+                                {linkedinProfile.profile_name || (language === 'fr' ? 'En attente...' : 'Pending...')}
+                              </span>
+                            </div>
                           </TableCell>
                           <TableCell className="py-0.5 w-[30%]">
                             <a href={linkedinProfile.linkedin_url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1 truncate">
