@@ -1,11 +1,13 @@
 import { useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useWorkspace } from '@/hooks/useWorkspace';
+import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
 export function useNewPostsNotification() {
   const { workspace } = useWorkspace();
   const toastIdRef = useRef<string | number | null>(null);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (!workspace?.id) return;
@@ -23,10 +25,17 @@ export function useNewPostsNotification() {
         }
         
         toastIdRef.current = toast.info('Données mises à jour', {
-          description: 'Actualisez la page pour voir les changements',
+          description: 'Cliquez pour actualiser les données',
           action: {
             label: 'Actualiser',
-            onClick: () => window.location.reload()
+            onClick: () => {
+              // Invalidate all relevant queries instead of full page reload
+              queryClient.invalidateQueries({ queryKey: ['posts'] });
+              queryClient.invalidateQueries({ queryKey: ['analytics-all-posts'] });
+              queryClient.invalidateQueries({ queryKey: ['all-posts-leaderboard'] });
+              queryClient.invalidateQueries({ queryKey: ['linkedin-profiles'] });
+              queryClient.invalidateQueries({ queryKey: ['billable-users'] });
+            }
           },
           duration: Infinity,
         });
@@ -39,5 +48,5 @@ export function useNewPostsNotification() {
         toast.dismiss(toastIdRef.current);
       }
     };
-  }, [workspace?.id]);
+  }, [workspace?.id, queryClient]);
 }

@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useWorkspace } from '@/hooks/useWorkspace';
 
 const translations = {
   fr: {
@@ -75,16 +76,20 @@ export default function DashboardContent() {
   // Get leaderboards data
   const { topPosts, activeContributors, loading: leaderboardsLoading } = useLeaderboards();
 
-  // Use React Query for authors with caching
+  // Use workspace-scoped query for authors with caching
+  const { workspace } = useWorkspace();
   const { data: authors = [] } = useQuery({
-    queryKey: ['authors'],
+    queryKey: ['authors', workspace?.id],
     queryFn: async () => {
+      if (!workspace?.id) return [];
       const { data } = await supabase
         .from('billable_users')
-        .select('id, profile_name, profile_picture');
+        .select('id, profile_name, profile_picture')
+        .eq('workspace_id', workspace.id);
       return (data || []) as BillableUser[];
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    enabled: !!workspace?.id,
+    staleTime: 5 * 60 * 1000,
   });
 
   const hasActiveFeedFilters = sortBy !== 'recent' || authorFilter !== 'all' || searchQuery !== '' || timePeriod !== 'all';

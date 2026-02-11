@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { useWorkspace } from '@/hooks/useWorkspace';
 import { toast } from 'sonner';
 
 interface VettedContent {
@@ -15,20 +16,24 @@ interface VettedContent {
 
 export function useVettedLibrary() {
   const { user } = useAuth();
+  const { workspace } = useWorkspace();
   const queryClient = useQueryClient();
 
   const { data: contents = [], isLoading: contentsLoading, refetch } = useQuery({
-    queryKey: ['vetted-content'],
+    queryKey: ['vetted-content', workspace?.id],
     queryFn: async () => {
+      if (!workspace?.id) return [];
       const { data, error } = await supabase
         .from('vetted_content')
         .select('*')
+        .eq('workspace_id', workspace.id)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
       return data as VettedContent[];
     },
-    staleTime: 2 * 60 * 1000, // 2 minutes
+    enabled: !!workspace?.id,
+    staleTime: 2 * 60 * 1000,
   });
 
   const { data: bookmarkedContents = new Set<string>(), isLoading: bookmarksLoading } = useQuery({
@@ -46,7 +51,7 @@ export function useVettedLibrary() {
       return new Set(data?.map(b => b.vetted_content_id!) || []);
     },
     enabled: !!user,
-    staleTime: 60 * 1000, // 1 minute
+    staleTime: 60 * 1000,
   });
 
   const toggleBookmarkMutation = useMutation({
@@ -98,8 +103,8 @@ export function useVettedLibrary() {
       return contentId;
     },
     onSuccess: (contentId) => {
-      queryClient.setQueryData(['vetted-content'], (old: VettedContent[]) => 
-        old.filter(c => c.id !== contentId)
+      queryClient.setQueryData(['vetted-content', workspace?.id], (old: VettedContent[]) => 
+        old?.filter(c => c.id !== contentId) || []
       );
       toast.success('Contenu supprimé');
     },

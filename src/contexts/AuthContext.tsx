@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useRef, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -40,59 +40,55 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isProfileLoading, setIsProfileLoading] = useState(false);
+  
+  // Guard to prevent duplicate fetches
+  const fetchingForUserRef = useRef<string | null>(null);
 
-  const fetchProfile = async (userId: string) => {
-    setIsProfileLoading(true);
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single();
+  const fetchUserData = async (userId: string) => {
+    // Skip if already fetching for this user
+    if (fetchingForUserRef.current === userId) return;
+    fetchingForUserRef.current = userId;
     
-    if (!error && data) {
-      setProfile(data as Profile);
+    setIsProfileLoading(true);
+    
+    const [profileResult, roleResult] = await Promise.all([
+      supabase.from('profiles').select('*').eq('id', userId).single(),
+      supabase.rpc('has_role', { _user_id: userId, _role: 'admin' }),
+    ]);
+    
+    if (!profileResult.error && profileResult.data) {
+      setProfile(profileResult.data as Profile);
     }
+    if (!roleResult.error) {
+      setIsAdmin(roleResult.data === true);
+    }
+    
     setIsProfileLoading(false);
   };
 
-  const checkAdminRole = async (userId: string) => {
-    const { data, error } = await supabase
-      .rpc('has_role', { _user_id: userId, _role: 'admin' });
-    
-    if (!error) {
-      setIsAdmin(data === true);
-    }
-  };
-
   useEffect(() => {
-    // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
         
-        // Defer Supabase calls with setTimeout to avoid deadlock
         if (session?.user) {
-          setTimeout(() => {
-            fetchProfile(session.user.id);
-            checkAdminRole(session.user.id);
-          }, 0);
+          setTimeout(() => fetchUserData(session.user.id), 0);
         } else {
           setProfile(null);
           setIsAdmin(false);
+          fetchingForUserRef.current = null;
         }
         setIsLoading(false);
       }
     );
 
-    // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
       
       if (session?.user) {
-        fetchProfile(session.user.id);
-        checkAdminRole(session.user.id);
+        fetchUserData(session.user.id);
       }
       setIsLoading(false);
     });
@@ -101,24 +97,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
     return { error };
   };
 
   const signUp = async (email: string, password: string, fullName?: string) => {
     const redirectUrl = `${window.location.origin}/dashboard`;
-    
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         emailRedirectTo: redirectUrl,
-        data: {
-          full_name: fullName,
-        },
+        data: { full_name: fullName },
       },
     });
     return { error };
@@ -130,19 +120,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setSession(null);
     setProfile(null);
     setIsAdmin(false);
+    fetchingForUserRef.current = null;
   };
 
   return (
     <AuthContext.Provider value={{
-      user,
-      session,
-      profile,
-      isAdmin,
-      isLoading,
-      isProfileLoading,
-      signIn,
-      signUp,
-      signOut,
+      user, session, profile, isAdmin, isLoading, isProfileLoading,
+      signIn, signUp, signOut,
     }}>
       {children}
     </AuthContext.Provider>

@@ -65,7 +65,8 @@ export function useTeamFeed() {
         .from('posts')
         .select('*')
         .eq('workspace_id', workspace.id)
-        .order('linkedin_created_at', { ascending: false });
+        .order('linkedin_created_at', { ascending: false })
+        .limit(10000);
 
       if (error) throw error;
       return data as Post[];
