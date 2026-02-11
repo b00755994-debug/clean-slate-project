@@ -27,7 +27,7 @@ export type Database = {
           id: string
           linkedin_title: string | null
           linkedin_url: string
-          profile_name: string
+          profile_name: string | null
           profile_picture: string | null
           scrapping_onboarding_done: boolean | null
           slack_user_id: string | null
@@ -49,7 +49,7 @@ export type Database = {
           id?: string
           linkedin_title?: string | null
           linkedin_url: string
-          profile_name: string
+          profile_name?: string | null
           profile_picture?: string | null
           scrapping_onboarding_done?: boolean | null
           slack_user_id?: string | null
@@ -71,7 +71,7 @@ export type Database = {
           id?: string
           linkedin_title?: string | null
           linkedin_url?: string
-          profile_name?: string
+          profile_name?: string | null
           profile_picture?: string | null
           scrapping_onboarding_done?: boolean | null
           slack_user_id?: string | null
@@ -692,8 +692,8 @@ export type Database = {
     Functions: {
       add_billable_user: {
         Args: {
-          p_linkedin_url: string
-          p_profile_name: string
+          p_linkedin_url?: string
+          p_profile_name?: string
           p_slack_user_id?: string
           p_workspace_id: string
         }
