@@ -528,7 +528,7 @@ export default function Dashboard() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="space-y-3">
+              <div className="space-y-3 mt-2">
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-muted-foreground">{t.followedProfiles}</span>
                   <span className="font-semibold">{linkedinProfiles.length}</span>
