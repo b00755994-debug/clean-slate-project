@@ -98,7 +98,7 @@ export function OnboardingFlow() {
   };
 
   // Create or get workspace for the user
-  const ensureWorkspace = async (companyName?: string): Promise<string | null> => {
+  const ensureWorkspace = async (): Promise<string | null> => {
     if (!user) {
       console.error('[Onboarding] No user found');
       return null;
@@ -120,7 +120,7 @@ export function OnboardingFlow() {
     }
 
     // Create a new workspace using RPC function (bypasses PostgREST RLS cache issues)
-    const workspaceName = companyName?.trim() || `${user.email}'s Workspace`;
+    const workspaceName = `${user.email}'s Workspace`;
     console.log('[Onboarding] Creating new workspace via RPC:', workspaceName);
     
     const { data: newWorkspaceId, error } = await supabase
@@ -183,8 +183,8 @@ export function OnboardingFlow() {
     setStep1Data(data);
     sessionStorage.setItem('onboarding_step1_data_confirmed', JSON.stringify(data));
     
-    // Create workspace with company name
-    const wsId = await ensureWorkspace(data.companyName);
+    // Create workspace
+    const wsId = await ensureWorkspace();
     if (!wsId) {
       toast.error(language === 'fr' ? 'Erreur lors de la création du workspace' : 'Error creating workspace');
       return;
