@@ -170,15 +170,15 @@ export default function DashboardContent() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all" className="text-sm">{t.allAuthors}</SelectItem>
-                {authors.map(author => (
+                {authors.filter(a => a.profile_name).map(author => (
                   <SelectItem key={author.id} value={author.id} className="text-sm">
                     <div className="flex items-center gap-2">
                       {author.profile_picture ? (
-                        <img src={author.profile_picture} alt={author.profile_name} className="w-5 h-5 rounded-full object-cover" />
+                        <img src={author.profile_picture} alt={author.profile_name || ''} className="w-5 h-5 rounded-full object-cover" />
                       ) : (
                         <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center">
                           <span className="text-[10px] font-medium text-primary">
-                            {author.profile_name.charAt(0).toUpperCase()}
+                            {(author.profile_name || '?').charAt(0).toUpperCase()}
                           </span>
                         </div>
                       )}
