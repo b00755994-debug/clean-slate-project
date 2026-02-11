@@ -1,37 +1,40 @@
 
 
-# Fix: Bug d'affichage du Content Dashboard
+# Replace "New Posts" Badge with Auto-Refresh
 
-## Diagnostic
+## Why the badge doesn't work
+The `useNewPostsBadge` hook subscribes to Supabase Realtime `postgres_changes` on the `posts` table. This requires Realtime to be explicitly enabled for that table in the Supabase dashboard. If it's not enabled (which is the most likely case), the subscription silently does nothing — no errors, no events.
 
-Apres analyse complete du code, il n'y a pas d'erreur evidente dans l'implementation du badge "New posts". Les logs console ne montrent aucune erreur, et les requetes reseau retournent des donnees correctement.
+## Proposed change: Auto-refresh polling
 
-Le probleme le plus probable est lie au **hook `useNewPostsBadge`** qui s'execute dans `TeamFeed`, lequel est utilise a la fois dans `DashboardContent` et indirectement dans `Dashboard` (via `useTeamFeedStats`). Le hook cree un canal Realtime Supabase qui pourrait entrer en conflit avec le canal similaire dans `useNewPostsNotification` (utilise dans `DashboardLayout`).
+Instead of relying on Realtime, we add a simple polling interval to the posts query so new posts appear automatically.
 
-## Corrections preventives
+### Files to modify
 
-### 1. Proteger `useNewPostsBadge` contre les cas limites
+**1. `src/hooks/useTeamFeed.ts`**
+- Add `refetchInterval: 30_000` (30 seconds) to the posts query options
+- This automatically re-fetches posts every 30s in the background
+- Combined with `placeholderData`, the UI stays stable during refresh (no flicker)
 
-- Ajouter un guard plus strict : ne pas souscrire si `workspace?.id` n'est pas encore disponible
-- S'assurer que le cleanup du canal Realtime est robuste
+**2. `src/hooks/useNewPostsBadge.ts`**
+- Delete this file entirely (no longer needed)
 
-### 2. Eviter les conflits de canaux Realtime
+**3. `src/components/content/TeamFeed.tsx`**
+- Remove the `useNewPostsBadge` import and usage
+- Remove the `scrollContainerRef` prop (only used for the badge scroll-to-top)
+- Remove the floating "New posts" button JSX
+- Remove `ArrowUp` icon import
 
-Les deux hooks (`useNewPostsBadge` et `useNewPostsNotification`) souscrivent au meme type d'evenements sur la meme table `posts`. Les noms de canaux sont differents (`new-posts-badge-{id}` vs `posts-notification-{id}`), donc il ne devrait pas y avoir de conflit. Mais on va s'assurer que c'est bien le cas.
+**4. `src/pages/DashboardContent.tsx`**
+- Remove the `feedScrollRef` and its `ref` prop on the scroll container
+- Remove the `scrollContainerRef` prop passed to `TeamFeed`
 
-### 3. Ajouter un Error Boundary defensif
+**5. `src/hooks/useNewPostsNotification.ts`**
+- Also uses Realtime on `posts` table and likely doesn't work for the same reason
+- Replace with a simpler approach or remove (the auto-refresh covers this use case)
 
-Envelopper le `TeamFeed` dans un try/catch au niveau du rendu pour eviter qu'une erreur silencieuse ne bloque tout le dashboard content.
-
-## Detail technique
-
-**`src/components/content/TeamFeed.tsx`** :
-- Envelopper l'appel a `useNewPostsBadge` dans un pattern defensif
-- Si le hook echoue, le badge ne s'affiche simplement pas mais le feed fonctionne toujours
-
-**`src/hooks/useNewPostsBadge.ts`** :
-- Ajouter un `try/catch` autour de la souscription Realtime
-- Ajouter une verification que le canal est bien cree avant de tenter le cleanup
-
-En parallele, je vais **forcer un rebuild propre** en touchant les fichiers concernes, ce qui devrait resoudre le probleme si c'est lie a un build cache corrompu.
+## Result
+- New posts appear automatically within 30 seconds, no user action needed
+- No dependency on Supabase Realtime configuration
+- Simpler codebase with fewer moving parts
 
