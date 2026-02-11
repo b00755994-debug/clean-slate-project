@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/hooks/useAuth';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
@@ -691,16 +692,18 @@ export default function Dashboard() {
                             <div className="flex items-center gap-2 truncate">
                               {linkedinProfile.profile_picture ? (
                                 <img src={linkedinProfile.profile_picture} alt={linkedinProfile.profile_name || ''} className="w-6 h-6 rounded-full object-cover shrink-0" />
-                              ) : (
+                              ) : linkedinProfile.profile_name ? (
                                 <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
-                                  {linkedinProfile.profile_name
-                                    ? <span className="text-[10px] font-medium">{linkedinProfile.profile_name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}</span>
-                                    : <User className="w-3 h-3" />}
+                                  <span className="text-[10px] font-medium">{linkedinProfile.profile_name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}</span>
                                 </div>
+                              ) : (
+                                <Skeleton className="w-6 h-6 rounded-full shrink-0" />
                               )}
-                              <span className={linkedinProfile.profile_name ? '' : 'text-muted-foreground italic'}>
-                                {linkedinProfile.profile_name || (language === 'fr' ? 'En attente...' : 'Pending...')}
-                              </span>
+                              {linkedinProfile.profile_name ? (
+                                <span>{linkedinProfile.profile_name}</span>
+                              ) : (
+                                <Skeleton className="h-3 w-20" />
+                              )}
                             </div>
                           </TableCell>
                           <TableCell className="py-0.5 w-[30%]">
@@ -791,7 +794,7 @@ export default function Dashboard() {
                             )}
                           </TableCell>
                           <TableCell className="py-0.5 w-[12%] text-right text-sm">
-                            {linkedinProfile.followers ? `${(linkedinProfile.followers / 1000).toFixed(1)}k` : '—'}
+                            {linkedinProfile.followers != null ? `${(linkedinProfile.followers / 1000).toFixed(1)}k` : <Skeleton className="h-3 w-10 ml-auto" />}
                           </TableCell>
                           <TableCell className="text-center py-0.5 w-[12%]">
 

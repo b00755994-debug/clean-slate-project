@@ -87,6 +87,11 @@ export function useLinkedInProfiles() {
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 30 * 60 * 1000, // 30 minutes
     placeholderData: (previousData) => previousData,
+    refetchInterval: (query) => {
+      const data = query.state.data;
+      if (data && data.some((p: LinkedInProfile) => !p.profile_name)) return 10_000;
+      return false;
+    },
   });
 
   const addProfileMutation = useMutation({
