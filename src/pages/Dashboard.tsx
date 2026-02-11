@@ -690,9 +690,7 @@ export default function Dashboard() {
                           <TableCell className="font-medium py-0.5 w-[18%]">
                             <div className="flex items-center gap-2 truncate">
                               <Avatar className="h-6 w-6 shrink-0">
-                                {(linkedinProfile as any).profile_picture ? (
-                                  <AvatarImage src={(linkedinProfile as any).profile_picture} alt={linkedinProfile.profile_name || ''} />
-                                ) : null}
+                                <AvatarImage src={linkedinProfile.profile_picture || undefined} alt={linkedinProfile.profile_name || ''} />
                                 <AvatarFallback className="text-[10px]">
                                   {linkedinProfile.profile_name
                                     ? linkedinProfile.profile_name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
