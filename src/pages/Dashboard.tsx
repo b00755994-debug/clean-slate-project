@@ -688,8 +688,8 @@ export default function Dashboard() {
                       <TableHead className="py-0.5 text-[11px] w-[18%] uppercase tracking-wide">{t.name}</TableHead>
                       <TableHead className="py-0.5 text-[11px] w-[30%] uppercase tracking-wide">{t.linkedinUrl}</TableHead>
                       <TableHead className="py-0.5 text-[11px] w-[20%] uppercase tracking-wide">{t.slackUser}</TableHead>
-                      <TableHead className="py-0.5 text-[11px] w-[14%] text-right uppercase tracking-wide">{t.followers}</TableHead>
-                      <TableHead className="text-center py-0.5 text-[11px] w-[14%] uppercase tracking-wide">{t.posts30d}</TableHead>
+                      <TableHead className="py-0.5 text-[11px] w-[12%] text-right uppercase tracking-wide">{t.followers}</TableHead>
+                      <TableHead className="text-center py-0.5 text-[11px] w-[12%] uppercase tracking-wide">{t.posts30d}</TableHead>
                       <TableHead className="text-right py-0.5 text-[11px] w-[10%] uppercase tracking-wide">{t.actions}</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -789,10 +789,10 @@ export default function Dashboard() {
                               </TooltipProvider>
                             )}
                           </TableCell>
-                          <TableCell className="py-0.5 w-[14%] text-right text-sm">
+                          <TableCell className="py-0.5 w-[12%] text-right text-sm">
                             {linkedinProfile.followers ? `${(linkedinProfile.followers / 1000).toFixed(1)}k` : '—'}
                           </TableCell>
-                          <TableCell className="text-center py-0.5 w-[14%]">
+                          <TableCell className="text-center py-0.5 w-[12%]">
 
                             <Badge variant="secondary">{linkedinProfile.posts_count || 0}</Badge>
                           </TableCell>
