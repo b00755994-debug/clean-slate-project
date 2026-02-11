@@ -130,7 +130,7 @@ export default function DashboardContent() {
           {/* Filters + Search bar on the right */}
           <div className="flex items-center gap-2 flex-wrap">
             <Select value={sortBy} onValueChange={(v: 'recent' | 'impressions' | 'reactions') => setSortBy(v)}>
-              <SelectTrigger className="w-[130px] h-8 text-sm bg-card">
+              <SelectTrigger className="w-[150px] h-8 text-sm bg-card">
                 <span className="truncate">
                   {sortBy === 'recent' ? t.mostRecent : sortBy === 'impressions' ? t.mostViewed : t.mostReactions}
                 </span>
