@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -43,6 +44,7 @@ export function useLinkedInProfiles() {
   const { user } = useAuth();
   const { workspace } = useWorkspace();
   const queryClient = useQueryClient();
+  const pollingStartRef = useRef<number | null>(null);
 
   const { data: linkedinProfiles = [], isLoading } = useQuery({
     queryKey: ['linkedin-profiles', workspace?.id],
@@ -89,7 +91,19 @@ export function useLinkedInProfiles() {
     placeholderData: (previousData) => previousData,
     refetchInterval: (query) => {
       const data = query.state.data;
-      if (data && data.some((p: LinkedInProfile) => !p.profile_name)) return 10_000;
+      const hasIncomplete = data && data.some((p: LinkedInProfile) => !p.profile_name);
+      
+      if (!hasIncomplete) {
+        pollingStartRef.current = null;
+        return false;
+      }
+      
+      if (!pollingStartRef.current) {
+        pollingStartRef.current = Date.now();
+      }
+      
+      const elapsed = Date.now() - pollingStartRef.current;
+      if (elapsed < 60_000) return 3_000;
       return false;
     },
   });
