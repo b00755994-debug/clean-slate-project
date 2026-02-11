@@ -163,7 +163,7 @@ export function useFullLeaderboard() {
 
       return {
         id: user.id,
-        profileName: user.profile_name,
+        profileName: user.profile_name || 'Utilisateur inconnu',
         linkedinTitle: user.linkedin_title,
         avatarUrl: user.profile_picture || user.avatar_url,
         followers: user.followers,
