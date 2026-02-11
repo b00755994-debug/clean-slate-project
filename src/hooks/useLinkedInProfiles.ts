@@ -148,6 +148,7 @@ export function useLinkedInProfiles() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['linkedin-profiles', workspace?.id] });
+      queryClient.invalidateQueries({ queryKey: ['posts', workspace?.id] });
       toast.success('Le profil LinkedIn a été supprimé');
     },
     onError: () => {
