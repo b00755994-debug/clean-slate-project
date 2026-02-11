@@ -75,6 +75,7 @@ export function useTeamFeed() {
     enabled: !!workspace?.id,
     staleTime: 2 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
+    refetchInterval: 30_000,
     placeholderData: (prev) => prev,
   });
 

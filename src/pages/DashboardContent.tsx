@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
 import { TeamFeed, useTeamFeedStats } from '@/components/content/TeamFeed';
@@ -69,7 +69,7 @@ export default function DashboardContent() {
   const [authorFilter, setAuthorFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [timePeriod, setTimePeriod] = useState<TimePeriod>('all');
-  const feedScrollRef = useRef<HTMLDivElement>(null);
+  
 
   // Get stats
   const { stats, loading: statsLoading } = useTeamFeedStats();
@@ -232,14 +232,13 @@ export default function DashboardContent() {
           <div className="hidden xl:block w-px bg-border mx-2 flex-shrink-0" />
           
           {/* Center Column - Feed */}
-          <div ref={feedScrollRef} className="flex-1 xl:max-w-[552px] mx-auto overflow-y-auto pl-2 pr-4">
+          <div className="flex-1 xl:max-w-[552px] mx-auto overflow-y-auto pl-2 pr-4">
             <TeamFeed 
               showBookmarksOnly={showBookmarksOnly}
               sortBy={sortBy}
               authorFilter={authorFilter}
               searchQuery={searchQuery}
               timePeriod={timePeriod}
-              scrollContainerRef={feedScrollRef}
             />
           </div>
           
