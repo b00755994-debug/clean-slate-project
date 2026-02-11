@@ -80,7 +80,8 @@ export function PostCard({ post, author, isBookmarked = false, onToggleBookmark,
     onToggleBookmark?.(post.id);
   };
 
-  const getInitials = (name: string) => {
+  const getInitials = (name: string | null) => {
+    if (!name) return '?';
     return name
       .split(' ')
       .map(n => n[0])
