@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowRight, CheckCircle2, Loader2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CheckCircle2, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import slackLogo from '@/assets/slack-logo.png';
@@ -8,6 +8,7 @@ import { SlackChannelSelector } from '@/components/slack/SlackChannelSelector';
 interface OnboardingStepSlackProps {
   onNext: () => void;
   onSkip: () => void;
+  onBack: () => void;
   onConnectSlack: () => Promise<void>;
   isSlackConnected: boolean;
   language: 'fr' | 'en';
@@ -24,6 +25,7 @@ const translations = {
     channelConfigured: "Canal configuré",
     next: "Terminer",
     skip: "Passer",
+    back: "Retour",
   },
   en: {
     title: "Connect Slack",
@@ -35,10 +37,11 @@ const translations = {
     channelConfigured: "Channel configured",
     next: "Finish",
     skip: "Skip",
+    back: "Back",
   },
 };
 
-export function OnboardingStepSlack({ onNext, onSkip, onConnectSlack, isSlackConnected, language }: OnboardingStepSlackProps) {
+export function OnboardingStepSlack({ onNext, onSkip, onBack, onConnectSlack, isSlackConnected, language }: OnboardingStepSlackProps) {
   const t = translations[language];
   const [isConnecting, setIsConnecting] = useState(false);
   const [channelConfigured, setChannelConfigured] = useState(false);
@@ -120,7 +123,14 @@ export function OnboardingStepSlack({ onNext, onSkip, onConnectSlack, isSlackCon
             </Button>
           )}
           
-          <div className="flex justify-center mt-2">
+          <div className="flex justify-between items-center mt-2">
+            <button
+              onClick={onBack}
+              className="flex items-center gap-1 text-xs text-muted-foreground/60 hover:text-muted-foreground transition-colors"
+            >
+              <ArrowLeft className="h-3.5 w-3.5" />
+              {t.back}
+            </button>
             <button 
               onClick={onSkip} 
               className="text-xs text-muted-foreground/60 hover:text-muted-foreground hover:underline transition-colors"
