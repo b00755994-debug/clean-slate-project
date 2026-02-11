@@ -1,51 +1,47 @@
 
+# Fix definitif : Decalage du texte dans le SelectTrigger
 
-# Fix : Decalage du texte selectionne dans le SelectTrigger (tentative definitive)
+## Diagnostic
 
-## Probleme
+Les tentatives precedentes (CSS `!important`, global overrides) n'ont pas fonctionne car le probleme n'est pas du CSS mais du **DOM**. Radix `SelectValue` cree une structure DOM differente selon que la valeur est :
+- La valeur initiale (definie par `useState`) : rendu comme texte simple
+- Une valeur selectionnee par l'utilisateur : rendu via la projection `ItemText` avec des spans imbriques supplementaires
 
-Les classes Tailwind `[&>span]:pl-0` et `[&_*]:pl-0` ajoutees precedemment ne suffisent pas car Radix Select peut appliquer des **styles inline** (`style="padding-left: ..."`) ou des **margins** sur les elements internes du trigger quand une valeur est selectionnee. Les styles inline ont une specificite CSS superieure aux classes Tailwind standards.
+Aucun override CSS ne peut corriger une difference structurelle dans le DOM.
 
 ## Solution
 
-Deux modifications dans `src/components/ui/select.tsx` :
-
-1. **SelectTrigger** : Utiliser le modificateur `!important` de Tailwind (`!pl-0`, `!ml-0`) sur tous les descendants pour forcer l'override des styles inline Radix. Ajouter aussi le reset des margins.
-
-2. **Ajouter un style CSS global** en fallback dans `src/index.css` pour cibler specifiquement les spans internes du trigger Radix avec `!important`.
+Remplacer `SelectValue` par un rendu manuel du texte dans le `SelectTrigger` du filtre "Sort by". Ainsi, le DOM est strictement identique quel que soit le choix selectionne.
 
 ## Detail technique
 
-### Fichier 1 : `src/components/ui/select.tsx` - SelectTrigger (ligne 20)
+**`src/pages/DashboardContent.tsx`** - lignes 132-141
 
-Remplacer :
+Avant :
 ```
-[&>span]:line-clamp-1 [&>span]:pl-0 [&_*]:pl-0
-```
-
-Par :
-```
-[&>span]:line-clamp-1 [&>span]:!pl-0 [&>span]:!ml-0 [&_*]:!pl-0 [&_*]:!ml-0
-```
-
-L'ajout de `!` devant les utilitaires Tailwind genere `!important`, ce qui override les styles inline de Radix. On ajoute aussi `ml-0` pour couvrir le cas ou Radix utilise `margin-left` au lieu de `padding-left`.
-
-### Fichier 2 : `src/index.css` - Ajouter un style global de fallback
-
-Ajouter a la fin du fichier CSS :
-```css
-/* Force no padding/margin on Radix Select trigger internal spans */
-[data-radix-select-trigger] span,
-[data-radix-select-trigger] span * {
-  padding-left: 0 !important;
-  margin-left: 0 !important;
-  text-indent: 0 !important;
-}
+<Select value={sortBy} onValueChange={...}>
+  <SelectTrigger className="w-[130px] h-8 text-sm bg-card">
+    <SelectValue placeholder={t.sortBy} />
+  </SelectTrigger>
+  ...
+</Select>
 ```
 
-Cela cible tous les spans a l'interieur du trigger Radix, quel que soit le niveau d'imbrication, avec `!important` pour overrider les styles inline.
+Apres :
+```
+<Select value={sortBy} onValueChange={...}>
+  <SelectTrigger className="w-[130px] h-8 text-sm bg-card">
+    <span className="truncate">
+      {sortBy === 'recent' ? t.mostRecent : sortBy === 'impressions' ? t.mostViewed : t.mostReactions}
+    </span>
+  </SelectTrigger>
+  ...
+</Select>
+```
 
-### Resume des fichiers modifies
-- `src/components/ui/select.tsx` (1 ligne modifiee)
-- `src/index.css` (ajout de 7 lignes)
+On remplace `<SelectValue>` par un `<span>` classique qui affiche le bon label en fonction de l'etat `sortBy`. Le DOM est maintenant identique pour les 3 options.
 
+L'import de `SelectValue` reste utilise par les autres Select de la page (time period, author filter), donc pas besoin de modifier les imports.
+
+### Fichier modifie
+- `src/pages/DashboardContent.tsx` (1 bloc modifie)
