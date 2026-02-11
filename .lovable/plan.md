@@ -1,66 +1,49 @@
 
+# Corriger workspace_name pour qu'il reste le nom Slack
 
-# Ameliorations de l'onboarding
+## Constat
 
-## 1. Persistence de l'etat lors du changement d'onglet
+- `profiles.company_name` stocke deja le nom d'entreprise saisi pendant l'onboarding -- c'est correct.
+- Le probleme : `OnboardingFlow.ensureWorkspace()` ecrit aussi ce nom d'entreprise dans `workspaces.workspace_name`, qui devrait etre reserve au nom du workspace Slack.
 
-**Probleme** : Le composant `OnboardingFlow` persiste deja `currentStep` et `workspaceId` dans `sessionStorage`, mais les donnees saisies dans chaque step (formulaire Step 1, URLs LinkedIn Step 2) sont stockees uniquement en state React local. Quand on change d'onglet dans Lovable (ou un remount du composant), tout est perdu.
+## Solution (aucune migration necessaire)
 
-**Solution** :
-- **OnboardingStep1** : Persister `formData` dans `sessionStorage` (cle `onboarding_step1_data`). Initialiser le state depuis le storage. Nettoyer a la completion de l'onboarding.
-- **OnboardingStepLinkedIn** (Step 2) : Persister la liste des URLs saisies dans `sessionStorage` (cle `onboarding_step2_profiles`). Initialiser depuis le storage.
-- **OnboardingFlow** : Persister aussi `step1Data` dans sessionStorage pour qu'il survive aux remounts. Nettoyer toutes les cles a la fin.
+### 1. `src/components/onboarding/OnboardingFlow.tsx` - `ensureWorkspace()`
 
-## 2. Refonte de la Step 2 (profils LinkedIn) - UI du dashboard
+Ne plus passer le nom d'entreprise comme `workspace_name`. Utiliser un nom generique par defaut (ex: "My Workspace") en attendant la connexion Slack.
 
-**Probleme actuel** : La step 2 demande prenom + nom + URL. Le dashboard ne demande que l'URL et affiche photo/nom/followers avec des skeletons pendant le scraping.
+Avant :
+```text
+const workspaceName = companyName?.trim() || `${user.email}'s Workspace`;
+```
 
-**Solution** : Reecrire `OnboardingStepLinkedIn` pour :
-- **Input unique** : Un seul champ URL LinkedIn par ligne (plus de prenom/nom)
-- **Insertion immediate** : Des qu'une URL valide est saisie et confirmee, elle est inseree en DB via `add_billable_user` (nom = null, scraper prend le relais)
-- **Affichage table** : Reproduire le format du dashboard principal sous forme de table compacte avec les colonnes :
-  - Photo (skeleton si absente) + Nom (skeleton si absent)
-  - URL LinkedIn (lien cliquable)
-  - Followers (skeleton si absent)
-  - Bouton supprimer
-  - Pas de colonne Slack Users (comme demande)
-- **Polling** : Utiliser le hook `useLinkedInProfiles` existant qui poll deja toutes les 3s pendant 1 minute pour detecter les mises a jour du scraper
-- **Interface du Flow** : `onComplete` ne prend plus de profiles en parametre (ils sont deja en DB), juste passe a l'etape suivante
+Apres :
+```text
+const workspaceName = `${user.email}'s Workspace`;
+```
 
-## 3. Boutons retour dans les steps
+Le parametre `companyName` est supprime de `ensureWorkspace()` puisqu'il n'est plus utilise. Les appels dans `handleStep1Next` et `handleSkipStep1` sont simplifies.
 
-**Solution** :
-- **OnboardingStepper** : Pas de changement (reste des dots)
-- **OnboardingStep1** : Pas de bouton retour (c'est la premiere etape)
-- **OnboardingStepLinkedIn** : Ajouter un bouton "Retour" qui appelle `onBack`
-- **OnboardingStepSlack** : Ajouter un bouton "Retour" qui appelle `onBack`
-- **OnboardingFlow** : Ajouter des handlers `onBack` qui font `setCurrentStep(currentStep - 1)`
+### 2. `supabase/functions/slack-callback/index.ts`
 
----
+Dans le bloc d'update du workspace existant (vers la ligne 161), ajouter `workspace_name: teamName` pour que le vrai nom Slack soit enregistre des la connexion OAuth :
 
-## Detail technique
+```text
+.update({
+  workspace_name: teamName || 'My Workspace',
+  is_connected: true,
+  connected_at: new Date().toISOString(),
+})
+```
 
-### Fichiers modifies
+Idem dans le bloc fallback de creation de workspace (deja le cas avec `teamName || 'My Workspace'`).
 
-**`src/components/onboarding/OnboardingStep1.tsx`**
-- Initialiser `formData` depuis `sessionStorage.getItem('onboarding_step1_data')`
-- Ajouter un `useEffect` qui persiste `formData` dans sessionStorage a chaque changement
+### 3. Dashboard (`src/pages/Dashboard.tsx`)
 
-**`src/components/onboarding/OnboardingStepLinkedIn.tsx`** (rewrite majeur)
-- Supprimer les champs firstName/lastName
-- Un seul input URL + bouton "Ajouter"
-- Appel direct a `add_billable_user` via le hook `useLinkedInProfiles`
-- Afficher les profils deja ajoutes dans une table identique au dashboard :
-  - Avatar (skeleton) | Nom (skeleton) | URL | Followers (skeleton) | Delete
-- Accepter les nouveaux props : `workspaceId`, `onBack`
-- Persister les URLs saisies (non encore ajoutees) dans sessionStorage
+Aucun changement necessaire -- il affiche deja `workspace_name`, qui sera maintenant le vrai nom Slack.
 
-**`src/components/onboarding/OnboardingStepSlack.tsx`**
-- Ajouter prop `onBack` et un bouton "Retour" a cote du bouton Skip
+## Resume
 
-**`src/components/onboarding/OnboardingFlow.tsx`**
-- Persister `step1Data` dans sessionStorage
-- Passer `workspaceId` a la Step 2
-- Ajouter handlers `handleBack` pour steps 2 et 3
-- Adapter `handleStep2Complete` : ne prend plus de profiles, juste avance
-- Nettoyer toutes les cles sessionStorage supplementaires a la completion
+- `profiles.company_name` = nom de l'entreprise (onboarding step 1) -- deja en place
+- `workspaces.workspace_name` = nom du workspace Slack (rempli au callback OAuth)
+- Pas de nouvelle colonne, pas de migration
