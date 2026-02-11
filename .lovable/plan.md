@@ -1,24 +1,70 @@
 
-# Suppression des posts lors de la suppression d'un profil LinkedIn
+# Badge "New posts" flottant dans le Team Feed
 
-## Etat actuel
+## Fonctionnement
 
-La base de donnees a deja une contrainte `ON DELETE CASCADE` sur `posts.linkedin_profiles -> billable_users.id`. Quand un billable user est supprime, **ses posts sont automatiquement supprimes de la base**.
+Quand de nouveaux posts apparaissent en base (via Supabase Realtime), un badge flottant "New posts" apparait en haut de la zone de scroll du feed. Il reste fixe meme si l'utilisateur a scroll. Au clic, il (1) remonte le feed en haut et (2) charge les nouveaux posts en invalidant le cache.
 
-Le seul probleme : le cache React Query du team feed (`['posts', workspace?.id]`) n'est pas invalide apres la suppression, donc les posts supprimes restent visibles dans l'interface jusqu'au prochain rechargement.
+## Changements
 
-## Changement
+### 1. Modifier `useNewPostsNotification` pour exposer un etat au lieu d'un toast
 
-**src/hooks/useLinkedInProfiles.ts** - une seule ligne a ajouter dans le `onSuccess` de `deleteProfileMutation` (ligne 149-151) :
+Actuellement, le hook affiche un toast global. On va le transformer pour qu'il expose un booleen `hasNewPosts` et une fonction `loadNewPosts()`, tout en gardant le toast pour les autres pages (hors team feed).
 
-Ajouter l'invalidation du cache des posts pour que le team feed se mette a jour immediatement :
+On va creer un **nouveau hook** `useNewPostsBadge` dedie au feed, qui :
+- Ecoute les changements Realtime sur la table `posts` (INSERT uniquement)
+- Maintient un etat `hasNewPosts: boolean`
+- Expose une fonction `loadNewPosts()` qui invalide le cache et remet le flag a false
+
+### 2. Modifier le composant `TeamFeed`
+
+- Ajouter une `ref` sur le conteneur du feed pour pouvoir faire `scrollIntoView` / `scrollTo(0)`
+- Integrer le hook `useNewPostsBadge`
+- Afficher un badge flottant en `position: sticky; top: 0` quand `hasNewPosts` est true
+- Au clic : appeler `loadNewPosts()` + scroll to top
+
+### 3. Modifier `DashboardContent`
+
+Le conteneur scrollable du feed est dans `DashboardContent` (ligne 234, le `div` avec `overflow-y-auto`). Il faut passer une ref a `TeamFeed` ou restructurer legerement pour que le badge soit positionne dans ce conteneur scrollable avec `sticky top-0`.
+
+## Detail technique
+
+**Nouveau fichier : `src/hooks/useNewPostsBadge.ts`**
 
 ```typescript
-onSuccess: () => {
-  queryClient.invalidateQueries({ queryKey: ['linkedin-profiles', workspace?.id] });
-  queryClient.invalidateQueries({ queryKey: ['posts', workspace?.id] });
-  toast.success('Le profil LinkedIn a été supprimé');
-},
+// Ecoute INSERT sur posts, expose hasNewPosts + loadNewPosts()
+// Utilise Supabase Realtime, filtre sur workspace_id
+// loadNewPosts() invalide ['posts', workspaceId] et reset le flag
 ```
 
-C'est tout. La cascade en base fait le travail cote donnees, et cette invalidation fait le travail cote interface.
+**`src/components/content/TeamFeed.tsx`** :
+
+- Accepter une nouvelle prop `scrollContainerRef` (RefObject du parent scrollable)
+- Utiliser `useNewPostsBadge()`
+- Rendre un badge sticky en haut :
+
+```tsx
+{hasNewPosts && (
+  <button
+    onClick={() => {
+      scrollContainerRef?.current?.scrollTo({ top: 0, behavior: 'smooth' });
+      loadNewPosts();
+    }}
+    className="sticky top-0 z-10 mx-auto flex items-center gap-2 
+               bg-primary text-primary-foreground px-4 py-2 rounded-full 
+               shadow-lg animate-fade-in cursor-pointer hover:bg-primary/90"
+  >
+    <ArrowUp className="h-4 w-4" />
+    New posts
+  </button>
+)}
+```
+
+**`src/pages/DashboardContent.tsx`** :
+
+- Creer un `useRef` pour le conteneur scroll du feed (ligne 234)
+- Passer cette ref en prop a `TeamFeed`
+
+**`src/hooks/useNewPostsNotification.ts`** :
+
+- Aucun changement : ce hook continue de fonctionner pour les autres pages du dashboard (analytics, leaderboard, etc.)
