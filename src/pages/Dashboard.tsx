@@ -689,14 +689,15 @@ export default function Dashboard() {
                         <TableRow key={linkedinProfile.id} className="h-5">
                           <TableCell className="font-medium py-0.5 w-[18%]">
                             <div className="flex items-center gap-2 truncate">
-                              <Avatar className="h-6 w-6 shrink-0">
-                                <AvatarImage src={linkedinProfile.profile_picture || undefined} alt={linkedinProfile.profile_name || ''} />
-                                <AvatarFallback className="text-[10px]">
+                              {linkedinProfile.profile_picture ? (
+                                <img src={linkedinProfile.profile_picture} alt={linkedinProfile.profile_name || ''} className="w-6 h-6 rounded-full object-cover shrink-0" />
+                              ) : (
+                                <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
                                   {linkedinProfile.profile_name
-                                    ? linkedinProfile.profile_name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
+                                    ? <span className="text-[10px] font-medium">{linkedinProfile.profile_name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}</span>
                                     : <User className="w-3 h-3" />}
-                                </AvatarFallback>
-                              </Avatar>
+                                </div>
+                              )}
                               <span className={linkedinProfile.profile_name ? '' : 'text-muted-foreground italic'}>
                                 {linkedinProfile.profile_name || (language === 'fr' ? 'En attente...' : 'Pending...')}
                               </span>
