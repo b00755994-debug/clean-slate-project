@@ -131,7 +131,9 @@ export default function DashboardContent() {
           <div className="flex items-center gap-2 flex-wrap">
             <Select value={sortBy} onValueChange={(v: 'recent' | 'impressions' | 'reactions') => setSortBy(v)}>
               <SelectTrigger className="w-[130px] h-8 text-sm bg-card">
-                <SelectValue placeholder={t.sortBy} />
+                <span className="truncate">
+                  {sortBy === 'recent' ? t.mostRecent : sortBy === 'impressions' ? t.mostViewed : t.mostReactions}
+                </span>
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="recent" className="text-sm">{t.mostRecent}</SelectItem>
