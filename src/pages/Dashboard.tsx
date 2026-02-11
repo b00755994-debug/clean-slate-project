@@ -687,10 +687,10 @@ export default function Dashboard() {
                     <TableRow className="h-5">
                       <TableHead className="py-0.5 text-[11px] w-[18%] uppercase tracking-wide">{t.name}</TableHead>
                       <TableHead className="py-0.5 text-[11px] w-[30%] uppercase tracking-wide">{t.linkedinUrl}</TableHead>
-                      <TableHead className="py-0.5 text-[11px] w-[14%] uppercase tracking-wide">{t.slackUser}</TableHead>
+                      <TableHead className="py-0.5 text-[11px] w-[20%] uppercase tracking-wide">{t.slackUser}</TableHead>
                       <TableHead className="py-0.5 text-[11px] w-[14%] text-right uppercase tracking-wide">{t.followers}</TableHead>
                       <TableHead className="text-center py-0.5 text-[11px] w-[14%] uppercase tracking-wide">{t.posts30d}</TableHead>
-                      <TableHead className="text-right py-0.5 text-[11px] w-[12%] uppercase tracking-wide">{t.actions}</TableHead>
+                      <TableHead className="text-right py-0.5 text-[11px] w-[10%] uppercase tracking-wide">{t.actions}</TableHead>
                     </TableRow>
                   </TableHeader>
                 </Table>
@@ -708,7 +708,7 @@ export default function Dashboard() {
                               <ExternalLink className="w-3 h-3 shrink-0" />
                             </a>
                           </TableCell>
-                          <TableCell className="py-0.5 w-[14%]">
+                          <TableCell className="py-0.5 w-[20%]">
                             {slackWorkspace?.is_connected ? (
                               <Select value={linkedinProfile.slack_user_id || 'none'} onValueChange={value => {
                                 handleUpdateSlackUser(linkedinProfile.id, value === 'none' ? null : value);
@@ -796,7 +796,7 @@ export default function Dashboard() {
 
                             <Badge variant="secondary">{linkedinProfile.posts_count || 0}</Badge>
                           </TableCell>
-                          <TableCell className="text-right py-0.5 w-[12%]">
+                          <TableCell className="text-right py-0.5 w-[10%]">
                             <Button variant="ghost" size="icon" onClick={() => handleDeleteProfile(linkedinProfile.id)} className="text-destructive hover:text-destructive hover:bg-destructive/10">
                               <Trash2 className="w-4 h-4" />
                             </Button>
