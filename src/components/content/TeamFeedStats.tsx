@@ -1,16 +1,21 @@
-import { FileText, Users } from 'lucide-react';
+import { FileText, Users, Info } from 'lucide-react';
 import { Card } from '@/components/ui/card';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const translations = {
   fr: {
     posts: 'Posts',
+    postsTooltip: 'Nombre total de posts publiés sur les 30 derniers jours glissants',
     contributors: 'Contributeurs',
+    contributorsTooltip: 'Nombre de membres ayant publié au moins un post sur les 30 derniers jours glissants',
     last30Days: '30 derniers jours',
   },
   en: {
     posts: 'Posts',
+    postsTooltip: 'Total posts published over the last rolling 30 days',
     contributors: 'Contributors',
+    contributorsTooltip: 'Members who published at least one post over the last rolling 30 days',
     last30Days: 'Last 30 days',
   }
 };
@@ -36,6 +41,7 @@ export function TeamFeedStats({
       icon: FileText,
       value: totalPosts,
       label: t.posts,
+      tooltip: t.postsTooltip,
       color: 'text-blue-500',
       bgColor: 'bg-blue-500/10',
     },
@@ -43,6 +49,7 @@ export function TeamFeedStats({
       icon: Users,
       value: activeMembers,
       label: t.contributors,
+      tooltip: t.contributorsTooltip,
       color: 'text-amber-500',
       bgColor: 'bg-amber-500/10',
     },
@@ -62,9 +69,21 @@ export function TeamFeedStats({
             <p className="text-base sm:text-lg font-bold text-foreground leading-none truncate">
               {stat.value}
             </p>
-            <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 truncate">
-              {stat.label}
-            </p>
+            <div className="flex items-center gap-1 mt-0.5">
+              <p className="text-[10px] sm:text-xs text-muted-foreground truncate">
+                {stat.label}
+              </p>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Info className="h-3 w-3 text-muted-foreground cursor-help flex-shrink-0" />
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="max-w-[200px] text-xs">
+                    {stat.tooltip}
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
           </div>
         </Card>
       ))}
