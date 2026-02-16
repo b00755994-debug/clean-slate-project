@@ -30,7 +30,7 @@ const ProblemSolution = () => {
       metric: "d'impressions en moyenne"
     },
     en: {
-      title1: "Turn LinkedIn into",
+      title1: "Make LinkedIn",
       title2: "a team sport.",
       subtitle1: "Your employees have a network. ",
       subtitleHighlight: "Activate it.",
