@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -205,6 +206,12 @@ export default function Dashboard() {
   
   // Show syncing indicator only when fetching in background (not initial load)
   const isSyncing = (isWorkspaceFetching && !isWorkspaceLoading) || (isSlackMembersFetching && !isLoadingMembers) || (isChannelsFetching && !isLoadingChannels);
+
+  // Paywall helpers
+  const maxBillableUsers = slackWorkspace?.max_billable_users ?? 10;
+  const usedBillableUsers = linkedinProfiles.length;
+  const isAtLimit = usedBillableUsers >= maxBillableUsers;
+  const usagePercent = Math.min((usedBillableUsers / maxBillableUsers) * 100, 100);
   
   const [newProfileUrl, setNewProfileUrl] = useState(() => {
     return sessionStorage.getItem('add_user_url') || '';
@@ -407,6 +414,16 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent className="flex flex-col flex-grow">
               <p className="text-sm text-muted-foreground mb-4" dangerouslySetInnerHTML={{ __html: t.planDescription }} />
+              {/* Quota display */}
+              <div className="mb-4 space-y-1.5">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">{language === 'fr' ? 'Profils LinkedIn' : 'LinkedIn profiles'}</span>
+                  <span className={`font-semibold tabular-nums ${isAtLimit ? 'text-destructive' : 'text-foreground'}`}>
+                    {usedBillableUsers} / {maxBillableUsers}
+                  </span>
+                </div>
+                <Progress value={usagePercent} className={`h-1.5 ${isAtLimit ? '[&>div]:bg-destructive' : ''}`} />
+              </div>
               <div className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-muted/50 border border-dashed border-border text-muted-foreground text-sm mt-auto">
                 <Settings className="w-4 h-4" />
                 <span>{t.manageSubscription}</span>
@@ -560,106 +577,136 @@ export default function Dashboard() {
         {/* LinkedIn Profiles Section */}
         <Card className="border-border/50 shadow-md">
           <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex-1 min-w-0">
                 <CardTitle className="flex items-center gap-2">
                   <Linkedin className="w-5 h-5 text-[#0A66C2]" />
                   {t.linkedinProfilesTitle}
+                  <span className={`ml-1 text-sm font-medium tabular-nums ${isAtLimit ? 'text-destructive' : 'text-muted-foreground'}`}>
+                    {usedBillableUsers}/{maxBillableUsers}
+                  </span>
                 </CardTitle>
                 <CardDescription className="mt-1.5">
                   {t.linkedinProfilesDescription}
                 </CardDescription>
+                <div className="mt-2 space-y-1">
+                  <Progress value={usagePercent} className={`h-1 ${isAtLimit ? '[&>div]:bg-destructive' : ''}`} />
+                  {isAtLimit && (
+                    <p className="text-xs text-destructive">
+                      {language === 'fr'
+                        ? 'Limite atteinte — contactez-nous pour augmenter votre quota'
+                        : 'Limit reached — contact us to increase your quota'}
+                    </p>
+                  )}
+                </div>
               </div>
-              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button className="gap-2">
-                    <Plus className="w-4 h-4" />
-                    {t.addUser}
-                  </Button>
-                </DialogTrigger>
-                <DialogContent onPointerDownOutside={(e) => e.preventDefault()} onInteractOutside={(e) => e.preventDefault()} onFocusOutside={(e) => e.preventDefault()}>
-                  <DialogHeader>
-                    <DialogTitle>{t.addLinkedinProfile}</DialogTitle>
-                    <DialogDescription>{t.addProfileDescription}</DialogDescription>
-                  </DialogHeader>
-                  <div className="space-y-4 py-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="profileUrl">{t.linkedinUrl}</Label>
-                      <Input id="profileUrl" placeholder={t.linkedinUrlPlaceholder} value={newProfileUrl} onChange={e => setNewProfileUrl(e.target.value)} />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="slackUser" className="flex items-center gap-2">
-                        <img src={slackLogo} alt="Slack" className="w-4 h-4" />
-                        {t.associatedSlackUser}
-                        <span className="text-muted-foreground text-xs">({t.optional})</span>
-                      </Label>
-                      {slackWorkspace?.is_connected && slackMembers.length > 0 ? (
-                        <>
-                          <Select value={selectedSlackUserId || 'none'} onValueChange={(value) => setSelectedSlackUserId(value === 'none' ? '' : value)}>
-                            <SelectTrigger className="w-full">
-                              <SelectValue placeholder={t.selectSlackMember} />
-                            </SelectTrigger>
-                            <SelectContent className="bg-background border border-border">
-                              <SelectItem value="none">
-                                <span className="text-muted-foreground">{t.none}</span>
-                              </SelectItem>
-                              {slackMembers.map(member => (
-                                <SelectItem key={member.id} value={member.id}>
-                                  <div className="flex items-center gap-2">
-                                    {member.avatar_url ? (
-                                      <img src={member.avatar_url} alt={member.name} className="w-5 h-5 rounded-full" />
-                                    ) : (
-                                      <User className="w-5 h-5 text-muted-foreground" />
-                                    )}
-                                    <span>{member.name}</span>
-                                    {member.email && (
-                                      <span className="text-xs text-muted-foreground">({member.email})</span>
-                                    )}
-                                  </div>
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <p className="text-xs text-muted-foreground flex items-center gap-1">
-                            <Link className="w-3 h-3" />
-                            {t.autoTagDescription}
-                          </p>
-                        </>
-                      ) : slackWorkspace?.is_connected && isLoadingMembers ? (
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
-                          {t.loadingMembers}
-                        </div>
-                      ) : (
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <div className="relative">
-                                <Input id="slackUser" disabled placeholder={t.connectSlackToUnlock} className="bg-muted/50 cursor-not-allowed pr-10" />
-                                <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                              </div>
-                            </TooltipTrigger>
-                            <TooltipContent side="top" className="max-w-xs">
-                              <p>{t.connectSlackTooltip}</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      )}
-                    </div>
-                  </div>
-                  <DialogFooter>
-                    <Button variant="outline" onClick={() => {
-                      setIsDialogOpen(false);
-                      clearAddUserForm();
-                    }}>
-                      {t.cancel}
-                    </Button>
-                    <Button onClick={handleAddProfile} disabled={isAddingProfile}>
-                      {isAddingProfile ? t.adding : t.add}
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span tabIndex={isAtLimit ? 0 : undefined}>
+                      <Dialog open={isDialogOpen} onOpenChange={isAtLimit ? undefined : setIsDialogOpen}>
+                        <DialogTrigger asChild>
+                          <Button className="gap-2" disabled={isAtLimit}>
+                            <Plus className="w-4 h-4" />
+                            {t.addUser}
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent onPointerDownOutside={(e) => e.preventDefault()} onInteractOutside={(e) => e.preventDefault()} onFocusOutside={(e) => e.preventDefault()}>
+                          <DialogHeader>
+                            <DialogTitle>{t.addLinkedinProfile}</DialogTitle>
+                            <DialogDescription>{t.addProfileDescription}</DialogDescription>
+                          </DialogHeader>
+                          <div className="space-y-4 py-4">
+                            <div className="space-y-2">
+                              <Label htmlFor="profileUrl">{t.linkedinUrl}</Label>
+                              <Input id="profileUrl" placeholder={t.linkedinUrlPlaceholder} value={newProfileUrl} onChange={e => setNewProfileUrl(e.target.value)} />
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor="slackUser" className="flex items-center gap-2">
+                                <img src={slackLogo} alt="Slack" className="w-4 h-4" />
+                                {t.associatedSlackUser}
+                                <span className="text-muted-foreground text-xs">({t.optional})</span>
+                              </Label>
+                              {slackWorkspace?.is_connected && slackMembers.length > 0 ? (
+                                <>
+                                  <Select value={selectedSlackUserId || 'none'} onValueChange={(value) => setSelectedSlackUserId(value === 'none' ? '' : value)}>
+                                    <SelectTrigger className="w-full">
+                                      <SelectValue placeholder={t.selectSlackMember} />
+                                    </SelectTrigger>
+                                    <SelectContent className="bg-background border border-border">
+                                      <SelectItem value="none">
+                                        <span className="text-muted-foreground">{t.none}</span>
+                                      </SelectItem>
+                                      {slackMembers.map(member => (
+                                        <SelectItem key={member.id} value={member.id}>
+                                          <div className="flex items-center gap-2">
+                                            {member.avatar_url ? (
+                                              <img src={member.avatar_url} alt={member.name} className="w-5 h-5 rounded-full" />
+                                            ) : (
+                                              <User className="w-5 h-5 text-muted-foreground" />
+                                            )}
+                                            <span>{member.name}</span>
+                                            {member.email && (
+                                              <span className="text-xs text-muted-foreground">({member.email})</span>
+                                            )}
+                                          </div>
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                  <p className="text-xs text-muted-foreground flex items-center gap-1">
+                                    <Link className="w-3 h-3" />
+                                    {t.autoTagDescription}
+                                  </p>
+                                </>
+                              ) : slackWorkspace?.is_connected && isLoadingMembers ? (
+                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+                                  {t.loadingMembers}
+                                </div>
+                              ) : (
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <div className="relative">
+                                        <Input id="slackUser" disabled placeholder={t.connectSlackToUnlock} className="bg-muted/50 cursor-not-allowed pr-10" />
+                                        <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                                      </div>
+                                    </TooltipTrigger>
+                                    <TooltipContent side="top" className="max-w-xs">
+                                      <p>{t.connectSlackTooltip}</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              )}
+                            </div>
+                          </div>
+                          <DialogFooter>
+                            <Button variant="outline" onClick={() => {
+                              setIsDialogOpen(false);
+                              clearAddUserForm();
+                            }}>
+                              {t.cancel}
+                            </Button>
+                            <Button onClick={handleAddProfile} disabled={isAddingProfile}>
+                              {isAddingProfile ? t.adding : t.add}
+                            </Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
+                    </span>
+                  </TooltipTrigger>
+                  {isAtLimit && (
+                    <TooltipContent side="left" className="max-w-xs">
+                      <p>
+                        {language === 'fr'
+                          ? `Limite de ${maxBillableUsers} profils atteinte. Contactez-nous pour augmenter votre quota.`
+                          : `${maxBillableUsers} profile limit reached. Contact us to increase your quota.`}
+                      </p>
+                    </TooltipContent>
+                  )}
+                </Tooltip>
+              </TooltipProvider>
             </div>
           </CardHeader>
           <CardContent>

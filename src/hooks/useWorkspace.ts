@@ -24,6 +24,8 @@ interface Workspace {
   connected_at: string | null;
   slack_workspace_auth: string | null;
   role: WorkspaceRole;
+  plan: string;
+  max_billable_users: number;
 }
 
 export function useWorkspace() {
@@ -45,7 +47,9 @@ export function useWorkspace() {
             workspace_name,
             is_connected,
             connected_at,
-            slack_workspace_auth
+            slack_workspace_auth,
+            plan,
+            max_billable_users
           )
         `)
         .eq('profile_id', user?.id)
@@ -62,6 +66,8 @@ export function useWorkspace() {
         is_connected: boolean | null;
         connected_at: string | null;
         slack_workspace_auth: string | null;
+        plan: string | null;
+        max_billable_users: number | null;
       };
       
       return {
@@ -71,6 +77,8 @@ export function useWorkspace() {
         connected_at: ws.connected_at,
         slack_workspace_auth: ws.slack_workspace_auth,
         role: data.role as WorkspaceRole,
+        plan: ws.plan || 'pro',
+        max_billable_users: ws.max_billable_users ?? 10,
       } as Workspace;
     },
     enabled: !!user,
