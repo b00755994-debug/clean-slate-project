@@ -123,6 +123,14 @@ export function useLinkedInProfiles() {
     }) => {
       const trimmedName = profileName.trim();
       const trimmedUrl = linkedinUrl.trim();
+
+      // Client-side limit check (UX guard — server also enforces this)
+      const maxUsers = workspace?.max_billable_users ?? 10;
+      if (linkedinProfiles.length >= maxUsers) {
+        throw new Error(
+          `Vous avez atteint la limite de ${maxUsers} profils LinkedIn. Contactez-nous pour augmenter votre quota.`
+        );
+      }
       
       try {
         if (trimmedName) {

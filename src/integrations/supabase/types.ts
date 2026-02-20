@@ -656,6 +656,8 @@ export type Database = {
           created_at: string | null
           id: string
           is_connected: boolean | null
+          max_billable_users: number
+          plan: string
           slack_workspace_auth: string | null
           workspace_name: string
         }
@@ -664,6 +666,8 @@ export type Database = {
           created_at?: string | null
           id?: string
           is_connected?: boolean | null
+          max_billable_users?: number
+          plan?: string
           slack_workspace_auth?: string | null
           workspace_name: string
         }
@@ -672,6 +676,8 @@ export type Database = {
           created_at?: string | null
           id?: string
           is_connected?: boolean | null
+          max_billable_users?: number
+          plan?: string
           slack_workspace_auth?: string | null
           workspace_name?: string
         }
