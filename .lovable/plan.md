@@ -1,52 +1,108 @@
 
-# Loading indicators tied to `scrapping_onboarding_done`
+# Structure de paywall — Limite de billable users par workspace
 
-## What the user wants
+## Contexte
 
-- The "Followed LinkedIn Profiles" table in Dashboard.tsx: **no change to the skeleton logic** (keep as-is, using `profile_name` and `followers == null` as today)
-- The **Team Feed**: when scraping is still in progress for any profile, show skeleton post cards instead of "No posts found"
-- The polling in `useLinkedInProfiles`: use `scrapping_onboarding_done` as the authoritative signal (not `!profile_name`)
+Actuellement, il n'existe aucune limite sur le nombre de profils LinkedIn (billable users) qu'un workspace peut ajouter. L'objectif est de poser l'infrastructure d'un paywall futur, sans bloquer les paiements pour l'instant. Tout est gérable manuellement dans le backend.
 
-## Current state
+## Architecture choisie
 
-| Area | Current behavior | Problem |
-|---|---|---|
-| `useLinkedInProfiles` polling | Polls while `!p.profile_name` | Weak heuristic — name might be null after scraping, or populated before done |
-| Dashboard table skeletons | Skeletons for `profile_picture` and `profile_name` when `!profile_name`, skeleton for `followers` when `followers == null` | Stays as-is per user request |
-| Team Feed empty state | Shows "No posts found" immediately | No way to distinguish "no posts yet" from "scraping in progress" |
+Ajouter deux colonnes à la table `workspaces` :
+- `plan` — le plan actuel du workspace (`'pro'` par défaut)
+- `max_billable_users` — la limite de profils LinkedIn (`10` par défaut)
 
-## Changes
+Ce sont les deux seules valeurs nécessaires pour piloter la limite. Elles seront modifiables manuellement dans Supabase pour chaque client.
 
-### 1. `src/hooks/useLinkedInProfiles.ts`
+## Ce qui change
 
-- Add `scrapping_onboarding_done: boolean | null` to the `LinkedInProfile` interface (internal only, not displayed in the table)
-- Update polling condition: `!p.scrapping_onboarding_done` instead of `!p.profile_name`
-- Export `hasPendingScraping: boolean` — true when at least one profile has `scrapping_onboarding_done` not true
+### 1. Migration SQL — table `workspaces`
 
-The polling already resets properly (stops after 60s), so only the trigger condition changes.
+Ajout des deux colonnes avec valeurs par défaut :
 
-### 2. `src/components/content/TeamFeed.tsx`
+```sql
+ALTER TABLE workspaces
+  ADD COLUMN plan text NOT NULL DEFAULT 'pro',
+  ADD COLUMN max_billable_users integer NOT NULL DEFAULT 10;
 
-- Add optional prop: `hasPendingScraping?: boolean`
-- When `filteredAndSortedPosts.length === 0`:
-  - If `hasPendingScraping` is `true`: show 3 skeleton post cards (ghost cards identical to the loading state)
-  - If `hasPendingScraping` is `false` or undefined: show "No posts found" as today
+-- Mettre à jour les workspaces existants
+UPDATE workspaces SET plan = 'pro', max_billable_users = 10;
+```
 
-This means after scraping completes (`scrapping_onboarding_done = true`), if there are still no posts, the feed shows "No posts found" normally.
+### 2. `src/hooks/useWorkspace.ts`
 
-### 3. `src/pages/DashboardContent.tsx`
+- Ajouter `plan` et `max_billable_users` à l'interface `Workspace`
+- Les exposer via le hook
 
-- Import `useLinkedInProfiles` and destructure `hasPendingScraping`
-- Pass `hasPendingScraping` as a prop to `<TeamFeed />`
+### 3. `src/hooks/useLinkedInProfiles.ts`
 
-## What does NOT change
+Dans `addProfileMutation`, avant d'appeler le RPC `add_billable_user`, vérifier côté client :
 
-- Dashboard.tsx LinkedIn Profiles table skeleton logic — untouched
-- Polling timing (3s for first minute, then stops)
-- All other components
+```
+if (linkedinProfiles.length >= workspace.max_billable_users) {
+  throw new Error(limitReachedMessage)
+}
+```
 
-## Files modified
+Note : c'est une vérification côté client (UX). La vraie protection est au niveau de la fonction RPC `add_billable_user` dans Supabase (step 4).
 
-- `src/hooks/useLinkedInProfiles.ts` — interface + polling condition + `hasPendingScraping` export
-- `src/components/content/TeamFeed.tsx` — conditional skeleton vs "no posts" state
-- `src/pages/DashboardContent.tsx` — consume and pass `hasPendingScraping` to `<TeamFeed />`
+### 4. Fonction RPC `add_billable_user` — protection côté serveur
+
+Modifier la fonction pour qu'elle vérifie la limite avant d'insérer :
+
+```sql
+-- Vérifier la limite
+IF (SELECT COUNT(*) FROM billable_users WHERE workspace_id = p_workspace_id) >= 
+   (SELECT max_billable_users FROM workspaces WHERE id = p_workspace_id) THEN
+  RAISE EXCEPTION 'Workspace has reached its LinkedIn profile limit';
+END IF;
+```
+
+C'est la protection réelle, côté base de données, qui ne peut pas être contournée.
+
+### 5. `src/pages/Dashboard.tsx` — UI du paywall
+
+Dans la section "Profils LinkedIn suivis", afficher :
+
+- Un compteur `X / Y profils` à côté du titre (ex: `3 / 10`)
+- Une barre de progression fine montrant l'utilisation
+- Quand la limite est atteinte : le bouton "Ajouter un utilisateur" est désactivé et affiche un tooltip explicatif
+- Un message d'upgrade discret sous la barre (ex: "Limite atteinte — contactez-nous pour augmenter votre quota")
+
+### 6. `src/pages/Dashboard.tsx` — Carte "Mon Plan"
+
+Enrichir la carte plan avec :
+- Affichage du quota : `X / Y profils LinkedIn`
+- Mini barre de progression
+
+## Flux complet
+
+```text
+Utilisateur clique "Ajouter"
+        |
+        v
+[Vérification client] linkedinProfiles.length >= max_billable_users ?
+        |                         |
+       OUI                       NON
+        |                         |
+Toast "Limite atteinte"     Appel RPC add_billable_user()
+                                  |
+                    [Vérification serveur dans la fonction SQL]
+                          |                   |
+                   Limite atteinte      OK → insertion
+                          |
+                  RAISE EXCEPTION → toast d'erreur
+```
+
+## Fichiers modifiés
+
+- Migration SQL (`workspaces` table) — 2 nouvelles colonnes
+- Mise à jour de la fonction RPC `add_billable_user` — guard côté serveur
+- `src/hooks/useWorkspace.ts` — expose `plan` et `max_billable_users`
+- `src/hooks/useLinkedInProfiles.ts` — vérification côté client avant insertion
+- `src/pages/Dashboard.tsx` — compteur, barre de progression, bouton désactivé
+
+## Ce qui ne change PAS
+
+- Aucun paiement, aucun Stripe, aucune redirection
+- Tous les workspaces existants restent sur Pro avec limite à 10
+- Modifiable manuellement dans Supabase à tout moment
