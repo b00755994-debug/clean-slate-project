@@ -1,47 +1,52 @@
 
-# Fix definitif : Decalage du texte dans le SelectTrigger
+# Loading indicators tied to `scrapping_onboarding_done`
 
-## Diagnostic
+## What the user wants
 
-Les tentatives precedentes (CSS `!important`, global overrides) n'ont pas fonctionne car le probleme n'est pas du CSS mais du **DOM**. Radix `SelectValue` cree une structure DOM differente selon que la valeur est :
-- La valeur initiale (definie par `useState`) : rendu comme texte simple
-- Une valeur selectionnee par l'utilisateur : rendu via la projection `ItemText` avec des spans imbriques supplementaires
+- The "Followed LinkedIn Profiles" table in Dashboard.tsx: **no change to the skeleton logic** (keep as-is, using `profile_name` and `followers == null` as today)
+- The **Team Feed**: when scraping is still in progress for any profile, show skeleton post cards instead of "No posts found"
+- The polling in `useLinkedInProfiles`: use `scrapping_onboarding_done` as the authoritative signal (not `!profile_name`)
 
-Aucun override CSS ne peut corriger une difference structurelle dans le DOM.
+## Current state
 
-## Solution
+| Area | Current behavior | Problem |
+|---|---|---|
+| `useLinkedInProfiles` polling | Polls while `!p.profile_name` | Weak heuristic — name might be null after scraping, or populated before done |
+| Dashboard table skeletons | Skeletons for `profile_picture` and `profile_name` when `!profile_name`, skeleton for `followers` when `followers == null` | Stays as-is per user request |
+| Team Feed empty state | Shows "No posts found" immediately | No way to distinguish "no posts yet" from "scraping in progress" |
 
-Remplacer `SelectValue` par un rendu manuel du texte dans le `SelectTrigger` du filtre "Sort by". Ainsi, le DOM est strictement identique quel que soit le choix selectionne.
+## Changes
 
-## Detail technique
+### 1. `src/hooks/useLinkedInProfiles.ts`
 
-**`src/pages/DashboardContent.tsx`** - lignes 132-141
+- Add `scrapping_onboarding_done: boolean | null` to the `LinkedInProfile` interface (internal only, not displayed in the table)
+- Update polling condition: `!p.scrapping_onboarding_done` instead of `!p.profile_name`
+- Export `hasPendingScraping: boolean` — true when at least one profile has `scrapping_onboarding_done` not true
 
-Avant :
-```
-<Select value={sortBy} onValueChange={...}>
-  <SelectTrigger className="w-[130px] h-8 text-sm bg-card">
-    <SelectValue placeholder={t.sortBy} />
-  </SelectTrigger>
-  ...
-</Select>
-```
+The polling already resets properly (stops after 60s), so only the trigger condition changes.
 
-Apres :
-```
-<Select value={sortBy} onValueChange={...}>
-  <SelectTrigger className="w-[130px] h-8 text-sm bg-card">
-    <span className="truncate">
-      {sortBy === 'recent' ? t.mostRecent : sortBy === 'impressions' ? t.mostViewed : t.mostReactions}
-    </span>
-  </SelectTrigger>
-  ...
-</Select>
-```
+### 2. `src/components/content/TeamFeed.tsx`
 
-On remplace `<SelectValue>` par un `<span>` classique qui affiche le bon label en fonction de l'etat `sortBy`. Le DOM est maintenant identique pour les 3 options.
+- Add optional prop: `hasPendingScraping?: boolean`
+- When `filteredAndSortedPosts.length === 0`:
+  - If `hasPendingScraping` is `true`: show 3 skeleton post cards (ghost cards identical to the loading state)
+  - If `hasPendingScraping` is `false` or undefined: show "No posts found" as today
 
-L'import de `SelectValue` reste utilise par les autres Select de la page (time period, author filter), donc pas besoin de modifier les imports.
+This means after scraping completes (`scrapping_onboarding_done = true`), if there are still no posts, the feed shows "No posts found" normally.
 
-### Fichier modifie
-- `src/pages/DashboardContent.tsx` (1 bloc modifie)
+### 3. `src/pages/DashboardContent.tsx`
+
+- Import `useLinkedInProfiles` and destructure `hasPendingScraping`
+- Pass `hasPendingScraping` as a prop to `<TeamFeed />`
+
+## What does NOT change
+
+- Dashboard.tsx LinkedIn Profiles table skeleton logic — untouched
+- Polling timing (3s for first minute, then stops)
+- All other components
+
+## Files modified
+
+- `src/hooks/useLinkedInProfiles.ts` — interface + polling condition + `hasPendingScraping` export
+- `src/components/content/TeamFeed.tsx` — conditional skeleton vs "no posts" state
+- `src/pages/DashboardContent.tsx` — consume and pass `hasPendingScraping` to `<TeamFeed />`
