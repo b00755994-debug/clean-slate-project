@@ -37,6 +37,7 @@ interface LinkedInProfile {
   avatar_url: string | null;
   slack_user_id: string | null;
   followers: number | null;
+  scrapping_onboarding_done: boolean | null;
   posts_count?: number;
 }
 
@@ -91,7 +92,9 @@ export function useLinkedInProfiles() {
     placeholderData: (previousData) => previousData,
     refetchInterval: (query) => {
       const data = query.state.data;
-      const hasIncomplete = data && data.some((p: LinkedInProfile) => !p.profile_name);
+      const hasIncomplete = data && data.some(
+        (p: LinkedInProfile) => p.scrapping_onboarding_done === false || p.scrapping_onboarding_done === null
+      );
       
       if (!hasIncomplete) {
         pollingStartRef.current = null;
@@ -198,9 +201,14 @@ export function useLinkedInProfiles() {
     },
   });
 
+  const hasPendingScraping = linkedinProfiles.some(
+    (p) => p.scrapping_onboarding_done === false || p.scrapping_onboarding_done === null
+  );
+
   return {
     linkedinProfiles,
     isLoading,
+    hasPendingScraping,
     addProfile: addProfileMutation.mutateAsync,
     isAddingProfile: addProfileMutation.isPending,
     deleteProfile: deleteProfileMutation.mutate,

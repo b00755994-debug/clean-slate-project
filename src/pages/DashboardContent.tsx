@@ -6,6 +6,7 @@ import { TeamFeedStats } from '@/components/content/TeamFeedStats';
 import { TopPostsLeaderboard } from '@/components/content/TopPostsLeaderboard';
 import { ActiveContributorsLeaderboard } from '@/components/content/ActiveContributorsLeaderboard';
 import { useLeaderboards } from '@/hooks/useLeaderboards';
+import { useLinkedInProfiles } from '@/hooks/useLinkedInProfiles';
 import { Newspaper, Bookmark, X, Search, Calendar } from 'lucide-react';
 import { Toggle } from '@/components/ui/toggle';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -76,6 +77,9 @@ export default function DashboardContent() {
 
   // Get leaderboards data
   const { topPosts, activeContributors, loading: leaderboardsLoading } = useLeaderboards();
+
+  // Get scraping status
+  const { hasPendingScraping } = useLinkedInProfiles();
 
   // Use workspace-scoped query for authors with caching
   const { workspace } = useWorkspace();
@@ -230,6 +234,7 @@ export default function DashboardContent() {
               authorFilter={authorFilter}
               searchQuery={searchQuery}
               timePeriod={timePeriod}
+              hasPendingScraping={hasPendingScraping}
             />
           </div>
           
