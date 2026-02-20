@@ -24,6 +24,7 @@ interface TeamFeedProps {
   viewMode?: ViewMode;
   searchQuery?: string;
   timePeriod?: TimePeriod;
+  hasPendingScraping?: boolean;
   onStatsChange?: (stats: { 
     totalPosts: number; 
     totalImpressions: number; 
@@ -39,6 +40,7 @@ export function TeamFeed({
   viewMode = 'list',
   searchQuery = '',
   timePeriod = 'all',
+  hasPendingScraping = false,
 }: TeamFeedProps) {
   const { language } = useLanguage();
   const t = translations[language];
@@ -127,9 +129,27 @@ export function TeamFeed({
   return (
     <div className="w-full max-w-[700px]">
       {filteredAndSortedPosts.length === 0 ? (
-        <div className="text-center py-12 text-muted-foreground bg-card rounded-lg border border-border/40">
-          <p>{t.noPostsFound}</p>
-        </div>
+        hasPendingScraping ? (
+          <div className="w-full max-w-[700px] space-y-2">
+            {[1, 2, 3].map(i => (
+              <div key={i} className="bg-card p-4 border border-border/40 rounded-lg">
+                <div className="flex items-center gap-3 mb-3">
+                  <Skeleton className="h-12 w-12 rounded-full" />
+                  <div>
+                    <Skeleton className="h-4 w-32 mb-1" />
+                    <Skeleton className="h-3 w-20" />
+                  </div>
+                </div>
+                <Skeleton className="h-20 w-full mb-3" />
+                <Skeleton className="h-10 w-full" />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12 text-muted-foreground bg-card rounded-lg border border-border/40">
+            <p>{t.noPostsFound}</p>
+          </div>
+        )
       ) : (
         <div className="space-y-2">
           {filteredAndSortedPosts.map(post => (
