@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Progress } from '@/components/ui/progress';
+
 import { useToast } from '@/hooks/use-toast';
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -422,7 +422,7 @@ export default function Dashboard() {
                     {usedBillableUsers} / {maxBillableUsers}
                   </span>
                 </div>
-                <Progress value={usagePercent} className={`h-1.5 ${isAtLimit ? '[&>div]:bg-destructive' : ''}`} />
+                
               </div>
               <div className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-muted/50 border border-dashed border-border text-muted-foreground text-sm mt-auto">
                 <Settings className="w-4 h-4" />
@@ -590,7 +590,7 @@ export default function Dashboard() {
                   {t.linkedinProfilesDescription}
                 </CardDescription>
                 <div className="mt-2 space-y-1">
-                  <Progress value={usagePercent} className={`h-1 ${isAtLimit ? '[&>div]:bg-destructive' : ''}`} />
+                  
                   {isAtLimit && (
                     <p className="text-xs text-destructive">
                       {language === 'fr'
