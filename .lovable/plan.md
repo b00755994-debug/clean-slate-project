@@ -1,108 +1,41 @@
 
-# Structure de paywall — Limite de billable users par workspace
+# Configurer le plan Free dans le Dashboard
 
 ## Contexte
 
-Actuellement, il n'existe aucune limite sur le nombre de profils LinkedIn (billable users) qu'un workspace peut ajouter. L'objectif est de poser l'infrastructure d'un paywall futur, sans bloquer les paiements pour l'instant. Tout est gérable manuellement dans le backend.
-
-## Architecture choisie
-
-Ajouter deux colonnes à la table `workspaces` :
-- `plan` — le plan actuel du workspace (`'pro'` par défaut)
-- `max_billable_users` — la limite de profils LinkedIn (`10` par défaut)
-
-Ce sont les deux seules valeurs nécessaires pour piloter la limite. Elles seront modifiables manuellement dans Supabase pour chaque client.
+Le plan Free existe deja sur la page Pricing (Individual, 0EUR, 1 user). Il faut maintenant que le Dashboard affiche dynamiquement le bon plan en fonction de la valeur `plan` du workspace (`'pro'` ou `'free'`), au lieu d'afficher "Pro" en dur.
 
 ## Ce qui change
 
-### 1. Migration SQL — table `workspaces`
+### 1. `src/pages/Dashboard.tsx` -- Affichage dynamique du plan
 
-Ajout des deux colonnes avec valeurs par défaut :
+Actuellement, le texte "Vous etes sur le plan **Pro**" est en dur dans les traductions. Il faut le rendre dynamique en fonction de `workspace.plan` :
 
-```sql
-ALTER TABLE workspaces
-  ADD COLUMN plan text NOT NULL DEFAULT 'pro',
-  ADD COLUMN max_billable_users integer NOT NULL DEFAULT 10;
+- Si `plan === 'free'` : afficher "Individual" (cohérent avec la page Pricing) et adapter la description
+- Si `plan === 'pro'` : garder le texte actuel
 
--- Mettre à jour les workspaces existants
-UPDATE workspaces SET plan = 'pro', max_billable_users = 10;
-```
+Concretement :
+- Remplacer la string statique `planDescription` par une fonction qui prend le plan en parametre
+- Afficher le nom du plan (Individual / Pro) en gras dans la description
+- Adapter le message : Free = "Passez a Pro pour suivre plus de profils", Pro = texte actuel
 
-### 2. `src/hooks/useWorkspace.ts`
+### 2. Aucune migration SQL necessaire
 
-- Ajouter `plan` et `max_billable_users` à l'interface `Workspace`
-- Les exposer via le hook
+Les colonnes `plan` et `max_billable_users` existent deja. Pour creer un workspace Free, il suffit de mettre `plan = 'free'` et `max_billable_users = 1` manuellement dans Supabase.
 
-### 3. `src/hooks/useLinkedInProfiles.ts`
+### 3. Aucun changement cote hooks
 
-Dans `addProfileMutation`, avant d'appeler le RPC `add_billable_user`, vérifier côté client :
+`useWorkspace` expose deja `plan` et `max_billable_users`. Le plan Free avec `max_billable_users = 1` sera automatiquement pris en compte par la verification existante dans `useLinkedInProfiles`.
 
-```
-if (linkedinProfiles.length >= workspace.max_billable_users) {
-  throw new Error(limitReachedMessage)
-}
-```
+## Fichiers modifies
 
-Note : c'est une vérification côté client (UX). La vraie protection est au niveau de la fonction RPC `add_billable_user` dans Supabase (step 4).
+- `src/pages/Dashboard.tsx` : rendre l'affichage du plan dynamique (Free/Pro) au lieu du texte "Pro" en dur
 
-### 4. Fonction RPC `add_billable_user` — protection côté serveur
-
-Modifier la fonction pour qu'elle vérifie la limite avant d'insérer :
-
-```sql
--- Vérifier la limite
-IF (SELECT COUNT(*) FROM billable_users WHERE workspace_id = p_workspace_id) >= 
-   (SELECT max_billable_users FROM workspaces WHERE id = p_workspace_id) THEN
-  RAISE EXCEPTION 'Workspace has reached its LinkedIn profile limit';
-END IF;
-```
-
-C'est la protection réelle, côté base de données, qui ne peut pas être contournée.
-
-### 5. `src/pages/Dashboard.tsx` — UI du paywall
-
-Dans la section "Profils LinkedIn suivis", afficher :
-
-- Un compteur `X / Y profils` à côté du titre (ex: `3 / 10`)
-- Une barre de progression fine montrant l'utilisation
-- Quand la limite est atteinte : le bouton "Ajouter un utilisateur" est désactivé et affiche un tooltip explicatif
-- Un message d'upgrade discret sous la barre (ex: "Limite atteinte — contactez-nous pour augmenter votre quota")
-
-### 6. `src/pages/Dashboard.tsx` — Carte "Mon Plan"
-
-Enrichir la carte plan avec :
-- Affichage du quota : `X / Y profils LinkedIn`
-- Mini barre de progression
-
-## Flux complet
+## Resume technique
 
 ```text
-Utilisateur clique "Ajouter"
-        |
-        v
-[Vérification client] linkedinProfiles.length >= max_billable_users ?
-        |                         |
-       OUI                       NON
-        |                         |
-Toast "Limite atteinte"     Appel RPC add_billable_user()
-                                  |
-                    [Vérification serveur dans la fonction SQL]
-                          |                   |
-                   Limite atteinte      OK → insertion
-                          |
-                  RAISE EXCEPTION → toast d'erreur
+workspace.plan === 'free'  -->  Nom: "Individual", max_billable_users: 1
+workspace.plan === 'pro'   -->  Nom: "Pro", max_billable_users: 10 (defaut)
 ```
 
-## Fichiers modifiés
-
-- Migration SQL (`workspaces` table) — 2 nouvelles colonnes
-- Mise à jour de la fonction RPC `add_billable_user` — guard côté serveur
-- `src/hooks/useWorkspace.ts` — expose `plan` et `max_billable_users`
-- `src/hooks/useLinkedInProfiles.ts` — vérification côté client avant insertion
-- `src/pages/Dashboard.tsx` — compteur, barre de progression, bouton désactivé
-
-## Ce qui ne change PAS
-
-- Aucun paiement, aucun Stripe, aucune redirection
-- Tous les workspaces existants restent sur Pro avec limite à 10
-- Modifiable manuellement dans Supabase à tout moment
+Tout le reste (limite cote client, limite cote serveur via RPC) fonctionne deja grace aux colonnes existantes.
