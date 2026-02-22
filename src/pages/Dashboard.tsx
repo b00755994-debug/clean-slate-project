@@ -417,7 +417,7 @@ export default function Dashboard() {
               {/* Quota display */}
               <div className="mb-4 space-y-1.5">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">{language === 'fr' ? 'Profils LinkedIn' : 'LinkedIn profiles'}</span>
+                  <span className="text-muted-foreground">{language === 'fr' ? 'Profils LinkedIn suivis' : 'LinkedIn profiles followed'}</span>
                   <span className={`font-semibold tabular-nums ${isAtLimit ? 'text-destructive' : 'text-foreground'}`}>
                     {usedBillableUsers} / {maxBillableUsers}
                   </span>
