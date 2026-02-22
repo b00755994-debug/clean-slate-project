@@ -31,7 +31,9 @@ const translations = {
     defaultUser: 'Utilisateur',
     manageAccount: 'Gérez votre compte et soutenez vos équipes sur LinkedIn',
     myPlan: 'Mon Plan',
-    planDescription: 'Vous êtes sur le plan <strong>Pro</strong>. Profitez de toutes les fonctionnalités avancées.',
+    planDescription: (plan: string) => plan === 'free'
+      ? 'Vous êtes sur le plan <strong>Individual</strong>. Passez à Pro pour suivre plus de profils.'
+      : 'Vous êtes sur le plan <strong>Pro</strong>. Profitez de toutes les fonctionnalités avancées.',
     manageSubscription: "Gérer l'abonnement",
     comingSoon: '🥷 Bientôt',
     connected: 'Connecté',
@@ -109,7 +111,9 @@ const translations = {
     defaultUser: 'User',
     manageAccount: 'Manage your account and support your teams on LinkedIn',
     myPlan: 'My Plan',
-    planDescription: "You're on the <strong>Pro</strong> plan. Enjoy all advanced features.",
+    planDescription: (plan: string) => plan === 'free'
+      ? "You're on the <strong>Individual</strong> plan. Upgrade to Pro to follow more profiles."
+      : "You're on the <strong>Pro</strong> plan. Enjoy all advanced features.",
     manageSubscription: 'Manage subscription',
     comingSoon: '🥷 Coming soon',
     connected: 'Connected',
@@ -413,7 +417,7 @@ export default function Dashboard() {
               </CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col flex-grow">
-              <p className="text-sm text-muted-foreground mb-4" dangerouslySetInnerHTML={{ __html: t.planDescription }} />
+              <p className="text-sm text-muted-foreground mb-4" dangerouslySetInnerHTML={{ __html: t.planDescription(slackWorkspace?.plan || 'pro') }} />
               {/* Quota display */}
               <div className="mb-4 space-y-1.5">
                 <div className="flex items-center justify-between text-sm">
