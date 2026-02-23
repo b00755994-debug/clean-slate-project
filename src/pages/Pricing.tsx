@@ -33,7 +33,7 @@ const translations = {
     simulatorTitle: "Simulez le prix selon le nombre d'utilisateurs",
     plans: {
       free: {
-        name: "Individual",
+        name: "Free",
         description: "Démarrez gratuitement",
         features: [
           "Alertes Slack pour mobiliser votre équipe",
@@ -41,14 +41,14 @@ const translations = {
           "Support email",
           "Intégration Slack"
         ],
-        limit: "1 utilisateur",
+        limit: "3 utilisateurs max",
         valueProposition: "Testez Superpump en solo et passez à Pro quand vous voulez embarquer votre équipe."
       },
       pro: {
         name: "Pro",
         description: "Amplifiez la voix de votre équipe",
         features: [
-          "Tout ce qui est inclus dans Individual",
+          "Tout ce qui est inclus dans Free",
           "Analyses avancées à l'échelle de votre équipe",
           "Feed des contenus de votre équipe",
           "Audience & brand insights",
@@ -88,7 +88,7 @@ const translations = {
     simulatorTitle: "Simulate the price based on the number of users",
     plans: {
       free: {
-        name: "Individual",
+        name: "Free",
         description: "Get started for free",
         features: [
           "Slack alerts to rally your team",
@@ -96,14 +96,14 @@ const translations = {
           "Email support",
           "Slack integration"
         ],
-        limit: "1 user",
+        limit: "Up to 3 users",
         valueProposition: "Try Superpump solo and switch to Pro when you want to bring your team onboard."
       },
       pro: {
         name: "Pro",
         description: "Amplify your team's voice",
         features: [
-          "Everything in Individual",
+          "Everything in Free",
           "Advanced team analytics",
           "Content library to follow your team",
           "Monthly leaderboard",

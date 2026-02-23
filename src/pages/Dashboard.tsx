@@ -32,7 +32,7 @@ const translations = {
     manageAccount: 'Gérez votre compte et soutenez vos équipes sur LinkedIn',
     myPlan: 'Mon Plan',
     planDescription: (plan: string) => plan === 'free'
-      ? 'Vous êtes sur le plan <strong>Individual</strong>. Passez à Pro pour suivre plus de profils.'
+      ? 'Vous êtes sur le plan <strong>Free</strong>. Passez à Pro pour suivre plus de profils.'
       : 'Vous êtes sur le plan <strong>Pro</strong>. Profitez de toutes les fonctionnalités avancées.',
     manageSubscription: "Gérer l'abonnement",
     comingSoon: '🥷 Bientôt',
@@ -112,7 +112,7 @@ const translations = {
     manageAccount: 'Manage your account and support your teams on LinkedIn',
     myPlan: 'My Plan',
     planDescription: (plan: string) => plan === 'free'
-      ? "You're on the <strong>Individual</strong> plan. Upgrade to Pro to follow more profiles."
+      ? "You're on the <strong>Free</strong> plan. Upgrade to Pro to follow more profiles."
       : "You're on the <strong>Pro</strong> plan. Enjoy all advanced features.",
     manageSubscription: 'Manage subscription',
     comingSoon: '🥷 Coming soon',
