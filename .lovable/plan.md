@@ -1,41 +1,29 @@
 
-# Configurer le plan Free dans le Dashboard
+# Passer le plan par defaut a Free (3 URLs max)
 
-## Contexte
+## Modifications
 
-Le plan Free existe deja sur la page Pricing (Individual, 0EUR, 1 user). Il faut maintenant que le Dashboard affiche dynamiquement le bon plan en fonction de la valeur `plan` du workspace (`'pro'` ou `'free'`), au lieu d'afficher "Pro" en dur.
+### 1. Dashboard -- Renommer "Individual" en "Free"
 
-## Ce qui change
+Dans `src/pages/Dashboard.tsx`, remplacer "Individual" par "Free" dans les deux langues (FR et EN) des descriptions de plan.
 
-### 1. `src/pages/Dashboard.tsx` -- Affichage dynamique du plan
+### 2. Migration SQL -- Changer les defaults de la table `workspaces`
 
-Actuellement, le texte "Vous etes sur le plan **Pro**" est en dur dans les traductions. Il faut le rendre dynamique en fonction de `workspace.plan` :
+- Colonne `plan` : default passe de `'pro'` a `'free'`
+- Colonne `max_billable_users` : default passe de `10` a `3`
 
-- Si `plan === 'free'` : afficher "Individual" (cohérent avec la page Pricing) et adapter la description
-- Si `plan === 'pro'` : garder le texte actuel
+### 3. Pricing page -- Renommer "Individual" en "Free"
 
-Concretement :
-- Remplacer la string statique `planDescription` par une fonction qui prend le plan en parametre
-- Afficher le nom du plan (Individual / Pro) en gras dans la description
-- Adapter le message : Free = "Passez a Pro pour suivre plus de profils", Pro = texte actuel
+Dans `src/pages/Pricing.tsx`, remplacer le nom du plan "Individual" par "Free" pour rester coherent.
 
-### 2. Aucune migration SQL necessaire
-
-Les colonnes `plan` et `max_billable_users` existent deja. Pour creer un workspace Free, il suffit de mettre `plan = 'free'` et `max_billable_users = 1` manuellement dans Supabase.
-
-### 3. Aucun changement cote hooks
-
-`useWorkspace` expose deja `plan` et `max_billable_users`. Le plan Free avec `max_billable_users = 1` sera automatiquement pris en compte par la verification existante dans `useLinkedInProfiles`.
-
-## Fichiers modifies
-
-- `src/pages/Dashboard.tsx` : rendre l'affichage du plan dynamique (Free/Pro) au lieu du texte "Pro" en dur
-
-## Resume technique
+## Resume
 
 ```text
-workspace.plan === 'free'  -->  Nom: "Individual", max_billable_users: 1
-workspace.plan === 'pro'   -->  Nom: "Pro", max_billable_users: 10 (defaut)
+Avant:  plan default = 'pro',  max_billable_users default = 10
+Apres:  plan default = 'free', max_billable_users default = 3
 ```
 
-Tout le reste (limite cote client, limite cote serveur via RPC) fonctionne deja grace aux colonnes existantes.
+Fichiers modifies :
+- `src/pages/Dashboard.tsx` (renommer Individual -> Free)
+- `src/pages/Pricing.tsx` (renommer Individual -> Free)
+- Migration SQL (changer defaults de `workspaces`)
