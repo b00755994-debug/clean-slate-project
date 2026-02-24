@@ -17,7 +17,7 @@ export function PeriodSelector({ value, onChange }: PeriodSelectorProps) {
             : "text-muted-foreground hover:text-foreground hover:bg-muted"
         )}
       >
-        6 mois
+        6 months
       </button>
       <button
         onClick={() => onChange('12')}
@@ -28,7 +28,7 @@ export function PeriodSelector({ value, onChange }: PeriodSelectorProps) {
             : "text-muted-foreground hover:text-foreground hover:bg-muted"
         )}
       >
-        12 mois
+        12 months
       </button>
     </div>
   );
