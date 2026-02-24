@@ -21,6 +21,7 @@ import DashboardAnalytics from "./pages/DashboardAnalytics";
 import DashboardContent from "./pages/DashboardContent";
 import DashboardLeaderboard from "./pages/DashboardLeaderboard";
 import Admin from "./pages/Admin";
+import Mockups from "./pages/Mockups";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -97,6 +98,7 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
+            <Route path="/mockups" element={<Mockups />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
