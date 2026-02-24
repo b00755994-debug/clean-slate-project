@@ -4,7 +4,7 @@ const mockPosts = [
   {
     post: {
       id: 'mock-1',
-      content: "🚀 Très fier d'annoncer le lancement de notre nouvelle fonctionnalité d'analytics LinkedIn pour les équipes !\n\nAprès 6 mois de développement, nous permettons enfin aux managers de suivre l'impact collectif de leur équipe sur LinkedIn.\n\nQuelques chiffres clés :\n→ +340% d'impressions moyennes par post\n→ 67% de taux de support interne\n→ 12 contributeurs actifs ce mois-ci\n\nMerci à toute l'équipe pour ce travail incroyable 🙏\n\n#LinkedInMarketing #EmployeeAdvocacy #Analytics",
+      content: "🚀 Thrilled to announce the launch of our new LinkedIn analytics feature for teams!\n\nAfter 6 months of development, we finally enable managers to track their team's collective impact on LinkedIn.\n\nKey metrics:\n→ +340% average impressions per post\n→ 67% internal support rate\n→ 12 active contributors this month\n\nHuge thanks to the entire team for this incredible work 🙏\n\n#LinkedInMarketing #EmployeeAdvocacy #Analytics",
       url: null,
       avatar_url: null,
       impressions: 45200,
@@ -30,7 +30,7 @@ const mockPosts = [
   {
     post: {
       id: 'mock-2',
-      content: "J'ai passé 3 ans à construire une stratégie de personal branding pour notre équipe commerciale. Voici ce que j'ai appris :\n\n1️⃣ La régularité bat le talent. Poster 2x/semaine > 1 post viral/mois\n2️⃣ Le support interne est un game-changer. Quand vos collègues likent et commentent dans les 30 premières minutes, l'algo booste votre reach x3\n3️⃣ Les posts \"behind the scenes\" performent 2x mieux que les posts corporate\n\nRésultat : notre équipe de 8 personnes génère plus d'impressions que notre page entreprise 💪\n\nQui d'autre observe cette tendance ?",
+      content: "I spent 3 years building a personal branding strategy for our sales team. Here's what I learned:\n\n1️⃣ Consistency beats talent. Posting 2x/week > 1 viral post/month\n2️⃣ Internal support is a game-changer. When your colleagues like and comment in the first 30 minutes, the algorithm boosts your reach x3\n3️⃣ \"Behind the scenes\" posts perform 2x better than corporate posts\n\nResult: our team of 8 generates more impressions than our company page 💪\n\nWho else is seeing this trend?",
       url: null,
       avatar_url: null,
       impressions: 28300,
@@ -56,7 +56,7 @@ const mockPosts = [
   {
     post: {
       id: 'mock-3',
-      content: "💡 Conseil pour les Product Managers : arrêtez de poster uniquement des annonces produit.\n\nVos posts les plus engageants seront ceux où vous partagez :\n- Vos échecs et apprentissages\n- Les coulisses de vos décisions produit\n- Les retours utilisateurs qui vous ont surpris\n\nL'authenticité > la perfection.\n\nQuel type de contenu fonctionne le mieux pour vous ?",
+      content: "💡 Advice for Product Managers: stop posting only product announcements.\n\nYour most engaging posts will be the ones where you share:\n- Your failures and lessons learned\n- The behind-the-scenes of your product decisions\n- User feedback that surprised you\n\nAuthenticity > perfection.\n\nWhat type of content works best for you?",
       url: null,
       avatar_url: null,
       impressions: 18700,
@@ -86,7 +86,7 @@ export function MockTeamFeed() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-1">
         <h2 className="text-2xl font-bold text-foreground">Team Feed</h2>
-        <p className="text-muted-foreground text-sm">Dernières publications LinkedIn de votre équipe</p>
+        <p className="text-muted-foreground text-sm">Latest LinkedIn posts from your team</p>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {mockPosts.map(({ post, author, isTopPerformer }) => (

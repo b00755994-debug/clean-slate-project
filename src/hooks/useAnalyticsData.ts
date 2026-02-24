@@ -175,7 +175,7 @@ export function useAnalyticsData() {
   const trendData = useMemo((): TrendDataPoint[] => {
     if (!hasProfiles || allPosts.length === 0) return [];
     const monthsData: TrendDataPoint[] = [];
-    const monthKeys = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
+    const monthKeys = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
     for (let i = 11; i >= 0; i--) {
       const monthDate = subMonths(new Date(), i);
@@ -251,7 +251,7 @@ export function useAnalyticsData() {
   const activationTrendData = useMemo((): ActivationTrendDataPoint[] => {
     if (!hasProfiles || allPosts.length === 0) return [];
     const monthsData: ActivationTrendDataPoint[] = [];
-    const monthKeys = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
+    const monthKeys = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
     for (let i = 11; i >= 0; i--) {
       const monthDate = subMonths(new Date(), i);
@@ -274,7 +274,7 @@ export function useAnalyticsData() {
   const postingHeatmapData = useMemo((): HeatmapCell[] => {
     if (!hasProfiles || allPosts.length === 0) return [];
 
-    const DAYS_KEYS = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
+    const DAYS_KEYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     const HOURS_KEYS = ['6h', '8h', '10h', '12h', '14h', '16h', '18h', '20h'];
     
     const heatmapGrid: Record<string, Record<string, { count: number; impressions: number }>> = {};
@@ -309,7 +309,7 @@ export function useAnalyticsData() {
     });
 
     const result: HeatmapCell[] = [];
-    const orderedDays = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+    const orderedDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     orderedDays.forEach(day => {
       HOURS_KEYS.forEach(hour => {
         result.push({
@@ -375,7 +375,7 @@ export function useAnalyticsData() {
   const reachTrendData = useMemo((): ReachTrendDataPoint[] => {
     if (!hasProfiles || allPosts.length === 0) return [];
     const monthsData: ReachTrendDataPoint[] = [];
-    const monthKeys = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
+    const monthKeys = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
     const getReactions = (p: typeof allPosts[0]) => Number(p.reactions) || (
       (Number(p.likes) || 0) + (Number(p.praise) || 0) + (Number(p.empathy) || 0) + 

@@ -65,26 +65,26 @@ export function MockLeaderboard() {
         <div className="flex flex-col gap-1">
           <h2 className="text-2xl font-bold text-foreground flex items-center gap-3">
             <Trophy className="w-7 h-7 text-primary" />
-            Classement
+            Leaderboard
           </h2>
-          <p className="text-muted-foreground text-sm">Classement des membres par performance LinkedIn</p>
+          <p className="text-muted-foreground text-sm">Team member ranking by LinkedIn performance</p>
         </div>
-        <Badge variant="outline" className="text-sm px-3 py-1">Février 2026</Badge>
+        <Badge variant="outline" className="text-sm px-3 py-1">February 2026</Badge>
       </div>
 
       <div className="overflow-auto rounded-lg border border-border/50 bg-card">
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent">
-              <TableHead className="text-xs uppercase tracking-wide">Membre</TableHead>
-              <TableHead className="hidden md:table-cell pl-1 text-xs uppercase tracking-wide">Titre</TableHead>
-              <TableHead className="w-20 px-4 text-right text-xs uppercase tracking-wide">Abonnés</TableHead>
+              <TableHead className="text-xs uppercase tracking-wide">Member</TableHead>
+              <TableHead className="hidden md:table-cell pl-1 text-xs uppercase tracking-wide">Title</TableHead>
+              <TableHead className="w-20 px-4 text-right text-xs uppercase tracking-wide">Followers</TableHead>
               <TableHead className="w-16 px-4 text-right text-xs uppercase tracking-wide">Posts</TableHead>
               <TableHead className="w-20 px-4 text-right text-xs uppercase tracking-wide">Impressions</TableHead>
-              <TableHead className="w-20 px-4 text-right text-xs uppercase tracking-wide">Réactions</TableHead>
+              <TableHead className="w-20 px-4 text-right text-xs uppercase tracking-wide">Reactions</TableHead>
               <TableHead className="w-20 px-4 text-right text-xs uppercase tracking-wide">Engagement</TableHead>
-              <TableHead className="w-14 px-4 text-center text-xs uppercase tracking-wide">Rang</TableHead>
-              <TableHead className="w-16 px-4 text-center text-xs uppercase tracking-wide">Evol.</TableHead>
+              <TableHead className="w-14 px-4 text-center text-xs uppercase tracking-wide">Rank</TableHead>
+              <TableHead className="w-16 px-4 text-center text-xs uppercase tracking-wide">Change</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

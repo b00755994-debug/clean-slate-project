@@ -34,12 +34,12 @@ const translations = {
   },
 };
 
-// Map French day keys from data to day index
+// Map day keys from data to day index
 const dayKeyToIndex: Record<string, number> = {
-  'Lun': 0, 'Mar': 1, 'Mer': 2, 'Jeu': 3, 'Ven': 4, 'Sam': 5, 'Dim': 6,
+  'Mon': 0, 'Tue': 1, 'Wed': 2, 'Thu': 3, 'Fri': 4, 'Sat': 5, 'Sun': 6,
 };
 
-// Map French hour keys from data to hour index
+// Map hour keys from data to hour index
 const hourKeyToIndex: Record<string, number> = {
   '6h': 0, '8h': 1, '10h': 2, '12h': 3, '14h': 4, '16h': 5, '18h': 6, '20h': 7,
 };
@@ -59,8 +59,8 @@ export function PostingHeatmap({ data }: PostingHeatmapProps) {
   const { language } = useLanguage();
   const t = translations[language];
 
-  // Use French keys for data lookup (since mock data uses French keys)
-  const DAYS_KEYS = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+  // Use English keys for data lookup
+  const DAYS_KEYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   const HOURS_KEYS = ['6h', '8h', '10h', '12h', '14h', '16h', '18h', '20h'];
 
   const { grid, avgImpressionsGrid, maxCount, topPerformingSlots } = useMemo(() => {
@@ -68,7 +68,7 @@ export function PostingHeatmap({ data }: PostingHeatmapProps) {
     const avgImpressionsGrid: Record<string, Record<string, number>> = {};
     let maxCount = 0;
 
-    // Initialize grids with French keys (matching data)
+    // Initialize grids with English keys (matching data)
     DAYS_KEYS.forEach(day => {
       grid[day] = {};
       avgImpressionsGrid[day] = {};
