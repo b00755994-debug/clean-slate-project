@@ -1,53 +1,55 @@
 
 
-# Cadre uniforme et dimensions reduites pour les mockups
+# Mise a jour du Free Plan -- Toutes les features Pro, limite a 3 users
 
-## Constat actuel
+## Changement de logique
 
-- **MockTeamFeed** a deja un cadre visible : `rounded-xl border border-border bg-background` avec `h-[700px] overflow-hidden` -- c'est le style de reference.
-- **MockAnalytics** n'a aucun cadre exterieur (simple `div` avec `space-y-6`), pas de hauteur fixe.
-- **MockLeaderboard** n'a aucun cadre exterieur (simple `div` avec `flex flex-col gap-6`), pas de hauteur fixe.
-- **SlackIntegration (embedded)** a son propre style de card mais sans cadre uniforme avec les autres.
+Le Free plan n'est plus un plan "basique" avec des features limitees. Il offre desormais **toutes les features du Pro**, mais avec une limite de **3 utilisateurs/URLs max**. Le Pro se differencie uniquement par le nombre d'utilisateurs (10+).
 
-## Plan
+## Modifications dans `src/pages/Pricing.tsx`
 
-### 1. `src/components/Features.tsx` -- Wrapper uniforme
+### 1. Mettre a jour les features du Free plan (FR + EN)
 
-Remplacer le wrapper actuel des mockups (ligne 121) :
-```
-<div className="rounded-xl overflow-hidden">
-```
-par un wrapper avec un cadre plus marque et une hauteur reduite :
-```
-<div className="rounded-xl border-2 border-border/80 shadow-lg bg-background overflow-hidden h-[600px]">
-```
+Remplacer la liste actuelle du Free (alertes Slack, analytics basiques, email support, Slack integration) par la meme liste que le Pro :
 
-Cela applique a tous les mockups :
-- `border-2` au lieu de `border` pour un cadre plus visible
-- `border-border/80` pour une couleur de bordure plus marquee
-- `shadow-lg` pour un effet d'elevation
-- `h-[600px]` avec `overflow-hidden` pour des dimensions reduites et uniformes
+**EN :**
+- Slack alerts to rally your team
+- Advanced team analytics
+- Content library to follow your team
+- Monthly leaderboard
+- Audience & brand insights
 
-### 2. `src/components/mockups/MockTeamFeed.tsx` -- Ajuster la hauteur
+**FR :**
+- Alertes Slack pour mobiliser votre equipe
+- Analyses avancees a l'echelle de votre equipe
+- Feed des contenus de votre equipe
+- Audience & brand insights
+- Support prioritaire
 
-Modifier le conteneur principal (ligne 134) :
-- Retirer le `h-[700px]`, `rounded-xl`, `border border-border` du composant lui-meme puisque le wrapper parent dans Features.tsx s'en charge
-- Remplacer par `h-full` pour qu'il remplisse le conteneur parent
+### 2. Mettre a jour la description et la value proposition
 
-### 3. `src/components/mockups/MockAnalytics.tsx` -- Ajuster pour le cadre
+- **Description** : passer de "Get started for free" / "Demarrez gratuitement" a quelque chose comme "All features, up to 3 users" / "Toutes les features, jusqu'a 3 utilisateurs"
+- **Value proposition** : adapter le texte pour expliquer que le Free donne acces a tout, et que le Pro est simplement pour scaler au-dela de 3 users. Ex: "Get the full Superpump experience for free. Upgrade to Pro when your team grows beyond 3 members."
+- **Limit** reste "Up to 3 users" / "3 utilisateurs max"
 
-Modifier le conteneur principal (ligne 186) :
-- Ajouter `h-full overflow-y-auto p-4` au wrapper pour que le contenu scrolle dans le cadre fixe
+### 3. Adapter la liste des features du Pro
 
-### 4. `src/components/mockups/MockLeaderboard.tsx` -- Ajuster pour le cadre
+Puisque Free = Pro en features, le Pro ne peut plus dire "Everything in Free" + des extras. A la place, la liste Pro devient :
+- All features included (toutes les features incluses)
+- From 10 to 200 users (de 10 a 200 utilisateurs)
+- Priority support (support prioritaire)
 
-Modifier le conteneur principal (ligne 63) :
-- Ajouter `h-full overflow-y-auto p-4` au wrapper pour que le contenu scrolle dans le cadre fixe
+Cela met l'accent sur le **scaling** comme seul differentiel.
+
+### 4. Adapter la liste du Business
+
+Le Business dit actuellement "Everything in Pro" -- cela reste valide. Pas de changement necessaire.
+
+### 5. Style de la card Free
+
+Optionnellement, mettre en valeur le Free davantage puisqu'il est maintenant tres genereux : ajouter un petit badge "All features" ou similaire. Mais cela reste optionnel et peut se faire apres.
 
 ## Fichiers concernes
 
-- `src/components/Features.tsx` -- wrapper uniforme
-- `src/components/mockups/MockTeamFeed.tsx` -- retrait du cadre propre, `h-full`
-- `src/components/mockups/MockAnalytics.tsx` -- ajout scroll interne
-- `src/components/mockups/MockLeaderboard.tsx` -- ajout scroll interne
+- `src/pages/Pricing.tsx` uniquement -- les deux blocs de traductions (FR et EN) + pas de changement structurel dans le JSX
 
