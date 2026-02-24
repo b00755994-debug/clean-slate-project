@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Hash, TrendingUp, Trophy, Share2, Bell, BarChart3, Users, MessageSquare, ThumbsUp, Eye, Smile, Repeat2, Bookmark, Zap, Slack, Home, MoreHorizontal } from "lucide-react";
 import slackLogo from "@/assets/slack-logo.png";
-const SlackIntegration = () => {
+const SlackIntegration = ({ embedded = false }: { embedded?: boolean }) => {
   const {
     language
   } = useLanguage();
@@ -664,28 +664,10 @@ const SlackIntegration = () => {
     setActiveChannel(channelId);
     setProgress(0);
   };
-  return <section id="slack-integration" className="py-16 bg-background">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">
-            {t.title1}
-            <span className="bg-gradient-to-r from-primary to-destructive bg-clip-text text-transparent">
-              {t.title2}
-            </span>
-            {t.title3}
-          </h2>
-          <p className="text-lg md:text-xl max-w-2xl mx-auto leading-relaxed" style={{ color: '#5A5A5A' }}>
-            {t.subtitle1}
-            <br />
-            <span className="bg-primary/15 text-primary px-2 py-0.5 rounded-md font-medium">
-              {t.subtitleHighlight}
-            </span>
-          </p>
-        </div>
-
-        <div className="max-w-6xl mx-auto">
-          <Card className="border-[3px] border-border/80 bg-card overflow-hidden shadow-2xl ring-1 ring-border/50">
-            <div className="flex h-[650px]">
+  const slackCard = (
+      <div className="max-w-6xl mx-auto">
+        <Card className="border-[3px] border-border/80 bg-card overflow-hidden shadow-2xl ring-1 ring-border/50">
+          <div className="flex h-[650px]">
               {/* Left Sidebar - Slack Navigation */}
               <div className="w-16 bg-[#350D36] flex flex-col items-center py-4 gap-3 border-r border-white/10">
                 <button className="flex flex-col items-center gap-1 px-1 py-2 rounded-lg hover:bg-white/10 transition-colors group w-full">
@@ -1212,6 +1194,31 @@ const SlackIntegration = () => {
             </div>
           </Card>
         </div>
+  );
+
+  if (embedded) {
+    return slackCard;
+  }
+
+  return <section id="slack-integration" className="py-16 bg-background">
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-12">
+          <h2 className="text-4xl md:text-5xl font-bold mb-4">
+            {t.title1}
+            <span className="bg-gradient-to-r from-primary to-destructive bg-clip-text text-transparent">
+              {t.title2}
+            </span>
+            {t.title3}
+          </h2>
+          <p className="text-lg md:text-xl max-w-2xl mx-auto leading-relaxed" style={{ color: '#5A5A5A' }}>
+            {t.subtitle1}
+            <br />
+            <span className="bg-primary/15 text-primary px-2 py-0.5 rounded-md font-medium">
+              {t.subtitleHighlight}
+            </span>
+          </p>
+        </div>
+        {slackCard}
       </div>
     </section>;
 };
