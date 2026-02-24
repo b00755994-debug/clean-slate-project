@@ -133,6 +133,7 @@ serve(async (req) => {
     const teamId = tokenData.team?.id;
     const teamName = tokenData.team?.name;
     const scopes = tokenData.scope;
+    const botUserId = tokenData.bot_user_id;
 
     console.log(`Successfully obtained token for team ${teamName} (${teamId})`);
 
@@ -238,10 +239,11 @@ serve(async (req) => {
       const { error: updateAuthError } = await supabase
         .from('slack_workspace_auth')
         .update({
-          superpump_workspace_id: workspaceId, // Reassign to current workspace
+          superpump_workspace_id: workspaceId,
           slack_id: teamId,
           token: accessToken,
           scopes: scopes,
+          bot_user_id: botUserId,
           installed_at: new Date().toISOString(),
         })
         .eq('id', existingAuth.id);
@@ -266,6 +268,7 @@ serve(async (req) => {
           slack_id: teamId,
           token: accessToken,
           scopes: scopes,
+          bot_user_id: botUserId,
           installed_at: new Date().toISOString(),
         })
         .select('id')
