@@ -1,29 +1,37 @@
 
-# Passer le plan par defaut a Free (3 URLs max)
 
-## Modifications
+# Sauvegarder le bot_user_id dans slack_workspace_auth
 
-### 1. Dashboard -- Renommer "Individual" en "Free"
+## Probleme
 
-Dans `src/pages/Dashboard.tsx`, remplacer "Individual" par "Free" dans les deux langues (FR et EN) des descriptions de plan.
+La table `slack_workspace_auth` a une colonne `bot_user_id` mais elle n'est jamais remplie. Lors du callback OAuth Slack, la reponse contient `bot_user_id` mais le code l'ignore.
 
-### 2. Migration SQL -- Changer les defaults de la table `workspaces`
+## Solution
 
-- Colonne `plan` : default passe de `'pro'` a `'free'`
-- Colonne `max_billable_users` : default passe de `10` a `3`
+Modifier `supabase/functions/slack-callback/index.ts` pour extraire `bot_user_id` de la reponse OAuth et l'inclure dans les operations INSERT et UPDATE sur `slack_workspace_auth`.
 
-### 3. Pricing page -- Renommer "Individual" en "Free"
+## Fichier modifie
 
-Dans `src/pages/Pricing.tsx`, remplacer le nom du plan "Individual" par "Free" pour rester coherent.
+- `supabase/functions/slack-callback/index.ts`
 
-## Resume
+## Detail technique
+
+La reponse Slack OAuth v2 (`oauth.v2.access`) retourne :
 
 ```text
-Avant:  plan default = 'pro',  max_billable_users default = 10
-Apres:  plan default = 'free', max_billable_users default = 3
+{
+  "ok": true,
+  "access_token": "xoxb-...",
+  "bot_user_id": "U12345678",
+  "team": { "id": "T...", "name": "..." },
+  "scope": "..."
+}
 ```
 
-Fichiers modifies :
-- `src/pages/Dashboard.tsx` (renommer Individual -> Free)
-- `src/pages/Pricing.tsx` (renommer Individual -> Free)
-- Migration SQL (changer defaults de `workspaces`)
+Modifications :
+
+1. Extraire `bot_user_id` depuis `tokenData.bot_user_id` (a cote de `accessToken`, `teamId`, etc.)
+2. L'ajouter dans l'objet `.update()` (mise a jour d'un auth existant)
+3. L'ajouter dans l'objet `.insert()` (creation d'un nouvel auth)
+
+Aucune migration SQL necessaire -- la colonne existe deja.
