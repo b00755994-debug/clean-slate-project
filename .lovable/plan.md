@@ -1,70 +1,53 @@
 
 
-# Features Section -- Tabbed Mockups Integration
+# Cadre uniforme et dimensions reduites pour les mockups
 
-## Goal
-Replace the current 4-card grid in the Features section with a tabbed interface. Each tab shows the feature name, description, and its corresponding interactive mockup preview. The existing SlackIntegration section will be merged into this tabbed view as the first tab.
+## Constat actuel
 
-## Current Structure
-- **Features.tsx**: 4 feature cards (Slack Alerts, Team Feed, Analytics, Leaderboard) in a grid
-- **SlackIntegration.tsx**: Separate section below Features with a full Slack mockup
-- **Index.tsx**: `<Features />` then `<SlackIntegration />` as two distinct sections
+- **MockTeamFeed** a deja un cadre visible : `rounded-xl border border-border bg-background` avec `h-[700px] overflow-hidden` -- c'est le style de reference.
+- **MockAnalytics** n'a aucun cadre exterieur (simple `div` avec `space-y-6`), pas de hauteur fixe.
+- **MockLeaderboard** n'a aucun cadre exterieur (simple `div` avec `flex flex-col gap-6`), pas de hauteur fixe.
+- **SlackIntegration (embedded)** a son propre style de card mais sans cadre uniforme avec les autres.
 
-## New Structure
+## Plan
 
-### Page layout change (`Index.tsx`)
-- Remove `<SlackIntegration />` as a standalone section -- it moves into the Features tabs
-- Keep `<Features />` which becomes the unified tabbed section
+### 1. `src/components/Features.tsx` -- Wrapper uniforme
 
-### Features.tsx -- Full rewrite
+Remplacer le wrapper actuel des mockups (ligne 121) :
+```
+<div className="rounded-xl overflow-hidden">
+```
+par un wrapper avec un cadre plus marque et une hauteur reduite :
+```
+<div className="rounded-xl border-2 border-border/80 shadow-lg bg-background overflow-hidden h-[600px]">
+```
 
-**Section header**: Keep the existing title ("Everything you need to turn content into pipeline.") and subtitle unchanged.
+Cela applique a tous les mockups :
+- `border-2` au lieu de `border` pour un cadre plus visible
+- `border-border/80` pour une couleur de bordure plus marquee
+- `shadow-lg` pour un effet d'elevation
+- `h-[600px]` avec `overflow-hidden` pour des dimensions reduites et uniformes
 
-**Tabbed interface** (using existing `Tabs` component from shadcn):
-- 4 horizontal tabs, each showing: icon + feature name
-- Tab content area: feature description text + full mockup preview below
+### 2. `src/components/mockups/MockTeamFeed.tsx` -- Ajuster la hauteur
 
-**Tab 1 -- Slack Alerts**:
-- Description text from current feature card
-- Embed the SlackIntegration mockup (the Slack channel simulator with tabs: posts, analytics, leaderboard, share, DM)
-- Extract/refactor the Slack mockup rendering from `SlackIntegration.tsx` into a reusable component, or import `SlackIntegration` content directly
+Modifier le conteneur principal (ligne 134) :
+- Retirer le `h-[700px]`, `rounded-xl`, `border border-border` du composant lui-meme puisque le wrapper parent dans Features.tsx s'en charge
+- Remplacer par `h-full` pour qu'il remplisse le conteneur parent
 
-**Tab 2 -- Team Feed**:
-- Description text from current feature card
-- Embed `MockTeamFeed` component (the full 3-column layout already built)
+### 3. `src/components/mockups/MockAnalytics.tsx` -- Ajuster pour le cadre
 
-**Tab 3 -- Analytics**:
-- Description text from current feature card
-- Embed `MockAnalytics` component (tabbed analytics with Overview, Team Activation, Audience & Reach)
+Modifier le conteneur principal (ligne 186) :
+- Ajouter `h-full overflow-y-auto p-4` au wrapper pour que le contenu scrolle dans le cadre fixe
 
-**Tab 4 -- Leaderboard**:
-- Description text from current feature card
-- Embed `MockLeaderboard` component (the ranking table)
+### 4. `src/components/mockups/MockLeaderboard.tsx` -- Ajuster pour le cadre
 
-### Bilingual support
-- All tab labels, descriptions remain bilingual (FR/EN) using the existing `useLanguage` hook
-- Mockup components themselves are now in English (from previous changes), which is acceptable
+Modifier le conteneur principal (ligne 63) :
+- Ajouter `h-full overflow-y-auto p-4` au wrapper pour que le contenu scrolle dans le cadre fixe
 
-## Technical Details
+## Fichiers concernes
 
-### Files to modify:
-
-1. **`src/pages/Index.tsx`**: Remove `<SlackIntegration />` import and usage
-
-2. **`src/components/Features.tsx`**: Major rewrite
-   - Import `Tabs, TabsList, TabsTrigger, TabsContent` from shadcn
-   - Import `MockTeamFeed`, `MockAnalytics`, `MockLeaderboard`
-   - Import or inline the Slack mockup content from `SlackIntegration.tsx`
-   - Structure: section header, then `<Tabs>` with 4 tabs
-   - Each `TabsContent` contains: description paragraph + mockup component
-   - Tab triggers styled to match the landing page aesthetic (icon + label, primary color when active)
-   - Container for mockups: `max-w-7xl mx-auto` with appropriate height constraints
-
-3. **`src/components/SlackIntegration.tsx`**: Extract the inner Slack mockup (the card with channel tabs and messages) into a separate exportable component, or reference it from Features. The outer section wrapper (title, subtitle, badges) will be removed since Features now provides that context.
-
-### Layout considerations
-- Mockup containers will have a fixed max-height with overflow handling to keep the page manageable
-- The `MockTeamFeed` already has `h-[700px]` with internal scrolling -- works as-is
-- `MockAnalytics` and `MockLeaderboard` may need similar height constraints
-- On mobile, tabs could stack or use a horizontal scroll
+- `src/components/Features.tsx` -- wrapper uniforme
+- `src/components/mockups/MockTeamFeed.tsx` -- retrait du cadre propre, `h-full`
+- `src/components/mockups/MockAnalytics.tsx` -- ajout scroll interne
+- `src/components/mockups/MockLeaderboard.tsx` -- ajout scroll interne
 
