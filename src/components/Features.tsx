@@ -118,12 +118,15 @@ const Features = () => {
                 <p className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto text-center leading-relaxed">
                   {tab.description}
                 </p>
-                <div className="rounded-xl border-2 border-border/80 shadow-lg bg-background overflow-hidden h-[600px]">
-                  {tab.id === "slack" && <SlackIntegration embedded />}
-                  {tab.id === "feed" && <MockTeamFeed />}
-                  {tab.id === "analytics" && <MockAnalytics />}
-                  {tab.id === "leaderboard" && <MockLeaderboard />}
-                </div>
+                {tab.id === "slack" ? (
+                  <SlackIntegration embedded />
+                ) : (
+                  <div className="rounded-xl border-2 border-border/80 shadow-lg bg-background overflow-hidden h-[600px]">
+                    {tab.id === "feed" && <MockTeamFeed />}
+                    {tab.id === "analytics" && <MockAnalytics />}
+                    {tab.id === "leaderboard" && <MockLeaderboard />}
+                  </div>
+                )}
               </TabsContent>
             ))}
           </Tabs>
