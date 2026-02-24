@@ -6,8 +6,8 @@ export default function Mockups() {
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border/50 bg-card px-6 py-4">
-        <h1 className="text-3xl font-bold text-foreground">Mockups — Validation Design</h1>
-        <p className="text-muted-foreground text-sm mt-1">Prévisualisation des interfaces avec données fictives</p>
+        <h1 className="text-3xl font-bold text-foreground">Mockups — Design Validation</h1>
+        <p className="text-muted-foreground text-sm mt-1">Interface previews with sample data</p>
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-10 space-y-16">

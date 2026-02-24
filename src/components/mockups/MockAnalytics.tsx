@@ -23,17 +23,17 @@ function MockOverview() {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <KPICard icon={FileText} label="Total Posts" value={overviewKPIs.totalPosts.value} change={overviewKPIs.totalPosts.change} tooltip="" color="blue" periodLabel="30 derniers jours" />
-        <KPICard icon={Eye} label="Total Impressions" value={overviewKPIs.totalImpressions.value} change={overviewKPIs.totalImpressions.change} tooltip="" color="violet" periodLabel="30 derniers jours" />
-        <KPICard icon={Users} label="Contributeurs actifs" value={overviewKPIs.activeContributors.value} change={overviewKPIs.activeContributors.change} tooltip="" color="emerald" periodLabel="30 derniers jours" />
-        <KPICard icon={TrendingUp} label="Moy. posts/contributeur" value={overviewKPIs.avgPostsPerContributor.value} change={overviewKPIs.avgPostsPerContributor.change} tooltip="" color="amber" periodLabel="30 derniers jours" />
+        <KPICard icon={FileText} label="Total Posts" value={overviewKPIs.totalPosts.value} change={overviewKPIs.totalPosts.change} tooltip="" color="blue" periodLabel="Last 30 days" />
+        <KPICard icon={Eye} label="Total Impressions" value={overviewKPIs.totalImpressions.value} change={overviewKPIs.totalImpressions.change} tooltip="" color="violet" periodLabel="Last 30 days" />
+        <KPICard icon={Users} label="Active Contributors" value={overviewKPIs.activeContributors.value} change={overviewKPIs.activeContributors.change} tooltip="" color="emerald" periodLabel="Last 30 days" />
+        <KPICard icon={TrendingUp} label="Avg. Posts/Contributor" value={overviewKPIs.avgPostsPerContributor.value} change={overviewKPIs.avgPostsPerContributor.change} tooltip="" color="amber" periodLabel="Last 30 days" />
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="border-border/50 shadow-md">
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base font-semibold flex items-center gap-2">
-                <FileText className="w-4 h-4 text-blue-600" />Évolution des publications
+                <FileText className="w-4 h-4 text-blue-600" />Posts Trend
               </CardTitle>
               <PeriodSelector value={postsPeriod} onChange={setPostsPeriod} />
             </div>
@@ -54,7 +54,7 @@ function MockOverview() {
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base font-semibold flex items-center gap-2">
-                <Eye className="w-4 h-4 text-violet-600" />Évolution des impressions
+                <Eye className="w-4 h-4 text-violet-600" />Impressions Trend
               </CardTitle>
               <PeriodSelector value={impressionsPeriod} onChange={setImpressionsPeriod} />
             </div>
@@ -83,22 +83,22 @@ function MockTeamActivation() {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <KPICard icon={Users} label="Contributeurs actifs" value={overviewKPIs.activeContributors.value} change={overviewKPIs.activeContributors.change} tooltip="" color="emerald" periodLabel="30 derniers jours" />
-        <KPICard icon={Activity} label="Taux d'activation" value={activationKPIs.contributorsActivePercent.value} change={activationKPIs.contributorsActivePercent.change} tooltip="" color="blue" periodLabel="30 derniers jours" suffix="%" />
-        <KPICard icon={TrendingUp} label="Moy. posts/contributeur" value={overviewKPIs.avgPostsPerContributor.value} change={overviewKPIs.avgPostsPerContributor.change} tooltip="" color="amber" periodLabel="30 derniers jours" />
-        <KPICard icon={Activity} label="Interactions internes" value={activationKPIs.avgInternalInteractions.value} change={activationKPIs.avgInternalInteractions.change} tooltip="" color="violet" periodLabel="30 derniers jours" />
+        <KPICard icon={Users} label="Active Contributors" value={overviewKPIs.activeContributors.value} change={overviewKPIs.activeContributors.change} tooltip="" color="emerald" periodLabel="Last 30 days" />
+        <KPICard icon={Activity} label="Activation Rate" value={activationKPIs.contributorsActivePercent.value} change={activationKPIs.contributorsActivePercent.change} tooltip="" color="blue" periodLabel="Last 30 days" suffix="%" />
+        <KPICard icon={TrendingUp} label="Avg. Posts/Contributor" value={overviewKPIs.avgPostsPerContributor.value} change={overviewKPIs.avgPostsPerContributor.change} tooltip="" color="amber" periodLabel="Last 30 days" />
+        <KPICard icon={Activity} label="Internal Interactions" value={activationKPIs.avgInternalInteractions.value} change={activationKPIs.avgInternalInteractions.change} tooltip="" color="violet" periodLabel="Last 30 days" />
       </div>
       <Card className="border-border/50 shadow-md">
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
             <CardTitle className="text-base font-semibold flex items-center gap-2">
-              <Users className="w-4 h-4 text-emerald-600" />Contributeurs actifs / mois
+              <Users className="w-4 h-4 text-emerald-600" />Active Contributors / Month
             </CardTitle>
             <PeriodSelector value={period} onChange={setPeriod} />
           </div>
         </CardHeader>
         <CardContent>
-          <ChartContainer config={{ activeContributors: { label: 'Contributeurs', color: 'hsl(160 60% 45%)' } }} className="h-[225px] w-full">
+          <ChartContainer config={{ activeContributors: { label: 'Contributors', color: 'hsl(160 60% 45%)' } }} className="h-[225px] w-full">
             <BarChart data={data} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" />
               <XAxis dataKey="month" tickLine={false} axisLine={false} className="text-xs fill-muted-foreground" />
@@ -120,10 +120,10 @@ function MockReachImpact() {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <KPICard icon={Eye} label="Total Impressions" value={reachKPIs.totalImpressions.value} change={reachKPIs.totalImpressions.change} tooltip="" color="violet" periodLabel="30 derniers jours" />
-        <KPICard icon={Eye} label="Moy. Impressions/post" value={reachKPIs.avgImpressionsPerPost.value} change={reachKPIs.avgImpressionsPerPost.change} tooltip="" color="blue" periodLabel="30 derniers jours" />
-        <KPICard icon={Activity} label="Taux d'engagement" value={reachKPIs.engagementRate.value} change={reachKPIs.engagementRate.change} tooltip="" color="emerald" periodLabel="30 derniers jours" suffix="%" />
-        <KPICard icon={Activity} label="Taux de commentaire" value={reachKPIs.commentRate.value} change={reachKPIs.commentRate.change} tooltip="" color="amber" periodLabel="30 derniers jours" suffix="%" />
+        <KPICard icon={Eye} label="Total Impressions" value={reachKPIs.totalImpressions.value} change={reachKPIs.totalImpressions.change} tooltip="" color="violet" periodLabel="Last 30 days" />
+        <KPICard icon={Eye} label="Avg. Impressions/Post" value={reachKPIs.avgImpressionsPerPost.value} change={reachKPIs.avgImpressionsPerPost.change} tooltip="" color="blue" periodLabel="Last 30 days" />
+        <KPICard icon={Activity} label="Engagement Rate" value={reachKPIs.engagementRate.value} change={reachKPIs.engagementRate.change} tooltip="" color="emerald" periodLabel="Last 30 days" suffix="%" />
+        <KPICard icon={Activity} label="Comment Rate" value={reachKPIs.commentRate.value} change={reachKPIs.commentRate.change} tooltip="" color="amber" periodLabel="Last 30 days" suffix="%" />
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="border-border/50 shadow-md">
@@ -152,7 +152,7 @@ function MockReachImpact() {
         <Card className="border-border/50 shadow-md">
           <CardHeader className="pb-2">
             <CardTitle className="text-base font-semibold flex items-center gap-2">
-              <BarChart3 className="w-4 h-4 text-blue-600" />Distribution des impressions
+              <BarChart3 className="w-4 h-4 text-blue-600" />Impressions Distribution
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -181,15 +181,15 @@ export function MockAnalytics() {
           <BarChart3 className="w-7 h-7 text-primary" />
           Analytics
         </h2>
-        <p className="text-muted-foreground text-sm">Métriques agrégées de l'activité LinkedIn de votre équipe</p>
+        <p className="text-muted-foreground text-sm">Aggregated metrics from your team's LinkedIn activity</p>
       </div>
       <Tabs defaultValue="overview" className="space-y-6">
         <TabsList className="grid w-full grid-cols-3 lg:w-auto lg:inline-grid">
           <TabsTrigger value="overview" className="flex items-center gap-2 uppercase tracking-wide text-xs">
-            <BarChart3 className="w-4 h-4" />Vue d'ensemble
+            <BarChart3 className="w-4 h-4" />Overview
           </TabsTrigger>
           <TabsTrigger value="activation" className="flex items-center gap-2 uppercase tracking-wide text-xs">
-            <Activity className="w-4 h-4" />Activation équipe
+            <Activity className="w-4 h-4" />Team Activation
           </TabsTrigger>
           <TabsTrigger value="reach" className="flex items-center gap-2 uppercase tracking-wide text-xs">
             <Zap className="w-4 h-4" />Audience & Reach
