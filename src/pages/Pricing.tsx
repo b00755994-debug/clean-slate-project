@@ -34,24 +34,23 @@ const translations = {
     plans: {
       free: {
         name: "Free",
-        description: "Démarrez gratuitement",
+        description: "Toutes les features, jusqu'à 3 utilisateurs",
         features: [
           "Alertes Slack pour mobiliser votre équipe",
-          "Analytics basiques",
-          "Support email",
-          "Intégration Slack"
+          "Analyses avancées à l'échelle de votre équipe",
+          "Feed des contenus de votre équipe",
+          "Audience & brand insights",
+          "Support prioritaire"
         ],
         limit: "3 utilisateurs max",
-        valueProposition: "Testez Superpump en solo et passez à Pro quand vous voulez embarquer votre équipe."
+        valueProposition: "Profitez de toute l'expérience Superpump gratuitement. Passez à Pro quand votre équipe dépasse 3 membres."
       },
       pro: {
         name: "Pro",
         description: "Amplifiez la voix de votre équipe",
         features: [
-          "Tout ce qui est inclus dans Free",
-          "Analyses avancées à l'échelle de votre équipe",
-          "Feed des contenus de votre équipe",
-          "Audience & brand insights",
+          "Toutes les features incluses",
+          "De 10 à 200 utilisateurs",
           "Support prioritaire"
         ]
       },
@@ -89,25 +88,24 @@ const translations = {
     plans: {
       free: {
         name: "Free",
-        description: "Get started for free",
+        description: "All features, up to 3 users",
         features: [
           "Slack alerts to rally your team",
-          "Basic individual analytics",
-          "Email support",
-          "Slack integration"
+          "Advanced team analytics",
+          "Content library to follow your team",
+          "Monthly leaderboard",
+          "Audience & brand insights"
         ],
         limit: "Up to 3 users",
-        valueProposition: "Try Superpump solo and switch to Pro when you want to bring your team onboard."
+        valueProposition: "Get the full Superpump experience for free. Upgrade to Pro when your team grows beyond 3 members."
       },
       pro: {
         name: "Pro",
         description: "Amplify your team's voice",
         features: [
-          "Everything in Free",
-          "Advanced team analytics",
-          "Content library to follow your team",
-          "Monthly leaderboard",
-          "Audience & brand insights"
+          "All features included",
+          "From 10 to 200 users",
+          "Priority support"
         ]
       },
       business: {
