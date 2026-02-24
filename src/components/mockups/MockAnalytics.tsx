@@ -183,7 +183,7 @@ function MockReachImpact() {
 
 export function MockAnalytics() {
   return (
-    <div className="space-y-6">
+    <div className="h-full overflow-y-auto p-4 space-y-6">
       <div className="flex flex-col gap-1">
         <h2 className="text-2xl font-bold text-foreground flex items-center gap-3">
           <BarChart3 className="w-7 h-7 text-primary" />

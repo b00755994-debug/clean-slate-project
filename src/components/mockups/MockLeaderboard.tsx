@@ -60,7 +60,7 @@ function RankProgression({ change }: { change: number | null }) {
 
 export function MockLeaderboard() {
   return (
-    <div className="flex flex-col gap-6">
+    <div className="h-full overflow-y-auto p-4 flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-1">
           <h2 className="text-2xl font-bold text-foreground flex items-center gap-3">

@@ -131,7 +131,7 @@ export function MockTeamFeed() {
   const [showBookmarksOnly, setShowBookmarksOnly] = useState(false);
 
   return (
-    <div className="flex flex-col h-[700px] overflow-hidden rounded-xl border border-border bg-background">
+    <div className="flex flex-col h-full overflow-hidden bg-background">
       {/* Sticky Header */}
       <div className="flex-shrink-0 space-y-4 p-4 pb-4 border-b border-border shadow-sm bg-background">
         <div className="flex flex-col gap-1">
