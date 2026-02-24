@@ -1,78 +1,38 @@
 
-# Page Mockups -- Leaderboard, Team Feed, Analytics
 
-## Objectif
+# MockTeamFeed -- Full Team Feed Page Layout
 
-Creer une page `/mockups` accessible sans authentification, qui affiche des mockups visuels des 3 interfaces principales avec des donnees fictives realistes. Cette page servira a valider les designs avant integration dans la landing page.
+## Goal
+Replace the current simple 3-card grid in `MockTeamFeed` with a complete replica of the `DashboardContent` page layout, including the sticky header with filters, the three-column layout (Top Posts | Feed | Active Contributors), and vertical scrolling.
 
-## Structure de la page
+## Changes
 
-La page sera divisee en 3 sections verticales, chacune avec un titre de section et le composant mockup correspondant :
+### `src/components/mockups/MockTeamFeed.tsx` -- Full rewrite
 
-1. **Leaderboard** -- Tableau de classement avec 8 membres fictifs (noms, titres, followers, posts, impressions, reactions, engagement, rang, evolution)
-2. **Team Feed** -- 3-4 PostCards fictives avec des contenus LinkedIn realistes, des reactions, impressions et commentaires
-3. **Analytics** -- Les 3 onglets (Overview, Team Activation, Audience & Reach) avec les donnees mock existantes dans `mockData.ts`
+Replicate the structure of `DashboardContent.tsx` with static mock data:
 
-## Fichiers a creer/modifier
+**Sticky Header:**
+- Title "Team Feed" with Newspaper icon
+- Subtitle "Explore your team's LinkedIn posts"
+- Static filter bar: Sort dropdown (Most recent), Time period (All time), Author filter (All authors), Favorites toggle, Search input -- all non-functional but visually present
 
-### 1. `src/pages/Mockups.tsx` (nouveau)
+**Three-Column Layout (mirrors `DashboardContent`):**
+- **Left column (300px, hidden below XL):** `TopPostsLeaderboard` with mock top posts data (3 entries with author name, content excerpt, interactions count)
+- **Center column (max-w-552px, scrollable):** 5-6 `PostCard` components stacked vertically with `space-y-2`, more posts to demonstrate scrolling
+- **Right column (300px, hidden below XL):** `ActiveContributorsLeaderboard` with mock contributors data (5 entries with name, avatar, post count)
+- Vertical separators between columns (`w-px bg-border mx-2`)
 
-Page principale qui :
-- N'utilise PAS `DashboardLayout` ni `ProtectedRoute` (accessible sans login)
-- Affiche les 3 sections avec un header simple
-- Utilise un fond neutre avec espacement genereux entre les sections
+**Mock Data to add:**
+- `mockTopPosts`: 3 entries matching `TopPost` interface (id, content, url, authorName, authorAvatar, interactions, impressions)
+- `mockContributors`: 5 entries matching `ActiveContributor` interface (id, name, avatarUrl, postCount)
+- Expand `mockPosts` from 3 to 5-6 posts for better scroll demonstration
+- Use imported avatar images from `src/assets/mockup-avatars/`
 
-### 2. `src/components/mockups/MockLeaderboard.tsx` (nouveau)
+**Container:** The whole section needs a fixed height (`h-[700px]` or similar) with `overflow-hidden` on the outer div so the internal scrolling works within the mockup page context.
 
-- Reprend la structure de `DashboardLeaderboard.tsx` (table avec colonnes Rang, Membre, Titre, Abonnes, Posts, Impressions, Reactions, Engagement, Evolution)
-- Utilise des donnees fictives en dur (8 membres avec noms realistes francophones)
-- Pas de dependance a `useFullLeaderboard` ni a Supabase
-- Inclut le month selector en statique (affiche "Fevrier 2026")
+### Technical Details
 
-### 3. `src/components/mockups/MockTeamFeed.tsx` (nouveau)
-
-- Affiche 3 PostCards avec des donnees fictives
-- Reutilise le composant `PostCard` existant en lui passant des props fake
-- Simule le layout 3 colonnes (Top Posts a gauche, Feed au centre, Active Contributors a droite) -- ou juste le feed central pour le mockup
-- Pas de dependance aux hooks reels
-
-### 4. `src/components/mockups/MockAnalytics.tsx` (nouveau)
-
-- Reutilise directement les composants `AnalyticsOverview`, `AnalyticsTeamActivation`, et `AnalyticsReachImpact`
-- Ces composants utilisent deja `useAnalyticsData` qui retourne des donnees mock quand il n'y a pas de workspace
-- Structure avec les 3 onglets comme dans `DashboardAnalytics.tsx`
-
-### 5. `src/App.tsx` (modifier)
-
-- Ajouter la route `/mockups` sans `ProtectedRoute`
-
-## Donnees fictives
-
-### Leaderboard (8 membres)
-
-| Rang | Nom | Titre | Abonnes | Posts | Impressions | Reactions | Engagement | Evol. |
-|------|-----|-------|---------|-------|-------------|-----------|------------|-------|
-| 1 | Marie Dupont | Head of Marketing | 12.3k | 8 | 45.2k | 1,240 | 5.2% | +2 |
-| 2 | Thomas Martin | CEO & Co-founder | 8.7k | 6 | 38.5k | 980 | 4.8% | -1 |
-| 3 | Julie Bernard | Sales Director | 5.4k | 7 | 28.3k | 720 | 4.5% | +1 |
-| 4 | Nicolas Petit | Product Manager | 3.2k | 5 | 18.7k | 450 | 3.9% | 0 |
-| 5 | Sophie Laurent | HR Manager | 2.8k | 4 | 12.4k | 310 | 3.2% | +3 |
-| 6 | Alexandre Moreau | CTO | 6.1k | 3 | 15.8k | 280 | 2.8% | -2 |
-| 7 | Camille Leroy | Content Manager | 1.9k | 4 | 9.2k | 210 | 2.5% | new |
-| 8 | Pierre Dubois | Account Executive | 1.5k | 2 | 5.6k | 120 | 2.1% | -1 |
-
-### Team Feed (3 posts)
-
-Posts avec du contenu LinkedIn realiste (annonces produit, partage d'experience, conseil professionnel), avec impressions, reactions detaillees, commentaires.
-
-### Analytics
-
-Reutilisation des donnees mock existantes dans `mockData.ts` via le hook `useAnalyticsData`.
-
-## Details techniques
-
-- La page utilise `LanguageProvider` deja en place (supporte FR/EN)
-- Les composants mockup sont isoles dans `src/components/mockups/` pour un nettoyage facile
-- Les PostCards reutilisent les assets LinkedIn reactions existants (`src/assets/linkedin-reactions/`)
-- Pas besoin de migration SQL
-- Le hook `useAnalyticsData` retourne deja des donnees mock lorsqu'il n'a pas de workspace, donc les composants Analytics fonctionneront directement
+- Imports: `TopPostsLeaderboard`, `ActiveContributorsLeaderboard`, `PostCard`, filter UI components (Select, Toggle, Input, Button), icons (Newspaper, Bookmark, Search, Calendar, X)
+- All filter controls are rendered but non-functional (static state, no onChange handlers needed beyond basic useState for visual consistency)
+- The `PostCard` component uses `fr` locale for date formatting -- this is acceptable for the mockup since it's a minor detail
+- Avatar imports reused from existing `src/assets/mockup-avatars/`
