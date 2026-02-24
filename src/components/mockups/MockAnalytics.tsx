@@ -88,31 +88,40 @@ function MockTeamActivation() {
         <KPICard icon={TrendingUp} label="Avg. Posts/Contributor" value={overviewKPIs.avgPostsPerContributor.value} change={overviewKPIs.avgPostsPerContributor.change} tooltip="" color="amber" periodLabel="Last 30 days" />
         <KPICard icon={Activity} label="Internal Interactions" value={activationKPIs.avgInternalInteractions.value} change={activationKPIs.avgInternalInteractions.change} tooltip="" color="violet" periodLabel="Last 30 days" />
       </div>
-      <Card className="border-border/50 shadow-md">
-        <CardHeader className="pb-2">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-base font-semibold flex items-center gap-2">
-              <Users className="w-4 h-4 text-emerald-600" />Active Contributors / Month
-            </CardTitle>
-            <PeriodSelector value={period} onChange={setPeriod} />
-          </div>
-        </CardHeader>
-        <CardContent>
-          <ChartContainer config={{ activeContributors: { label: 'Contributors', color: 'hsl(160 60% 45%)' } }} className="h-[225px] w-full">
-            <BarChart data={data} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" />
-              <XAxis dataKey="month" tickLine={false} axisLine={false} className="text-xs fill-muted-foreground" />
-              <YAxis tickLine={false} axisLine={false} className="text-xs fill-muted-foreground" />
-              <ChartTooltip content={<ChartTooltipContent />} />
-              <Bar dataKey="activeContributors" fill="var(--color-activeContributors)" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ChartContainer>
-        </CardContent>
-      </Card>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card className="border-border/50 shadow-md">
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-base font-semibold flex items-center gap-2">
+                <Users className="w-4 h-4 text-emerald-600" />Active Contributors / Month
+              </CardTitle>
+              <PeriodSelector value={period} onChange={setPeriod} />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <ChartContainer config={{ activeContributors: { label: 'Contributors', color: 'hsl(160 60% 45%)' } }} className="h-[225px] w-full">
+              <BarChart data={data} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" />
+                <XAxis dataKey="month" tickLine={false} axisLine={false} className="text-xs fill-muted-foreground" />
+                <YAxis tickLine={false} axisLine={false} className="text-xs fill-muted-foreground" />
+                <ChartTooltip content={<ChartTooltipContent />} />
+                <Bar dataKey="activeContributors" fill="var(--color-activeContributors)" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ChartContainer>
+          </CardContent>
+        </Card>
+        <Card className="border-border/50 shadow-md">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base font-semibold">Posting Times</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <PostingHeatmap data={postingHeatmapData} />
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
-
 function MockReachImpact() {
   const [period, setPeriod] = useState<'6' | '12'>('6');
   const data = period === '6' ? reachEngagementTrendData.slice(-6) : reachEngagementTrendData;
@@ -168,7 +177,6 @@ function MockReachImpact() {
           </CardContent>
         </Card>
       </div>
-      <PostingHeatmap data={postingHeatmapData} />
     </div>
   );
 }
