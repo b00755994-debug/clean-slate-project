@@ -74,7 +74,7 @@ export function DashboardSidebar() {
     >
       {/* Logo Header */}
       <SidebarHeader className="px-4 py-4 border-b border-border/30">
-        <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+        <Link to="/" className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-destructive flex items-center justify-center">
             <Zap className="w-4 h-4 text-white" />
           </div>
