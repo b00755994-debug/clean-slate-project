@@ -52,7 +52,7 @@ const Features = () => {
           id: "slack",
           icon: Zap,
           label: "Slack Alerts",
-          description: "Instantly notify the right Slack channels when a team member posts on LinkedIn. Each alert includes a post preview, direct link, and clear actions to drive fast, coordinated engagement."
+          description: "Instantly notify the right Slack channels when a team member posts on LinkedIn. We help you drive fast, coordinated engagement."
         },
         {
           id: "feed",
