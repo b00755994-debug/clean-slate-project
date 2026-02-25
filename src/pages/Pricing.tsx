@@ -132,13 +132,13 @@ const Pricing = () => {
   const { user } = useAuthContext();
   const navigate = useNavigate();
   const t = translations.en;
-  const { subscribed, quantity: currentQuantity, openCustomerPortal, updateQuantity, isLoading: isSubLoading } = useSubscription();
+  const { subscribed, quantity: currentQuantity, openCustomerPortal, isLoading: isSubLoading } = useSubscription();
 
   const [isAnnual, setIsAnnual] = useState(true);
   const [proUsers, setProUsers] = useState([10]);
   const [businessUsers, setBusinessUsers] = useState([10]);
   const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
-  const [isUpdateLoading, setIsUpdateLoading] = useState(false);
+  
 
 
   // Initialize slider to current quantity when subscription data loads
@@ -412,35 +412,28 @@ const Pricing = () => {
               {/* CTA */}
               {subscribed ? (
                 <div className="mt-4">
-                  {currentQuantity && proUsers[0] !== currentQuantity ? (
-                    <Button
-                      onClick={async () => {
-                        setIsUpdateLoading(true);
-                        try {
-                          await updateQuantity(proUsers[0]);
-                          toast.success(`Subscription updated to ${proUsers[0]} seats`);
-                        } catch (err: any) {
-                          toast.error(err.message || "Failed to update subscription");
-                        } finally {
-                          setIsUpdateLoading(false);
-                        }
-                      }}
-                      disabled={isUpdateLoading}
-                      className={`w-full font-semibold ${
-                        proUsers[0] > currentQuantity
+                  <Button
+                    onClick={openCustomerPortal}
+                    variant={currentQuantity && proUsers[0] !== currentQuantity ? "default" : "outline"}
+                    className={`w-full font-semibold gap-2 ${
+                      currentQuantity && proUsers[0] !== currentQuantity
+                        ? proUsers[0] > currentQuantity
                           ? 'bg-success hover:bg-success/90 text-white'
                           : 'bg-destructive hover:bg-destructive/90 text-white'
-                      }`}
-                    >
-                      {isUpdateLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-                      {proUsers[0] > currentQuantity ? 'Upgrade' : 'Downgrade'} to {proUsers[0]} seats
-                    </Button>
-                  ) : (
-                    <Button onClick={openCustomerPortal} variant="outline" className="w-full font-semibold gap-2">
-                      <Crown className="h-4 w-4" />
-                      Manage billing
-                    </Button>
-                  )}
+                        : ''
+                    }`}
+                  >
+                    {currentQuantity && proUsers[0] !== currentQuantity ? (
+                      <>
+                        {proUsers[0] > currentQuantity ? 'Upgrade' : 'Downgrade'} to {proUsers[0]} seats
+                      </>
+                    ) : (
+                      <>
+                        <Crown className="h-4 w-4" />
+                        Manage billing
+                      </>
+                    )}
+                  </Button>
                 </div>
               ) : (
                 <Button onClick={handleProCheckout} disabled={isCheckoutLoading} variant="hero" className="w-full mt-4">
