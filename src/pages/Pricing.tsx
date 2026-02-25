@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useAuthContext } from "@/contexts/AuthContext";
 import { Check, PlusCircle } from "lucide-react";
 
 import Header from "@/components/Header";
@@ -124,6 +125,7 @@ const translations = {
 
 const Pricing = () => {
   // Force English only for pricing page
+  const { user } = useAuthContext();
   const t = translations.en;
 
   const [isAnnual, setIsAnnual] = useState(true);
@@ -263,8 +265,10 @@ const Pricing = () => {
               </div>
 
               {/* CTA */}
-              <Button disabled className="w-full mt-4 bg-gray-300 text-gray-700 font-semibold cursor-not-allowed hover:bg-gray-300">
-                🥷 Coming soon
+              <Button asChild variant="outline" className="w-full mt-4 font-semibold">
+                <Link to={user ? "/dashboard" : "/auth?mode=signup"}>
+                  {t.getStarted}
+                </Link>
               </Button>
             </CardContent>
           </Card>
