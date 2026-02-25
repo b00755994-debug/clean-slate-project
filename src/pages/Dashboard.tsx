@@ -598,8 +598,12 @@ export default function Dashboard() {
                   {isAtLimit && (
                     <p className="text-xs text-destructive">
                       {language === 'fr'
-                        ? 'Limite atteinte — contactez-nous pour augmenter votre quota'
-                        : 'Limit reached — contact us to increase your quota'}
+                        ? 'Limite atteinte — '
+                        : 'Limit reached — '}
+                      <a href="/pricing" className="underline font-semibold hover:opacity-80">
+                        {language === 'fr' ? 'Passez à Pro' : 'Upgrade to Pro'}
+                      </a>
+                      {language === 'fr' ? ' pour suivre plus de profils' : ' to track more profiles'}
                     </p>
                   )}
                 </div>
@@ -704,8 +708,12 @@ export default function Dashboard() {
                     <TooltipContent side="left" className="max-w-xs">
                       <p>
                         {language === 'fr'
-                          ? `Limite de ${maxBillableUsers} profils atteinte. Contactez-nous pour augmenter votre quota.`
-                          : `${maxBillableUsers} profile limit reached. Contact us to increase your quota.`}
+                          ? `Limite de ${maxBillableUsers} profils atteinte.`
+                          : `${maxBillableUsers} profile limit reached.`}
+                        {' '}
+                        <a href="/pricing" className="underline font-semibold">
+                          {language === 'fr' ? 'Passez à Pro →' : 'Upgrade to Pro →'}
+                        </a>
                       </p>
                     </TooltipContent>
                   )}
