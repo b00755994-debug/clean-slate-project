@@ -20,25 +20,29 @@ const Features = () => {
           id: "slack",
           icon: Zap,
           label: "Alertes Slack",
-          description: "Notification instantanée dans Slack dès qu'un membre publie. Aperçu du post, lien direct, et call-to-action clair pour engager en quelques secondes."
+          description: "Notification instantanée dans Slack dès qu'un membre publie. Aperçu du post, lien direct, et call-to-action clair pour engager en quelques secondes.",
+          highlight: "engager en quelques secondes"
         },
         {
           id: "feed",
           icon: Rss,
           label: "Team Feed",
-          description: "Centralisez tous les posts LinkedIn de votre équipe dans un flux unique. Suivez les performances en temps réel, identifiez les meilleurs contenus et inspirez-vous en pour créer de nouveaux posts."
+          description: "Un seul flux pour toute l'activité LinkedIn de votre équipe.\nRepérez les tendances et reproduisez ce qui marche.",
+          highlight: "reproduisez ce qui marche"
         },
         {
           id: "analytics",
           icon: BarChart3,
           label: "Analytics",
-          description: "Obtenez une vue claire de la présence LinkedIn de votre équipe avec des données agrégées et anonymisées. Suivez les métriques globales et analysez la qualité de l'audience."
+          description: "Transformez l'activité LinkedIn de votre équipe en données actionnables.\nSuivez la portée, l'activation et la qualité de l'audience, à grande échelle.",
+          highlight: "données actionnables"
         },
         {
           id: "leaderboard",
           icon: Trophy,
           label: "Leaderboard",
-          description: "Classez et récompensez vos ambassadeurs les plus actifs. Visualisez les top contributeurs et stimulez une émulation positive au sein de votre équipe."
+          description: "Voyez qui mène la charge sur LinkedIn.\nGamifiez votre programme d'advocacy.",
+          highlight: "Gamifiez votre programme d'advocacy"
         },
       ],
     },
@@ -52,25 +56,29 @@ const Features = () => {
           id: "slack",
           icon: Zap,
           label: "Slack Alerts",
-          description: "Instantly notify the right Slack channels when a team member posts on LinkedIn.\nWe help you drive fast, coordinated engagement."
+          description: "Instantly notify the right Slack channels when a team member posts on LinkedIn.\nWe help you drive fast, coordinated engagement.",
+          highlight: "fast, coordinated engagement"
         },
         {
           id: "feed",
           icon: Rss,
           label: "Team Feed",
-          description: "Centralize all your team's LinkedIn posts in a single feed. Track performance in real-time, identify top-performing content, and get inspired to remix winning formats."
+          description: "One feed for your entire team's LinkedIn activity.\nSpot trends and replicate what works.",
+          highlight: "replicate what works"
         },
         {
           id: "analytics",
           icon: BarChart3,
           label: "Analytics",
-          description: "Understand how your team's LinkedIn activity translates into real visibility and engagement. Get insights on your reach, audience, engagement dynamics, and post performances."
+          description: "Turn your team's LinkedIn activity into actionable data.\nTrack reach, activation & audience quality, at scale.",
+          highlight: "actionable data"
         },
         {
           id: "leaderboard",
           icon: Trophy,
           label: "Leaderboard",
-          description: "Rank and reward your most active ambassadors. Visualize top contributors and foster healthy competition within your team."
+          description: "See who's leading the charge on LinkedIn.\nGamify your advocacy program.",
+          highlight: "Gamify your advocacy program"
         },
       ]
     }
@@ -110,8 +118,8 @@ const Features = () => {
             {t.tabs.map((tab) => (
               <TabsContent key={tab.id} value={tab.id} className="space-y-6">
                 <p className="text-base md:text-lg text-muted-foreground max-w-4xl mx-auto text-center leading-relaxed whitespace-pre-line">
-                  {tab.description.includes('fast, coordinated engagement') ? (
-                    <>{tab.description.split('fast, coordinated engagement')[0]}<span className="bg-primary/15 text-primary rounded-sm font-medium px-1">fast, coordinated engagement</span>{tab.description.split('fast, coordinated engagement')[1]}</>
+                  {tab.highlight && tab.description.includes(tab.highlight) ? (
+                    <>{tab.description.split(tab.highlight)[0]}<span className="bg-primary/15 text-primary rounded-sm font-medium px-1">{tab.highlight}</span>{tab.description.split(tab.highlight)[1]}</>
                   ) : tab.description}
                 </p>
                 {tab.id === "slack" ? (
