@@ -204,7 +204,7 @@ export default function Dashboard() {
 
   // Use React Query hooks for caching
   const { workspace: slackWorkspace, isLoading: isWorkspaceLoading, isFetching: isWorkspaceFetching, refetch: refetchWorkspace, disconnect: disconnectSlack } = useWorkspace();
-  const { linkedinProfiles, addProfile, isAddingProfile, deleteProfile, updateSlackUser } = useLinkedInProfiles();
+  const { linkedinProfiles, addProfile, isAddingProfile, deleteProfile, updateSlackUser, pollingTimedOut } = useLinkedInProfiles();
   const { data: slackMembers = [], isLoading: isLoadingMembers, isFetching: isSlackMembersFetching } = useSlackMembers(slackWorkspace?.is_connected || false);
   const { stats: teamStats } = useTeamFeedStats();
   const { channels, currentChannel, isLoading: isLoadingChannels, isFetching: isChannelsFetching } = useSlackChannels(slackWorkspace?.is_connected || false);
@@ -776,6 +776,10 @@ export default function Dashboard() {
                               )}
                               {linkedinProfile.profile_name ? (
                                 <span>{linkedinProfile.profile_name}</span>
+                              ) : pollingTimedOut && (linkedinProfile.scrapping_onboarding_done === null || linkedinProfile.scrapping_onboarding_done === false) ? (
+                                <span className="text-xs text-amber-600 dark:text-amber-400">
+                                  {language === 'fr' ? 'Scraping échoué' : 'Scraping failed'}
+                                </span>
                               ) : (
                                 <Skeleton className="h-3 w-20" />
                               )}
