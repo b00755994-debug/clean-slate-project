@@ -1,34 +1,32 @@
 
 
-## Plan: Update Feature Descriptions
+## Plan: CTA Free plan → Dashboard ou Auth
 
-Update `src/components/Features.tsx` with the 3 new descriptions (EN + FR) and extend the highlight logic for all tabs.
+### Comportement souhaité
 
-### Changes to `src/components/Features.tsx`:
+Le bouton "Coming soon" du plan Free devient un vrai CTA :
+- **Utilisateur connecté** → redirige vers `/dashboard` (le `ProtectedRoute` gère déjà la redirection vers `/onboarding` si l'onboarding n'est pas terminé)
+- **Utilisateur non connecté** → redirige vers `/auth?mode=signup`
 
-**English descriptions:**
-- **Team Feed:** "One feed for your entire team's LinkedIn activity.\nSpot trends and **replicate what works**."
-- **Analytics:** "Turn your team's LinkedIn activity into **actionable data**.\nTrack reach, activation & audience quality, at scale."
-- **Leaderboard:** "See who's leading the charge on LinkedIn.\n**Gamify your advocacy program**."
+### Modifications dans `src/pages/Pricing.tsx`
 
-**French descriptions (equivalent):**
-- **Team Feed:** "Un seul flux pour toute l'activité LinkedIn de votre équipe.\nRepérez les tendances et **reproduisez ce qui marche**."
-- **Analytics:** "Transformez l'activité LinkedIn de votre équipe en **données actionnables**.\nSuivez la portée, l'activation et la qualité de l'audience, à grande échelle."
-- **Leaderboard:** "Voyez qui mène la charge sur LinkedIn.\n**Gamifiez votre programme d'advocacy**."
-
-**Highlight logic:** Replace the current hardcoded check for `'fast, coordinated engagement'` with a generic approach — add a `highlight` field to each tab object containing the phrase to highlight. The render logic will use this field to wrap the matching text in the styled `<span>`.
-
-### Technical detail
-
-Each tab object gains an optional `highlight: string` property. The rendering becomes:
+1. **Importer `useAuthContext`** depuis `@/contexts/AuthContext`
+2. **Récupérer `user`** via `const { user } = useAuthContext();`
+3. **Remplacer le bouton disabled du plan Free** (ligne ~272) :
 
 ```tsx
-{tab.highlight && tab.description.includes(tab.highlight) ? (
-  <>
-    {tab.description.split(tab.highlight)[0]}
-    <span className="bg-primary/15 text-primary rounded-sm font-medium px-1">{tab.highlight}</span>
-    {tab.description.split(tab.highlight)[1]}
-  </>
-) : tab.description}
+// Avant
+<Button disabled className="w-full mt-4 bg-gray-300 text-gray-700 font-semibold cursor-not-allowed hover:bg-gray-300">
+  🥷 Coming soon
+</Button>
+
+// Après
+<Button asChild variant="outline" className="w-full mt-4 font-semibold">
+  <Link to={user ? "/dashboard" : "/auth?mode=signup"}>
+    {t.getStarted}
+  </Link>
+</Button>
 ```
+
+La logique existante du `ProtectedRoute` sur `/dashboard` s'occupe de tout : si l'utilisateur n'a pas terminé l'onboarding, il sera automatiquement redirigé vers `/onboarding`.
 
