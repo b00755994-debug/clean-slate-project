@@ -1,26 +1,34 @@
 
 
-# Limiter les Active Contributors au Top 3
+## Plan: Update Feature Descriptions
 
-## Constat
+Update `src/components/Features.tsx` with the 3 new descriptions (EN + FR) and extend the highlight logic for all tabs.
 
-- **Mockup (`MockTeamFeed.tsx`)** : `mockContributors` contient 5 entrées (Marie, Julie, Thomas, Nicolas, Sophie). Il faut réduire à 3.
-- **Interface réelle (`useLeaderboards.ts`)** : déjà limité à `.slice(0, 3)` -- aucun changement nécessaire.
-- **`ActiveContributorsLeaderboard.tsx`** : le composant affiche tout ce qu'on lui passe, pas de limite interne -- c'est correct, la limite est côté données.
+### Changes to `src/components/Features.tsx`:
 
-## Modifications
+**English descriptions:**
+- **Team Feed:** "One feed for your entire team's LinkedIn activity.\nSpot trends and **replicate what works**."
+- **Analytics:** "Turn your team's LinkedIn activity into **actionable data**.\nTrack reach, activation & audience quality, at scale."
+- **Leaderboard:** "See who's leading the charge on LinkedIn.\n**Gamify your advocacy program**."
 
-### 1. `src/components/mockups/MockTeamFeed.tsx`
+**French descriptions (equivalent):**
+- **Team Feed:** "Un seul flux pour toute l'activité LinkedIn de votre équipe.\nRepérez les tendances et **reproduisez ce qui marche**."
+- **Analytics:** "Transformez l'activité LinkedIn de votre équipe en **données actionnables**.\nSuivez la portée, l'activation et la qualité de l'audience, à grande échelle."
+- **Leaderboard:** "Voyez qui mène la charge sur LinkedIn.\n**Gamifiez votre programme d'advocacy**."
 
-Supprimer les 2 dernières entrées du tableau `mockContributors` (lignes 51-52 : Nicolas et Sophie), ne garder que les 3 premières.
+**Highlight logic:** Replace the current hardcoded check for `'fast, coordinated engagement'` with a generic approach — add a `highlight` field to each tab object containing the phrase to highlight. The render logic will use this field to wrap the matching text in the styled `<span>`.
 
-```ts
-const mockContributors = [
-  { id: 'c-1', name: 'Marie Dupont', avatarUrl: marieAvatar, postCount: 8 },
-  { id: 'c-2', name: 'Julie Bernard', avatarUrl: julieAvatar, postCount: 6 },
-  { id: 'c-3', name: 'Thomas Martin', avatarUrl: thomasAvatar, postCount: 5 },
-];
+### Technical detail
+
+Each tab object gains an optional `highlight: string` property. The rendering becomes:
+
+```tsx
+{tab.highlight && tab.description.includes(tab.highlight) ? (
+  <>
+    {tab.description.split(tab.highlight)[0]}
+    <span className="bg-primary/15 text-primary rounded-sm font-medium px-1">{tab.highlight}</span>
+    {tab.description.split(tab.highlight)[1]}
+  </>
+) : tab.description}
 ```
-
-C'est le seul fichier à modifier.
 
