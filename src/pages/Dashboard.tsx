@@ -605,17 +605,17 @@ export default function Dashboard() {
                   <span className={`ml-1 text-sm font-medium tabular-nums ${isAtLimit ? 'text-destructive' : 'text-muted-foreground'}`}>
                     {usedBillableUsers}/{maxBillableUsers}
                   </span>
+                  {slackWorkspace?.plan !== 'pro' && (
+                    <a href="/pricing" className="ml-1 text-xs text-muted-foreground hover:text-foreground font-medium hover:underline transition-colors">
+                      Upgrade
+                    </a>
+                  )}
                 </CardTitle>
                 <CardDescription className="mt-1.5">
                   {t.linkedinProfilesDescription}
                 </CardDescription>
               </div>
               <div className="flex items-center gap-3">
-                {isAtLimit && (
-                  <a href="/pricing" className="text-xs text-destructive font-medium hover:underline whitespace-nowrap">
-                    {language === 'fr' ? 'Limite atteinte — upgrade' : 'Limit reached — upgrade'}
-                  </a>
-                )}
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
