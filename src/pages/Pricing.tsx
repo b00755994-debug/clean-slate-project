@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuthContext } from "@/contexts/AuthContext";
-import { Check, PlusCircle } from "lucide-react";
+import { Check, PlusCircle, Loader2 } from "lucide-react";
 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -9,8 +9,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import InlineTestimonial from "@/components/InlineTestimonial";
+import { supabase } from "@/integrations/supabase/client";
+import { STRIPE_PLANS } from "@/lib/stripe";
+import { toast } from "sonner";
 
 const translations = {
   fr: {
@@ -126,11 +129,13 @@ const translations = {
 const Pricing = () => {
   // Force English only for pricing page
   const { user } = useAuthContext();
+  const navigate = useNavigate();
   const t = translations.en;
 
   const [isAnnual, setIsAnnual] = useState(true);
   const [proUsers, setProUsers] = useState([10]);
   const [businessUsers, setBusinessUsers] = useState([10]);
+  const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
 
   // Pricing constants - per user
   const PRO_PRICE_PER_USER = 4;
@@ -158,6 +163,28 @@ const Pricing = () => {
   };
 
   const roundToStep = (n: number) => Math.round(n / 10) * 10;
+
+  const handleProCheckout = async () => {
+    if (!user) {
+      navigate("/auth?mode=signup");
+      return;
+    }
+    setIsCheckoutLoading(true);
+    try {
+      const priceId = isAnnual ? STRIPE_PLANS.pro.annual.priceId : STRIPE_PLANS.pro.monthly.priceId;
+      const { data, error } = await supabase.functions.invoke("create-checkout", {
+        body: { priceId, quantity: proUsers[0] },
+      });
+      if (error) throw error;
+      if (data?.url) {
+        window.open(data.url, "_blank");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Failed to start checkout");
+    } finally {
+      setIsCheckoutLoading(false);
+    }
+  };
 
   const handleProInputChange = (value: string) => {
     const num = parseInt(value) || MIN_USERS;
@@ -372,8 +399,9 @@ const Pricing = () => {
               </div>
 
               {/* CTA */}
-              <Button asChild variant="hero" className="w-full mt-4">
-                <Link to="/beta">{t.getStarted}</Link>
+              <Button onClick={handleProCheckout} disabled={isCheckoutLoading} variant="hero" className="w-full mt-4">
+                {isCheckoutLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                {t.getStarted}
               </Button>
             </CardContent>
           </Card>
