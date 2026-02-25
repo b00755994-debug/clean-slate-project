@@ -39,11 +39,25 @@ serve(async (req) => {
     if (!user?.email) throw new Error("User not authenticated");
     logStep("User authenticated", { email: user.email });
 
+    // Get user's workspace
+    const { data: membership } = await supabaseClient
+      .from('workspace_members')
+      .select('workspace_id')
+      .eq('profile_id', user.id)
+      .maybeSingle();
+
+    const workspaceId = membership?.workspace_id;
+    logStep("Workspace lookup", { workspaceId });
+
     const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
 
     if (customers.data.length === 0) {
       logStep("No Stripe customer found");
+      // Sync workspace to free
+      if (workspaceId) {
+        await supabaseClient.from('workspaces').update({ plan: 'free', max_billable_users: 3 }).eq('id', workspaceId);
+      }
       return new Response(JSON.stringify({ subscribed: false }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 200,
@@ -70,6 +84,22 @@ serve(async (req) => {
       productId = subscription.items.data[0].price.product;
       quantity = subscription.items.data[0].quantity;
       logStep("Active subscription found", { productId, quantity, subscriptionEnd });
+
+      // Sync workspace to pro
+      if (workspaceId && quantity) {
+        await supabaseClient.from('workspaces').update({
+          plan: 'pro',
+          max_billable_users: quantity,
+        }).eq('id', workspaceId);
+        logStep("Workspace synced to pro", { workspaceId, quantity });
+      }
+    } else {
+      logStep("No active subscription");
+      // Sync workspace to free
+      if (workspaceId) {
+        await supabaseClient.from('workspaces').update({ plan: 'free', max_billable_users: 3 }).eq('id', workspaceId);
+        logStep("Workspace synced to free", { workspaceId });
+      }
     }
 
     return new Response(JSON.stringify({

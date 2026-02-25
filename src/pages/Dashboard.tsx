@@ -24,6 +24,7 @@ import { useTeamFeedStats } from '@/components/content/TeamFeed';
 import { useSlackChannels } from '@/hooks/useSlackChannels';
 import { SlackChannelSelector } from '@/components/slack/SlackChannelSelector';
 import { supabase } from '@/integrations/supabase/client';
+import { useSubscription } from '@/hooks/useSubscription';
 
 const translations = {
   fr: {
@@ -207,6 +208,7 @@ export default function Dashboard() {
   const { data: slackMembers = [], isLoading: isLoadingMembers, isFetching: isSlackMembersFetching } = useSlackMembers(slackWorkspace?.is_connected || false);
   const { stats: teamStats } = useTeamFeedStats();
   const { channels, currentChannel, isLoading: isLoadingChannels, isFetching: isChannelsFetching } = useSlackChannels(slackWorkspace?.is_connected || false);
+  const { subscribed, openCustomerPortal } = useSubscription();
   
   // Show syncing indicator only when fetching in background (not initial load)
   const isSyncing = (isWorkspaceFetching && !isWorkspaceLoading) || (isSlackMembersFetching && !isLoadingMembers) || (isChannelsFetching && !isLoadingChannels);
@@ -428,13 +430,27 @@ export default function Dashboard() {
                 </div>
                 
               </div>
-              <div className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-muted/50 border border-dashed border-border text-muted-foreground text-sm mt-auto">
-                <Settings className="w-4 h-4" />
-                <span>{t.manageSubscription}</span>
-                <Badge variant="secondary" className="ml-auto text-[10px] px-2 py-0.5">
-                  {t.comingSoon}
-                </Badge>
-              </div>
+              {slackWorkspace?.plan === 'pro' ? (
+                <Button
+                  variant="outline"
+                  className="w-full mt-auto gap-2"
+                  onClick={openCustomerPortal}
+                >
+                  <Settings className="w-4 h-4" />
+                  {t.manageSubscription}
+                </Button>
+              ) : (
+                <Button
+                  variant="hero"
+                  className="w-full mt-auto gap-2"
+                  asChild
+                >
+                  <a href="/pricing">
+                    <Crown className="w-4 h-4" />
+                    {language === 'fr' ? 'Passer à Pro' : 'Upgrade to Pro'}
+                  </a>
+                </Button>
+              )}
             </CardContent>
           </Card>
 

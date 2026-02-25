@@ -60,7 +60,7 @@ export default function Admin() {
     const [membershipsResult, billableCountsResult] = await Promise.all([
       supabase
         .from('workspace_members')
-        .select('profile_id, workspace_id, workspace:workspaces(is_connected)')
+        .select('profile_id, workspace_id, workspace:workspaces(is_connected, plan)')
         .in('profile_id', profileIds),
       supabase
         .from('billable_users')
@@ -68,11 +68,13 @@ export default function Admin() {
     ]);
 
     // Build membership map: profile_id -> { workspace_id, is_connected }
-    const membershipMap = new Map<string, { workspace_id: string; is_connected: boolean }>();
+    const membershipMap = new Map<string, { workspace_id: string; is_connected: boolean; plan: string }>();
     membershipsResult.data?.forEach(m => {
+      const ws = m.workspace as { is_connected?: boolean; plan?: string } | null;
       membershipMap.set(m.profile_id, {
         workspace_id: m.workspace_id,
-        is_connected: (m.workspace as { is_connected?: boolean } | null)?.is_connected || false,
+        is_connected: ws?.is_connected || false,
+        plan: ws?.plan || 'free',
       });
     });
 
@@ -90,7 +92,7 @@ export default function Admin() {
         id: profile.id,
         email: profile.email,
         full_name: profile.full_name,
-        plan: profile.plan || 'pro',
+        plan: membership?.plan || 'free',
         created_at: profile.created_at,
         slack_connected: membership?.is_connected || false,
         linkedin_profiles_count: membership ? (billableCountMap.get(membership.workspace_id) || 0) : 0,
