@@ -116,7 +116,9 @@ const Features = () => {
             {t.tabs.map((tab) => (
               <TabsContent key={tab.id} value={tab.id} className="space-y-6">
                 <p className="text-base md:text-lg text-muted-foreground max-w-4xl mx-auto text-center leading-relaxed whitespace-pre-line">
-                  {tab.description}
+                  {tab.description.includes('fast, coordinated engagement') ? (
+                    <>{tab.description.split('fast, coordinated engagement')[0]}<span className="bg-primary/15 text-primary rounded-sm font-medium px-1">fast, coordinated engagement</span>{tab.description.split('fast, coordinated engagement')[1]}</>
+                  ) : tab.description}
                 </p>
                 {tab.id === "slack" ? (
                   <SlackIntegration embedded />
