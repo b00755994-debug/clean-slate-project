@@ -90,12 +90,6 @@ const Features = () => {
               {t.title2}
             </span>
           </h2>
-          <p className="text-lg md:text-xl max-w-3xl mx-auto leading-relaxed" style={{ color: '#5A5A5A' }}>
-            {t.subtitle}{" "}
-            <span className="bg-primary/15 text-primary rounded-sm font-medium px-1">
-              {t.subtitleHighlight}
-            </span>
-          </p>
         </div>
 
         <div className="max-w-7xl mx-auto">
