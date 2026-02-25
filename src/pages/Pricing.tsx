@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuthContext } from "@/contexts/AuthContext";
-import { Check, PlusCircle, Loader2 } from "lucide-react";
+import { Check, PlusCircle, Loader2, Crown } from "lucide-react";
 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -14,6 +14,7 @@ import InlineTestimonial from "@/components/InlineTestimonial";
 import { supabase } from "@/integrations/supabase/client";
 import { STRIPE_PLANS } from "@/lib/stripe";
 import { toast } from "sonner";
+import { useSubscription } from "@/hooks/useSubscription";
 
 const translations = {
   fr: {
@@ -131,6 +132,7 @@ const Pricing = () => {
   const { user } = useAuthContext();
   const navigate = useNavigate();
   const t = translations.en;
+  const { subscribed, openCustomerPortal, isLoading: isSubLoading } = useSubscription();
 
   const [isAnnual, setIsAnnual] = useState(true);
   const [proUsers, setProUsers] = useState([10]);
@@ -305,7 +307,7 @@ const Pricing = () => {
             <div className="absolute -top-5 left-1/2 -translate-x-1/2">
               <Badge className="bg-card border border-foreground/20 px-4 py-1.5 text-sm font-semibold shadow-lg cursor-default hover:bg-card">
                 <span className="bg-gradient-to-r from-primary to-destructive bg-clip-text text-transparent">
-                  {t.mostPopular}
+                  {subscribed ? 'Your Plan' : t.mostPopular}
                 </span>
               </Badge>
             </div>
@@ -399,10 +401,17 @@ const Pricing = () => {
               </div>
 
               {/* CTA */}
-              <Button onClick={handleProCheckout} disabled={isCheckoutLoading} variant="hero" className="w-full mt-4">
-                {isCheckoutLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-                {t.getStarted}
-              </Button>
+              {subscribed ? (
+                <Button onClick={openCustomerPortal} variant="outline" className="w-full mt-4 font-semibold gap-2">
+                  <Crown className="h-4 w-4" />
+                  Manage subscription
+                </Button>
+              ) : (
+                <Button onClick={handleProCheckout} disabled={isCheckoutLoading} variant="hero" className="w-full mt-4">
+                  {isCheckoutLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                  {t.getStarted}
+                </Button>
+              )}
             </CardContent>
           </Card>
 
@@ -511,8 +520,8 @@ const Pricing = () => {
         <div className="mt-16">
           <InlineTestimonial
             quote={{
-              fr: "À 3€ par utilisateur, c'est ridicule comparé à ce qu'on paye en ads. Un seul lead qualifié généré via LinkedIn d'un collègue rembourse 1 an d'abonnement de toute l'équipe !",
-              en: "At €3 per user, it's ridiculous compared to what we pay in ads. A single qualified lead generated via a colleague's LinkedIn post pays for 1 year of the whole team's subscription!"
+              fr: "À 4€ par utilisateur, c'est ridicule comparé à ce qu'on paye en ads. Un seul lead qualifié généré via LinkedIn d'un collègue rembourse 1 an d'abonnement de toute l'équipe !",
+              en: "At €4 per user, it's ridiculous compared to what we pay in ads. A single qualified lead generated via a colleague's LinkedIn post pays for 1 year of the whole team's subscription!"
             }}
             author="Marc Lefebvre"
             role={{ fr: "Sales Director", en: "Sales Director" }}
