@@ -411,7 +411,7 @@ const Pricing = () => {
 
               {/* CTA */}
               {subscribed ? (
-                <div className="space-y-2 mt-4">
+                <div className="mt-4">
                   {currentQuantity && proUsers[0] !== currentQuantity ? (
                     <Button
                       onClick={async () => {
@@ -426,21 +426,21 @@ const Pricing = () => {
                         }
                       }}
                       disabled={isUpdateLoading}
-                      variant="hero"
-                      className="w-full font-semibold"
+                      className={`w-full font-semibold ${
+                        proUsers[0] > currentQuantity
+                          ? 'bg-success hover:bg-success/90 text-white'
+                          : 'bg-destructive hover:bg-destructive/90 text-white'
+                      }`}
                     >
                       {isUpdateLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
                       {proUsers[0] > currentQuantity ? 'Upgrade' : 'Downgrade'} to {proUsers[0]} seats
                     </Button>
                   ) : (
-                    <p className="text-center text-sm text-muted-foreground">
-                      Current plan: <span className="font-semibold text-foreground">{currentQuantity} seats</span>
-                    </p>
+                    <Button onClick={openCustomerPortal} variant="outline" className="w-full font-semibold gap-2">
+                      <Crown className="h-4 w-4" />
+                      Manage billing
+                    </Button>
                   )}
-                  <Button onClick={openCustomerPortal} variant="outline" className="w-full font-semibold gap-2">
-                    <Crown className="h-4 w-4" />
-                    Manage billing
-                  </Button>
                 </div>
               ) : (
                 <Button onClick={handleProCheckout} disabled={isCheckoutLoading} variant="hero" className="w-full mt-4">
