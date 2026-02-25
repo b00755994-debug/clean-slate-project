@@ -115,7 +115,7 @@ const Features = () => {
 
             {t.tabs.map((tab) => (
               <TabsContent key={tab.id} value={tab.id} className="space-y-6">
-                <p className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto text-center leading-relaxed">
+                <p className="text-base md:text-lg text-muted-foreground max-w-4xl mx-auto text-center leading-relaxed">
                   {tab.description}
                 </p>
                 {tab.id === "slack" ? (
