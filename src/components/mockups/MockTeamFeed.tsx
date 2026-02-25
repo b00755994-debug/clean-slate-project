@@ -48,8 +48,6 @@ const mockContributors = [
   { id: 'c-1', name: 'Marie Dupont', avatarUrl: marieAvatar, postCount: 8 },
   { id: 'c-2', name: 'Julie Bernard', avatarUrl: julieAvatar, postCount: 6 },
   { id: 'c-3', name: 'Thomas Martin', avatarUrl: thomasAvatar, postCount: 5 },
-  { id: 'c-4', name: 'Nicolas Petit', avatarUrl: nicolasAvatar, postCount: 4 },
-  { id: 'c-5', name: 'Sophie Laurent', avatarUrl: sophieAvatar, postCount: 3 },
 ];
 
 const mockPosts = [
