@@ -46,6 +46,7 @@ export function useLinkedInProfiles() {
   const { workspace } = useWorkspace();
   const queryClient = useQueryClient();
   const pollingStartRef = useRef<number | null>(null);
+  const prevScrapingStatesRef = useRef<Record<string, boolean | null>>({});
 
   const { data: linkedinProfiles = [], isLoading } = useQuery({
     queryKey: ['linkedin-profiles', workspace?.id],
@@ -92,7 +93,26 @@ export function useLinkedInProfiles() {
     placeholderData: (previousData) => previousData,
     refetchInterval: (query) => {
       const data = query.state.data;
-      const hasIncomplete = data && data.some(
+      if (!data) return false;
+
+      // Detect profiles that just finished scraping → invalidate feed caches
+      const prevStates = prevScrapingStatesRef.current;
+      let anyTransitioned = false;
+      const newStates: Record<string, boolean | null> = {};
+      data.forEach((p: LinkedInProfile) => {
+        newStates[p.id] = p.scrapping_onboarding_done ?? null;
+        if (p.scrapping_onboarding_done === true && prevStates[p.id] !== true && prevStates[p.id] !== undefined) {
+          anyTransitioned = true;
+        }
+      });
+      prevScrapingStatesRef.current = newStates;
+
+      if (anyTransitioned && workspace?.id) {
+        queryClient.invalidateQueries({ queryKey: ['billable-users', workspace.id] });
+        queryClient.invalidateQueries({ queryKey: ['posts', workspace.id] });
+      }
+
+      const hasIncomplete = data.some(
         (p: LinkedInProfile) => p.scrapping_onboarding_done === false || p.scrapping_onboarding_done === null
       );
       
@@ -106,7 +126,7 @@ export function useLinkedInProfiles() {
       }
       
       const elapsed = Date.now() - pollingStartRef.current;
-      if (elapsed < 60_000) return 3_000;
+      if (elapsed < 180_000) return 3_000;
       return false;
     },
   });
@@ -213,10 +233,14 @@ export function useLinkedInProfiles() {
     (p) => p.scrapping_onboarding_done === false || p.scrapping_onboarding_done === null
   );
 
+  // Polling timed out if we have pending profiles but polling has stopped (elapsed >= 180s)
+  const pollingTimedOut = hasPendingScraping && pollingStartRef.current !== null && (Date.now() - pollingStartRef.current) >= 180_000;
+
   return {
     linkedinProfiles,
     isLoading,
     hasPendingScraping,
+    pollingTimedOut,
     addProfile: addProfileMutation.mutateAsync,
     isAddingProfile: addProfileMutation.isPending,
     deleteProfile: deleteProfileMutation.mutate,

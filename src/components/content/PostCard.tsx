@@ -140,8 +140,11 @@ export function PostCard({ post, author, isBookmarked = false, onToggleBookmark,
                 {(author?.profile_picture || post.avatar_url || author?.avatar_url) ? (
                   <img src={author?.profile_picture || post.avatar_url || author?.avatar_url || ''} alt={author?.profile_name || ''} className="h-full w-full object-cover" />
                 ) : (
-                  <div className="h-full w-full bg-primary/10 flex items-center justify-center text-primary text-sm font-semibold">
-                    {author ? getInitials(author.profile_name) : '??'}
+                  <div className={cn(
+                    "h-full w-full flex items-center justify-center text-sm font-semibold",
+                    author && !author.profile_name ? "bg-muted animate-pulse" : "bg-primary/10 text-primary"
+                  )}>
+                    {author ? (author.profile_name ? getInitials(author.profile_name) : '') : '??'}
                   </div>
                 )}
               </div>
@@ -153,7 +156,9 @@ export function PostCard({ post, author, isBookmarked = false, onToggleBookmark,
                 rel="noopener noreferrer"
                 className="font-semibold text-foreground hover:text-primary hover:underline transition-colors text-[13px] leading-tight block"
               >
-                {author?.profile_name || 'Utilisateur inconnu'}
+                {author?.profile_name || (author ? (
+                  <span className="text-muted-foreground animate-pulse">En attente...</span>
+                ) : 'Utilisateur inconnu')}
               </a>
               {author?.linkedin_title && (
                 <p className="text-xs text-muted-foreground truncate max-w-[200px] mt-0.5">
