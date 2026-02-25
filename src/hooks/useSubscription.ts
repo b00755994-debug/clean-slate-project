@@ -48,6 +48,20 @@ export function useSubscription() {
     if (data?.url) window.open(data.url, '_blank');
   };
 
+  const updateQuantity = async (newQuantity: number) => {
+    const { data: result, error } = await supabase.functions.invoke('update-subscription', {
+      body: { newQuantity },
+    });
+    if (error) throw error;
+    if (result?.error) throw new Error(result.error);
+    // Refresh subscription and workspace data
+    await refetch();
+    if (user) {
+      queryClient.invalidateQueries({ queryKey: ['workspace', user.id] });
+    }
+    return result;
+  };
+
   return {
     subscribed: data?.subscribed ?? false,
     productId: data?.product_id ?? null,
@@ -56,5 +70,6 @@ export function useSubscription() {
     isLoading,
     refetch,
     openCustomerPortal,
+    updateQuantity,
   };
 }
