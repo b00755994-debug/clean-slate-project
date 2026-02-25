@@ -52,7 +52,7 @@ const Features = () => {
           id: "slack",
           icon: Zap,
           label: "Slack Alerts",
-          description: "Instantly notify the right Slack channels when a team member posts on LinkedIn. We help you drive fast, coordinated engagement."
+          description: "Instantly notify the right Slack channels when a team member posts on LinkedIn.\nWe help you drive fast, coordinated engagement."
         },
         {
           id: "feed",
@@ -115,7 +115,7 @@ const Features = () => {
 
             {t.tabs.map((tab) => (
               <TabsContent key={tab.id} value={tab.id} className="space-y-6">
-                <p className="text-base md:text-lg text-muted-foreground max-w-4xl mx-auto text-center leading-relaxed">
+                <p className="text-base md:text-lg text-muted-foreground max-w-4xl mx-auto text-center leading-relaxed whitespace-pre-line">
                   {tab.description}
                 </p>
                 {tab.id === "slack" ? (
