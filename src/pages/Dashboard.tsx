@@ -609,32 +609,24 @@ export default function Dashboard() {
                 <CardDescription className="mt-1.5">
                   {t.linkedinProfilesDescription}
                 </CardDescription>
-                <div className="mt-2 space-y-1">
-                  
-                  {isAtLimit && (
-                    <p className="text-xs text-destructive">
-                      {language === 'fr'
-                        ? 'Limite atteinte — '
-                        : 'Limit reached — '}
-                      <a href="/pricing" className="underline font-semibold hover:opacity-80">
-                        {language === 'fr' ? 'Passez à Pro' : 'Upgrade to Pro'}
-                      </a>
-                      {language === 'fr' ? ' pour suivre plus de profils' : ' to track more profiles'}
-                    </p>
-                  )}
-                </div>
               </div>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <span tabIndex={isAtLimit ? 0 : undefined}>
-                      <Dialog open={isDialogOpen} onOpenChange={isAtLimit ? undefined : setIsDialogOpen}>
-                        <DialogTrigger asChild>
-                          <Button className="gap-2" disabled={isAtLimit}>
-                            <Plus className="w-4 h-4" />
-                            {t.addUser}
-                          </Button>
-                        </DialogTrigger>
+              <div className="flex items-center gap-3">
+                {isAtLimit && (
+                  <a href="/pricing" className="text-xs text-destructive font-medium hover:underline whitespace-nowrap">
+                    {language === 'fr' ? 'Limite atteinte — upgrade' : 'Limit reached — upgrade'}
+                  </a>
+                )}
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span tabIndex={isAtLimit ? 0 : undefined}>
+                        <Dialog open={isDialogOpen} onOpenChange={isAtLimit ? undefined : setIsDialogOpen}>
+                          <DialogTrigger asChild>
+                            <Button className="gap-2" disabled={isAtLimit}>
+                              <Plus className="w-4 h-4" />
+                              {t.addUser}
+                            </Button>
+                          </DialogTrigger>
                         <DialogContent onPointerDownOutside={(e) => e.preventDefault()} onInteractOutside={(e) => e.preventDefault()} onFocusOutside={(e) => e.preventDefault()}>
                           <DialogHeader>
                             <DialogTitle>{t.addLinkedinProfile}</DialogTitle>
@@ -735,6 +727,7 @@ export default function Dashboard() {
                   )}
                 </Tooltip>
               </TooltipProvider>
+              </div>
             </div>
           </CardHeader>
           <CardContent>
