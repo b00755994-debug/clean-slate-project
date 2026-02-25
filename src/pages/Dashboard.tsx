@@ -606,7 +606,8 @@ export default function Dashboard() {
                     {usedBillableUsers}/{maxBillableUsers}
                   </span>
                   {slackWorkspace?.plan !== 'pro' && (
-                    <a href="/pricing" className="ml-1 text-xs text-muted-foreground hover:text-foreground font-medium hover:underline transition-colors">
+                    <a href="/pricing" className="ml-2 inline-flex items-center gap-1 text-xs font-medium text-primary/80 hover:text-primary bg-primary/10 hover:bg-primary/15 px-2 py-0.5 rounded-md transition-colors">
+                      <Crown className="w-3 h-3" />
                       Upgrade
                     </a>
                   )}
