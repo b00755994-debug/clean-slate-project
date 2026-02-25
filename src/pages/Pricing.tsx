@@ -251,7 +251,7 @@ const Pricing = () => {
         {/* Pricing cards */}
         <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
           {/* Free Plan */}
-          <Card className="relative border border-border hover:border-primary/50 hover:shadow-lg transition-all flex flex-col">
+          <Card className="relative border border-border transition-all flex flex-col">
             <CardHeader className="pb-4">
               <CardTitle className="text-2xl">{t.plans.free.name}</CardTitle>
               <CardDescription>{t.plans.free.description}</CardDescription>
@@ -303,7 +303,7 @@ const Pricing = () => {
           </Card>
 
           {/* Pro Plan - Featured */}
-          <Card className="relative border border-border bg-gradient-to-b from-slack/5 to-transparent hover:border-primary/50 hover:shadow-lg transition-all flex flex-col">
+          <Card className="relative border border-border bg-gradient-to-b from-slack/5 to-transparent transition-all flex flex-col">
             <div className="absolute -top-5 left-1/2 -translate-x-1/2">
               <Badge className="bg-card border border-foreground/20 px-4 py-1.5 text-sm font-semibold shadow-lg cursor-default hover:bg-card">
                 <span className="bg-gradient-to-r from-primary to-destructive bg-clip-text text-transparent">
@@ -416,7 +416,7 @@ const Pricing = () => {
           </Card>
 
           {/* Business Plan */}
-          <Card className="relative border border-border flex flex-col hover:border-primary/50 hover:shadow-lg transition-all">
+          <Card className="relative border border-border flex flex-col transition-all">
             <CardHeader className="pb-4">
               <CardTitle className="text-2xl">{t.plans.business.name}</CardTitle>
               <CardDescription>{t.plans.business.description}</CardDescription>
