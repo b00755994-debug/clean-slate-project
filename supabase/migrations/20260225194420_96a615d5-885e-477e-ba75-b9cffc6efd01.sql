@@ -1,0 +1,1 @@
+UPDATE workspaces SET max_billable_users = 3 WHERE max_billable_users < 3 AND plan = 'free';
