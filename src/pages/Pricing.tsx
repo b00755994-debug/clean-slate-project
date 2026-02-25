@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { Check, PlusCircle, Loader2, Crown } from "lucide-react";
 
@@ -132,12 +132,21 @@ const Pricing = () => {
   const { user } = useAuthContext();
   const navigate = useNavigate();
   const t = translations.en;
-  const { subscribed, openCustomerPortal, isLoading: isSubLoading } = useSubscription();
+  const { subscribed, quantity: currentQuantity, openCustomerPortal, updateQuantity, isLoading: isSubLoading } = useSubscription();
 
   const [isAnnual, setIsAnnual] = useState(true);
   const [proUsers, setProUsers] = useState([10]);
   const [businessUsers, setBusinessUsers] = useState([10]);
   const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
+  const [isUpdateLoading, setIsUpdateLoading] = useState(false);
+
+
+  // Initialize slider to current quantity when subscription data loads
+  useEffect(() => {
+    if (subscribed && currentQuantity) {
+      setProUsers([currentQuantity]);
+    }
+  }, [subscribed, currentQuantity]);
 
   // Pricing constants - per user
   const PRO_PRICE_PER_USER = 4;
@@ -402,10 +411,37 @@ const Pricing = () => {
 
               {/* CTA */}
               {subscribed ? (
-                <Button onClick={openCustomerPortal} variant="outline" className="w-full mt-4 font-semibold gap-2">
-                  <Crown className="h-4 w-4" />
-                  Manage subscription
-                </Button>
+                <div className="space-y-2 mt-4">
+                  {currentQuantity && proUsers[0] !== currentQuantity ? (
+                    <Button
+                      onClick={async () => {
+                        setIsUpdateLoading(true);
+                        try {
+                          await updateQuantity(proUsers[0]);
+                          toast.success(`Subscription updated to ${proUsers[0]} seats`);
+                        } catch (err: any) {
+                          toast.error(err.message || "Failed to update subscription");
+                        } finally {
+                          setIsUpdateLoading(false);
+                        }
+                      }}
+                      disabled={isUpdateLoading}
+                      variant="hero"
+                      className="w-full font-semibold"
+                    >
+                      {isUpdateLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                      {proUsers[0] > currentQuantity ? 'Upgrade' : 'Downgrade'} to {proUsers[0]} seats
+                    </Button>
+                  ) : (
+                    <p className="text-center text-sm text-muted-foreground">
+                      Current plan: <span className="font-semibold text-foreground">{currentQuantity} seats</span>
+                    </p>
+                  )}
+                  <Button onClick={openCustomerPortal} variant="outline" className="w-full font-semibold gap-2">
+                    <Crown className="h-4 w-4" />
+                    Manage billing
+                  </Button>
+                </div>
               ) : (
                 <Button onClick={handleProCheckout} disabled={isCheckoutLoading} variant="hero" className="w-full mt-4">
                   {isCheckoutLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
@@ -508,7 +544,7 @@ const Pricing = () => {
 
               {/* CTA */}
               <div className="mt-4">
-                <Button disabled className="w-full bg-gray-300 text-gray-700 font-semibold cursor-not-allowed hover:bg-gray-300">
+                <Button disabled className="w-full bg-muted text-muted-foreground font-semibold cursor-not-allowed hover:bg-muted">
                   🥷 Coming soon
                 </Button>
               </div>
