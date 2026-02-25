@@ -15,7 +15,7 @@ const Header = () => {
       testimonials: "Témoignages",
       pricing: "Tarifs",
       login: "Se connecter",
-      joinBeta: "Rejoindre la Beta"
+      joinBeta: "Essayer gratuitement"
     },
     en: {
       solution: "Our solution",
@@ -23,7 +23,7 @@ const Header = () => {
       testimonials: "Testimonials",
       pricing: "Pricing",
       login: "Sign in",
-      joinBeta: "Join the Beta"
+      joinBeta: "Try for free"
     }
   };
 
