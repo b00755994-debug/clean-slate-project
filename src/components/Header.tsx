@@ -11,7 +11,7 @@ const Header = () => {
   const translations = {
     fr: {
       solution: "Notre solution",
-      slackIntegration: "Slack App",
+      slackIntegration: "Fonctionnalités",
       testimonials: "Témoignages",
       pricing: "Tarifs",
       login: "Se connecter",
@@ -19,7 +19,7 @@ const Header = () => {
     },
     en: {
       solution: "Our solution",
-      slackIntegration: "Slack App",
+      slackIntegration: "Features",
       testimonials: "Testimonials",
       pricing: "Pricing",
       login: "Sign in",
