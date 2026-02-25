@@ -1,70 +1,66 @@
 
 
-## Analyse de la situation
+## Plan: Merge Pro plan CTA buttons into a single dynamic button
 
-Actuellement, le flow d'abonnement supporte :
-- **Upgrade** : via `create-checkout` (nouveau abonnement Pro)
-- **Annulation** : via `customer-portal` (portail Stripe)
-- **Downgrade** : non implémenté
+### Current state (lines 412-450)
+When subscribed, there are 2 buttons:
+1. "Upgrade/Downgrade to X seats" (appears only when quantity changed)
+2. "Manage billing" (always visible, opens Stripe portal)
 
-Le "downgrade" peut signifier deux choses dans votre modèle :
-1. **Réduire le nombre de sièges** (ex: passer de 30 à 10 utilisateurs Pro)
-2. **Revenir au plan Free** (annuler l'abonnement Pro)
+Plus a text line showing current seats when unchanged.
 
-Le cas 2 est déjà couvert par l'annulation via le portail Stripe — quand l'abonnement se termine, `check-subscription` remet automatiquement le workspace en `free` avec 3 utilisateurs max.
+### Target behavior
+A single button that:
+- **No change** (slider == currentQuantity): "Manage billing" with Crown icon, outline style → opens Stripe portal
+- **Upgrade** (slider > currentQuantity): "Upgrade to X seats" in green (`bg-success hover:bg-success/90`) → calls `updateQuantity`
+- **Downgrade** (slider < currentQuantity): "Downgrade to X seats" in red (`bg-destructive hover:bg-destructive/90`) → calls `updateQuantity`
 
-Le cas 1 (réduire les sièges) nécessite une modification de la `quantity` sur l'abonnement Stripe existant.
+### Changes
 
-## Proposition
+**File: `src/pages/Pricing.tsx`** (lines 412-450)
 
-### Approche recommandée : mise à jour de la quantity via `update-subscription`
+Replace the entire `{subscribed ? (...) : (...)}` CTA block with a single button logic:
 
-Créer une nouvelle edge function `update-subscription` qui modifie la quantity de l'abonnement actif. Côté frontend, ajouter un sélecteur de sièges dans les paramètres du dashboard ou sur la page Pricing pour les utilisateurs déjà abonnés.
-
-### Step 1 — Nouvelle edge function `update-subscription`
-
-**Fichier : `supabase/functions/update-subscription/index.ts`**
-
-La fonction :
-- Authentifie l'utilisateur
-- Retrouve le customer Stripe par email
-- Récupère l'abonnement actif
-- Met à jour la `quantity` avec la nouvelle valeur (minimum 10, par incréments de 10)
-- Synchronise le workspace (`max_billable_users`) dans Supabase
-- Vérifie que la nouvelle quantity n'est pas inférieure au nombre actuel de `billable_users` dans le workspace (pour éviter qu'un utilisateur descende en dessous de ses profils actifs)
-
-### Step 2 — Ajouter la logique frontend
-
-**Fichier : `src/hooks/useSubscription.ts`**
-
-Ajouter une fonction `updateQuantity(newQuantity: number)` qui appelle la nouvelle edge function et rafraîchit le cache.
-
-### Step 3 — UI pour modifier les sièges
-
-Ajouter un composant dans le dashboard (Settings ou Pricing) permettant à l'utilisateur abonné de :
-- Voir son nombre de sièges actuel
-- Choisir un nouveau nombre (slider ou sélecteur, min 10, incréments de 10)
-- Voir le nouveau prix mensuel estimé
-- Confirmer la modification
-
-### Détails techniques
-
-La edge function utilisera `stripe.subscriptions.update()` avec le paramètre `items` pour modifier la quantity :
-
-```typescript
-await stripe.subscriptions.update(subscriptionId, {
-  items: [{
-    id: subscriptionItemId,
-    quantity: newQuantity,
-  }],
-  proration_behavior: 'create_prorations', // Stripe calcule le prorata automatiquement
-});
+```tsx
+{subscribed ? (
+  <div className="mt-4">
+    {currentQuantity && proUsers[0] !== currentQuantity ? (
+      <Button
+        onClick={async () => {
+          setIsUpdateLoading(true);
+          try {
+            await updateQuantity(proUsers[0]);
+            toast.success(`Subscription updated to ${proUsers[0]} seats`);
+          } catch (err: any) {
+            toast.error(err.message || "Failed to update subscription");
+          } finally {
+            setIsUpdateLoading(false);
+          }
+        }}
+        disabled={isUpdateLoading}
+        className={`w-full font-semibold ${
+          proUsers[0] > currentQuantity
+            ? 'bg-success hover:bg-success/90 text-white'
+            : 'bg-destructive hover:bg-destructive/90 text-white'
+        }`}
+      >
+        {isUpdateLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+        {proUsers[0] > currentQuantity ? 'Upgrade' : 'Downgrade'} to {proUsers[0]} seats
+      </Button>
+    ) : (
+      <Button onClick={openCustomerPortal} variant="outline" className="w-full font-semibold gap-2">
+        <Crown className="h-4 w-4" />
+        Manage billing
+      </Button>
+    )}
+  </div>
+) : (
+  <Button onClick={handleProCheckout} disabled={isCheckoutLoading} variant="hero" className="w-full mt-4">
+    {isCheckoutLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+    Subscribe to Pro
+  </Button>
+)}
 ```
 
-La validation côté serveur vérifiera :
-- `newQuantity >= 10`
-- `newQuantity % 10 === 0`
-- `newQuantity >= nombre actuel de billable_users dans le workspace`
-
-Si l'utilisateur tente de descendre en dessous du nombre de profils LinkedIn actifs, la fonction renvoie une erreur explicite demandant de supprimer des profils d'abord.
+The "current plan: X seats" text is removed since the slider already shows the current value (initialized via `useEffect`). The button dynamically switches between portal access and quantity update based on slider position.
 
