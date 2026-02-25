@@ -97,7 +97,7 @@ const translations = {
         features: [
           "Slack alerts to rally your team",
           "Advanced team analytics",
-          "Content library to follow your team",
+          "Centralized team feed",
           "Monthly leaderboard",
           "Audience & brand insights"
         ],
