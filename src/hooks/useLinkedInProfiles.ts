@@ -128,7 +128,7 @@ export function useLinkedInProfiles() {
       const maxUsers = workspace?.max_billable_users ?? 10;
       if (linkedinProfiles.length >= maxUsers) {
         throw new Error(
-          `Vous avez atteint la limite de ${maxUsers} profils LinkedIn. Contactez-nous pour augmenter votre quota.`
+          `Limite de ${maxUsers} profils atteinte. Passez à Pro pour en suivre davantage.`
         );
       }
       
