@@ -296,7 +296,7 @@ const Pricing = () => {
               {/* CTA */}
               <Button asChild variant="outline" className="w-full mt-4 font-semibold">
                 <Link to={user ? "/dashboard" : "/auth?mode=signup"}>
-                  {t.getStarted}
+                  Start for free
                 </Link>
               </Button>
             </CardContent>
@@ -409,7 +409,7 @@ const Pricing = () => {
               ) : (
                 <Button onClick={handleProCheckout} disabled={isCheckoutLoading} variant="hero" className="w-full mt-4">
                   {isCheckoutLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-                  {t.getStarted}
+                  Subscribe to Pro
                 </Button>
               )}
             </CardContent>
