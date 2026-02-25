@@ -1,81 +1,52 @@
 
 
-## Root Cause Analysis
+## Diagnostic
 
-### Problem 1: "Utilisateur inconnu" in Team Feed
-The `useTeamFeed` hook builds a `profiles` map from `billable_users`. When a post's `linkedin_profiles` UUID maps to a billable_user whose `profile_name` is still `null` (scraper not finished), `PostCard` line 156 renders "Utilisateur inconnu" and shows a `??` avatar fallback.
+The edge function logs show the root cause clearly:
 
-The profiles query in `useTeamFeed` does NOT check if scraping is still pending -- it just returns whatever data exists.
+```
+[CHECK-SUBSCRIPTION] Found customer - {"customerId":"cus_U2ulTnnXvgsVji"}
+[CHECK-SUBSCRIPTION] ERROR - {"message":"Invalid time value"}
+```
 
-### Problem 2: 3rd LinkedIn profile stuck loading
-The profile `valentin-orru` (id: `1b222213`) has been stuck at `scrapping_onboarding_done: null` across multiple poll cycles. The `useLinkedInProfiles` hook stops polling after 60 seconds (`elapsed < 60_000`). After that, the profile remains stuck with no name, no picture, no data, and the UI shows no indication of failure or option to retry.
+Every single call to `check-subscription` crashes with "Invalid time value" **after** finding the customer but **before** updating the workspace. The crash happens at line 83:
 
----
+```typescript
+subscriptionEnd = new Date(subscription.current_period_end * 1000).toISOString();
+```
+
+With the Stripe API version `2025-08-27.basil`, `current_period_end` is likely returned as an ISO string or a different format rather than a Unix timestamp. Multiplying it by 1000 produces an invalid date, which crashes `.toISOString()`.
+
+Because the function throws before reaching the workspace update (lines 89-94), the workspace is never synced to `plan: 'pro'`.
+
+Additionally, the customer `cus_U2ulTnnXvgsVji` now has **2 active subscriptions** (one with quantity 30, one with quantity 10) -- likely from multiple test checkouts. This should be cleaned up in Stripe.
 
 ## Plan
 
-### Step A -- Show "En attente..." instead of "Utilisateur inconnu" during scraping
+### Step 1 -- Fix the date handling in `check-subscription`
 
-**File: `src/components/content/PostCard.tsx`**
+**File: `supabase/functions/check-subscription/index.ts`**
 
-When `author` exists but `profile_name` is null, and there's no avatar/picture, show "En attente..." instead of "Utilisateur inconnu". This handles the case where the scraper created the billable_user record and posts, but hasn't populated the profile info yet.
+Replace line 83 with safe date parsing that handles both Unix timestamps and ISO strings:
 
-- Line 156: Change fallback from `'Utilisateur inconnu'` to check if author has no name and no picture, then show `'En attente...'` with a subtle animated skeleton style
-- Line 143-145: When no avatar available, show a pulsing placeholder instead of static `??`
-
-### Step B -- Extend polling timeout and add retry mechanism
-
-**File: `src/hooks/useLinkedInProfiles.ts`**
-
-- Line 109: Increase polling timeout from `60_000` (60s) to `180_000` (3 minutes) to give the scraper more time
-- After polling expires, profiles still stuck in `onboarding` should be flagged as potentially failed
-
-### Step C -- Show retry button for stuck profiles on Dashboard
-
-**File: `src/pages/Dashboard.tsx`**
-
-- For profiles where `scrapping_onboarding_done` is still `null` after polling stops, show a "Retry" or "Le scraping a pris trop de temps" indicator with an option to delete and re-add the profile
-- This replaces the current skeleton that just stops updating after 60s
-
-### Step D -- Invalidate team feed profiles after scraping completes
-
-**File: `src/hooks/useLinkedInProfiles.ts`**
-
-When polling detects a profile transitioning from `scrapping_onboarding_done: null/false` to `true`, invalidate the `billable-users` query key used by `useTeamFeed` so the feed immediately picks up the new author names and photos.
-
-- Add `queryClient.invalidateQueries({ queryKey: ['billable-users'] })` when scraping completes
-- Also invalidate `['posts']` to ensure new posts from the scraper appear
-
----
-
-## Technical Details
-
-**PostCard fallback logic (Step A):**
-```text
-if author exists but profile_name is null:
-  → Show "En attente..." with animate-pulse class
-  → Show pulsing circle avatar instead of "??"
-if no author at all:
-  → Keep "Utilisateur inconnu" (this means the post has no linkedin_profiles link)
+```typescript
+const endValue = subscription.current_period_end;
+if (typeof endValue === 'number') {
+  subscriptionEnd = new Date(endValue * 1000).toISOString();
+} else if (typeof endValue === 'string') {
+  subscriptionEnd = new Date(endValue).toISOString();
+} else {
+  subscriptionEnd = null;
+}
 ```
 
-**Polling change (Step B):**
-```text
-Current:  if (elapsed < 60_000) return 3_000;
-Proposed: if (elapsed < 180_000) return 3_000;
-```
+This single change fixes the crash and allows the function to proceed to the workspace update logic.
 
-**Cache invalidation (Step D):**
-```text
-In refetchInterval callback, track previous scraping states.
-When a profile transitions to scrapping_onboarding_done === true,
-call queryClient.invalidateQueries for ['billable-users', workspace.id] and ['posts', workspace.id]
-```
+### Step 2 -- Clean up duplicate subscriptions in Stripe
 
-**File changes summary:**
-| File | Change |
-|------|--------|
-| `src/components/content/PostCard.tsx` | Show "En attente..." + pulsing avatar for null profile_name |
-| `src/hooks/useLinkedInProfiles.ts` | Extend polling to 180s, invalidate team feed caches on scrape completion |
-| `src/pages/Dashboard.tsx` | Show "scraping timeout" indicator with retry hint for stuck profiles |
+Cancel the older/unwanted subscription (`sub_1T4ozTEPoXPeqIKklERiPC2G`, quantity 10) using the Stripe tool, keeping only the one the user intends (`sub_1T4p2sEPoXPeqIKk7a9prpsJ`, quantity 30).
+
+### No other changes needed
+
+The rest of the flow (checkout redirect, `useSubscription` hook detecting `?checkout=success`, workspace cache invalidation) is already correctly wired. The only blocker was this date parsing crash.
 
