@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { LayoutDashboard, BarChart3, Trophy, Rss, Zap, Menu, LogOut, Settings, User, Check } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useAuth } from '@/hooks/useAuth';
@@ -74,12 +74,12 @@ export function DashboardSidebar() {
     >
       {/* Logo Header */}
       <SidebarHeader className="px-4 py-4 border-b border-border/30">
-        <div className="flex items-center gap-3">
+        <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-destructive flex items-center justify-center">
             <Zap className="w-4 h-4 text-white" />
           </div>
           <span className="text-lg font-bold text-foreground">superpump</span>
-        </div>
+        </Link>
       </SidebarHeader>
 
       {/* Navigation */}
