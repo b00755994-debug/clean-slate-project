@@ -10,7 +10,7 @@ const SlackIntegration = ({ embedded = false }: { embedded?: boolean }) => {
     language
   } = useLanguage();
   const [activeChannel, setActiveChannel] = useState("posts");
-  const [isAutoPlay, setIsAutoPlay] = useState(true);
+  const [isAutoPlay, setIsAutoPlay] = useState(false);
   const [progress, setProgress] = useState(0);
 
   // Function to format Slack-like text with bold, mentions and links
