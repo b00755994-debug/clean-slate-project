@@ -133,10 +133,10 @@ export function MockTeamFeed() {
       {/* Sticky Header */}
       <div className="flex-shrink-0 space-y-4 p-4 pb-4 border-b border-border shadow-sm bg-background">
         <div className="flex flex-col gap-1">
-          <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
-            <Newspaper className="w-8 h-8 text-primary" />
+          <h2 className="text-2xl font-bold text-foreground flex items-center gap-3">
+            <Newspaper className="w-7 h-7 text-primary" />
             Team Feed
-          </h1>
+          </h2>
           <p className="text-muted-foreground">Explore your team's LinkedIn posts</p>
         </div>
 
