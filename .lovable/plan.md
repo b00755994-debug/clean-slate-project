@@ -2,21 +2,21 @@
 
 ## Problem
 
-The leaderboard maintains its own separate query (`billable-users-list`) with its own polling and transition detection, duplicating and potentially conflicting with `useLinkedInProfiles` (which uses `linkedin-profiles` query key). These two parallel caches can get out of sync -- the dashboard profile list updates but the leaderboard's copy stays stale, leaving photo and title stuck in loading.
+The leaderboard determines loading state via `scrapping_onboarding_done !== true` (line 157 of `useFullLeaderboard.ts`). The Dashboard instead checks `profile_name` directly -- if it exists, it shows it. When `scrapping_onboarding_done` remains `null` or `false` in the database even though profile data (name, photo) is already populated, the leaderboard stays stuck showing "En attente..." with a pulsing avatar while the Dashboard displays the profile correctly.
 
 ## Plan
 
-### Replace the duplicate billable-users query with `useLinkedInProfiles` in `useFullLeaderboard.ts`
+### File: `src/hooks/useFullLeaderboard.ts` (line 157)
 
-Instead of maintaining a parallel `billable-users-list` query with its own polling and transition detection, import and use `useLinkedInProfiles()` directly. This ensures both the Dashboard and Leaderboard share the exact same cache, polling logic, and transition detection.
+Change the `isScraping` logic to match what the Dashboard does: consider a profile as "scraping" only if it has no `profile_name` AND `scrapping_onboarding_done` is not true. This way, as soon as the name is available, the leaderboard shows it regardless of the scraping flag.
 
-**File: `src/hooks/useFullLeaderboard.ts`**
+```typescript
+// Before:
+const isScraping = user.scrapping_onboarding_done !== true;
 
-1. Import `useLinkedInProfiles` and remove `useRef`, `useQueryClient` (no longer needed for transition detection)
-2. Replace the entire `billable-users-list` query (lines 97-139) with: `const { linkedinProfiles: billableUsers, isLoading: loadingUsers, hasPendingScraping } = useLinkedInProfiles();`
-3. Remove `prevScrapingStatesRef` and all transition detection code (now handled by `useLinkedInProfiles`)
-4. Update the posts query's `refetchInterval` to use `hasPendingScraping` instead of manually checking `billableUsers`
-5. In the `useMemo` mapping, adapt field access to match `useLinkedInProfiles` data shape (same `billable_users` table, just using `select('*')`)
+// After:
+const isScraping = !user.profile_name && user.scrapping_onboarding_done !== true;
+```
 
-This eliminates ~50 lines of duplicated polling/transition code and guarantees both views are always in sync.
+This single-line change aligns the leaderboard's loading behavior with the Dashboard's, so profiles appear as soon as their data is available.
 
