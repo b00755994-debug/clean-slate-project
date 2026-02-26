@@ -23,6 +23,7 @@ export interface LeaderboardEntry {
   reactions: number;
   engagementRate: number;
   rankChange: number | null;
+  isScraping: boolean;
 }
 
 function getPostDate(post: { linkedin_created_at?: string | null }): Date | null {
@@ -97,12 +98,21 @@ export function useFullLeaderboard() {
       if (!workspace?.id) return [];
       const { data, error } = await supabase
         .from('billable_users')
-        .select('id, profile_name, linkedin_title, avatar_url, profile_picture, followers')
+        .select('id, profile_name, linkedin_title, avatar_url, profile_picture, followers, scrapping_onboarding_done')
         .eq('workspace_id', workspace.id);
       if (error) throw error;
       return data || [];
     },
     enabled: !!workspace?.id,
+    refetchInterval: (query) => {
+      const users = query.state.data;
+      if (!users || !Array.isArray(users)) return false;
+      const hasPending = users.some(u => u.scrapping_onboarding_done !== true);
+      return hasPending ? 3000 : false;
+    },
+    placeholderData: (prev) => prev,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
   });
 
   const { data: posts, isLoading: loadingPosts } = useQuery({
@@ -118,6 +128,9 @@ export function useFullLeaderboard() {
       return data || [];
     },
     enabled: !!workspace?.id,
+    placeholderData: (prev) => prev,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
   });
 
   const leaderboard = useMemo(() => {
@@ -161,9 +174,11 @@ export function useFullLeaderboard() {
         ? (metrics.reactions / metrics.impressions) * 100
         : 0;
 
+      const isScraping = user.scrapping_onboarding_done !== true;
+
       return {
         id: user.id,
-        profileName: user.profile_name || 'Utilisateur inconnu',
+        profileName: isScraping ? 'En attente...' : (user.profile_name || 'Utilisateur inconnu'),
         linkedinTitle: user.linkedin_title,
         avatarUrl: user.profile_picture || user.avatar_url,
         followers: user.followers,
@@ -171,6 +186,7 @@ export function useFullLeaderboard() {
         impressions: metrics.impressions,
         reactions: metrics.reactions,
         engagementRate,
+        isScraping,
       };
     });
 

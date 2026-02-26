@@ -35,6 +35,7 @@ const translations = {
     evolution: 'Change',
     noData: 'No team members found',
     new: 'new',
+    waiting: 'Loading...',
   },
   fr: {
     title: 'Classement',
@@ -50,6 +51,7 @@ const translations = {
     evolution: 'Evol.',
     noData: 'Aucun membre trouvé',
     new: 'nouveau',
+    waiting: 'En attente...',
   },
 };
 
@@ -193,13 +195,15 @@ export default function DashboardLeaderboard() {
                   <TableRow key={entry.id} className="group">
                     <TableCell className="py-2">
                       <div className="flex items-center gap-2">
-                        <Avatar className="w-7 h-7">
-                          <AvatarImage src={entry.avatarUrl || undefined} alt={entry.profileName} />
-                          <AvatarFallback className="bg-primary/10 text-primary text-xs">
-                            {getInitials(entry.profileName)}
+                        <Avatar className={`w-7 h-7 ${entry.isScraping ? 'animate-pulse' : ''}`}>
+                          {!entry.isScraping && <AvatarImage src={entry.avatarUrl || undefined} alt={entry.profileName} />}
+                          <AvatarFallback className={`text-xs ${entry.isScraping ? 'bg-muted' : 'bg-primary/10 text-primary'}`}>
+                            {entry.isScraping ? '...' : getInitials(entry.profileName)}
                           </AvatarFallback>
                         </Avatar>
-                        <span className="font-medium text-sm text-foreground">{entry.profileName}</span>
+                        <span className={`font-medium text-sm ${entry.isScraping ? 'text-muted-foreground italic' : 'text-foreground'}`}>
+                          {entry.isScraping ? t.waiting : entry.profileName}
+                        </span>
                       </div>
                     </TableCell>
                     <TableCell className="hidden md:table-cell pl-1 text-muted-foreground text-sm truncate max-w-[300px] py-2">
