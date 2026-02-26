@@ -2,23 +2,21 @@
 
 ## Problem
 
-The `useFullLeaderboard` hook polls `billable-users-list` every 3s while scraping is pending, but the `all-posts-leaderboard` posts query has no polling at all. So profile info may update but post metrics stay stale. There's also no transition detection to cross-invalidate caches when scraping finishes.
-
-Meanwhile, `useLinkedInProfiles` has full transition detection logic that invalidates all caches when a profile flips from scraping to done -- but this hook only runs on the Dashboard page.
+The leaderboard maintains its own separate query (`billable-users-list`) with its own polling and transition detection, duplicating and potentially conflicting with `useLinkedInProfiles` (which uses `linkedin-profiles` query key). These two parallel caches can get out of sync -- the dashboard profile list updates but the leaderboard's copy stays stale, leaving photo and title stuck in loading.
 
 ## Plan
 
-### 1. Add transition detection and cross-invalidation to `useFullLeaderboard.ts`
+### Replace the duplicate billable-users query with `useLinkedInProfiles` in `useFullLeaderboard.ts`
 
-Add a `useRef` to track previous scraping states (same pattern as `useLinkedInProfiles`). In the `billable-users-list` `refetchInterval` callback, detect when any profile transitions from `scrapping_onboarding_done !== true` to `true`, and invalidate all four query keys plus `linkedin-profiles`.
+Instead of maintaining a parallel `billable-users-list` query with its own polling and transition detection, import and use `useLinkedInProfiles()` directly. This ensures both the Dashboard and Leaderboard share the exact same cache, polling logic, and transition detection.
 
-### 2. Add polling to the posts query in `useFullLeaderboard.ts`
+**File: `src/hooks/useFullLeaderboard.ts`**
 
-Add `refetchInterval` to the `all-posts-leaderboard` query that polls every 3s while any billable user has `scrapping_onboarding_done !== true`. This ensures posts data refreshes alongside profile data.
+1. Import `useLinkedInProfiles` and remove `useRef`, `useQueryClient` (no longer needed for transition detection)
+2. Replace the entire `billable-users-list` query (lines 97-139) with: `const { linkedinProfiles: billableUsers, isLoading: loadingUsers, hasPendingScraping } = useLinkedInProfiles();`
+3. Remove `prevScrapingStatesRef` and all transition detection code (now handled by `useLinkedInProfiles`)
+4. Update the posts query's `refetchInterval` to use `hasPendingScraping` instead of manually checking `billableUsers`
+5. In the `useMemo` mapping, adapt field access to match `useLinkedInProfiles` data shape (same `billable_users` table, just using `select('*')`)
 
-### 3. Files to edit
-
-- `src/hooks/useFullLeaderboard.ts` -- add `useRef`, `useQueryClient`, transition detection in billable users refetchInterval, and polling on posts query.
-
-No changes needed to `DashboardLeaderboard.tsx` (UI already handles `isScraping`).
+This eliminates ~50 lines of duplicated polling/transition code and guarantees both views are always in sync.
 
