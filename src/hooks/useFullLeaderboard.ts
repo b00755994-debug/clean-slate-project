@@ -154,7 +154,7 @@ export function useFullLeaderboard() {
         ? (metrics.reactions / metrics.impressions) * 100
         : 0;
 
-      const isScraping = user.scrapping_onboarding_done !== true;
+      const isScraping = !user.profile_name && user.scrapping_onboarding_done !== true;
 
       return {
         id: user.id,
