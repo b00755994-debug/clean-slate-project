@@ -1,10 +1,11 @@
-import { useMemo, useRef, useState } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useWorkspace } from '@/hooks/useWorkspace';
 import { format, subMonths, startOfMonth, endOfMonth, isWithinInterval } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useLinkedInProfiles } from '@/hooks/useLinkedInProfiles';
 
 export interface MonthOption {
   value: string;
@@ -75,8 +76,7 @@ function calculateRankings(
 export function useFullLeaderboard() {
   const { workspace } = useWorkspace();
   const { language } = useLanguage();
-  const queryClient = useQueryClient();
-  const prevScrapingStatesRef = useRef<Record<string, boolean | null>>({});
+  const { linkedinProfiles: billableUsers, isLoading: loadingUsers, hasPendingScraping } = useLinkedInProfiles();
 
   // Generate last 12 months
   const availableMonths = useMemo<MonthOption[]>(() => {
@@ -94,50 +94,6 @@ export function useFullLeaderboard() {
   // Default to current month
   const [selectedMonth, setSelectedMonth] = useState(() => format(new Date(), 'yyyy-MM'));
 
-  const { data: billableUsers, isLoading: loadingUsers } = useQuery({
-    queryKey: ['billable-users-list', workspace?.id],
-    queryFn: async () => {
-      if (!workspace?.id) return [];
-      const { data, error } = await supabase
-        .from('billable_users')
-        .select('id, profile_name, linkedin_title, avatar_url, profile_picture, followers, scrapping_onboarding_done')
-        .eq('workspace_id', workspace.id);
-      if (error) throw error;
-      return data || [];
-    },
-    enabled: !!workspace?.id,
-    refetchInterval: (query) => {
-      const users = query.state.data;
-      if (!users || !Array.isArray(users)) return false;
-
-      // Detect scraping transitions and cross-invalidate caches
-      const prevStates = prevScrapingStatesRef.current;
-      let anyTransitioned = false;
-      const newStates: Record<string, boolean | null> = {};
-      users.forEach((u) => {
-        newStates[u.id] = u.scrapping_onboarding_done ?? null;
-        if (u.scrapping_onboarding_done === true && prevStates[u.id] !== true && prevStates[u.id] !== undefined) {
-          anyTransitioned = true;
-        }
-      });
-      prevScrapingStatesRef.current = newStates;
-
-      if (anyTransitioned && workspace?.id) {
-        queryClient.invalidateQueries({ queryKey: ['linkedin-profiles', workspace.id] });
-        queryClient.invalidateQueries({ queryKey: ['billable-users', workspace.id] });
-        queryClient.invalidateQueries({ queryKey: ['billable-users-list', workspace.id] });
-        queryClient.invalidateQueries({ queryKey: ['posts', workspace.id] });
-        queryClient.invalidateQueries({ queryKey: ['all-posts-leaderboard', workspace.id] });
-      }
-
-      const hasPending = users.some(u => u.scrapping_onboarding_done !== true);
-      return hasPending ? 3000 : false;
-    },
-    placeholderData: (prev) => prev,
-    staleTime: 5 * 60 * 1000,
-    gcTime: 30 * 60 * 1000,
-  });
-
   const { data: posts, isLoading: loadingPosts } = useQuery({
     queryKey: ['all-posts-leaderboard', workspace?.id],
     queryFn: async () => {
@@ -154,11 +110,7 @@ export function useFullLeaderboard() {
     placeholderData: (prev) => prev,
     staleTime: 5 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
-    refetchInterval: () => {
-      if (!billableUsers || !Array.isArray(billableUsers)) return false;
-      const hasPending = billableUsers.some(u => u.scrapping_onboarding_done !== true);
-      return hasPending ? 3000 : false;
-    },
+    refetchInterval: hasPendingScraping ? 3000 : false,
   });
 
   const leaderboard = useMemo(() => {
