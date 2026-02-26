@@ -2,17 +2,19 @@
 
 ## Problem
 
-The analytics page uses its own query keys (`user-profile-ids` and `analytics-all-posts`) that are never invalidated when billable users are added or deleted. The `useLinkedInProfiles` hook invalidates `billable-users`, `billable-users-list`, `posts`, and `all-posts-leaderboard` on transitions and mutations, but not the analytics-specific keys.
+`TabsContent` unmounts inactive tabs, so each time the auto-rotation switches to a new tab, the mockup component remounts from scratch, causing a visible loading flash.
 
-## Plan
+## Solution
 
-### File: `src/hooks/useLinkedInProfiles.ts`
+Replace `TabsContent` with a manual visibility approach: render all four tab panels simultaneously but hide inactive ones with CSS (`hidden`). This keeps all mockups mounted in the DOM at all times.
 
-Add `user-profile-ids` and `analytics-all-posts` to all three invalidation points:
+### File: `src/components/Features.tsx`
 
-1. **Transition detection** (line ~112-115): add invalidation for `user-profile-ids` and `analytics-all-posts`
-2. **addProfile onSuccess** (line ~180): add invalidation for `user-profile-ids` and `analytics-all-posts`
-3. **deleteProfile onSuccess** (line ~198-202): add invalidation for `user-profile-ids` and `analytics-all-posts`
+Replace the `TabsContent`-based rendering (lines 141-158) with a simple div-based approach:
 
-This ensures analytics data refetches automatically whenever a profile is added, deleted, or finishes scraping.
+- Remove `TabsContent` import (no longer needed for content panels)
+- Render all tabs in parallel, using `className={activeTab === tab.id ? "space-y-6" : "hidden"}` instead of `TabsContent`
+- Keep the `Tabs` and `TabsList`/`TabsTrigger` for the tab bar controls
+
+This ensures all mockup components stay mounted and cached in the DOM, eliminating any loading flicker during auto-rotation.
 
