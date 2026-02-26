@@ -1,21 +1,24 @@
 
 
-## Plan: Invalidate all caches on profile deletion
+## Problem
 
-### File: `src/hooks/useLinkedInProfiles.ts` (lines 196-199)
+The `useFullLeaderboard` hook polls `billable-users-list` every 3s while scraping is pending, but the `all-posts-leaderboard` posts query has no polling at all. So profile info may update but post metrics stay stale. There's also no transition detection to cross-invalidate caches when scraping finishes.
 
-Add the missing cache invalidations in `deleteProfileMutation.onSuccess` to match the same pattern used for scraping transitions:
+Meanwhile, `useLinkedInProfiles` has full transition detection logic that invalidates all caches when a profile flips from scraping to done -- but this hook only runs on the Dashboard page.
 
-```typescript
-onSuccess: () => {
-  queryClient.invalidateQueries({ queryKey: ['linkedin-profiles', workspace?.id] });
-  queryClient.invalidateQueries({ queryKey: ['billable-users', workspace?.id] });
-  queryClient.invalidateQueries({ queryKey: ['billable-users-list', workspace?.id] });
-  queryClient.invalidateQueries({ queryKey: ['posts', workspace?.id] });
-  queryClient.invalidateQueries({ queryKey: ['all-posts-leaderboard', workspace?.id] });
-  toast.success('Le profil LinkedIn a été supprimé');
-},
-```
+## Plan
 
-This ensures the deleted profile disappears immediately from the Dashboard (profiles table), Team Feed, and Leaderboard.
+### 1. Add transition detection and cross-invalidation to `useFullLeaderboard.ts`
+
+Add a `useRef` to track previous scraping states (same pattern as `useLinkedInProfiles`). In the `billable-users-list` `refetchInterval` callback, detect when any profile transitions from `scrapping_onboarding_done !== true` to `true`, and invalidate all four query keys plus `linkedin-profiles`.
+
+### 2. Add polling to the posts query in `useFullLeaderboard.ts`
+
+Add `refetchInterval` to the `all-posts-leaderboard` query that polls every 3s while any billable user has `scrapping_onboarding_done !== true`. This ensures posts data refreshes alongside profile data.
+
+### 3. Files to edit
+
+- `src/hooks/useFullLeaderboard.ts` -- add `useRef`, `useQueryClient`, transition detection in billable users refetchInterval, and polling on posts query.
+
+No changes needed to `DashboardLeaderboard.tsx` (UI already handles `isScraping`).
 
