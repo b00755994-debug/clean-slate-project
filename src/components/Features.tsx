@@ -1,3 +1,4 @@
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Zap, BarChart3, Rss, Trophy } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -6,8 +7,30 @@ import { MockTeamFeed } from "@/components/mockups/MockTeamFeed";
 import { MockAnalytics } from "@/components/mockups/MockAnalytics";
 import { MockLeaderboard } from "@/components/mockups/MockLeaderboard";
 
+const TAB_IDS = ["slack", "feed", "analytics", "leaderboard"];
+const AUTO_INTERVAL = 5000;
+
 const Features = () => {
   const { language } = useLanguage();
+  const [activeTab, setActiveTab] = useState("slack");
+  const [autoPlay, setAutoPlay] = useState(true);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const stopAutoPlay = useCallback(() => {
+    setAutoPlay(false);
+    if (intervalRef.current) clearInterval(intervalRef.current);
+  }, []);
+
+  useEffect(() => {
+    if (!autoPlay) return;
+    intervalRef.current = setInterval(() => {
+      setActiveTab((prev) => {
+        const idx = TAB_IDS.indexOf(prev);
+        return TAB_IDS[(idx + 1) % TAB_IDS.length];
+      });
+    }, AUTO_INTERVAL);
+    return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
+  }, [autoPlay]);
 
   const translations = {
     fr: {
@@ -101,7 +124,7 @@ const Features = () => {
         </div>
 
         <div className="max-w-7xl mx-auto">
-          <Tabs defaultValue="slack" className="space-y-8">
+          <Tabs value={activeTab} onValueChange={(v) => { stopAutoPlay(); setActiveTab(v); }} className="space-y-8">
             <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 h-auto p-2 gap-2 bg-transparent">
               {t.tabs.map((tab) => (
                 <TabsTrigger
