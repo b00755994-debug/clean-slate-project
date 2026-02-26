@@ -64,6 +64,7 @@ export function TeamFeed({
 
   const filteredAndSortedPosts = useMemo(() => {
     return posts
+      .filter(post => post.content && post.content.trim().length > 0)
       .filter(post => authorFilter === 'all' || post.linkedin_profiles === authorFilter)
       .filter(post => !showBookmarksOnly || bookmarkedPosts.has(post.id))
       .filter(post => !searchQuery || post.content?.toLowerCase().includes(searchQuery.toLowerCase()))

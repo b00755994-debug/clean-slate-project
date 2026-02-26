@@ -109,7 +109,9 @@ export function useLinkedInProfiles() {
 
       if (anyTransitioned && workspace?.id) {
         queryClient.invalidateQueries({ queryKey: ['billable-users', workspace.id] });
+        queryClient.invalidateQueries({ queryKey: ['billable-users-list', workspace.id] });
         queryClient.invalidateQueries({ queryKey: ['posts', workspace.id] });
+        queryClient.invalidateQueries({ queryKey: ['all-posts-leaderboard', workspace.id] });
       }
 
       const hasIncomplete = data.some(
