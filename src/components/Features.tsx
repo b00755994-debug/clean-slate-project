@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Zap, BarChart3, Rss, Trophy } from "lucide-react";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useLanguage } from "@/contexts/LanguageContext";
 import SlackIntegration from "@/components/SlackIntegration";
 import { MockTeamFeed } from "@/components/mockups/MockTeamFeed";
@@ -139,7 +139,7 @@ const Features = () => {
             </TabsList>
 
             {t.tabs.map((tab) => (
-              <TabsContent key={tab.id} value={tab.id} className="space-y-6">
+              <div key={tab.id} className={activeTab === tab.id ? "space-y-6" : "hidden"}>
                 <p className="text-base md:text-lg text-muted-foreground max-w-4xl mx-auto text-center leading-relaxed whitespace-pre-line">
                   {tab.highlight && tab.description.includes(tab.highlight) ? (
                     <>{tab.description.split(tab.highlight)[0]}<span className="bg-primary/15 text-primary rounded-sm font-medium px-1">{tab.highlight}</span>{tab.description.split(tab.highlight)[1]}</>
@@ -154,7 +154,7 @@ const Features = () => {
                     {tab.id === "leaderboard" && <MockLeaderboard />}
                   </div>
                 )}
-              </TabsContent>
+              </div>
             ))}
           </Tabs>
         </div>
