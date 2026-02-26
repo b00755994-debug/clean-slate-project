@@ -70,7 +70,7 @@ export function useTeamFeed() {
         .limit(10000);
 
       if (error) throw error;
-      return data as Post[];
+      return (data as Post[]).filter(post => post.content && post.content.trim().length > 0);
     },
     enabled: !!workspace?.id,
     staleTime: 2 * 60 * 1000,
