@@ -102,12 +102,12 @@ const Features = () => {
 
         <div className="max-w-7xl mx-auto">
           <Tabs defaultValue="slack" className="space-y-8">
-            <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 h-auto p-1.5 bg-muted/50 backdrop-blur-sm">
+            <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 h-auto p-2 gap-2 bg-transparent">
               {t.tabs.map((tab) => (
                 <TabsTrigger
                   key={tab.id}
                   value={tab.id}
-                  className="flex items-center gap-2 py-3 px-4 text-sm font-semibold data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-md transition-all"
+                  className="flex items-center gap-2 py-3 px-4 text-sm font-semibold border border-border/60 rounded-lg bg-background/80 text-muted-foreground hover:border-primary/40 hover:text-foreground data-[state=active]:border-primary data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:shadow-sm transition-all"
                 >
                   <tab.icon className="h-4 w-4" />
                   {tab.label}
