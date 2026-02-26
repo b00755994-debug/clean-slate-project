@@ -113,6 +113,8 @@ export function useLinkedInProfiles() {
         queryClient.invalidateQueries({ queryKey: ['billable-users-list', workspace.id] });
         queryClient.invalidateQueries({ queryKey: ['posts', workspace.id] });
         queryClient.invalidateQueries({ queryKey: ['all-posts-leaderboard', workspace.id] });
+        queryClient.invalidateQueries({ queryKey: ['user-profile-ids', workspace.id] });
+        queryClient.invalidateQueries({ queryKey: ['analytics-all-posts', workspace.id] });
       }
 
       const hasIncomplete = data.some(
@@ -178,6 +180,8 @@ export function useLinkedInProfiles() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['linkedin-profiles', workspace?.id] });
+      queryClient.invalidateQueries({ queryKey: ['user-profile-ids', workspace?.id] });
+      queryClient.invalidateQueries({ queryKey: ['analytics-all-posts', workspace?.id] });
       toast.success('Le profil LinkedIn a été ajouté avec succès');
     },
     onError: (error: Error) => {
@@ -200,6 +204,8 @@ export function useLinkedInProfiles() {
       queryClient.invalidateQueries({ queryKey: ['billable-users-list', workspace?.id] });
       queryClient.invalidateQueries({ queryKey: ['posts', workspace?.id] });
       queryClient.invalidateQueries({ queryKey: ['all-posts-leaderboard', workspace?.id] });
+      queryClient.invalidateQueries({ queryKey: ['user-profile-ids', workspace?.id] });
+      queryClient.invalidateQueries({ queryKey: ['analytics-all-posts', workspace?.id] });
       toast.success('Le profil LinkedIn a été supprimé');
     },
     onError: () => {
