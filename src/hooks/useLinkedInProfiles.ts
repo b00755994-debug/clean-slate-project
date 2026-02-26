@@ -29,10 +29,11 @@ const profileNameSchema = z.string()
   .min(1, 'Le nom ne peut pas être vide')
   .max(100, 'Le nom ne peut pas dépasser 100 caractères');
 
-interface LinkedInProfile {
+export interface LinkedInProfile {
   id: string;
   linkedin_url: string;
   profile_name: string | null;
+  linkedin_title: string | null;
   profile_picture: string | null;
   avatar_url: string | null;
   slack_user_id: string | null;
