@@ -1,50 +1,52 @@
 
 
-## Plan: Both Upgrade and Downgrade redirect to Stripe Portal
+## Problem Analysis
 
-### Change
+When a LinkedIn profile finishes scraping, the `useLinkedInProfiles` hook invalidates only 2 of 4 relevant query keys:
 
-In `src/pages/Pricing.tsx`, simplify the subscribed CTA: regardless of whether the user increases or decreases seats, the button opens the Stripe Customer Portal. Remove the `updateQuantity` call entirely from this page.
+| Query Key | Hook | Invalidated on scrape done? |
+|---|---|---|
+| `billable-users` | useTeamFeed | Yes |
+| `posts` | useTeamFeed | Yes |
+| `billable-users-list` | useFullLeaderboard | **No** |
+| `all-posts-leaderboard` | useFullLeaderboard | **No** |
 
-### File: `src/pages/Pricing.tsx` (lines ~413-440)
+This causes the feed to update while the leaderboard still shows stale data (or vice versa depending on timing).
 
-Replace the current conditional logic with:
+Additionally, the TeamFeed renders posts with `content === null` — these are empty posts that should be filtered out.
 
-```tsx
-{subscribed ? (
-  <div className="mt-4">
-    <Button
-      onClick={openCustomerPortal}
-      variant={proUsers[0] !== currentQuantity ? "default" : "outline"}
-      className={`w-full font-semibold gap-2 ${
-        currentQuantity && proUsers[0] !== currentQuantity
-          ? proUsers[0] > currentQuantity
-            ? 'bg-success hover:bg-success/90 text-white'
-            : 'bg-destructive hover:bg-destructive/90 text-white'
-          : ''
-      }`}
-    >
-      {currentQuantity && proUsers[0] !== currentQuantity ? (
-        <>
-          {proUsers[0] > currentQuantity ? 'Upgrade' : 'Downgrade'} to {proUsers[0]} seats
-        </>
-      ) : (
-        <>
-          <Crown className="h-4 w-4" />
-          Manage billing
-        </>
-      )}
-    </Button>
-  </div>
-) : (
-  <Button onClick={handleProCheckout} disabled={isCheckoutLoading} variant="hero" className="w-full mt-4">
-    {isCheckoutLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-    Subscribe to Pro
-  </Button>
-)}
+## Plan
+
+### 1. Centralize cache invalidation in `useLinkedInProfiles.ts`
+
+In the `refetchInterval` callback (around line 93), where `anyTransitioned` is detected, add the two missing invalidation calls:
+
+```typescript
+if (anyTransitioned && workspace?.id) {
+  queryClient.invalidateQueries({ queryKey: ['billable-users', workspace.id] });
+  queryClient.invalidateQueries({ queryKey: ['billable-users-list', workspace.id] });
+  queryClient.invalidateQueries({ queryKey: ['posts', workspace.id] });
+  queryClient.invalidateQueries({ queryKey: ['all-posts-leaderboard', workspace.id] });
+}
 ```
 
-All three states (upgrade, downgrade, no change) call `openCustomerPortal`. The visual styling (green/red/outline) remains as a hint, but the actual seat modification happens in Stripe's portal.
+### 2. Filter out empty posts in `useTeamFeed.ts`
 
-The `isUpdateLoading` state and the `updateQuantity` import can be cleaned up since they're no longer used on this page.
+In the posts query (around line 67), add a filter to exclude posts with null/empty content:
+
+```typescript
+return (data as Post[]).filter(post => post.content && post.content.trim().length > 0);
+```
+
+### 3. Filter out empty posts in `TeamFeed.tsx` (defense in depth)
+
+In the `filteredAndSortedPosts` useMemo, add a content filter as the first filter to ensure no empty posts slip through:
+
+```typescript
+.filter(post => post.content && post.content.trim().length > 0)
+```
+
+### Technical Detail
+
+The root cause is that React Query caches are isolated by key. The leaderboard page uses separate query keys (`billable-users-list`, `all-posts-leaderboard`) to avoid format conflicts with the team feed cache (object map vs array). Both sets of keys must be invalidated when scraping completes to keep all views in sync.
 
