@@ -2,21 +2,17 @@
 
 ## Problem
 
-The leaderboard determines loading state via `scrapping_onboarding_done !== true` (line 157 of `useFullLeaderboard.ts`). The Dashboard instead checks `profile_name` directly -- if it exists, it shows it. When `scrapping_onboarding_done` remains `null` or `false` in the database even though profile data (name, photo) is already populated, the leaderboard stays stuck showing "En attente..." with a pulsing avatar while the Dashboard displays the profile correctly.
+The analytics page uses its own query keys (`user-profile-ids` and `analytics-all-posts`) that are never invalidated when billable users are added or deleted. The `useLinkedInProfiles` hook invalidates `billable-users`, `billable-users-list`, `posts`, and `all-posts-leaderboard` on transitions and mutations, but not the analytics-specific keys.
 
 ## Plan
 
-### File: `src/hooks/useFullLeaderboard.ts` (line 157)
+### File: `src/hooks/useLinkedInProfiles.ts`
 
-Change the `isScraping` logic to match what the Dashboard does: consider a profile as "scraping" only if it has no `profile_name` AND `scrapping_onboarding_done` is not true. This way, as soon as the name is available, the leaderboard shows it regardless of the scraping flag.
+Add `user-profile-ids` and `analytics-all-posts` to all three invalidation points:
 
-```typescript
-// Before:
-const isScraping = user.scrapping_onboarding_done !== true;
+1. **Transition detection** (line ~112-115): add invalidation for `user-profile-ids` and `analytics-all-posts`
+2. **addProfile onSuccess** (line ~180): add invalidation for `user-profile-ids` and `analytics-all-posts`
+3. **deleteProfile onSuccess** (line ~198-202): add invalidation for `user-profile-ids` and `analytics-all-posts`
 
-// After:
-const isScraping = !user.profile_name && user.scrapping_onboarding_done !== true;
-```
-
-This single-line change aligns the leaderboard's loading behavior with the Dashboard's, so profiles appear as soon as their data is available.
+This ensures analytics data refetches automatically whenever a profile is added, deleted, or finishes scraping.
 
