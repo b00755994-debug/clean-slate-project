@@ -1,52 +1,26 @@
 
 
-## Problem Analysis
+## Problem
 
-When a LinkedIn profile finishes scraping, the `useLinkedInProfiles` hook invalidates only 2 of 4 relevant query keys:
+The `useLinkedInProfiles` hook (which polls and detects scraping transitions) only runs on the `/dashboard` page. When the user is on the leaderboard page, no polling happens, so the leaderboard never detects that scraping finished and keeps showing "Utilisateur inconnu" until a manual reload.
 
-| Query Key | Hook | Invalidated on scrape done? |
-|---|---|---|
-| `billable-users` | useTeamFeed | Yes |
-| `posts` | useTeamFeed | Yes |
-| `billable-users-list` | useFullLeaderboard | **No** |
-| `all-posts-leaderboard` | useFullLeaderboard | **No** |
-
-This causes the feed to update while the leaderboard still shows stale data (or vice versa depending on timing).
-
-Additionally, the TeamFeed renders posts with `content === null` — these are empty posts that should be filtered out.
+The dashboard's "Followed LinkedIn Profiles" table works because it directly uses `useLinkedInProfiles` which polls every 3s and shows loading states for pending profiles.
 
 ## Plan
 
-### 1. Centralize cache invalidation in `useLinkedInProfiles.ts`
+### 1. Add `scrapping_onboarding_done` to leaderboard query (`src/hooks/useFullLeaderboard.ts`)
 
-In the `refetchInterval` callback (around line 93), where `anyTransitioned` is detected, add the two missing invalidation calls:
+In the `billable-users-list` query (line 100), add `scrapping_onboarding_done` to the select. Add `refetchInterval` that polls every 3s while any profile has `scrapping_onboarding_done !== true`, mirroring the dashboard behavior. Add `placeholderData` to prevent flickering.
 
-```typescript
-if (anyTransitioned && workspace?.id) {
-  queryClient.invalidateQueries({ queryKey: ['billable-users', workspace.id] });
-  queryClient.invalidateQueries({ queryKey: ['billable-users-list', workspace.id] });
-  queryClient.invalidateQueries({ queryKey: ['posts', workspace.id] });
-  queryClient.invalidateQueries({ queryKey: ['all-posts-leaderboard', workspace.id] });
-}
-```
+### 2. Show scraping state in leaderboard entries (`src/hooks/useFullLeaderboard.ts`)
 
-### 2. Filter out empty posts in `useTeamFeed.ts`
+Add `isScraping: boolean` to `LeaderboardEntry`. Set it based on `scrapping_onboarding_done`. Use "En attente..." instead of "Utilisateur inconnu" when scraping is pending.
 
-In the posts query (around line 67), add a filter to exclude posts with null/empty content:
+### 3. Show loading UI in leaderboard table (`src/pages/DashboardLeaderboard.tsx`)
 
-```typescript
-return (data as Post[]).filter(post => post.content && post.content.trim().length > 0);
-```
+For entries where `isScraping === true`, show a pulsing avatar and "En attente..." text (same pattern as the dashboard profiles table), so the user sees consistent loading feedback across both views.
 
-### 3. Filter out empty posts in `TeamFeed.tsx` (defense in depth)
+### 4. Add cache stability settings (`src/hooks/useFullLeaderboard.ts`)
 
-In the `filteredAndSortedPosts` useMemo, add a content filter as the first filter to ensure no empty posts slip through:
-
-```typescript
-.filter(post => post.content && post.content.trim().length > 0)
-```
-
-### Technical Detail
-
-The root cause is that React Query caches are isolated by key. The leaderboard page uses separate query keys (`billable-users-list`, `all-posts-leaderboard`) to avoid format conflicts with the team feed cache (object map vs array). Both sets of keys must be invalidated when scraping completes to keep all views in sync.
+Add `staleTime`, `gcTime`, and `placeholderData` to both queries to match the team feed's stability pattern and prevent UI flashes during background refetches.
 
