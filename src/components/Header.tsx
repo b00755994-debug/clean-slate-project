@@ -2,9 +2,11 @@ import { Button } from "@/components/ui/button";
 import { Zap } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useAuthContext } from "@/contexts/AuthContext";
 
 const Header = () => {
   const { language } = useLanguage();
+  const { user } = useAuthContext();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -71,12 +73,20 @@ const Header = () => {
           </nav>
 
           <div className="flex items-center gap-4">
-            <Link to="/auth">
-              <Button variant="ghost" className="hidden sm:inline-flex hover:bg-primary/10 hover:text-primary transition-all">{t.login}</Button>
-            </Link>
-            <Link to="/auth?mode=signup">
-              <Button variant="hero">{t.joinBeta}</Button>
-            </Link>
+            {user ? (
+              <Link to="/dashboard">
+                <Button variant="hero">Dashboard</Button>
+              </Link>
+            ) : (
+              <>
+                <Link to="/auth">
+                  <Button variant="ghost" className="hidden sm:inline-flex hover:bg-primary/10 hover:text-primary transition-all">{t.login}</Button>
+                </Link>
+                <Link to="/auth?mode=signup">
+                  <Button variant="hero">{t.joinBeta}</Button>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </div>

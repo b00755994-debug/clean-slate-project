@@ -2,8 +2,10 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Rocket, Sparkles, Star } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useAuthContext } from "@/contexts/AuthContext";
 const CTA = () => {
   const { language } = useLanguage();
+  const { user } = useAuthContext();
 
   const translations = {
     fr: {
@@ -60,9 +62,9 @@ const CTA = () => {
             {t.subtitle}
           </p>
 
-          <Link to="/beta">
+          <Link to={user ? "/dashboard" : "/beta"}>
             <Button variant="hero" size="lg" className="h-14 px-8 text-lg whitespace-nowrap">
-              {t.button}
+              {user ? (language === 'fr' ? 'Accéder au Dashboard' : 'Go to Dashboard') : t.button}
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </Link>
