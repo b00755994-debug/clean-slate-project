@@ -7,14 +7,21 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+const log = (step: string, details?: any) => {
+  console.log(`[CUSTOMER-PORTAL] ${step}${details ? ` - ${JSON.stringify(details)}` : ''}`);
+};
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
+    log("Function started");
+
     const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
     if (!stripeKey) throw new Error("STRIPE_SECRET_KEY is not set");
+    log("Stripe key verified");
 
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
@@ -30,6 +37,7 @@ serve(async (req) => {
     if (userError) throw new Error(`Authentication error: ${userError.message}`);
     const user = userData.user;
     if (!user?.email) throw new Error("User not authenticated");
+    log("User authenticated", { userId: user.id, email: user.email });
 
     const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
@@ -38,6 +46,7 @@ serve(async (req) => {
     }
 
     const customerId = customers.data[0].id;
+    log("Found Stripe customer", { customerId });
 
     // 1. Get workspace
     const { data: membership } = await supabaseClient
@@ -45,6 +54,7 @@ serve(async (req) => {
       .select('workspace_id')
       .eq('profile_id', user.id)
       .maybeSingle();
+    log("Workspace membership", { membership });
 
     // 2. Count tracked profiles
     let profileCount = 0;
@@ -55,10 +65,13 @@ serve(async (req) => {
         .eq('workspace_id', membership.workspace_id);
       profileCount = count ?? 0;
     }
+    log("Profile count", { profileCount });
 
     const minimumQty = Math.max(10, profileCount);
+    log("Minimum quantity", { minimumQty });
 
     // 3. Create portal config with minimum_quantity
+    log("Creating portal configuration...");
     const portalConfig = await stripe.billingPortal.configurations.create({
       business_profile: { headline: 'Manage your SuperPump subscription' },
       features: {
@@ -75,6 +88,7 @@ serve(async (req) => {
         invoice_history: { enabled: true },
       },
     });
+    log("Portal config created", { configId: portalConfig.id });
 
     // 4. Use config when creating the session
     const origin = req.headers.get("origin") || "https://superpump.tech";
@@ -83,6 +97,7 @@ serve(async (req) => {
       configuration: portalConfig.id,
       return_url: `${origin}/pricing`,
     });
+    log("Portal session created", { url: portalSession.url });
 
     return new Response(JSON.stringify({ url: portalSession.url }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -90,6 +105,7 @@ serve(async (req) => {
     });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
+    log("ERROR", { message: errorMessage });
     return new Response(JSON.stringify({ error: errorMessage }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,
