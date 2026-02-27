@@ -429,13 +429,13 @@ const Pricing = () => {
                       }
                     }}
                     disabled={isPortalLoading}
-                    variant={currentQuantity && proUsers[0] !== currentQuantity ? "default" : "secondary"}
+                    variant={currentQuantity && proUsers[0] !== currentQuantity ? "default" : "ghost"}
                     className={`w-full font-semibold gap-2 ${
                       currentQuantity && proUsers[0] !== currentQuantity
                         ? proUsers[0] > currentQuantity
                           ? 'bg-success hover:bg-success/90 text-white'
                           : 'bg-destructive hover:bg-destructive/90 text-white'
-                        : ''
+                        : 'bg-primary/10 text-primary hover:bg-primary/15'
                     }`}
                   >
                     {isPortalLoading ? (
@@ -466,8 +466,8 @@ const Pricing = () => {
                     }
                   }}
                   disabled={isPortalLoading}
-                  variant="secondary"
-                  className="w-full mt-4"
+                  variant="ghost"
+                  className="w-full mt-4 bg-primary/10 text-primary hover:bg-primary/15"
                 >
                   {isPortalLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Crown className="h-4 w-4 mr-2" />}
                   Manage billing
