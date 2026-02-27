@@ -9,13 +9,13 @@ const BetaBanner = () => {
     fr: {
       closedBeta: "Bêta privée",
       text1: "avec nos partenaires pilotes.",
-      signUp: "Contactez-nous",
+      signUp: "Réservez une démo",
       text2: "pour en faire partie et avoir accès en priorité au nouvel outil."
     },
     en: {
       closedBeta: "Private Beta",
       text1: "with our pilot partners.",
-      signUp: "Book a call with us",
+      signUp: "Book a demo",
       text2: "to be part of it and get priority access to the new tool."
     }
   };

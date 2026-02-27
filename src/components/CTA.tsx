@@ -11,7 +11,7 @@ const CTA = () => {
       title1: "Prêt à décupler votre",
       title2: "impact LinkedIn",
       subtitle: "Rejoignez les entreprises qui boostent leur portée LinkedIn directement depuis Slack, sans effort supplémentaire",
-      button: "Essayer gratuitement",
+      button: "Réserver une démo",
       footer: "Pas de carte bancaire requise • Configuration Slack en 5 minutes • Support dédié"
     },
     en: {
@@ -19,7 +19,7 @@ const CTA = () => {
       title1: "Ready to unleash your",
       title2: "LinkedIn impact",
       subtitle: "Join companies boosting their LinkedIn reach directly from Slack, with zero extra effort",
-      button: "Try for free",
+      button: "Book a demo",
       footer: "No credit card required • 5-minute Slack setup • Dedicated support"
     }
   };
