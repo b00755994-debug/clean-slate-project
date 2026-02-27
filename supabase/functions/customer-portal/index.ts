@@ -79,8 +79,8 @@ serve(async (req) => {
           enabled: true,
           default_allowed_updates: ['quantity'],
           products: [
-            { product: 'prod_U2u5D1O58TUiGO', prices: ['price_1T4oGzEPoXPeqIKkP1JHmhVr'], minimum_quantity: minimumQty },
-            { product: 'prod_U2u5R33sL7CeRe', prices: ['price_1T4oHOEPoXPeqIKkFdPcMylA'], minimum_quantity: minimumQty },
+            { product: 'prod_U2u5D1O58TUiGO', prices: ['price_1T4oGzEPoXPeqIKkP1JHmhVr'], adjustable_quantity: { enabled: true, minimum: minimumQty } },
+            { product: 'prod_U2u5R33sL7CeRe', prices: ['price_1T4oHOEPoXPeqIKkFdPcMylA'], adjustable_quantity: { enabled: true, minimum: minimumQty } },
           ],
         },
         subscription_cancel: { enabled: true },
