@@ -1,25 +1,18 @@
 
 
-## Keep both CTAs when logged in + Fix Pricing page for Pro subscribers
+## Fix: Add loading state to "Manage billing" button
 
-### 1. `src/components/Hero.tsx` (lines 133-141)
-- When logged in, show **both** CTAs instead of just Dashboard:
-  - "Go to Dashboard" / "Accéder au Dashboard" → `/dashboard` (hero variant)
-  - "Book a demo" / "Réserver une démo" → `/beta` (outline variant)
-- Same structure as the logged-out state, just different labels for the primary CTA
+The delay is inherent to the Stripe API (2 API calls: customer lookup + portal session creation). We can't eliminate it, but we can make it feel responsive.
 
-### 2. `src/components/CTA.tsx` (lines 65-69)
-- When logged in, show **two buttons** side by side:
-  - "Go to Dashboard" / "Accéder au Dashboard" → `/dashboard` (hero variant)
-  - "Book a demo" / "Réserver une démo" → `/beta` (outline variant)
-- Wrap in a flex container like the Hero
+### `src/pages/Pricing.tsx`
+- Add a `isPortalLoading` state
+- Wrap `openCustomerPortal` call with loading state management + error handling (toast on error)
+- Show `Loader2` spinner and disable the button while loading
+- Apply same pattern to the Dashboard's "Manage billing" button
 
-### 3. `src/components/Header.tsx`
-- When logged in, keep the current layout (LogOut icon + Dashboard button) — no "Book a demo" needed in the header (too crowded)
+### `src/pages/Dashboard.tsx`
+- Same loading state + spinner on the "Manage billing" button there
 
-### 4. `src/pages/Pricing.tsx` (lines 438-442)
-- The Pro CTA shows "Subscribe to Pro" for logged-in users even when they already have a Pro subscription, because `subscribed` from `useSubscription` may still be loading or returning false
-- Fix: while `isSubLoading` is true, show a loading state on the Pro CTA button
-- Also, for logged-in non-subscribed users, the CTA text "Subscribe to Pro" is correct — no change needed there
-- The real issue is likely that `subscribed` is `false` during loading. Add `disabled={isSubLoading}` and a spinner to the subscribe button to avoid showing a stale CTA while subscription status loads
+### `src/hooks/useSubscription.ts`
+- No changes needed -- the hook is fine, the UX just needs feedback
 
