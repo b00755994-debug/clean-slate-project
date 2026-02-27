@@ -438,7 +438,7 @@ const Pricing = () => {
               ) : (
                 <Button onClick={handleProCheckout} disabled={isCheckoutLoading} variant="hero" className="w-full mt-4">
                   {isCheckoutLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-                  Subscribe to Pro
+                  {user ? 'Subscribe to Pro' : 'Sign up to subscribe'}
                 </Button>
               )}
             </CardContent>
