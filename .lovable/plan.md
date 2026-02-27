@@ -1,28 +1,16 @@
 
 
-## Create a `/test` page with multiple Slack badge "Select" design variations
+## Match Dashboard badge to Test page "Outline + Arrow" proportions
 
-### Current badge
-The current badge at line 834 of `Dashboard.tsx` is a dashed outline `Badge` with a small Slack logo and "Select" text.
+The Dashboard badge has extra classes (`hover:bg-muted/50`, `text-muted-foreground`) not present in the test page version. Align them exactly.
 
-### Plan
+### Change in `src/pages/Dashboard.tsx` (line 834)
 
-**1. Create `src/pages/TestSlackBadge.tsx`**
-A showcase page with 10-12 different badge/button design variations for the Slack "Select" action, organized in a grid. Each variation will be labeled and displayed at actual size + enlarged. Variations to include:
+Replace the current Badge className with the exact same classes from the test page variant:
 
-- **Current**: dashed outline badge (for reference)
-- **Solid Slack purple**: bg-[#4A154B] text-white with Slack logo
-- **Ghost button**: subtle ghost button with Slack icon
-- **Pill with icon only**: just the Slack logo in a small rounded pill, no text
-- **Gradient border**: gradient border from purple to pink
-- **Slack colored chip**: light purple bg (#F4EDE4 Slack beige) with dark text
-- **Dotted circle + icon**: circular badge with just the Slack logo and a "+" overlay
-- **Underline link style**: simple text link "Link Slack" with logo inline
-- **Outlined with arrow**: outline badge with a small chevron-down
-- **Floating action style**: small round button with shadow and Slack logo
-- **Tag style**: colored tag with rounded-sm corners
-- **Minimal plus**: just a "+" icon in muted style that reveals Slack on hover
+```tsx
+<Badge variant="outline" className="cursor-pointer py-1 pl-1.5 pr-1.5 text-xs gap-1 border-muted-foreground/25 hover:border-muted-foreground/50 transition-colors">
+```
 
-**2. Add route in `App.tsx`**
-Add `<Route path="/test" element={<TestSlackBadge />} />` before the catch-all.
+This removes `hover:bg-muted/50` and `text-muted-foreground` that were added in the dashboard but absent from the test page version.
 
