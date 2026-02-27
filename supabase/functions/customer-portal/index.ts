@@ -37,9 +37,50 @@ serve(async (req) => {
       throw new Error("No Stripe customer found for this user");
     }
 
+    const customerId = customers.data[0].id;
+
+    // 1. Get workspace
+    const { data: membership } = await supabaseClient
+      .from('workspace_members')
+      .select('workspace_id')
+      .eq('profile_id', user.id)
+      .maybeSingle();
+
+    // 2. Count tracked profiles
+    let profileCount = 0;
+    if (membership?.workspace_id) {
+      const { count } = await supabaseClient
+        .from('billable_users')
+        .select('*', { count: 'exact', head: true })
+        .eq('workspace_id', membership.workspace_id);
+      profileCount = count ?? 0;
+    }
+
+    const minimumQty = Math.max(10, profileCount);
+
+    // 3. Create portal config with minimum_quantity
+    const portalConfig = await stripe.billingPortal.configurations.create({
+      business_profile: { headline: 'Manage your SuperPump subscription' },
+      features: {
+        subscription_update: {
+          enabled: true,
+          default_allowed_updates: ['quantity'],
+          products: [
+            { product: 'prod_U2u5D1O58TUiGO', prices: ['price_1T4oGzEPoXPeqIKkP1JHmhVr'], minimum_quantity: minimumQty },
+            { product: 'prod_U2u5R33sL7CeRe', prices: ['price_1T4oHOEPoXPeqIKkFdPcMylA'], minimum_quantity: minimumQty },
+          ],
+        },
+        subscription_cancel: { enabled: true },
+        payment_method_update: { enabled: true },
+        invoice_history: { enabled: true },
+      },
+    });
+
+    // 4. Use config when creating the session
     const origin = req.headers.get("origin") || "https://superpump.tech";
     const portalSession = await stripe.billingPortal.sessions.create({
-      customer: customers.data[0].id,
+      customer: customerId,
+      configuration: portalConfig.id,
       return_url: `${origin}/pricing`,
     });
 
