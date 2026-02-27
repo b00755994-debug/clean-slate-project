@@ -831,7 +831,7 @@ export default function Dashboard() {
                                       </div>
                                     );
                                   })() : (
-                                    <Badge variant="outline" className="cursor-pointer hover:bg-[#4A154B]/10 hover:border-[#4A154B]/30 gap-1.5 transition-colors py-1 pl-1.5 pr-2.5 text-xs border-dashed border-muted-foreground/30 text-muted-foreground">
+                                    <Badge variant="outline" className="cursor-pointer hover:bg-[#4A154B]/10 hover:border-[#4A154B]/30 gap-2 transition-colors py-1.5 pl-2.5 pr-3 text-xs border-dashed border-muted-foreground/30 text-muted-foreground">
                                       <img src={slackLogo} alt="Slack" className="w-3.5 h-3.5 opacity-60" />
                                       {t.select}
                                     </Badge>
