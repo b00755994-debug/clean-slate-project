@@ -435,7 +435,7 @@ export default function Dashboard() {
               </div>
               {slackWorkspace?.plan === 'pro' ? (
                 <Button
-                  variant="outline"
+                  variant="secondary"
                   className="w-full mt-auto gap-2"
                   disabled={isPortalLoading}
                   onClick={async () => {
