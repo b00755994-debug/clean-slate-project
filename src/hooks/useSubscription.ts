@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -31,36 +31,31 @@ export function useSubscription() {
   // Handle checkout=success param
   useEffect(() => {
     if (searchParams.get('checkout') === 'success' && user) {
-      // Refetch subscription to sync workspace
       refetch().then(() => {
-        // Invalidate workspace to refresh dashboard
         queryClient.invalidateQueries({ queryKey: ['workspace', user.id] });
       });
-      // Clean URL
       searchParams.delete('checkout');
       setSearchParams(searchParams, { replace: true });
     }
   }, [searchParams, user]);
 
-  const openCustomerPortal = async () => {
+  // Auto-refetch when user returns from Stripe Customer Portal tab
+  useEffect(() => {
+    if (!user) return;
+    const handleFocus = () => {
+      refetch().then(() => {
+        queryClient.invalidateQueries({ queryKey: ['workspace', user.id] });
+      });
+    };
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
+  }, [user, refetch, queryClient]);
+
+  const openCustomerPortal = useCallback(async () => {
     const { data, error } = await supabase.functions.invoke('customer-portal');
     if (error) throw error;
     if (data?.url) window.open(data.url, '_blank');
-  };
-
-  const updateQuantity = async (newQuantity: number) => {
-    const { data: result, error } = await supabase.functions.invoke('update-subscription', {
-      body: { newQuantity },
-    });
-    if (error) throw error;
-    if (result?.error) throw new Error(result.error);
-    // Refresh subscription and workspace data
-    await refetch();
-    if (user) {
-      queryClient.invalidateQueries({ queryKey: ['workspace', user.id] });
-    }
-    return result;
-  };
+  }, []);
 
   return {
     subscribed: data?.subscribed ?? false,
@@ -70,6 +65,5 @@ export function useSubscription() {
     isLoading,
     refetch,
     openCustomerPortal,
-    updateQuantity,
   };
 }
