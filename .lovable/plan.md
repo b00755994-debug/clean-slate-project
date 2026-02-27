@@ -1,76 +1,72 @@
 
 
-## Audit & Fix: Pricing page Pro CTA logic
+## Set Stripe Portal minimum quantity = max(10, tracked profiles)
 
-### Root cause analysis
+The Stripe Customer Portal supports `minimum_quantity` per product in its configuration. We'll compute this dynamically when opening the portal.
 
-The edge function logs reveal the core issue: **every call to `check-subscription` is failing with "Authentication error: Auth session missing!"**. This means `subscribed` is always `false` (the default), so the CTA always shows "Subscribe to Pro" instead of "Manage billing".
+### Changes to `supabase/functions/customer-portal/index.ts`
 
-The cascade of bugs:
+Before creating the portal session, add logic to:
 
-1. **`useSubscription` silently swallows errors**: When `check-subscription` returns a 500 error, react-query catches the exception, `data` stays `undefined`, and `subscribed` defaults to `false`. The user sees no error feedback.
+1. Look up the user's workspace via `workspace_members`
+2. Count `billable_users` for that workspace
+3. Compute `minimumQty = Math.max(10, count)`
+4. Create a portal configuration with `features.subscription_update.products` set for both Pro products (monthly + annual) with `minimum_quantity: minimumQty`
+5. Pass that configuration ID to `stripe.billingPortal.sessions.create({ configuration: configId, ... })`
 
-2. **"Subscribe to Pro" click creates a duplicate checkout**: Since `subscribed` is falsely `false`, clicking the CTA calls `handleProCheckout` → `create-checkout`, which tries to create a NEW Stripe checkout session for an already-subscribed customer. This may fail or create a duplicate subscription.
+```typescript
+// After finding customerId, before creating portalSession:
 
-3. **No error state displayed**: The Pricing page has no way to show the user that subscription status couldn't be loaded.
+// 1. Get workspace
+const { data: membership } = await supabaseClient
+  .from('workspace_members')
+  .select('workspace_id')
+  .eq('profile_id', user.id)
+  .maybeSingle();
 
-4. **`isSubLoading` only covers initial load**: Once the query errors out, `isLoading` becomes `false` and the error is invisible.
+// 2. Count tracked profiles
+let profileCount = 0;
+if (membership?.workspace_id) {
+  const { count } = await supabaseClient
+    .from('billable_users')
+    .select('*', { count: 'exact', head: true })
+    .eq('workspace_id', membership.workspace_id);
+  profileCount = count ?? 0;
+}
 
-### Why "Auth session missing"
+const minimumQty = Math.max(10, profileCount);
 
-The `check-subscription` edge function uses `supabaseClient.auth.getUser(token)` with the service role key client. The token comes from the `Authorization` header which `supabase.functions.invoke()` passes automatically from the client session. If the session token is expired or missing in the preview iframe context, all calls fail silently.
-
-### Fixes
-
-#### 1. `src/hooks/useSubscription.ts`
-- Expose `error` and `isError` from the react-query result so consumers can react to failures
-- Add `retry: 2` to give transient auth failures a chance to resolve
-- Return `isError` in the hook's return value
-
-#### 2. `src/pages/Pricing.tsx` — Pro CTA section (lines 414-456)
-- When `isSubLoading` is true, show a disabled button with spinner (already partially done but the logic is inside the `else` branch)
-- When `isError` is true (subscription check failed), treat as "unknown" state: show a "Manage billing" button if the user is logged in (safer than showing "Subscribe" which could create duplicates), or show a retry button
-- **Key change**: Restructure the conditional:
-  ```
-  if (isSubLoading && user) → spinner button
-  else if (subscribed) → manage billing / upgrade/downgrade
-  else if (user && isError) → "Manage billing" with warning toast on click (safe fallback)
-  else → subscribe / sign up
-  ```
-- This prevents the dangerous case where a subscribed user sees "Subscribe to Pro" and creates a duplicate
-
-#### 3. `src/hooks/useSubscription.ts` — query config
-- Add `retry: 2` to handle transient auth issues
-- Expose `isError` from the query
-
-### Technical detail
-
-```
-// useSubscription.ts changes:
-const { data, isLoading, isError, refetch } = useQuery<SubscriptionData>({
-  ...existing config,
-  retry: 2,
+// 3. Create portal config with minimum
+const portalConfig = await stripe.billingPortal.configurations.create({
+  business_profile: { headline: 'Manage your SuperPump subscription' },
+  features: {
+    subscription_update: {
+      enabled: true,
+      default_allowed_updates: ['quantity'],
+      products: [
+        { product: 'prod_U2u5D1O58TUiGO', prices: ['price_1T4oGzEPoXPeqIKkP1JHmhVr'] },
+        { product: 'prod_U2u5R33sL7CeRe', prices: ['price_1T4oHOEPoXPeqIKkFdPcMylA'] },
+      ],
+    },
+    subscription_cancel: { enabled: true },
+    payment_method_update: { enabled: true },
+    invoice_history: { enabled: true },
+  },
 });
 
-return {
-  ...existing returns,
-  isError,
-};
-
-// Pricing.tsx Pro CTA restructure:
-{(isSubLoading && user) ? (
-  <Button disabled variant="outline" className="w-full mt-4">
-    <Loader2 className="animate-spin" /> Loading...
-  </Button>
-) : subscribed ? (
-  // existing manage billing logic
-) : (user && isError) ? (
-  // Safe fallback: assume they might be subscribed, offer portal
-  <Button onClick={handlePortal} variant="outline" className="w-full mt-4">
-    Manage billing
-  </Button>
-) : (
-  // existing subscribe/signup logic
-)}
+// 4. Use it when creating the session
+const portalSession = await stripe.billingPortal.sessions.create({
+  customer: customerId,
+  configuration: portalConfig.id,
+  return_url: `${origin}/pricing`,
+});
 ```
+
+### Limitation
+
+The Stripe `billingPortal.configurations.create` API supports `minimum_quantity` and `maximum_quantity` on products. If these fields aren't available via the current Stripe SDK version, we may need to check the exact API shape. The portal will natively show an error message like "Minimum quantity is 10" if the user tries to go below.
+
+### No other files change
+
+The `customer-portal` edge function is the only file modified. The frontend already calls `openCustomerPortal()` which invokes this function.
 
