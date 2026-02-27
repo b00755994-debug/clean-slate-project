@@ -52,6 +52,7 @@ export function OnboardingStepLinkedIn({ onComplete, onSkip, onBack, language }:
   const t = translations[language];
   const { linkedinProfiles, isLoading, addProfile, isAddingProfile, deleteProfile } = useLinkedInProfiles();
   const [urlInput, setUrlInput] = useState('');
+  const [urlError, setUrlError] = useState<string | null>(null);
 
   const handleAdd = async () => {
     const trimmed = urlInput.trim();
@@ -60,8 +61,11 @@ export function OnboardingStepLinkedIn({ onComplete, onSkip, onBack, language }:
     try {
       await addProfile({ profileName: '', linkedinUrl: trimmed });
       setUrlInput('');
-    } catch {
-      // toast already handled by hook
+      setUrlError(null);
+    } catch (e) {
+      if (e instanceof Error) {
+        setUrlError(e.message);
+      }
     }
   };
 
@@ -84,7 +88,7 @@ export function OnboardingStepLinkedIn({ onComplete, onSkip, onBack, language }:
           <Input
             placeholder={t.urlPlaceholder}
             value={urlInput}
-            onChange={(e) => setUrlInput(e.target.value)}
+            onChange={(e) => { setUrlInput(e.target.value); setUrlError(null); }}
             onKeyDown={handleKeyDown}
             className="flex-1"
           />
@@ -102,6 +106,9 @@ export function OnboardingStepLinkedIn({ onComplete, onSkip, onBack, language }:
             <span className="ml-1.5">{isAddingProfile ? t.adding : t.add}</span>
           </Button>
         </div>
+        {urlError && (
+          <p className="text-destructive text-xs -mt-2">{urlError}</p>
+        )}
 
         {/* Profiles table */}
         {linkedinProfiles.length > 0 && (
