@@ -429,7 +429,7 @@ const Pricing = () => {
                       }
                     }}
                     disabled={isPortalLoading}
-                    variant={currentQuantity && proUsers[0] !== currentQuantity ? "default" : "outline"}
+                    variant={currentQuantity && proUsers[0] !== currentQuantity ? "default" : "secondary"}
                     className={`w-full font-semibold gap-2 ${
                       currentQuantity && proUsers[0] !== currentQuantity
                         ? proUsers[0] > currentQuantity
@@ -466,7 +466,7 @@ const Pricing = () => {
                     }
                   }}
                   disabled={isPortalLoading}
-                  variant="outline"
+                  variant="secondary"
                   className="w-full mt-4"
                 >
                   {isPortalLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Crown className="h-4 w-4 mr-2" />}
