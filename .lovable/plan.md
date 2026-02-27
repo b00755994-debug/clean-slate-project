@@ -1,50 +1,34 @@
 
 
-## Plan: Simplify Stripe Billing Flows
+## Plan: Verify backend supports per-unit quantity changes via Customer Portal
 
-### Context
-The current implementation has most pieces in place (checkout, customer portal, subscription check, workspace sync). The goal is to ensure a coherent, simplified billing experience across the app.
+### Analysis
 
-### Changes
+The user chose Option A: keep the Stripe Customer Portal for quantity modifications (increments of 1). Need to verify the backend handles this correctly.
 
-#### 1. Pricing page: require authentication for Pro checkout
-- In `src/pages/Pricing.tsx`, the "Subscribe to Pro" button already redirects to `/auth?mode=signup` if not logged in. This is correct.
-- Add a visual indicator when not logged in: change the Pro CTA to "Sign up to subscribe" instead of "Subscribe to Pro" for unauthenticated users, making it clear they need an account first.
+### Current state review
 
-#### 2. Pricing page: "Manage plan" button for subscribers
-- Already implemented: subscribers see a "Manage billing" / "Upgrade to X seats" / "Downgrade to X seats" button that opens the Stripe Customer Portal. No changes needed here.
+The `check-subscription` Edge Function already:
+- Reads `subscription.items.data[0].quantity` from Stripe
+- Syncs it directly to `workspaces.max_billable_users`
+- This works for ANY quantity value (1, 5, 11, 23, etc.)
 
-#### 3. Dashboard: "Manage plan" button for Pro users
-- Already implemented at line 433-441: Pro plan shows "Manage subscription" button calling `openCustomerPortal`. No changes needed.
+The `useSubscription` hook already:
+- Returns `quantity` from the check
+- Auto-refetches on window focus (after returning from Customer Portal)
+- Invalidates workspace cache
 
-#### 4. Dashboard: "Upgrade" button for Free users approaching limit
-- Already implemented at line 443-452: Free plan shows "Upgrade to Pro" linking to `/pricing`. 
-- Additionally, the LinkedIn profiles section (line 608-613) shows an "Upgrade" badge for non-Pro users. No changes needed.
+The `add_billable_user` DB function already:
+- Checks `COUNT(*) >= max_billable_users` before allowing new profiles
+- Works with any integer limit
 
-#### 5. Simplify update-subscription flow via Customer Portal only
-- The `update-subscription` edge function currently does direct Stripe API quantity updates. Per the user's intent to simplify, **remove the direct API update path** and rely entirely on the Stripe Customer Portal for all subscription modifications (upgrades, downgrades, cancellations).
-- Remove `updateQuantity` from `useSubscription.ts` hook since it's no longer needed.
-- In `src/pages/Pricing.tsx`, the subscriber CTA buttons already redirect to Customer Portal. Confirm they don't call `updateQuantity` anywhere (they don't -- they call `openCustomerPortal`).
+### Conclusion
 
-#### 6. Add Stripe webhook or post-portal sync
-- After a user modifies their subscription via Customer Portal, the workspace needs to sync. Currently `check-subscription` handles this on page load.
-- Add a `refetch` call to `useSubscription` when the user returns from the Customer Portal (detect via `window.focus` event or by checking URL params).
-- In `useSubscription.ts`, add a `window.addEventListener('focus', refetch)` to auto-sync when the user returns from a Stripe tab.
+**No code changes are needed.** The entire backend chain (Stripe → check-subscription → workspaces.max_billable_users → add_billable_user validation) already supports arbitrary quantity values. Whether the user changes from 10 to 11 or 10 to 20 in the Customer Portal, the sync will work correctly.
 
-#### 7. Ensure quantity validation on downgrade
-- The Customer Portal handles this natively if configured correctly (min quantity = current billable users).
-- Optionally, create a Stripe Customer Portal configuration via API to set `subscription_update.products` with quantity constraints. However, this is a Stripe dashboard setting -- already instructed to the user.
+The only action needed is in the **Stripe Dashboard**: configure the Customer Portal's quantity settings (min/max) as desired. The backend is already quantity-agnostic.
 
-### Files to modify
+### Optional improvement (minor)
 
-1. **`src/pages/Pricing.tsx`** -- Update unauthenticated CTA text ("Sign up to subscribe")
-2. **`src/hooks/useSubscription.ts`** -- Remove `updateQuantity`, add `focus` listener for auto-refetch
-3. **`supabase/functions/update-subscription/index.ts`** -- Delete this function (no longer needed, all changes go through Customer Portal)
-4. **`supabase/config.toml`** -- Remove `update-subscription` entry
-
-### Technical details
-
-- The `openCustomerPortal` function in `useSubscription.ts` already opens the Stripe Customer Portal in a new tab. When the user returns, the `focus` event will trigger a `refetch` of subscription data, which calls `check-subscription` and syncs the workspace.
-- The `check-subscription` edge function already syncs `plan` and `max_billable_users` to the workspace table based on Stripe subscription state. This is the single source of truth.
-- No webhook is needed since the sync happens on every `check-subscription` call (page load, focus return, checkout success).
+In the Pricing page, the slider currently enforces increments of 10 for new checkouts. If you want new subscriptions to also start at any quantity (not just multiples of 10), the slider step would need to change. But since the user only asked about modification (Customer Portal), this is out of scope.
 
