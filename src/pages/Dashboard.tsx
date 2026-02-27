@@ -13,7 +13,7 @@ import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Crown, Linkedin, Plus, Trash2, ExternalLink, CheckCircle2, XCircle, Settings, LogOut, User, Link, Unlink, Lock, RefreshCw, Hash, Info, Loader2 } from 'lucide-react';
+import { Crown, Linkedin, Plus, Trash2, ExternalLink, CheckCircle2, XCircle, Settings, LogOut, User, Link, Unlink, Lock, RefreshCw, Hash, Info, Loader2, ChevronDown } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import slackLogo from '@/assets/slack-logo.png';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -831,9 +831,10 @@ export default function Dashboard() {
                                       </div>
                                     );
                                   })() : (
-                                    <Badge variant="outline" className="cursor-pointer hover:bg-[#4A154B]/10 hover:border-[#4A154B]/30 gap-1.5 transition-colors py-1 pl-1.5 pr-2.5 text-xs border-dashed border-muted-foreground/30 text-muted-foreground">
+                                    <Badge variant="outline" className="cursor-pointer hover:bg-muted/50 hover:border-muted-foreground/50 transition-colors py-1 pl-1.5 pr-1.5 text-xs gap-1 border-muted-foreground/25 text-muted-foreground">
                                       <img src={slackLogo} alt="Slack" className="w-3.5 h-3.5 opacity-60" />
                                       {t.select}
+                                      <ChevronDown className="w-3 h-3 opacity-40" />
                                     </Badge>
                                   )}
                                 </SelectTrigger>
