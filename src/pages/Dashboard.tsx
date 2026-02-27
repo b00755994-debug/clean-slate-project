@@ -813,7 +813,7 @@ export default function Dashboard() {
                               <Select value={linkedinProfile.slack_user_id || 'none'} onValueChange={value => {
                                 handleUpdateSlackUser(linkedinProfile.id, value === 'none' ? null : value);
                               }}>
-                                <SelectTrigger className="border-0 bg-transparent p-0 h-auto w-auto shadow-none focus:ring-0 [&>svg]:hidden">
+                                <SelectTrigger className="border-0 bg-transparent p-0 h-auto w-auto shadow-none focus:ring-0 [&>svg]:hidden [&_.slack-select-badge]:!pl-1.5 [&_.slack-select-badge]:!pr-1.5">
                                   {linkedinProfile.slack_user_id ? (() => {
                                     const slackMember = getSlackMember(linkedinProfile.slack_user_id);
                                     return (
@@ -831,7 +831,7 @@ export default function Dashboard() {
                                       </div>
                                     );
                                   })() : (
-                                    <Badge variant="outline" className="cursor-pointer py-1 !pl-2 pr-1.5 text-xs gap-1 border-muted-foreground/25 hover:border-muted-foreground/50 transition-colors">
+                                    <Badge variant="outline" className="slack-select-badge cursor-pointer py-1 pl-1.5 pr-1.5 text-xs gap-1 border-muted-foreground/25 hover:border-muted-foreground/50 transition-colors">
                                       <img src={slackLogo} alt="Slack" className="w-3.5 h-3.5 opacity-60" />
                                       {t.select}
                                       <ChevronDown className="w-3 h-3 opacity-40" />
