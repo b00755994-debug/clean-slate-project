@@ -62,12 +62,21 @@ const CTA = () => {
             {t.subtitle}
           </p>
 
-          <Link to={user ? "/dashboard" : "/beta"}>
-            <Button variant="hero" size="lg" className="h-14 px-8 text-lg whitespace-nowrap">
-              {user ? (language === 'fr' ? 'Accéder au Dashboard' : 'Go to Dashboard') : t.button}
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-          </Link>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Link to={user ? "/dashboard" : "/beta"}>
+              <Button variant="hero" size="lg" className="h-14 px-8 text-lg whitespace-nowrap">
+                {user ? (language === 'fr' ? 'Accéder au Dashboard' : 'Go to Dashboard') : t.button}
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
+            {user && (
+              <Link to="/beta">
+                <Button variant="outline" size="lg" className="h-14 px-8 text-lg whitespace-nowrap">
+                  <span className="text-primary">{t.button}</span>
+                </Button>
+              </Link>
+            )}
+          </div>
 
           <p className="text-sm text-muted-foreground mt-8">
             {t.footer}

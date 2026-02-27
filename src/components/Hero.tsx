@@ -131,30 +131,19 @@ const Hero = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-10">
-            {user ? (
-              <Link to="/dashboard">
-                <Button variant="hero" size="lg" className="text-base h-12 px-6">
-                  {language === 'fr' ? 'Accéder au Dashboard' : 'Go to Dashboard'}
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-              </Link>
-            ) : (
-              <>
-                <Link to="/auth?mode=signup">
-                  <Button variant="hero" size="lg" className="text-base h-12 px-6">
-                    {t.joinBeta}
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Button>
-                </Link>
-                <Link to="/beta">
-                  <Button variant="outline" size="lg" className="text-base h-12 px-6">
-                    <span className="text-primary">
-                      {t.viewDemo}
-                    </span>
-                  </Button>
-                </Link>
-              </>
-            )}
+            <Link to={user ? "/dashboard" : "/auth?mode=signup"}>
+              <Button variant="hero" size="lg" className="text-base h-12 px-6">
+                {user ? (language === 'fr' ? 'Accéder au Dashboard' : 'Go to Dashboard') : t.joinBeta}
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
+            <Link to="/beta">
+              <Button variant="outline" size="lg" className="text-base h-12 px-6">
+                <span className="text-primary">
+                  {t.viewDemo}
+                </span>
+              </Button>
+            </Link>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-4xl mx-auto">
