@@ -1,221 +1,212 @@
 import { useState } from 'react';
-import { BarChart3, TrendingUp, Users, Eye, Heart } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
+import { BarChart3, Activity, Zap, FileText, Eye, Users, TrendingUp } from 'lucide-react';
+import { KPICard } from '@/components/analytics/KPICard';
+import { PeriodSelector } from '@/components/analytics/PeriodSelector';
+import { PostingHeatmap } from '@/components/analytics/PostingHeatmap';
+import {
+  ChartContainer, ChartTooltip, ChartTooltipContent,
+} from '@/components/ui/chart';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, BarChart, Bar } from 'recharts';
+import {
+  overviewKPIs, trendData, activationKPIs, activationData,
+  reachKPIs, reachEngagementTrendData, impressionsDistribution, postingHeatmapData,
+} from '@/components/analytics/mockData';
 
-const overviewData = [
-  { month: 'Sep', impressions: 45000, reactions: 1200 },
-  { month: 'Oct', impressions: 62000, reactions: 1800 },
-  { month: 'Nov', impressions: 58000, reactions: 1650 },
-  { month: 'Dec', impressions: 71000, reactions: 2100 },
-  { month: 'Jan', impressions: 89000, reactions: 2800 },
-  { month: 'Feb', impressions: 105000, reactions: 3400 },
-];
+function MockOverview() {
+  const [postsPeriod, setPostsPeriod] = useState<'6' | '12'>('6');
+  const [impressionsPeriod, setImpressionsPeriod] = useState<'6' | '12'>('6');
+  const postsData = postsPeriod === '6' ? trendData.slice(-6) : trendData;
+  const impressionsData = impressionsPeriod === '6' ? trendData.slice(-6) : trendData;
 
-const audienceData = [
-  { name: 'Marketing', value: 28 },
-  { name: 'Sales', value: 22 },
-  { name: 'Engineering', value: 18 },
-  { name: 'C-Suite', value: 15 },
-  { name: 'Product', value: 10 },
-  { name: 'Other', value: 7 },
-];
-
-const COLORS = ['hsl(var(--primary))', 'hsl(var(--destructive))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))', 'hsl(var(--muted-foreground))'];
-
-const activationData = [
-  { week: 'W1', active: 3, total: 8 },
-  { week: 'W2', active: 5, total: 8 },
-  { week: 'W3', active: 4, total: 8 },
-  { week: 'W4', active: 7, total: 8 },
-];
-
-const heatmapData = [
-  { day: 'Mon', h8: 0, h9: 1, h10: 2, h11: 3, h12: 1, h13: 0, h14: 2, h15: 1, h16: 0, h17: 1 },
-  { day: 'Tue', h8: 1, h9: 2, h10: 3, h11: 2, h12: 0, h13: 1, h14: 1, h15: 2, h16: 1, h17: 0 },
-  { day: 'Wed', h8: 0, h9: 1, h10: 1, h11: 4, h12: 2, h13: 0, h14: 3, h15: 1, h16: 0, h17: 0 },
-  { day: 'Thu', h8: 1, h9: 0, h10: 2, h11: 2, h12: 1, h13: 1, h14: 2, h15: 3, h16: 1, h17: 0 },
-  { day: 'Fri', h8: 0, h9: 2, h10: 3, h11: 1, h12: 0, h13: 0, h14: 1, h15: 0, h16: 0, h17: 0 },
-];
-
-function formatNumber(num: number): string {
-  if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
-  if (num >= 1000) return `${(num / 1000).toFixed(1)}k`;
-  return num.toString();
-}
-
-function KPICard({ label, value, change, icon: Icon }: { label: string; value: string; change: string; icon: React.ElementType }) {
   return (
-    <Card>
-      <CardContent className="p-4">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-xs text-muted-foreground uppercase tracking-wide">{label}</span>
-          <Icon className="w-4 h-4 text-muted-foreground" />
-        </div>
-        <p className="text-2xl font-bold text-foreground">{value}</p>
-        <p className="text-xs text-green-600 flex items-center gap-1 mt-1">
-          <TrendingUp className="w-3 h-3" />{change}
-        </p>
-      </CardContent>
-    </Card>
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <KPICard icon={FileText} label="Total Posts" value={overviewKPIs.totalPosts.value} change={overviewKPIs.totalPosts.change} tooltip="" color="blue" periodLabel="Last 30 days" />
+        <KPICard icon={Eye} label="Total Impressions" value={overviewKPIs.totalImpressions.value} change={overviewKPIs.totalImpressions.change} tooltip="" color="violet" periodLabel="Last 30 days" />
+        <KPICard icon={Users} label="Active Contributors" value={overviewKPIs.activeContributors.value} change={overviewKPIs.activeContributors.change} tooltip="" color="emerald" periodLabel="Last 30 days" />
+        <KPICard icon={TrendingUp} label="Avg. Posts/Contributor" value={overviewKPIs.avgPostsPerContributor.value} change={overviewKPIs.avgPostsPerContributor.change} tooltip="" color="amber" periodLabel="Last 30 days" />
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card className="border-border/50 shadow-md">
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-base font-semibold flex items-center gap-2">
+                <FileText className="w-4 h-4 text-blue-600" />Posts Trend
+              </CardTitle>
+              <PeriodSelector value={postsPeriod} onChange={setPostsPeriod} />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <ChartContainer config={{ posts: { label: 'Posts', color: 'hsl(210 90% 40%)' } }} className="h-[225px] w-full">
+              <LineChart data={postsData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" />
+                <XAxis dataKey="month" tickLine={false} axisLine={false} className="text-xs fill-muted-foreground" />
+                <YAxis tickLine={false} axisLine={false} className="text-xs fill-muted-foreground" />
+                <ChartTooltip content={<ChartTooltipContent />} />
+                <Line type="monotone" dataKey="posts" stroke="var(--color-posts)" strokeWidth={2} dot={{ fill: 'var(--color-posts)', strokeWidth: 2 }} />
+              </LineChart>
+            </ChartContainer>
+          </CardContent>
+        </Card>
+        <Card className="border-border/50 shadow-md">
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-base font-semibold flex items-center gap-2">
+                <Eye className="w-4 h-4 text-violet-600" />Impressions Trend
+              </CardTitle>
+              <PeriodSelector value={impressionsPeriod} onChange={setImpressionsPeriod} />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <ChartContainer config={{ impressions: { label: 'Impressions', color: 'hsl(263 70% 55%)' } }} className="h-[225px] w-full">
+              <LineChart data={impressionsData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" />
+                <XAxis dataKey="month" tickLine={false} axisLine={false} className="text-xs fill-muted-foreground" />
+                <YAxis tickLine={false} axisLine={false} className="text-xs fill-muted-foreground" tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
+                <ChartTooltip content={<ChartTooltipContent />} />
+                <Line type="monotone" dataKey="impressions" stroke="var(--color-impressions)" strokeWidth={2} dot={{ fill: 'var(--color-impressions)', strokeWidth: 2 }} />
+              </LineChart>
+            </ChartContainer>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   );
 }
 
-function PostingHeatmap() {
-  const hours = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17];
+function MockTeamActivation() {
+  const [period, setPeriod] = useState<'6' | '12'>('6');
+  const data = period === '6' ? activationData.slice(-6) : activationData;
+
   return (
-    <Card>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-semibold">Posting Heatmap</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-1">
-          {heatmapData.map(row => (
-            <div key={row.day} className="flex items-center gap-1">
-              <span className="text-xs text-muted-foreground w-8">{row.day}</span>
-              {hours.map(h => {
-                const val = row[`h${h}` as keyof typeof row] as number;
-                const opacity = val === 0 ? 'bg-muted' : val === 1 ? 'bg-primary/20' : val === 2 ? 'bg-primary/40' : val >= 3 ? 'bg-primary/70' : 'bg-primary';
-                return <div key={h} className={`w-6 h-6 rounded-sm ${opacity}`} title={`${row.day} ${h}:00 — ${val} posts`} />;
-              })}
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <KPICard icon={Users} label="Active Contributors" value={overviewKPIs.activeContributors.value} change={overviewKPIs.activeContributors.change} tooltip="" color="emerald" periodLabel="Last 30 days" />
+        <KPICard icon={Activity} label="Activation Rate" value={activationKPIs.contributorsActivePercent.value} change={activationKPIs.contributorsActivePercent.change} tooltip="" color="blue" periodLabel="Last 30 days" suffix="%" />
+        <KPICard icon={TrendingUp} label="Avg. Posts/Contributor" value={overviewKPIs.avgPostsPerContributor.value} change={overviewKPIs.avgPostsPerContributor.change} tooltip="" color="amber" periodLabel="Last 30 days" />
+        <KPICard icon={Activity} label="Internal Interactions" value={activationKPIs.avgInternalInteractions.value} change={activationKPIs.avgInternalInteractions.change} tooltip="" color="violet" periodLabel="Last 30 days" />
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card className="border-border/50 shadow-md">
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-base font-semibold flex items-center gap-2">
+                <Users className="w-4 h-4 text-emerald-600" />Active Contributors / Month
+              </CardTitle>
+              <PeriodSelector value={period} onChange={setPeriod} />
             </div>
-          ))}
-          <div className="flex items-center gap-1 mt-1 ml-8">
-            {hours.map(h => (
-              <span key={h} className="w-6 text-center text-[10px] text-muted-foreground">{h}</span>
-            ))}
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+          </CardHeader>
+          <CardContent>
+            <ChartContainer config={{ activeContributors: { label: 'Contributors', color: 'hsl(160 60% 45%)' } }} className="h-[225px] w-full">
+              <BarChart data={data} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" />
+                <XAxis dataKey="month" tickLine={false} axisLine={false} className="text-xs fill-muted-foreground" />
+                <YAxis tickLine={false} axisLine={false} className="text-xs fill-muted-foreground" />
+                <ChartTooltip content={<ChartTooltipContent />} />
+                <Bar dataKey="activeContributors" fill="var(--color-activeContributors)" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ChartContainer>
+          </CardContent>
+        </Card>
+        <Card className="border-border/50 shadow-md">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base font-semibold">Posting Times</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <PostingHeatmap data={postingHeatmapData} />
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
+function MockReachImpact() {
+  const [period, setPeriod] = useState<'6' | '12'>('6');
+  const data = period === '6' ? reachEngagementTrendData.slice(-6) : reachEngagementTrendData;
+
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <KPICard icon={Eye} label="Total Impressions" value={reachKPIs.totalImpressions.value} change={reachKPIs.totalImpressions.change} tooltip="" color="violet" periodLabel="Last 30 days" />
+        <KPICard icon={Eye} label="Avg. Impressions/Post" value={reachKPIs.avgImpressionsPerPost.value} change={reachKPIs.avgImpressionsPerPost.change} tooltip="" color="blue" periodLabel="Last 30 days" />
+        <KPICard icon={Activity} label="Engagement Rate" value={reachKPIs.engagementRate.value} change={reachKPIs.engagementRate.change} tooltip="" color="emerald" periodLabel="Last 30 days" suffix="%" />
+        <KPICard icon={Activity} label="Comment Rate" value={reachKPIs.commentRate.value} change={reachKPIs.commentRate.change} tooltip="" color="amber" periodLabel="Last 30 days" suffix="%" />
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card className="border-border/50 shadow-md">
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-base font-semibold flex items-center gap-2">
+                <Eye className="w-4 h-4 text-violet-600" />Impressions & Engagement
+              </CardTitle>
+              <PeriodSelector value={period} onChange={setPeriod} />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <ChartContainer config={{ impressions: { label: 'Impressions', color: 'hsl(263 70% 55%)' }, engagementRate: { label: 'Engagement %', color: 'hsl(160 60% 45%)' } }} className="h-[225px] w-full">
+              <LineChart data={data} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" />
+                <XAxis dataKey="month" tickLine={false} axisLine={false} className="text-xs fill-muted-foreground" />
+                <YAxis yAxisId="left" tickLine={false} axisLine={false} className="text-xs fill-muted-foreground" tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
+                <YAxis yAxisId="right" orientation="right" tickLine={false} axisLine={false} className="text-xs fill-muted-foreground" tickFormatter={(v) => `${v}%`} />
+                <ChartTooltip content={<ChartTooltipContent />} />
+                <Line yAxisId="left" type="monotone" dataKey="impressions" stroke="var(--color-impressions)" strokeWidth={2} dot={{ fill: 'var(--color-impressions)', strokeWidth: 2 }} />
+                <Line yAxisId="right" type="monotone" dataKey="engagementRate" stroke="var(--color-engagementRate)" strokeWidth={2} dot={{ fill: 'var(--color-engagementRate)', strokeWidth: 2 }} />
+              </LineChart>
+            </ChartContainer>
+          </CardContent>
+        </Card>
+        <Card className="border-border/50 shadow-md">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base font-semibold flex items-center gap-2">
+              <BarChart3 className="w-4 h-4 text-blue-600" />Impressions Distribution
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ChartContainer config={{ count: { label: 'Posts', color: 'hsl(210 90% 40%)' } }} className="h-[225px] w-full">
+              <BarChart data={impressionsDistribution} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" />
+                <XAxis dataKey="bucket" tickLine={false} axisLine={false} className="text-xs fill-muted-foreground" />
+                <YAxis tickLine={false} axisLine={false} className="text-xs fill-muted-foreground" />
+                <ChartTooltip content={<ChartTooltipContent />} />
+                <Bar dataKey="count" fill="var(--color-count)" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ChartContainer>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   );
 }
 
 export function MockAnalytics() {
-  const [tab, setTab] = useState('overview');
-
   return (
-    <div className="h-full overflow-y-auto p-4 flex flex-col gap-4">
-      <div className="flex items-center justify-between">
-        <div className="flex flex-col gap-1">
-          <h2 className="text-2xl font-bold text-foreground flex items-center gap-3">
-            <BarChart3 className="w-7 h-7 text-primary" />
-            Analytics
-          </h2>
-          <p className="text-muted-foreground text-sm">Track your team's LinkedIn performance</p>
-        </div>
-        <Badge variant="outline" className="text-sm px-3 py-1">Last 6 months</Badge>
+    <div className="h-full overflow-y-auto p-4 space-y-6">
+      <div className="flex flex-col gap-1">
+        <h2 className="text-2xl font-bold text-foreground flex items-center gap-3">
+          <BarChart3 className="w-7 h-7 text-primary" />
+          Analytics
+        </h2>
+        <p className="text-muted-foreground text-sm">Aggregated metrics from your team's LinkedIn activity</p>
       </div>
-
-      <Tabs value={tab} onValueChange={setTab}>
-        <TabsList className="bg-muted/50">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="reach">Reach & Impact</TabsTrigger>
-          <TabsTrigger value="activation">Team Activation</TabsTrigger>
+      <Tabs defaultValue="overview" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-3 lg:w-auto lg:inline-grid">
+          <TabsTrigger value="overview" className="flex items-center gap-2 uppercase tracking-wide text-xs">
+            <BarChart3 className="w-4 h-4" />Overview
+          </TabsTrigger>
+          <TabsTrigger value="activation" className="flex items-center gap-2 uppercase tracking-wide text-xs">
+            <Activity className="w-4 h-4" />Team Activation
+          </TabsTrigger>
+          <TabsTrigger value="reach" className="flex items-center gap-2 uppercase tracking-wide text-xs">
+            <Zap className="w-4 h-4" />Audience & Reach
+          </TabsTrigger>
         </TabsList>
+        <TabsContent value="overview"><MockOverview /></TabsContent>
+        <TabsContent value="activation"><MockTeamActivation /></TabsContent>
+        <TabsContent value="reach"><MockReachImpact /></TabsContent>
       </Tabs>
-
-      {tab === 'overview' && (
-        <div className="space-y-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <KPICard label="Total Impressions" value="430k" change="+18% vs last period" icon={Eye} />
-            <KPICard label="Total Reactions" value="12.9k" change="+24% vs last period" icon={Heart} />
-            <KPICard label="Active Members" value="7/8" change="88% activation" icon={Users} />
-            <KPICard label="Avg Engagement" value="3.8%" change="+0.4pp vs last period" icon={TrendingUp} />
-          </div>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-semibold">Impressions & Reactions Over Time</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={280}>
-                <BarChart data={overviewData}>
-                  <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                  <XAxis dataKey="month" className="text-xs" />
-                  <YAxis className="text-xs" tickFormatter={formatNumber} />
-                  <Tooltip formatter={(v: number) => formatNumber(v)} />
-                  <Bar dataKey="impressions" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="reactions" fill="hsl(var(--destructive))" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-        </div>
-      )}
-
-      {tab === 'reach' && (
-        <div className="space-y-4">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-semibold">Impressions Trend</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={280}>
-                <LineChart data={overviewData}>
-                  <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                  <XAxis dataKey="month" className="text-xs" />
-                  <YAxis className="text-xs" tickFormatter={formatNumber} />
-                  <Tooltip formatter={(v: number) => formatNumber(v)} />
-                  <Line type="monotone" dataKey="impressions" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ r: 4 }} />
-                </LineChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-semibold">Audience Breakdown</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-8">
-                <ResponsiveContainer width={200} height={200}>
-                  <PieChart>
-                    <Pie data={audienceData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label={({ name, value }) => `${name} ${value}%`}>
-                      {audienceData.map((_, i) => (
-                        <Cell key={i} fill={COLORS[i % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
-                <div className="space-y-2">
-                  {audienceData.map((d, i) => (
-                    <div key={d.name} className="flex items-center gap-2 text-sm">
-                      <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[i] }} />
-                      <span className="text-foreground">{d.name}</span>
-                      <span className="text-muted-foreground">{d.value}%</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
-
-      {tab === 'activation' && (
-        <div className="space-y-4">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-semibold">Weekly Active Posters</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={250}>
-                <BarChart data={activationData}>
-                  <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                  <XAxis dataKey="week" className="text-xs" />
-                  <YAxis className="text-xs" />
-                  <Tooltip />
-                  <Bar dataKey="active" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} name="Active" />
-                  <Bar dataKey="total" fill="hsl(var(--muted))" radius={[4, 4, 0, 0]} name="Total" />
-                </BarChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-          <PostingHeatmap />
-        </div>
-      )}
     </div>
   );
 }

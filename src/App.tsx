@@ -21,7 +21,8 @@ import DashboardAnalytics from "./pages/DashboardAnalytics";
 import DashboardContent from "./pages/DashboardContent";
 import DashboardLeaderboard from "./pages/DashboardLeaderboard";
 import Admin from "./pages/Admin";
-import TestLogoExploration from "./pages/TestLogoExploration";
+import Mockups from "./pages/Mockups";
+import TestSlackBadge from "./pages/TestSlackBadge";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -98,7 +99,8 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
-            <Route path="/test" element={<TestLogoExploration />} />
+            <Route path="/mockups" element={<Mockups />} />
+            <Route path="/test" element={<TestSlackBadge />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
