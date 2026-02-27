@@ -831,10 +831,10 @@ export default function Dashboard() {
                                       </div>
                                     );
                                   })() : (
-                                    <Badge variant="outline" className="cursor-pointer hover:bg-[#4A154B]/10 hover:border-[#4A154B]/30 gap-1.5 transition-colors py-1 pl-4.5 pr-2.5 text-xs border-dashed border-muted-foreground/30 text-muted-foreground">
-                                      <img src={slackLogo} alt="Slack" className="w-3.5 h-3.5 opacity-60" />
-                                      {t.select}
-                                    </Badge>
+                                    <span className="inline-flex items-center gap-1.5 cursor-pointer text-xs text-muted-foreground/50 hover:text-muted-foreground transition-colors">
+                                      <img src={slackLogo} alt="Slack" className="w-3.5 h-3.5 opacity-40" />
+                                      <span className="border-b border-dashed border-muted-foreground/30">{t.select}</span>
+                                    </span>
                                   )}
                                 </SelectTrigger>
                                 <SelectContent className="bg-popover border border-border shadow-lg z-[100] max-h-60 overflow-auto" position="popper" sideOffset={4}>
