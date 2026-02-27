@@ -1,15 +1,11 @@
 
 
-## Change "Manage subscription/billing" buttons to light primary style
+## Reduce toast duration and add dismiss button
 
-Replace `variant="secondary"` with `variant="ghost"` + custom `bg-primary/10 text-primary hover:bg-primary/15` classes on the Manage subscription/billing buttons in both pages.
+The toasts use Sonner. Two changes needed in `src/components/ui/sonner.tsx`:
 
-### Files to edit
+1. Add `duration={3000}` prop (default is 4000ms, reducing to 3s)
+2. Add `closeButton={true}` prop to show a small X button on each toast for manual dismiss
 
-**`src/pages/Dashboard.tsx` (~line 438):**
-- Change `variant="secondary"` to `variant="ghost"` and add `bg-primary/10 text-primary hover:bg-primary/15` to the className
-
-**`src/pages/Pricing.tsx` (~lines 432, 469):**
-- Line 432: Change the non-modified variant from `"secondary"` to `"ghost"` and add `bg-primary/10 text-primary hover:bg-primary/15` to the className
-- Line 469: Same change on the error fallback button
+Single file edit, ~2 lines added to the `<Sonner>` component.
 
