@@ -1,19 +1,28 @@
 
 
-## Add inline error messages for rejected LinkedIn URLs
+## Create a `/test` page with multiple Slack badge "Select" design variations
 
-### Changes
+### Current badge
+The current badge at line 834 of `Dashboard.tsx` is a dashed outline `Badge` with a small Slack logo and "Select" text.
 
-**`src/components/onboarding/OnboardingStepLinkedIn.tsx`:**
-- Add `urlError` state (`useState<string | null>`)
-- In `handleAdd`, catch the error and set `urlError` to the error message instead of relying only on toast
-- Clear `urlError` when input changes (`onChange`)
-- Display error message below the input as a small red text (`text-destructive text-xs`)
+### Plan
 
-**`src/hooks/useLinkedInProfiles.ts`:**
-- Improve Zod error messages to be more user-friendly and specific:
-  - Empty → "Veuillez entrer une URL LinkedIn"
-  - Not a URL → "Ce n'est pas une URL valide. Exemple : https://www.linkedin.com/in/nom"
-  - Not linkedin.com → "L'URL doit provenir de linkedin.com (ex: https://www.linkedin.com/in/nom)"
-- In the `onError` of `addProfileMutation`, re-throw the error so the caller can also catch it for inline display
+**1. Create `src/pages/TestSlackBadge.tsx`**
+A showcase page with 10-12 different badge/button design variations for the Slack "Select" action, organized in a grid. Each variation will be labeled and displayed at actual size + enlarged. Variations to include:
+
+- **Current**: dashed outline badge (for reference)
+- **Solid Slack purple**: bg-[#4A154B] text-white with Slack logo
+- **Ghost button**: subtle ghost button with Slack icon
+- **Pill with icon only**: just the Slack logo in a small rounded pill, no text
+- **Gradient border**: gradient border from purple to pink
+- **Slack colored chip**: light purple bg (#F4EDE4 Slack beige) with dark text
+- **Dotted circle + icon**: circular badge with just the Slack logo and a "+" overlay
+- **Underline link style**: simple text link "Link Slack" with logo inline
+- **Outlined with arrow**: outline badge with a small chevron-down
+- **Floating action style**: small round button with shadow and Slack logo
+- **Tag style**: colored tag with rounded-sm corners
+- **Minimal plus**: just a "+" icon in muted style that reveals Slack on hover
+
+**2. Add route in `App.tsx`**
+Add `<Route path="/test" element={<TestSlackBadge />} />` before the catch-all.
 
