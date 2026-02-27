@@ -1,12 +1,12 @@
 import { Button } from "@/components/ui/button";
-import { Zap } from "lucide-react";
+import { Zap, LogOut } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuthContext } from "@/contexts/AuthContext";
 
 const Header = () => {
   const { language } = useLanguage();
-  const { user } = useAuthContext();
+  const { user, signOut } = useAuthContext();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -74,9 +74,14 @@ const Header = () => {
 
           <div className="flex items-center gap-4">
             {user ? (
-              <Link to="/dashboard">
-                <Button variant="hero">Dashboard</Button>
-              </Link>
+              <>
+                <Link to="/dashboard">
+                  <Button variant="hero">Dashboard</Button>
+                </Link>
+                <Button variant="ghost" size="icon" onClick={async () => { await signOut(); navigate('/'); }} className="text-muted-foreground hover:text-foreground">
+                  <LogOut className="h-4 w-4" />
+                </Button>
+              </>
             ) : (
               <>
                 <Link to="/auth">
