@@ -13,7 +13,7 @@ import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Crown, Linkedin, Plus, Trash2, ExternalLink, CheckCircle2, XCircle, Settings, LogOut, User, Link, Unlink, Lock, RefreshCw, Hash, Info } from 'lucide-react';
+import { Crown, Linkedin, Plus, Trash2, ExternalLink, CheckCircle2, XCircle, Settings, LogOut, User, Link, Unlink, Lock, RefreshCw, Hash, Info, Loader2 } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import slackLogo from '@/assets/slack-logo.png';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -209,6 +209,7 @@ export default function Dashboard() {
   const { stats: teamStats } = useTeamFeedStats();
   const { channels, currentChannel, isLoading: isLoadingChannels, isFetching: isChannelsFetching } = useSlackChannels(slackWorkspace?.is_connected || false);
   const { subscribed, openCustomerPortal } = useSubscription();
+  const [isPortalLoading, setIsPortalLoading] = useState(false);
   
   // Show syncing indicator only when fetching in background (not initial load)
   const isSyncing = (isWorkspaceFetching && !isWorkspaceLoading) || (isSlackMembersFetching && !isLoadingMembers) || (isChannelsFetching && !isLoadingChannels);
@@ -434,9 +435,23 @@ export default function Dashboard() {
                 <Button
                   variant="outline"
                   className="w-full mt-auto gap-2"
-                  onClick={openCustomerPortal}
+                  disabled={isPortalLoading}
+                  onClick={async () => {
+                    setIsPortalLoading(true);
+                    try {
+                      await openCustomerPortal();
+                    } catch (err: any) {
+                      toast({
+                        title: t.error,
+                        description: err.message || 'Failed to open billing portal',
+                        variant: 'destructive',
+                      });
+                    } finally {
+                      setIsPortalLoading(false);
+                    }
+                  }}
                 >
-                  <Settings className="w-4 h-4" />
+                  {isPortalLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Settings className="w-4 h-4" />}
                   {t.manageSubscription}
                 </Button>
               ) : (

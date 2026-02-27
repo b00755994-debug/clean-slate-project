@@ -138,7 +138,8 @@ const Pricing = () => {
   const [proUsers, setProUsers] = useState([10]);
   const [businessUsers, setBusinessUsers] = useState([10]);
   const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
-  
+  const [isPortalLoading, setIsPortalLoading] = useState(false);
+
 
 
   // Initialize slider to current quantity when subscription data loads
@@ -413,7 +414,17 @@ const Pricing = () => {
               {subscribed ? (
                 <div className="mt-4">
                   <Button
-                    onClick={openCustomerPortal}
+                    onClick={async () => {
+                      setIsPortalLoading(true);
+                      try {
+                        await openCustomerPortal();
+                      } catch (err: any) {
+                        toast.error(err.message || "Failed to open billing portal");
+                      } finally {
+                        setIsPortalLoading(false);
+                      }
+                    }}
+                    disabled={isPortalLoading}
                     variant={currentQuantity && proUsers[0] !== currentQuantity ? "default" : "outline"}
                     className={`w-full font-semibold gap-2 ${
                       currentQuantity && proUsers[0] !== currentQuantity
@@ -423,7 +434,9 @@ const Pricing = () => {
                         : ''
                     }`}
                   >
-                    {currentQuantity && proUsers[0] !== currentQuantity ? (
+                    {isPortalLoading ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : currentQuantity && proUsers[0] !== currentQuantity ? (
                       <>
                         {proUsers[0] > currentQuantity ? 'Upgrade' : 'Downgrade'} to {proUsers[0]} seats
                       </>
