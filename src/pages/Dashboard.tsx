@@ -54,6 +54,7 @@ const translations = {
     impressions: 'Impressions',
     linkedinProfilesTitle: 'Profils LinkedIn suivis',
     linkedinProfilesDescription: "Membres de votre équipe dont vous suivez l'activité LinkedIn",
+    addMoreUsers: 'Ajouter des utilisateurs',
     addUser: 'Ajouter un utilisateur',
     addLinkedinProfile: 'Ajouter un profil LinkedIn',
     addProfileDescription: 'Ajoutez un membre de votre équipe pour suivre son activité LinkedIn.',
@@ -134,6 +135,7 @@ const translations = {
     impressions: 'Impressions',
     linkedinProfilesTitle: 'Followed LinkedIn Profiles',
     linkedinProfilesDescription: "Team members whose LinkedIn activity you're following",
+    addMoreUsers: 'Add more users',
     addUser: 'Add user',
     addLinkedinProfile: 'Add LinkedIn Profile',
     addProfileDescription: "Add a team member to follow their LinkedIn activity.",
@@ -625,6 +627,12 @@ export default function Dashboard() {
                       <Crown className="w-3 h-3" />
                       Upgrade
                     </a>
+                  )}
+                  {slackWorkspace?.plan === 'pro' && isAtLimit && (
+                    <button onClick={() => openCustomerPortal()} className="ml-2 inline-flex items-center gap-1 text-xs font-medium text-primary/80 hover:text-primary bg-primary/10 hover:bg-primary/15 px-2 py-0.5 rounded-md transition-colors">
+                      <Crown className="w-3 h-3" />
+                      {t.addMoreUsers}
+                    </button>
                   )}
                 </CardTitle>
                 <CardDescription className="mt-1.5">
