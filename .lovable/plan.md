@@ -1,15 +1,15 @@
 
 
-## Change "Manage subscription/billing" buttons to secondary variant
+## Change "Manage subscription/billing" buttons to light primary style
 
-Replace `variant="outline"` with `variant="secondary"` on the Manage subscription/billing buttons in both pages. This removes the thick blue border and gives a subtle grey background instead.
+Replace `variant="secondary"` with `variant="ghost"` + custom `bg-primary/10 text-primary hover:bg-primary/15` classes on the Manage subscription/billing buttons in both pages.
 
 ### Files to edit
 
-**`src/pages/Dashboard.tsx` (line 438):**
-- Change `variant="outline"` to `variant="secondary"` on the Manage subscription button
+**`src/pages/Dashboard.tsx` (~line 438):**
+- Change `variant="secondary"` to `variant="ghost"` and add `bg-primary/10 text-primary hover:bg-primary/15` to the className
 
-**`src/pages/Pricing.tsx` (lines 432, 469):**
-- Line 432: Change the `variant` logic — when showing "Manage billing" (no quantity change), use `variant="secondary"` instead of `"outline"`
-- Line 469: Change `variant="outline"` to `variant="secondary"` on the error fallback Manage billing button
+**`src/pages/Pricing.tsx` (~lines 432, 469):**
+- Line 432: Change the non-modified variant from `"secondary"` to `"ghost"` and add `bg-primary/10 text-primary hover:bg-primary/15` to the className
+- Line 469: Same change on the error fallback button
 
