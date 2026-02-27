@@ -9,20 +9,20 @@ const Beta = () => {
 
   const translations = {
     fr: {
-      titleStart: "Accès anticipé",
-      titleHighlight: "à la Beta",
+      titleStart: "Réservez",
+      titleHighlight: "une démo",
       titleEnd: "",
-      subtitleStart: "Réservez un créneau pour configurer",
+      subtitleStart: "Découvrez comment",
       subtitleHighlight: "superpump",
-      subtitleEnd: "dans votre Slack et commencer à booster votre présence LinkedIn en équipe"
+      subtitleEnd: "peut vous aider à transformer votre équipe en moteur de croissance LinkedIn"
     },
     en: {
-      titleStart: "Get",
-      titleHighlight: "early access",
-      titleEnd: "to the Beta",
-      subtitleStart: "Book a time slot to set up",
+      titleStart: "Book",
+      titleHighlight: "a demo",
+      titleEnd: "",
+      subtitleStart: "See how",
       subtitleHighlight: "superpump",
-      subtitleEnd: "with our team and start boosting your LinkedIn presence, directly from Slack"
+      subtitleEnd: "can help you turn your team into a LinkedIn growth engine"
     }
   };
 
@@ -52,7 +52,7 @@ const Beta = () => {
               <div className="absolute inset-0 rounded-full bg-primary opacity-80 group-hover:opacity-100 transition-opacity" />
               <div className="absolute inset-[2px] bg-background rounded-full" />
               <Calendar className="h-4 w-4 relative z-10 text-primary" />
-              <span className="text-sm font-bold relative z-10 text-primary">Beta</span>
+              <span className="text-sm font-bold relative z-10 text-primary">Demo</span>
             </div>
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
               {t.titleStart}{" "}
