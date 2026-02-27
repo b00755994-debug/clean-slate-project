@@ -1,11 +1,19 @@
 
 
-## Reduce toast duration and add dismiss button
+## Add inline error messages for rejected LinkedIn URLs
 
-The toasts use Sonner. Two changes needed in `src/components/ui/sonner.tsx`:
+### Changes
 
-1. Add `duration={3000}` prop (default is 4000ms, reducing to 3s)
-2. Add `closeButton={true}` prop to show a small X button on each toast for manual dismiss
+**`src/components/onboarding/OnboardingStepLinkedIn.tsx`:**
+- Add `urlError` state (`useState<string | null>`)
+- In `handleAdd`, catch the error and set `urlError` to the error message instead of relying only on toast
+- Clear `urlError` when input changes (`onChange`)
+- Display error message below the input as a small red text (`text-destructive text-xs`)
 
-Single file edit, ~2 lines added to the `<Sonner>` component.
+**`src/hooks/useLinkedInProfiles.ts`:**
+- Improve Zod error messages to be more user-friendly and specific:
+  - Empty → "Veuillez entrer une URL LinkedIn"
+  - Not a URL → "Ce n'est pas une URL valide. Exemple : https://www.linkedin.com/in/nom"
+  - Not linkedin.com → "L'URL doit provenir de linkedin.com (ex: https://www.linkedin.com/in/nom)"
+- In the `onError` of `addProfileMutation`, re-throw the error so the caller can also catch it for inline display
 
