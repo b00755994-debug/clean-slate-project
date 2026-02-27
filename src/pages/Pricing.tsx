@@ -132,7 +132,7 @@ const Pricing = () => {
   const { user } = useAuthContext();
   const navigate = useNavigate();
   const t = translations.en;
-  const { subscribed, quantity: currentQuantity, openCustomerPortal, isLoading: isSubLoading } = useSubscription();
+  const { subscribed, quantity: currentQuantity, openCustomerPortal, isLoading: isSubLoading, isError: isSubError } = useSubscription();
 
   const [isAnnual, setIsAnnual] = useState(true);
   const [proUsers, setProUsers] = useState([10]);
@@ -411,7 +411,11 @@ const Pricing = () => {
               </div>
 
               {/* CTA */}
-              {subscribed ? (
+              {(isSubLoading && user) ? (
+                <Button disabled variant="outline" className="w-full mt-4">
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" /> Loading...
+                </Button>
+              ) : subscribed ? (
                 <div className="mt-4">
                   <Button
                     onClick={async () => {
@@ -448,9 +452,29 @@ const Pricing = () => {
                     )}
                   </Button>
                 </div>
+              ) : (user && isSubError) ? (
+                <Button
+                  onClick={async () => {
+                    toast.error("Could not verify subscription status. Opening billing portal...");
+                    setIsPortalLoading(true);
+                    try {
+                      await openCustomerPortal();
+                    } catch (err: any) {
+                      toast.error(err.message || "Failed to open billing portal");
+                    } finally {
+                      setIsPortalLoading(false);
+                    }
+                  }}
+                  disabled={isPortalLoading}
+                  variant="outline"
+                  className="w-full mt-4"
+                >
+                  {isPortalLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Crown className="h-4 w-4 mr-2" />}
+                  Manage billing
+                </Button>
               ) : (
-                <Button onClick={handleProCheckout} disabled={isCheckoutLoading || isSubLoading} variant="hero" className="w-full mt-4">
-                  {(isCheckoutLoading || isSubLoading) ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                <Button onClick={handleProCheckout} disabled={isCheckoutLoading} variant="hero" className="w-full mt-4">
+                  {isCheckoutLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
                   {user ? 'Subscribe to Pro' : 'Sign up to subscribe'}
                 </Button>
               )}
