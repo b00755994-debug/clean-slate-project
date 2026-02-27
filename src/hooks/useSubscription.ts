@@ -16,7 +16,7 @@ export function useSubscription() {
   const queryClient = useQueryClient();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const { data, isLoading, refetch } = useQuery<SubscriptionData>({
+  const { data, isLoading, isError, refetch } = useQuery<SubscriptionData>({
     queryKey: ['subscription', user?.id],
     queryFn: async () => {
       const { data, error } = await supabase.functions.invoke('check-subscription');
@@ -24,6 +24,7 @@ export function useSubscription() {
       return data as SubscriptionData;
     },
     enabled: !!user,
+    retry: 2,
     staleTime: 5 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
   });
@@ -63,6 +64,7 @@ export function useSubscription() {
     quantity: data?.quantity ?? null,
     subscriptionEnd: data?.subscription_end ?? null,
     isLoading,
+    isError,
     refetch,
     openCustomerPortal,
   };
