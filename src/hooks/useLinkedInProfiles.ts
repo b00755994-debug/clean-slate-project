@@ -8,8 +8,8 @@ import { z } from 'zod';
 
 // Validation schemas for LinkedIn profile data
 const linkedinUrlSchema = z.string()
-  .min(1, 'URL LinkedIn requise')
-  .url('URL invalide')
+  .min(1, 'Veuillez entrer une URL LinkedIn')
+  .url("Ce n'est pas une URL valide. Exemple : https://www.linkedin.com/in/nom")
   .refine(
     (url) => {
       try {
@@ -22,7 +22,7 @@ const linkedinUrlSchema = z.string()
         return false;
       }
     },
-    'Doit être une URL LinkedIn valide (https://linkedin.com ou https://www.linkedin.com)'
+    "L'URL doit provenir de linkedin.com (ex: https://www.linkedin.com/in/nom)"
   );
 
 const profileNameSchema = z.string()
