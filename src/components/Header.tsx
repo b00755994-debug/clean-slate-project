@@ -67,7 +67,7 @@ const Header = () => {
 
           <nav className="hidden md:flex items-center gap-6">
             <button onClick={() => handleNavClick('solution')} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">{t.solution}</button>
-            <button onClick={() => handleNavClick('slack-integration')} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">{t.slackIntegration}</button>
+            <button onClick={() => handleNavClick('features')} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">{t.slackIntegration}</button>
             <button onClick={() => handleNavClick('temoignages')} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">{t.testimonials}</button>
             <Link to="/pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">{t.pricing}</Link>
           </nav>
