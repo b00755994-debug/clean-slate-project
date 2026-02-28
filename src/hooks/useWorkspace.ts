@@ -77,8 +77,8 @@ export function useWorkspace() {
         connected_at: ws.connected_at,
         slack_workspace_auth: ws.slack_workspace_auth,
         role: data.role as WorkspaceRole,
-        plan: ws.plan || 'pro',
-        max_billable_users: ws.max_billable_users ?? 10,
+        plan: ws.plan || 'free',
+        max_billable_users: ws.max_billable_users ?? 3,
       } as Workspace;
     },
     enabled: !!user,

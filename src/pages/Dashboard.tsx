@@ -422,7 +422,13 @@ export default function Dashboard() {
               </CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col flex-grow">
-              <p className="text-sm text-muted-foreground mb-4" dangerouslySetInnerHTML={{ __html: t.planDescription(slackWorkspace?.plan || 'pro') }} />
+              <p className="text-sm text-muted-foreground mb-4">
+                {(slackWorkspace?.plan || 'free') === 'free' ? (
+                  <>{language === 'fr' ? "Vous êtes sur le plan " : "You're on the "}<strong>Free</strong>{language === 'fr' ? ". Passez à Pro pour suivre plus de profils." : " plan. Upgrade to Pro to follow more profiles."}</>
+                ) : (
+                  <>{language === 'fr' ? "Vous êtes sur le plan " : "You're on the "}<strong>Pro</strong>{language === 'fr' ? ". Profitez de toutes les fonctionnalités avancées." : " plan. Enjoy all advanced features."}</>
+                )}
+              </p>
               {/* Quota display */}
               <div className="mb-4 space-y-1.5">
                 <div className="flex items-center justify-between text-sm">
@@ -898,9 +904,28 @@ export default function Dashboard() {
                             <Badge variant="secondary">{linkedinProfile.posts_count || 0}</Badge>
                           </TableCell>
                           <TableCell className="text-right py-0.5 w-[10%]">
-                            <Button variant="ghost" size="icon" onClick={() => handleDeleteProfile(linkedinProfile.id)} className="text-destructive hover:text-destructive hover:bg-destructive/10">
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
+                            <Dialog>
+                              <DialogTrigger asChild>
+                                <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive hover:bg-destructive/10">
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent>
+                                <DialogHeader>
+                                  <DialogTitle>{language === 'fr' ? 'Supprimer ce profil ?' : 'Delete this profile?'}</DialogTitle>
+                                  <DialogDescription>
+                                    {language === 'fr' 
+                                      ? `Êtes-vous sûr de vouloir supprimer ${linkedinProfile.profile_name || 'ce profil'} ? Cette action est irréversible.`
+                                      : `Are you sure you want to delete ${linkedinProfile.profile_name || 'this profile'}? This action cannot be undone.`}
+                                  </DialogDescription>
+                                </DialogHeader>
+                                <DialogFooter>
+                                  <Button variant="destructive" onClick={() => handleDeleteProfile(linkedinProfile.id)}>
+                                    {language === 'fr' ? 'Supprimer' : 'Delete'}
+                                  </Button>
+                                </DialogFooter>
+                              </DialogContent>
+                            </Dialog>
                           </TableCell>
                         </TableRow>
                       ))}
