@@ -1,26 +1,38 @@
 
 
-## Probleme identifie
+## Probleme
 
-`window.open(data.url, "_blank")` est bloque par les navigateurs dans un contexte iframe/preview. Le checkout Stripe s'ouvre dans un nouvel onglet qui est silencieusement bloque.
+Les logs edge function montrent que `check-subscription` retourne souvent `"Auth session missing!"`, ce qui met `isError: true` dans le hook `useSubscription`. Cela affiche le bouton "Manage billing" d'erreur (ligne 455-474 de Pricing.tsx) au lieu du bouton "Subscribe to Pro". Quand l'utilisateur clique sur ce bouton, il appelle `openCustomerPortal()` qui echoue aussi (meme erreur auth), affiche un toast d'erreur, et l'UI reste dans cet etat.
+
+## Cause racine
+
+Le token d'authentification n'est parfois pas transmis a l'edge function (session expirée ou race condition). Le fallback UI actuel est mal concu : il montre "Manage billing" meme quand l'utilisateur n'a pas de customer Stripe.
 
 ## Solution
 
-Remplacer `window.open` par `window.location.href` pour rediriger dans le meme onglet au lieu d'ouvrir un nouvel onglet. Cela contourne les bloqueurs de popups.
+1. **Pricing.tsx** : Quand `isSubError` est true, afficher le bouton "Subscribe to Pro" (checkout) comme fallback au lieu du bouton "Manage billing" casse. Supprimer le toast d'erreur automatique.
 
-### Modification
+2. **useSubscription.ts** : Augmenter le `retry` a 3 et ajouter `retryDelay` exponentiel pour gerer les problemes de session transitoires.
 
-**Fichier** : `src/pages/Pricing.tsx`, ligne 192
+### Modification 1 - `src/pages/Pricing.tsx` (lignes 455-474)
 
-Remplacer :
-```typescript
-window.open(data.url, "_blank");
+Remplacer le bloc `isSubError` par un fallback vers le bouton checkout :
+
+```tsx
+) : (
+  <Button onClick={handleProCheckout} disabled={isCheckoutLoading} variant="hero" className="w-full mt-4">
+    {isCheckoutLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+    {user ? 'Subscribe to Pro' : 'Sign up to subscribe'}
+  </Button>
+)}
 ```
 
-Par :
-```typescript
-window.location.href = data.url;
-```
+Le bloc conditionnel `(user && isSubError)` est supprime. Le else final couvre deja le cas non-abonne et non-erreur.
 
-Cela redirigera l'utilisateur directement vers le checkout Stripe dans le meme onglet. Les URL `success_url` et `cancel_url` configurees dans la fonction `create-checkout` rameneront l'utilisateur sur l'app apres le paiement.
+### Modification 2 - `src/hooks/useSubscription.ts` (ligne 28-29)
+
+```typescript
+retry: 3,
+retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 10000),
+```
 
