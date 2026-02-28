@@ -452,26 +452,6 @@ const Pricing = () => {
                     )}
                   </Button>
                 </div>
-              ) : (user && isSubError) ? (
-                <Button
-                  onClick={async () => {
-                    toast.error("Could not verify subscription status. Opening billing portal...");
-                    setIsPortalLoading(true);
-                    try {
-                      await openCustomerPortal();
-                    } catch (err: any) {
-                      toast.error(err.message || "Failed to open billing portal");
-                    } finally {
-                      setIsPortalLoading(false);
-                    }
-                  }}
-                  disabled={isPortalLoading}
-                  variant="ghost"
-                  className="w-full mt-4 bg-primary/10 text-primary hover:bg-primary/15"
-                >
-                  {isPortalLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Crown className="h-4 w-4 mr-2" />}
-                  Manage billing
-                </Button>
               ) : (
                 <Button onClick={handleProCheckout} disabled={isCheckoutLoading} variant="hero" className="w-full mt-4">
                   {isCheckoutLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}

@@ -24,7 +24,8 @@ export function useSubscription() {
       return data as SubscriptionData;
     },
     enabled: !!user,
-    retry: 2,
+    retry: 3,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 10000),
     staleTime: 5 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
     refetchInterval: 60 * 1000,
