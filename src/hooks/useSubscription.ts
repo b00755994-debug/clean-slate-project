@@ -27,6 +27,7 @@ export function useSubscription() {
     retry: 2,
     staleTime: 5 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
+    refetchInterval: 60 * 1000,
   });
 
   // Handle checkout=success param

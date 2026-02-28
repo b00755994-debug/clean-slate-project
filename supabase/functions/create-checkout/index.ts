@@ -35,6 +35,19 @@ serve(async (req) => {
     let customerId;
     if (customers.data.length > 0) {
       customerId = customers.data[0].id;
+
+      // Check for existing active subscription to prevent duplicates
+      const subscriptions = await stripe.subscriptions.list({
+        customer: customerId,
+        status: "active",
+        limit: 1,
+      });
+      if (subscriptions.data.length > 0) {
+        return new Response(
+          JSON.stringify({ error: "You already have an active subscription. Please use the billing portal to manage it." }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 400 }
+        );
+      }
     }
 
     const session = await stripe.checkout.sessions.create({

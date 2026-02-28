@@ -71,7 +71,8 @@ export function useLinkedInProfiles() {
         .from('posts')
         .select('linkedin_profiles')
         .eq('workspace_id', workspace.id)
-        .gte('linkedin_created_at', thirtyDaysAgo.toISOString());
+        .gte('linkedin_created_at', thirtyDaysAgo.toISOString())
+        .limit(10000);
 
       // Count posts per profile client-side
       const countsMap: Record<string, number> = {};

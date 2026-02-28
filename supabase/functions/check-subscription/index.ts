@@ -80,11 +80,15 @@ serve(async (req) => {
 
     if (hasActiveSub) {
       const subscription = subscriptions.data[0];
-      const endValue = subscription.current_period_end;
-      if (typeof endValue === 'number') {
-        subscriptionEnd = new Date(endValue * 1000).toISOString();
-      } else if (typeof endValue === 'string') {
-        subscriptionEnd = new Date(endValue).toISOString();
+      // Robust date parsing: log raw value for debugging, handle all types
+      const rawEnd = subscription.current_period_end;
+      logStep("Raw current_period_end", { rawEnd, type: typeof rawEnd });
+      if (typeof rawEnd === 'number') {
+        subscriptionEnd = new Date(rawEnd * 1000).toISOString();
+      } else if (typeof rawEnd === 'string') {
+        subscriptionEnd = new Date(rawEnd).toISOString();
+      } else if (rawEnd && typeof rawEnd === 'object' && 'toISOString' in rawEnd) {
+        subscriptionEnd = (rawEnd as Date).toISOString();
       } else {
         subscriptionEnd = null;
       }

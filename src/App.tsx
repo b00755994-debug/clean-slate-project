@@ -99,8 +99,22 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
-            <Route path="/mockups" element={<Mockups />} />
-            <Route path="/test" element={<TestSlackBadge />} />
+            <Route
+              path="/mockups"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <Mockups />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/test"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <TestSlackBadge />
+                </ProtectedRoute>
+              }
+            />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
