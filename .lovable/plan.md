@@ -1,34 +1,26 @@
 
 
-## Activer les codes promo sur le checkout Stripe
+## Probleme identifie
 
-Actuellement, la session de checkout ne permet pas de saisir de code promo. Il suffit d'ajouter l'option `allow_promotion_codes: true` dans la creation de la session Stripe.
+`window.open(data.url, "_blank")` est bloque par les navigateurs dans un contexte iframe/preview. Le checkout Stripe s'ouvre dans un nouvel onglet qui est silencieusement bloque.
+
+## Solution
+
+Remplacer `window.open` par `window.location.href` pour rediriger dans le meme onglet au lieu d'ouvrir un nouvel onglet. Cela contourne les bloqueurs de popups.
 
 ### Modification
 
-**Fichier** : `supabase/functions/create-checkout/index.ts`
+**Fichier** : `src/pages/Pricing.tsx`, ligne 192
 
-Ajouter `allow_promotion_codes: true` dans l'objet passe a `stripe.checkout.sessions.create()` :
-
+Remplacer :
 ```typescript
-const session = await stripe.checkout.sessions.create({
-  customer: customerId,
-  customer_email: customerId ? undefined : user.email,
-  allow_promotion_codes: true,  // <-- ajout
-  line_items: [...],
-  mode: "subscription",
-  success_url: ...,
-  cancel_url: ...,
-});
+window.open(data.url, "_blank");
 ```
 
-Cela affichera un champ "Add promotion code" directement sur la page de checkout Stripe.
+Par :
+```typescript
+window.location.href = data.url;
+```
 
-### Pre-requis
-
-Les codes promo doivent etre crees dans le [dashboard Stripe > Coupons](https://dashboard.stripe.com/coupons) en mode **Live**. Chaque coupon peut etre configure avec un pourcentage ou montant fixe, une duree, et un nombre max d'utilisations.
-
-### Deploiement
-
-La fonction `create-checkout` sera redeployee apres modification.
+Cela redirigera l'utilisateur directement vers le checkout Stripe dans le meme onglet. Les URL `success_url` et `cancel_url` configurees dans la fonction `create-checkout` rameneront l'utilisateur sur l'app apres le paiement.
 
