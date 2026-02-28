@@ -1,45 +1,34 @@
 
 
-## Passer Stripe de Test a Live -- etape par etape
+## Activer les codes promo sur le checkout Stripe
 
-Ton compte Stripe `superpump.tech` est actuellement connecte avec une cle (probablement test). Voici ce qu'il faut faire :
+Actuellement, la session de checkout ne permet pas de saisir de code promo. Il suffit d'ajouter l'option `allow_promotion_codes: true` dans la creation de la session Stripe.
 
----
+### Modification
 
-### Etape 1 : Mettre a jour la cle secrete Stripe vers Live
+**Fichier** : `supabase/functions/create-checkout/index.ts`
 
-J'utiliserai l'outil `update_stripe_secret_key` pour t'ouvrir une modale ou tu colleras ta cle **live** (`sk_live_...`).
+Ajouter `allow_promotion_codes: true` dans l'objet passe a `stripe.checkout.sessions.create()` :
 
-Tu la trouves ici : [Stripe Dashboard > API Keys](https://dashboard.stripe.com/acct_1St55AEPoXPeqIKk/apikeys) -- assure-toi d'etre en mode **Live** (pas Test) en haut a droite du dashboard Stripe.
+```typescript
+const session = await stripe.checkout.sessions.create({
+  customer: customerId,
+  customer_email: customerId ? undefined : user.email,
+  allow_promotion_codes: true,  // <-- ajout
+  line_items: [...],
+  mode: "subscription",
+  success_url: ...,
+  cancel_url: ...,
+});
+```
 
----
+Cela affichera un champ "Add promotion code" directement sur la page de checkout Stripe.
 
-### Etape 2 : Creer les produits et prix en mode Live
+### Pre-requis
 
-Les produits test (`prod_U2u5D1O58TUiGO`, `prod_U2u5R33sL7CeRe`) n'existent pas en mode Live. Je les recreerai avec les memes parametres :
+Les codes promo doivent etre crees dans le [dashboard Stripe > Coupons](https://dashboard.stripe.com/coupons) en mode **Live**. Chaque coupon peut etre configure avec un pourcentage ou montant fixe, une duree, et un nombre max d'utilisations.
 
-- **Superpump Pro (Monthly)** : 4.00 EUR/mois/user
-- **Superpump Pro (Annual)** : 38.40 EUR/an/user (equivalent 3.20 EUR/mois)
+### Deploiement
 
----
-
-### Etape 3 : Mettre a jour le code avec les nouveaux IDs Live
-
-Fichiers a modifier :
-- `src/lib/stripe.ts` -- les `priceId` et `productId`
-- `supabase/functions/customer-portal/index.ts` -- les IDs hardcodes dans la config du portal
-
----
-
-### Etape 4 : Deployer les edge functions
-
-Les fonctions `create-checkout`, `check-subscription` et `customer-portal` seront automatiquement redeployees avec les nouveaux IDs.
-
----
-
-### Important
-
-- Aucun client test ne sera visible en mode Live (c'est normal)
-- Les abonnements test disparaitront -- seuls les vrais paiements apparaitront
-- La cle publishable (`pk_live_...`) n'est pas utilisee cote code (tout passe par les edge functions), donc pas de changement necessaire la
+La fonction `create-checkout` sera redeployee apres modification.
 
