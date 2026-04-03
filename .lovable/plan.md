@@ -1,38 +1,47 @@
 
 
-## Probleme
+## Stocker les photos de profil dans Supabase Storage
 
-Les logs edge function montrent que `check-subscription` retourne souvent `"Auth session missing!"`, ce qui met `isError: true` dans le hook `useSubscription`. Cela affiche le bouton "Manage billing" d'erreur (ligne 455-474 de Pricing.tsx) au lieu du bouton "Subscribe to Pro". Quand l'utilisateur clique sur ce bouton, il appelle `openCustomerPortal()` qui echoue aussi (meme erreur auth), affiche un toast d'erreur, et l'UI reste dans cet etat.
+Les URLs LinkedIn expirent regulierement (toutes les URLs actuelles sont expirees). La solution : telecharger les images et les stocker dans un bucket Supabase Storage.
 
-## Cause racine
+### Architecture
 
-Le token d'authentification n'est parfois pas transmis a l'edge function (session expirée ou race condition). Le fallback UI actuel est mal concu : il montre "Manage billing" meme quand l'utilisateur n'a pas de customer Stripe.
-
-## Solution
-
-1. **Pricing.tsx** : Quand `isSubError` est true, afficher le bouton "Subscribe to Pro" (checkout) comme fallback au lieu du bouton "Manage billing" casse. Supprimer le toast d'erreur automatique.
-
-2. **useSubscription.ts** : Augmenter le `retry` a 3 et ajouter `retryDelay` exponentiel pour gerer les problemes de session transitoires.
-
-### Modification 1 - `src/pages/Pricing.tsx` (lignes 455-474)
-
-Remplacer le bloc `isSubError` par un fallback vers le bouton checkout :
-
-```tsx
-) : (
-  <Button onClick={handleProCheckout} disabled={isCheckoutLoading} variant="hero" className="w-full mt-4">
-    {isCheckoutLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-    {user ? 'Subscribe to Pro' : 'Sign up to subscribe'}
-  </Button>
-)}
+```text
+LinkedIn CDN (temporaire) → Edge Function → Supabase Storage (permanent)
+                                              ↓
+                                    billable_users.profile_picture
+                                    (URL Supabase permanente)
 ```
 
-Le bloc conditionnel `(user && isSubError)` est supprime. Le else final couvre deja le cas non-abonne et non-erreur.
+### Etapes
 
-### Modification 2 - `src/hooks/useSubscription.ts` (ligne 28-29)
+#### 1. Creer un bucket Storage `profile-pictures` (public)
 
-```typescript
-retry: 3,
-retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 10000),
-```
+Migration SQL pour creer le bucket et les politiques RLS permettant la lecture publique.
+
+#### 2. Creer une edge function `sync-profile-pictures`
+
+Cette fonction :
+- Recupere tous les `billable_users` avec un `profile_picture` pointant vers `media.licdn.com`
+- Telecharge chaque image
+- L'upload dans le bucket `profile-pictures/{billable_user_id}.jpg`
+- Met a jour `billable_users.profile_picture` avec l'URL publique Supabase
+
+Elle sera appelable manuellement ou via cron pour rafraichir les photos quand le scraper met a jour les URLs LinkedIn.
+
+#### 3. Mettre a jour le scraping pipeline (n8n)
+
+Apres que n8n met a jour une `profile_picture` avec une nouvelle URL LinkedIn, il faudra appeler `sync-profile-pictures` pour la persister. Alternativement, un cron job quotidien peut synchroniser toutes les photos.
+
+#### 4. Executer la migration initiale
+
+Appeler la fonction une premiere fois pour migrer les 6 photos actuelles (meme si expirees, les nouvelles URLs du prochain scrape seront automatiquement persistees).
+
+### Impact sur le front-end
+
+Aucun changement cote front-end. Le champ `profile_picture` pointera simplement vers une URL Supabase Storage au lieu de LinkedIn. Les composants `PostCard`, `Dashboard`, `DashboardContent`, `OnboardingStepLinkedIn`, et `useFullLeaderboard` continueront de fonctionner sans modification.
+
+### Limites
+
+Les URLs actuelles sont deja expirees, donc la migration initiale ne pourra pas telecharger les images. Il faudra d'abord relancer le scrape n8n pour obtenir de nouvelles URLs LinkedIn, puis executer la sync.
 
